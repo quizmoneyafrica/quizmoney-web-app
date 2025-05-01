@@ -4,25 +4,34 @@ import { fetchToken } from "@/app/firebase/firebase";
 import { isIosPwaInstalled } from "../utils/utils";
 
 export default function EnablePushOnIosButton() {
-	const [isIosPwa, setIsIosPwa] = useState(false);
+	const [isVisible, setIsVisible] = useState(false);
 	const [status, setStatus] = useState("Tap to enable push notifications");
 
-	const checkIosPwaStatus = () => {
-		const isPwa = isIosPwaInstalled();
-		const permission = Notification.permission;
+	useEffect(() => {
+		if (!isIosPwaInstalled()) return;
 
-		setIsIosPwa(isPwa);
+		setIsVisible(true); // Now it's safe to show
 
-		if (permission === "granted") {
-			setStatus("✅ Push already enabled!");
-		} else if (permission === "denied") {
-			setStatus("❌ Notifications blocked");
-		} else {
-			setStatus("Tap to enable push notifications");
-		}
-	};
+		const checkPermission = () => {
+			const permission = Notification.permission;
+			if (permission === "granted") {
+				setStatus("✅ Push already enabled!");
+			} else if (permission === "denied") {
+				setStatus("❌ Notifications blocked");
+			} else {
+				setStatus("Tap to enable push notifications");
+			}
+		};
+
+		checkPermission();
+		const interval = setInterval(checkPermission, 5000);
+
+		return () => clearInterval(interval);
+	}, []);
 
 	const handleClick = async () => {
+		if (!isIosPwaInstalled()) return; // extra safety
+
 		try {
 			const permission = await Notification.requestPermission();
 			if (permission === "granted") {
@@ -38,17 +47,7 @@ export default function EnablePushOnIosButton() {
 		}
 	};
 
-	useEffect(() => {
-		checkIosPwaStatus();
-
-		const interval = setInterval(() => {
-			checkIosPwaStatus();
-		}, 5000);
-
-		return () => clearInterval(interval);
-	}, []);
-
-	if (!isIosPwa) return null;
+	if (!isVisible) return null;
 
 	return (
 		<div className="fixed bottom-0 left-0 right-0 bg-yellow-100 border-t border-yellow-400 p-4 z-50 shadow-md text-center text-sm md:text-base">
