@@ -1,26 +1,248 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+	--background: #ffffff;
+	--foreground: #171717;
+
+	--color-black: #070707;
+	--color-second: #006e7d;
+	--color-third: #55068a;
+	--color-fourth: #2364aa;
+
+	--color-primary-50: #e4f1fa;
+	--color-primary-100: #bcddf4;
+	--color-primary-200: #94c8ec;
+	--color-primary-300: #6db2e4;
+	--color-primary-400: #51a2e0;
+	--color-primary-500: #3a93db;
+	--color-primary-600: #3386ce;
+	--color-primary-700: #2a75bc;
+	--color-primary-800: #2364aa;
+	--color-primary-900: #17478b;
+
+	--color-secondary-50: #dff9ff;
+	--color-secondary-100: #aff0ff;
+	--color-secondary-200: #74e7ff;
+	--color-secondary-300: #0fdcfe;
+	--color-secondary-400: #00d4fc;
+	--color-secondary-500: #00cbf7;
+	--color-secondary-600: #00bbe3;
+	--color-secondary-700: #00a5c7;
+	--color-secondary-800: #0091ad;
+	--color-secondary-900: #006e7d;
+
+	--color-neutral-50: #f9f9f9;
+	--color-neutral-100: #f2f2f2;
+	--color-neutral-200: #e9e9e9;
+	--color-neutral-300: #d9d9d9;
+	--color-neutral-400: #b5b5b5;
+	--color-neutral-500: #959595;
+	--color-neutral-600: #6d6d6d;
+	--color-neutral-700: #5a5a5a;
+	--color-neutral-800: #3b3b3b;
+	--color-neutral-900: #1b1b1b;
+
+	--color-positive-50: #e7feed;
+	--color-positive-100: #c4fbd2;
+	--color-positive-200: #9af9b5;
+	--color-positive-300: #62f694;
+	--color-positive-400: #04f178;
+	--color-positive-500: #00ea62;
+	--color-positive-600: #00d956;
+	--color-positive-700: #00c449;
+	--color-positive-800: #00b23d;
+	--color-positive-900: #009028;
+
+	--color-error-50: #ffeaee;
+	--color-error-100: #ffcbd2;
+	--color-error-200: #f69798;
+	--color-error-300: #ee6d70;
+	--color-error-400: #f9474b;
+	--color-error-500: #ff312e;
+	--color-error-600: #f0242e;
+	--color-error-700: #de1528;
+	--color-error-800: #d10420;
+	--color-error-900: #c30012;
+
+	--color-warning-50: #fffce7;
+	--color-warning-100: #fff6c5;
+	--color-warning-200: #fff19f;
+	--color-warning-300: #ffeb7a;
+	--color-warning-400: #fee65e;
+	--color-warning-500: #ffe347;
+	--color-warning-600: #fcd142;
+	--color-warning-700: #f8b93c;
+	--color-warning-800: #f4a235;
+	--color-warning-900: #ed7b2b;
+
+	--color-info-50: #f6e4f6;
+	--color-info-900: #55068a;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+	--font-heading: var(--dmsans);
+	--font-text: var(--spacegrotesk);
 
+	--color-background: var(--color-background);
+	--color-foreground: var(--color-foreground);
+
+	--color-black: var(--color-black);
+	--color-second: var(--color-second);
+	--color-third: var(--color-third);
+	--color-fourth: var(--color-fourth);
+
+	--color-primary-50: var(--color-primary-50);
+	--color-primary-100: var(--color-primary-100);
+	--color-primary-200: var(--color-primary-200);
+	--color-primary-300: var(--color-primary-300);
+	--color-primary-400: var(--color-primary-400);
+	--color-primary-500: var(--color-primary-500);
+	--color-primary-600: var(--color-primary-600);
+	--color-primary-700: var(--color-primary-700);
+	--color-primary-800: var(--color-primary-800);
+	--color-primary-900: var(--color-primary-900);
+
+	--color-secondary-50: var(--color-secondary-50);
+	--color-secondary-100: var(--color-secondary-100);
+	--color-secondary-200: var(--color-secondary-200);
+	--color-secondary-300: var(--color-secondary-300);
+	--color-secondary-400: var(--color-secondary-400);
+	--color-secondary-500: var(--color-secondary-500);
+	--color-secondary-600: var(--color-secondary-600);
+	--color-secondary-700: var(--color-secondary-700);
+	--color-secondary-800: var(--color-secondary-800);
+	--color-secondary-900: var(--color-secondary-900);
+
+	--color-neutral-50: var(--color-neutral-50);
+	--color-neutral-100: var(--color-neutral-100);
+	--color-neutral-200: var(--color-neutral-200);
+	--color-neutral-300: var(--color-neutral-300);
+	--color-neutral-400: var(--color-neutral-400);
+	--color-neutral-500: var(--color-neutral-500);
+	--color-neutral-600: var(--color-neutral-600);
+	--color-neutral-700: var(--color-neutral-700);
+	--color-neutral-800: var(--color-neutral-800);
+	--color-neutral-900: var(--color-neutral-900);
+
+	--color-positive-50: var(--color-positive-50);
+	--color-positive-100: var(--color-positive-100);
+	--color-positive-200: var(--color-positive-200);
+	--color-positive-300: var(--color-positive-300);
+	--color-positive-400: var(--color-positive-400);
+	--color-positive-500: var(--color-positive-500);
+	--color-positive-600: var(--color-positive-600);
+	--color-positive-700: var(--color-positive-700);
+	--color-positive-800: var(--color-positive-800);
+	--color-positive-900: var(--color-positive-900);
+
+	--color-error-50: var(--color-error-50);
+	--color-error-100: var(--color-error-100);
+	--color-error-200: var(--color-error-200);
+	--color-error-300: var(--color-error-300);
+	--color-error-400: var(--color-error-400);
+	--color-error-500: var(--color-error-500);
+	--color-error-600: var(--color-error-600);
+	--color-error-700: var(--color-error-700);
+	--color-error-800: var(--color-error-800);
+	--color-error-900: var(--color-error-900);
+
+	--color-warning-50: var(--color-warning-50);
+	--color-warning-100: var(--color-warning-100);
+	--color-warning-200: var(--color-warning-200);
+	--color-warning-300: var(--color-warning-300);
+	--color-warning-400: var(--color-warning-400);
+	--color-warning-500: var(--color-warning-500);
+	--color-warning-600: var(--color-warning-600);
+	--color-warning-700: var(--color-warning-700);
+	--color-warning-800: var(--color-warning-800);
+	--color-warning-900: var(--color-warning-900);
+
+	--color-info-50: var(--color-info-50);
+	--color-info-900: var(--color-info-900);
+}
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+	:root {
+		--background: #ffffff;
+		--foreground: #171717;
+
+		--color-black: #070707;
+		--color-second: #006e7d;
+		--color-third: #55068a;
+		--color-fourth: #2364aa;
+
+		--color-primary-50: #e4f1fa;
+		--color-primary-100: #bcddf4;
+		--color-primary-200: #94c8ec;
+		--color-primary-300: #6db2e4;
+		--color-primary-400: #51a2e0;
+		--color-primary-500: #3a93db;
+		--color-primary-600: #3386ce;
+		--color-primary-700: #2a75bc;
+		--color-primary-800: #2364aa;
+		--color-primary-900: #17478b;
+
+		--color-secondary-50: #dff9ff;
+		--color-secondary-100: #aff0ff;
+		--color-secondary-200: #74e7ff;
+		--color-secondary-300: #0fdcfe;
+		--color-secondary-400: #00d4fc;
+		--color-secondary-500: #00cbf7;
+		--color-secondary-600: #00bbe3;
+		--color-secondary-700: #00a5c7;
+		--color-secondary-800: #0091ad;
+		--color-secondary-900: #006e7d;
+
+		--color-neutral-50: #f9f9f9;
+		--color-neutral-100: #f2f2f2;
+		--color-neutral-200: #e9e9e9;
+		--color-neutral-300: #d9d9d9;
+		--color-neutral-400: #b5b5b5;
+		--color-neutral-500: #959595;
+		--color-neutral-600: #6d6d6d;
+		--color-neutral-700: #5a5a5a;
+		--color-neutral-800: #3b3b3b;
+		--color-neutral-900: #1b1b1b;
+
+		--color-positive-50: #e7feed;
+		--color-positive-100: #c4fbd2;
+		--color-positive-200: #9af9b5;
+		--color-positive-300: #62f694;
+		--color-positive-400: #04f178;
+		--color-positive-500: #00ea62;
+		--color-positive-600: #00d956;
+		--color-positive-700: #00c449;
+		--color-positive-800: #00b23d;
+		--color-positive-900: #009028;
+
+		--color-error-50: #ffeaee;
+		--color-error-100: #ffcbd2;
+		--color-error-200: #f69798;
+		--color-error-300: #ee6d70;
+		--color-error-400: #f9474b;
+		--color-error-500: #ff312e;
+		--color-error-600: #f0242e;
+		--color-error-700: #de1528;
+		--color-error-800: #d10420;
+		--color-error-900: #c30012;
+
+		--color-warning-50: #fffce7;
+		--color-warning-100: #fff6c5;
+		--color-warning-200: #fff19f;
+		--color-warning-300: #ffeb7a;
+		--color-warning-400: #fee65e;
+		--color-warning-500: #ffe347;
+		--color-warning-600: #fcd142;
+		--color-warning-700: #f8b93c;
+		--color-warning-800: #f4a235;
+		--color-warning-900: #ed7b2b;
+
+		--color-info-50: #f6e4f6;
+		--color-info-900: #55068a;
+	}
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+	background: var(--background);
+	color: var(--foreground);
+	font-family: Arial, Helvetica, sans-serif;
 }

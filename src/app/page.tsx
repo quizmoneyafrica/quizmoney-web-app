@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Onboarding from "@/app/screens/onboarding/onboarding";
 
 export default function Home() {
 	return (
@@ -12,10 +13,9 @@ export default function Home() {
 					height={38}
 					priority
 				/>
-
-				
+				<Onboarding name="Quiz Money" />
+				<h3 className="font-bold text-primary-900">Bad Guy</h3>
 			</main>
-			
 		</div>
 	);
 }

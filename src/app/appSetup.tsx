@@ -7,6 +7,7 @@ import { persistor, store } from "./store/store";
 import { PersistGate } from "redux-persist/integration/react";
 import EnablePushOnIosButton from "./pwa/iosNotificationRequest";
 import NotificationBanner from "./firebase/NotificationBanner";
+import { Toaster } from "@/app/components/splashScreen/toaster/sonner";
 
 type Props = {
 	children: ReactNode;
@@ -14,9 +15,9 @@ type Props = {
 
 const AppSetup = ({ children }: Props) => {
 	const { token, notificationPermissionStatus } = useFcmToken();
-
+	// const [theme, setTheme] = useState<"light" | "dark" | "system">("system");
 	return (
-		<Theme appearance="light" >
+		<Theme appearance="light">
 			<div className="text-red-600 p-4 overflow-ellipsis">
 				<h1 className="text-4xl mb-4 font-bold">
 					Firebase Cloud Messaging Demo
@@ -34,6 +35,7 @@ const AppSetup = ({ children }: Props) => {
 			</div>
 			<Provider store={store}>
 				<PersistGate loading={null} persistor={persistor}>
+					<Toaster appearance="light" />
 					<EnablePushOnIosButton />
 					<NotificationBanner />
 					{children}

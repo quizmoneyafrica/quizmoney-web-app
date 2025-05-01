@@ -30,10 +30,10 @@ async function getNotificationPermissionAndToken() {
 	return null;
 }
 declare global {
-	interface Navigator {
-		standalone?: boolean;
-	}
-}
+    interface Navigator {
+      standalone?: boolean;
+    }
+  }
 const useFcmToken = () => {
 	const router = useRouter(); // Initialize the router for navigation.
 	const [notificationPermissionStatus, setNotificationPermissionStatus] =
@@ -128,11 +128,35 @@ const useFcmToken = () => {
 						`${payload.notification?.title}: ${payload.notification?.body}`
 					);
 				}
+
+				// --------------------------------------------
+				// Disable this if you only want toast notifications.
+				// const n = new Notification(
+				// 	payload.notification?.title || "New message",
+				// 	{
+				// 		body: payload.notification?.body || "This is a new message",
+				// 		data: link ? { url: link } : undefined,
+				// 	}
+				// );
+
+				// Step 10: Handle notification click event to navigate to a link if present.
+				// n.onclick = (event) => {
+				// 	event.preventDefault();
+				// 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				// 	const link = (event.target as any)?.data?.url;
+				// 	if (link) {
+				// 		router.push(link);
+				// 	} else {
+				// 		console.log("No link found in the notification payload");
+				// 	}
+				// };
+				// --------------------------------------------
 			});
 
 			return unsubscribe;
 		};
 
+		// Step 11: Cleanup the listener when the component unmounts.
 		let unsubscribe: Unsubscribe | null = null;
 
 		setupListener().then((unsub) => {
@@ -141,7 +165,6 @@ const useFcmToken = () => {
 			}
 		});
 
-		// Step 11: Cleanup the listener when the component unmounts.
 		return () => unsubscribe?.();
 	}, [token, router /*, toast*/]);
 
