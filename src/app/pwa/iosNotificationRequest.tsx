@@ -2,24 +2,30 @@
 import React, { useEffect, useState } from "react";
 import { fetchToken } from "@/app/firebase/firebase";
 import { isIosPwaInstalled } from "../utils/utils";
+import { Button, Callout } from "@radix-ui/themes";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
 
 export default function EnablePushOnIosButton() {
 	const [isVisible, setIsVisible] = useState(false);
+	const [isPushEnabled, setIsPushEnabled] = useState(false);
 	const [status, setStatus] = useState("Tap to enable push notifications");
 
 	useEffect(() => {
 		if (!isIosPwaInstalled()) return;
 
-		setIsVisible(true); // Now it's safe to show
+		setIsVisible(true);
 
 		const checkPermission = () => {
 			const permission = Notification.permission;
 			if (permission === "granted") {
 				setStatus("✅ Push already enabled!");
+				setIsPushEnabled(true);
 			} else if (permission === "denied") {
 				setStatus("❌ Notifications blocked");
+				setIsPushEnabled(false);
 			} else {
 				setStatus("Tap to enable push notifications");
+				setIsPushEnabled(false);
 			}
 		};
 
@@ -30,7 +36,7 @@ export default function EnablePushOnIosButton() {
 	}, []);
 
 	const handleClick = async () => {
-		if (!isIosPwaInstalled()) return; // extra safety
+		if (!isIosPwaInstalled()) return;
 
 		try {
 			const permission = await Notification.requestPermission();
@@ -38,8 +44,10 @@ export default function EnablePushOnIosButton() {
 				const token = await fetchToken();
 				console.log("✅ Push token:", token);
 				setStatus("✅ Push enabled!");
+				setIsPushEnabled(true);
 			} else if (permission === "denied") {
 				setStatus("❌ Permission denied");
+				setIsPushEnabled(false);
 			}
 		} catch (err) {
 			console.error("Push setup error:", err);
@@ -47,22 +55,20 @@ export default function EnablePushOnIosButton() {
 		}
 	};
 
-	if (!isVisible) return null;
+	if (!isVisible || isPushEnabled) return null;
 
 	return (
-		<div className="fixed bottom-0 left-0 right-0 bg-yellow-100 border-t border-yellow-400 p-4 z-50 shadow-md text-center text-sm md:text-base">
-			<p className="mb-2 text-yellow-900 font-medium">
-				🔔 Notifications are required to participate in Quiz Money!
-			</p>
-			<p className="mb-4 text-yellow-800">
-				Please enable notifications so we can alert you before each live game.
-			</p>
-
-			<button
-				onClick={handleClick}
-				className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-4 py-2 rounded-lg">
-				{status}
-			</button>
-		</div>
+		<Callout.Root>
+			<Callout.Icon>
+				<InfoCircledIcon />
+			</Callout.Icon>
+			<Callout.Text className="flex flex-col gap-3">
+				<span>
+					🔔 Notifications are required to participate in{" "}
+					<span className="font-bold">Quiz Money</span>!
+				</span>
+				<Button onClick={handleClick}>{status}</Button>
+			</Callout.Text>
+		</Callout.Root>
 	);
 }

@@ -40,7 +40,7 @@ const InstallAppButton: React.FC = () => {
 	return (
 		<button
 			onClick={handleInstall}
-			className="bg-green-600 text-white px-4 py-2 rounded-xl fixed bottom-6 right-6 shadow-xl z-50">
+			className="bg-primary-500 text-white px-4 py-2 rounded-xl fixed bottom-6 right-6 shadow-xl z-50">
 			📥 Install Quiz Money
 		</button>
 	);

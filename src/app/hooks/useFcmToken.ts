@@ -30,10 +30,10 @@ async function getNotificationPermissionAndToken() {
 	return null;
 }
 declare global {
-    interface Navigator {
-      standalone?: boolean;
-    }
-  }
+	interface Navigator {
+		standalone?: boolean;
+	}
+}
 const useFcmToken = () => {
 	const router = useRouter(); // Initialize the router for navigation.
 	const [notificationPermissionStatus, setNotificationPermissionStatus] =
@@ -121,11 +121,17 @@ const useFcmToken = () => {
 									}
 								},
 							},
+							duration: 10000,
+							position: "top-center",
 						}
 					);
 				} else {
 					toast.info(
-						`${payload.notification?.title}: ${payload.notification?.body}`
+						`${payload.notification?.title}: ${payload.notification?.body}`,
+						{
+							duration: 10000,
+							position: "top-center",
+						}
 					);
 				}
 
