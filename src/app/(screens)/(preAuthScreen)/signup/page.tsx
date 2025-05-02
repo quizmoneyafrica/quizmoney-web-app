@@ -2,17 +2,17 @@
 import { Container, Flex, Grid, Heading, Text } from "@radix-ui/themes";
 import React, { useEffect, useState } from "react";
 import Onboarding from "../../../components/onboarding/onboarding";
-import LoginForm from "./loginForm";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/app/hooks/useAuth";
 import AppLoader from "@/app/components/loader/loader";
 import Image from "next/image";
+import SignupForm from "./signupForm";
+import { CircleArrowLeft } from "@/app/icons/icons";
 
-const LoginPage = () => {
+function SignUpPage() {
 	const router = useRouter();
 	const { isAuthenticated, rehydrated } = useAppSelector((s) => s.auth);
 	const [loading, setLoading] = useState(false);
-
 	useEffect(() => {
 		if (rehydrated && isAuthenticated) {
 			router.replace("/home");
@@ -38,18 +38,30 @@ const LoginPage = () => {
 								priority
 							/>
 						</div>
+						<div className="hidden lg:inline-flex">
+							<Flex
+								align="center"
+								gap="2"
+								onClick={() => router.back()}
+								className="cursor-pointer">
+								<CircleArrowLeft /> Back
+							</Flex>
+						</div>
 						<Flex direction="column">
-							<Heading as="h2">Welcome Back!</Heading>
-							<Text className="text-neutral-600 ">Time to quiz and win</Text>
+							<Heading as="h2">Sign Up</Heading>
+							<Text className="text-neutral-600 ">
+								Let&apos;s create your account
+							</Text>
 						</Flex>
 
 						<Container>
-							<LoginForm loading={loading} setLoading={setLoading} />
+							<SignupForm setLoading={setLoading} />
 						</Container>
 					</div>
 				</Container>
 			</Grid>
 		</>
 	);
-};
-export default LoginPage;
+}
+
+export default SignUpPage;

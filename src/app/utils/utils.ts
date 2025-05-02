@@ -26,3 +26,5 @@ export function capitalizeFirstLetter(str: string) {
 export function cn(...classes: (string | undefined | null | false)[]) {
 	return classes.filter(Boolean).join(" ");
 }
+
+export const toastPosition = isMobileOrTablet() ? "top-center" : "top-right";

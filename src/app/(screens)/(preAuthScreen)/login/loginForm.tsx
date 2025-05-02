@@ -2,22 +2,33 @@
 import UserAPI from "@/app/api/userApi";
 import { useAuth } from "@/app/hooks/useAuth";
 import useFcmToken from "@/app/hooks/useFcmToken";
+import {
+	AppleIcon,
+	EyeIcon,
+	EyeSlash,
+	FacebookIcon,
+	GoogleIcon,
+	PersonIcon,
+} from "@/app/icons/icons";
 import { encryptData } from "@/app/utils/crypto";
 import CustomButton from "@/app/utils/CustomBtn";
 import CustomTextField from "@/app/utils/CustomTextField";
-import { capitalizeFirstLetter } from "@/app/utils/utils";
-import { EyeClosedIcon, EyeOpenIcon, PersonIcon } from "@radix-ui/react-icons";
+import { capitalizeFirstLetter, toastPosition } from "@/app/utils/utils";
 import { Flex } from "@radix-ui/themes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
 
-function LoginForm() {
+type Props = {
+	loading: boolean;
+	setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const LoginForm = ({ loading, setLoading }: Props) => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
-	const [loading, setLoading] = useState(false);
 	const { token, notificationPermissionStatus } = useFcmToken();
 	const { loginUser } = useAuth();
 	const router = useRouter();
@@ -58,13 +69,14 @@ function LoginForm() {
 			// ✅ Dispatch to Redux
 			loginUser(encryptedUser);
 
+			router.replace("/home");
+
 			toast.success(
 				`Welcome Back ${capitalizeFirstLetter(userData?.firstName)}`,
 				{
 					position: "top-center",
 				}
 			);
-			router.replace("/home");
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {
@@ -76,9 +88,27 @@ function LoginForm() {
 			setLoading(false);
 		}
 	};
+	const handleGoogleAuth = () => {
+		toast.info("Google Sign in Coming soon", {
+			position: toastPosition,
+			icon: <GoogleIcon />,
+		});
+	};
+	const handleFacebookAuth = () => {
+		toast.info("Facebook Sign in Coming soon", {
+			position: toastPosition,
+			icon: <FacebookIcon />,
+		});
+	};
+	const handleAppleAuth = () => {
+		toast.info("Apple Sign in Coming soon", {
+			position: toastPosition,
+			icon: <AppleIcon />,
+		});
+	};
 
 	return (
-		<div>
+		<>
 			<form onSubmit={handleLogin}>
 				<Flex direction="column" gap="4">
 					<CustomTextField
@@ -101,23 +131,66 @@ function LoginForm() {
 						onChange={(e) => setPassword(e.target.value)}
 						icon={
 							showPassword ? (
-								<EyeOpenIcon onClick={() => setShowPassword(false)} />
+								<EyeIcon onClick={() => setShowPassword(false)} />
 							) : (
-								<EyeClosedIcon onClick={() => setShowPassword(true)} />
+								<EyeSlash onClick={() => setShowPassword(true)} />
 							)
 						}
 					/>
 
 					<Flex justify="end">
-						<Link href="/forgot-password">Forgot your password?</Link>
+						<Link
+							href="/forgot-password"
+							className="underline underline-offset-4 text-primary-900">
+							Forgot your password?
+						</Link>
 					</Flex>
-					<CustomButton type="submit">
-						{loading ? "Logging in..." : "Login"}
-					</CustomButton>
+					<div className="pt-4 w-full">
+						<CustomButton type="submit" width="full">
+							{loading ? "Logging in..." : "Login"}
+						</CustomButton>
+					</div>
+					<div className="pt-4 space-y-6">
+						<p className="text-center text-[#6E7286]">Or sign in with</p>
+						<Flex align="center" justify="center" gap="6">
+							<IconButton onClick={handleGoogleAuth}>
+								<GoogleIcon />
+							</IconButton>
+							<IconButton onClick={handleFacebookAuth}>
+								<FacebookIcon />
+							</IconButton>
+							<IconButton onClick={handleAppleAuth}>
+								<AppleIcon />
+							</IconButton>
+						</Flex>
+						<p className="text-center">
+							Don&apos;t have an account yet?{" "}
+							<Link
+								href="/signup"
+								className="text-primary-900 font-medium underline underline-offset-2">
+								Sign up
+							</Link>
+						</p>
+					</div>
 				</Flex>
 			</form>
-		</div>
+		</>
+	);
+};
+export default LoginForm;
+
+type IconButtonProps = {
+	onClick?: () => void;
+	children: React.ReactNode;
+};
+
+export function IconButton({ children, onClick }: IconButtonProps) {
+	return (
+		<button
+			type="button"
+			onClick={onClick}
+			className="bg-[#ECECEC] hover:bg-[#e2e1e1] cursor-pointer py-3 px-8 rounded-[10px] transition">
+			{children}
+		</button>
 	);
 }
-
-export default LoginForm;

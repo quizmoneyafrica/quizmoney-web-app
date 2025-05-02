@@ -63,11 +63,13 @@ function Onboarding() {
 								priority
 							/>
 						</Link>
-						<button
-							onClick={() => router.replace("/login")}
-							className="lg:hidden text-primary-500 underline">
-							Skip
-						</button>
+						{currentIndex === slides.length - 1 ? null : (
+							<button
+								onClick={() => router.replace("/login")}
+								className="lg:hidden text-primary-500 underline">
+								Skip
+							</button>
+						)}
 					</Flex>
 				</div>
 				<div>
@@ -75,7 +77,14 @@ function Onboarding() {
 						modules={[A11y, Autoplay]}
 						spaceBetween={10}
 						slidesPerView={1}
-						autoplay
+						autoplay={
+							!isMobileOrTablet()
+								? {
+										delay: 3000,
+										disableOnInteraction: false,
+								  }
+								: false
+						}
 						loop={false}
 						onSwiper={(swiper) => setSwiperInstance(swiper)}
 						onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)}
@@ -92,7 +101,9 @@ function Onboarding() {
 											className="mb-6"
 										/>
 									</div>
-									<h2 className="text-xl font-heading font-semibold mb-2">{slide.title}</h2>
+									<h2 className="text-xl font-heading font-semibold mb-2">
+										{slide.title}
+									</h2>
 									<p className="font-text text-gray-600 md:max-w-[60%] mx-auto">
 										{slide.description}
 									</p>

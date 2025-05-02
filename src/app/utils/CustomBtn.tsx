@@ -11,6 +11,7 @@ type ButtonProps = {
 	className?: string;
 	disabled?: boolean;
 	onClick?: () => void;
+	width?: "full" | "medium" | "inline";
 };
 
 const variantClasses = {
@@ -18,11 +19,16 @@ const variantClasses = {
 	secondary: "bg-primary-500 text-white hover:bg-primary-600",
 	outline: "border border-neutral-300 text-black hover:bg-neutral-100",
 };
- 
+
 const sizeClasses = {
 	sm: "text-sm px-3 py-1.5",
 	md: "text-base px-4 py-2",
 	lg: "text-base px-5 py-4",
+};
+const widthClasses = {
+	full: "w-full",
+	medium: "w-[50%]",
+	inline: "",
 };
 
 export default function CustomButton({
@@ -33,6 +39,7 @@ export default function CustomButton({
 	className = "",
 	disabled = false,
 	onClick,
+	width = "inline",
 }: ButtonProps) {
 	return (
 		<button
@@ -43,6 +50,7 @@ export default function CustomButton({
 				"rounded-full cursor-pointer font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2",
 				variantClasses[variant],
 				sizeClasses[size],
+				widthClasses[width],
 				disabled && "opacity-50 cursor-not-allowed",
 				className
 			)}>
