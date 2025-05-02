@@ -119,7 +119,7 @@ const LoginForm = ({ loading, setLoading }: Props) => {
 						autoComplete="email"
 						placeholder="Enter your email"
 						onChange={(e) => setEmail(e.target.value)}
-						icon={<PersonIcon />}
+						icon={<PersonIcon className="text-[#A6ABC4]" />}
 					/>
 					<CustomTextField
 						label="Password"
@@ -131,9 +131,9 @@ const LoginForm = ({ loading, setLoading }: Props) => {
 						onChange={(e) => setPassword(e.target.value)}
 						icon={
 							showPassword ? (
-								<EyeIcon onClick={() => setShowPassword(false)} />
+								<EyeIcon className="text-[#A6ABC4]" onClick={() => setShowPassword(false)} />
 							) : (
-								<EyeSlash onClick={() => setShowPassword(true)} />
+								<EyeSlash className="text-[#A6ABC4]" onClick={() => setShowPassword(true)} />
 							)
 						}
 					/>
