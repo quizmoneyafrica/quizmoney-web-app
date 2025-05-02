@@ -7,11 +7,9 @@ import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/app/hooks/useAuth";
 import AppLoader from "@/app/components/loader/loader";
 
-type Props = {
-	appName?: string;
-};
 
-const LoginPage = ({}: Props) => {
+
+const LoginPage = () => {
 	const router = useRouter();
 	const { isAuthenticated, rehydrated } = useAppSelector((s) => s.auth);
 
