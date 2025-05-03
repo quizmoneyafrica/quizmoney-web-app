@@ -7,21 +7,22 @@ import { CircleArrowLeft } from "@/app/icons/icons";
 import { useSearchParams } from "next/navigation";
 import CustomButton from "@/app/utils/CustomBtn";
 import { unstable_OneTimePasswordField as OneTimePasswordField } from "radix-ui";
-import { formatCountDown } from "@/app/utils/utils";
+import { formatCountDown, toastPosition } from "@/app/utils/utils";
+import UserAPI from "@/app/api/userApi";
+import { toast } from "sonner";
 
-function VerifyEmailPage() {
+function Page() {
 	const searchParams = useSearchParams();
 	const email = searchParams.get("email");
 	const router = useRouter();
-	const [countdown, setCountdown] = useState(300);
-	const [canResend, setCanResend] = useState(false);
-
 	const [otpCode, setOtpCode] = useState("");
+	const [countdown, setCountdown] = useState(10);
+	const [canResend, setCanResend] = useState(false);
+	const [loading, setLoading] = useState(false);
 
 	if (!email) {
-		router.replace("/signup");
+		router.replace("/forgot-password");
 	}
-
 	useEffect(() => {
 		if (countdown <= 0) {
 			setCanResend(true);
@@ -37,9 +38,45 @@ function VerifyEmailPage() {
 
 	const handleVerify = async (e: React.FormEvent) => {
 		e.preventDefault();
+		setLoading(true);
+
+		const newValues = {
+			email: email?.toLowerCase().trim() || "",
+			otp: otpCode,
+		};
+		try {
+			const response = await UserAPI.verifyForgotPasswordOtp(newValues);
+			console.log("Forgot Password:", response);
+			if (response.status === 200) {
+				router.push(`/reset-password?email=${encodeURIComponent(email || "")}`);
+			}
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (err: any) {
+			console.log("ERROR Forgot Password", err);
+			toast.error(`${err.response.data.error}`, {
+				position: toastPosition,
+			});
+		} finally {
+			setLoading(false);
+		}
 	};
 	const handleResendOTP = async () => {
 		setCountdown(300);
+		setCanResend(false);
+		try {
+			const response = await UserAPI.forgotPassword(email || "");
+			console.log("Forgot Password:", response);
+			toast.success("OTP Reset Successfully", {
+				position: toastPosition,
+			});
+
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (err: any) {
+			console.log("ERROR Forgot Password", err);
+			toast.error(`${err.response.data.error}`, {
+				position: toastPosition,
+			});
+		}
 	};
 	return (
 		<>
@@ -62,7 +99,7 @@ function VerifyEmailPage() {
 							<div className="flex-col items-center justify-between text-center px-4 pt-4">
 								<div className="flex items-center justify-center">
 									<Image
-										src="/assets/images/mail.png"
+										src="/assets/images/reset-password.png"
 										alt="Quiz Money Verify Email"
 										width={300}
 										height={300}
@@ -70,10 +107,10 @@ function VerifyEmailPage() {
 									/>
 								</div>
 								<h2 className="text-xl font-heading font-semibold mb-2">
-									Email Verification
+									Reset Your Password
 								</h2>
 								<p className="font-text text-gray-600 md:max-w-[70%] mx-auto">
-									Verify your Email before your account is successfully created
+									Don&apos;t worry you can reset your password with ease
 								</p>
 							</div>
 						</div>
@@ -101,9 +138,9 @@ function VerifyEmailPage() {
 								</Flex>
 							</div>
 							<Flex direction="column" gap="1">
-								<Heading as="h2">Verify Email</Heading>
+								<Heading as="h2">Enter Reset Code</Heading>
 								<Text className="text-neutral-600 ">
-									Your&apos;re almost there 😎
+									We&apos;ve sent you an email with a reset code
 								</Text>
 							</Flex>
 							<div>
@@ -112,7 +149,7 @@ function VerifyEmailPage() {
 									<span className="text-secondary-900 underline underline-offset-2">
 										{email}
 									</span>{" "}
-									for verification
+									to reset your password
 								</Text>
 							</div>
 							<div>
@@ -126,7 +163,8 @@ function VerifyEmailPage() {
 											name="otp"
 											value={otpCode}
 											autoComplete="one-time-code"
-											onValueChange={setOtpCode}>
+											onValueChange={setOtpCode}
+											disabled={loading}>
 											<OneTimePasswordField.Input className="OTPInput" />
 											<OneTimePasswordField.Input className="OTPInput" />
 											<OneTimePasswordField.Input className="OTPInput" />
@@ -160,9 +198,16 @@ function VerifyEmailPage() {
 							</div>
 
 							<div className="pt-10 lg:pt-4">
-								<CustomButton type="submit" width="full">
-									Verify Account
-								</CustomButton>
+								{!loading ? (
+									<CustomButton
+										type="submit"
+										width="full"
+										disabled={otpCode.length !== 6}>
+										Verify Account
+									</CustomButton>
+								) : (
+									<CustomButton type="button" width="full" loader disabled />
+								)}
 							</div>
 						</div>
 					</Container>
@@ -172,4 +217,4 @@ function VerifyEmailPage() {
 	);
 }
 
-export default VerifyEmailPage;
+export default Page;

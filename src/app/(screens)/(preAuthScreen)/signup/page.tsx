@@ -23,7 +23,7 @@ function SignUpPage() {
 	return (
 		<>
 			{loading && <AppLoader />}
-			<Grid columns={{ initial: "1", lg: "2" }} className="h-screen">
+			<Grid columns={{ initial: "1", md: "2" }} className="h-screen">
 				<div className="hidden lg:inline-block">
 					<Onboarding />
 				</div>
@@ -47,7 +47,7 @@ function SignUpPage() {
 								<CircleArrowLeft /> Back
 							</Flex>
 						</div>
-						<Flex direction="column">
+						<Flex direction="column" gap="1">
 							<Heading as="h2">Sign Up</Heading>
 							<Text className="text-neutral-600 ">
 								Let&apos;s create your account

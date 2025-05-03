@@ -15,15 +15,20 @@ const LoginPage = () => {
 
 	useEffect(() => {
 		if (rehydrated && isAuthenticated) {
+			setLoading(false);
 			router.replace("/home");
 		}
 	}, [isAuthenticated, rehydrated, router]);
 
 	if (!rehydrated) return <AppLoader />;
+
 	return (
 		<>
-			{loading && <AppLoader />}
-			<Grid columns={{ initial: "1", lg: "2" }} className="h-screen">
+			{/* {loading ? (
+				<AppLoader />
+			) : (
+			)} */}
+			<Grid columns={{ initial: "1", md: "2" }} className="h-screen">
 				<div className="hidden lg:inline-block">
 					<Onboarding />
 				</div>
@@ -38,7 +43,7 @@ const LoginPage = () => {
 								priority
 							/>
 						</div>
-						<Flex direction="column">
+						<Flex direction="column" gap="1">
 							<Heading as="h2">Welcome Back!</Heading>
 							<Text className="text-neutral-600 ">Time to quiz and win</Text>
 						</Flex>

@@ -79,7 +79,7 @@ function BottomNavigation() {
 											transition={{
 												type: "spring",
 												stiffness: 100,
-												damping: 5,
+												damping: 10,
 											}}
 										/>
 									)}

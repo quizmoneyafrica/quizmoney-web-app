@@ -2,9 +2,10 @@
 
 import * as React from "react";
 import { cn } from "./utils";
+import { Spinner } from "@radix-ui/themes";
 
 type ButtonProps = {
-	children: React.ReactNode;
+	children?: React.ReactNode;
 	type?: "button" | "submit" | "reset";
 	variant?: "primary" | "secondary" | "outline";
 	size?: "sm" | "md" | "lg";
@@ -12,6 +13,7 @@ type ButtonProps = {
 	disabled?: boolean;
 	onClick?: () => void;
 	width?: "full" | "medium" | "inline";
+	loader?: boolean;
 };
 
 const variantClasses = {
@@ -40,6 +42,7 @@ export default function CustomButton({
 	disabled = false,
 	onClick,
 	width = "inline",
+	loader,
 }: ButtonProps) {
 	return (
 		<button
@@ -47,13 +50,15 @@ export default function CustomButton({
 			onClick={onClick}
 			disabled={disabled}
 			className={cn(
-				"rounded-full cursor-pointer font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2",
+				"rounded-full cursor-pointer font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:bg-primary-230 disabled:text-neutral-50 disabled:cursor-not-allowed",
+				`${loader && "flex items-center justify-center"}`,
 				variantClasses[variant],
 				sizeClasses[size],
 				widthClasses[width],
 				disabled && "opacity-50 cursor-not-allowed",
 				className
 			)}>
+			{loader && <Spinner />}
 			{children}
 		</button>
 	);

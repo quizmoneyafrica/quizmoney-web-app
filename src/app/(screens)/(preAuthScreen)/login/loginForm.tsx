@@ -8,12 +8,16 @@ import {
 	EyeSlash,
 	FacebookIcon,
 	GoogleIcon,
-	PersonIcon,
+	MailIcon,
 } from "@/app/icons/icons";
 import { encryptData } from "@/app/utils/crypto";
 import CustomButton from "@/app/utils/CustomBtn";
 import CustomTextField from "@/app/utils/CustomTextField";
-import { capitalizeFirstLetter, toastPosition } from "@/app/utils/utils";
+import {
+	capitalizeFirstLetter,
+	isValidEmail,
+	toastPosition,
+} from "@/app/utils/utils";
 import { Flex } from "@radix-ui/themes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -41,12 +45,12 @@ const LoginForm = ({ loading, setLoading }: Props) => {
 			notificationPermissionStatus !== "granted"
 		) {
 			toast.info(`Notification is not set for Quiz Money`, {
-				position: "bottom-right",
+				position: toastPosition,
 			});
 		}
 		if (!email || !password) {
 			toast.error(`Email and password are required.`, {
-				position: "top-center",
+				position: toastPosition,
 			});
 			setLoading(false);
 			return;
@@ -60,7 +64,7 @@ const LoginForm = ({ loading, setLoading }: Props) => {
 			const response = await UserAPI.login(newValues);
 			const userData = response.data.result;
 
-			// console.log("Logging in with:", response.data.result);
+			console.log("Logging in with:", userData);
 
 			// 🔐 Encrypt the user data
 			const encryptedUser = encryptData(userData);
@@ -77,16 +81,17 @@ const LoginForm = ({ loading, setLoading }: Props) => {
 					position: "top-center",
 				}
 			);
-
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {
-			console.log("ERROR LOGIN", err.message);
-			toast.error(`${err.message}`, {
-				position: "top-center",
+			console.log("ERROR LOGIN", err);
+			toast.error(`${err.response.data.error}`, {
+				position: toastPosition,
 			});
-		} finally {
 			setLoading(false);
 		}
+		// finally {
+		// 	setLoading(false);
+		// }
 	};
 	const handleGoogleAuth = () => {
 		toast.info("Google Sign in Coming soon", {
@@ -119,7 +124,8 @@ const LoginForm = ({ loading, setLoading }: Props) => {
 						autoComplete="email"
 						placeholder="Enter your email"
 						onChange={(e) => setEmail(e.target.value)}
-						icon={<PersonIcon className="text-[#A6ABC4]" />}
+						icon={<MailIcon className="text-[#A6ABC4]" />}
+						disabled={loading}
 					/>
 					<CustomTextField
 						label="Password"
@@ -131,11 +137,18 @@ const LoginForm = ({ loading, setLoading }: Props) => {
 						onChange={(e) => setPassword(e.target.value)}
 						icon={
 							showPassword ? (
-								<EyeIcon className="text-[#A6ABC4]" onClick={() => setShowPassword(false)} />
+								<EyeIcon
+									className="text-[#A6ABC4]"
+									onClick={() => setShowPassword(false)}
+								/>
 							) : (
-								<EyeSlash className="text-[#A6ABC4]" onClick={() => setShowPassword(true)} />
+								<EyeSlash
+									className="text-[#A6ABC4]"
+									onClick={() => setShowPassword(true)}
+								/>
 							)
 						}
+						disabled={loading}
 					/>
 
 					<Flex justify="end">
@@ -146,9 +159,16 @@ const LoginForm = ({ loading, setLoading }: Props) => {
 						</Link>
 					</Flex>
 					<div className="pt-4 w-full">
-						<CustomButton type="submit" width="full">
-							{loading ? "Logging in..." : "Login"}
-						</CustomButton>
+						{!loading ? (
+							<CustomButton
+								type="submit"
+								width="full"
+								disabled={!isValidEmail(email) || password === ""}>
+								Login
+							</CustomButton>
+						) : (
+							<CustomButton type="button" width="full" loader disabled />
+						)}
 					</div>
 					<div className="pt-4 space-y-6">
 						<p className="text-center text-[#6E7286]">Or sign in with</p>
