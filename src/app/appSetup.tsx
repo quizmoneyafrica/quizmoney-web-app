@@ -1,5 +1,5 @@
 "use client";
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode, useEffect } from "react";
 import { Callout, Container, Theme } from "@radix-ui/themes";
 import { Provider } from "react-redux";
 import { persistor, store } from "./store/store";
@@ -11,6 +11,7 @@ import { BellIcon, Link2Icon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { useAppDispatch } from "./hooks/useAuth";
 import { setRehydrated } from "./store/authSlice";
+import useFcmToken from "./hooks/useFcmToken";
 
 type Props = {
 	children: ReactNode;
@@ -27,27 +28,13 @@ function RootHydrationWatcher() {
 }
 
 const AppSetup = ({ children }: Props) => {
-	const [isVisible, setIsVisible] = useState(true);
 	// const [theme, setTheme] = useState<"light" | "dark" | "system">("system");
+	const { notificationPermissionStatus } = useFcmToken();
 
-	useEffect(() => {
-		if (!isVisible) return;
-		const checkPermission = () => {
-			const permission = Notification.permission;
-			if (permission === "granted") {
-				setIsVisible(false);
-			} else if (permission === "denied") {
-				setIsVisible(true);
-			} else {
-				setIsVisible(true);
-			}
-		};
+	const isVisible =
+		notificationPermissionStatus === "default" ||
+		notificationPermissionStatus === "denied";
 
-		checkPermission();
-		const interval = setInterval(checkPermission, 5000);
-
-		return () => clearInterval(interval);
-	}, [isVisible]);
 	return (
 		<Theme appearance="light" className="!font-text">
 			<Provider store={store}>

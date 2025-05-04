@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { fetchToken } from "@/app/firebase/firebase";
 import { isIosPwaInstalled } from "../utils/utils";
 import { Button, Callout, Container } from "@radix-ui/themes";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
@@ -8,58 +7,50 @@ import useFcmToken from "../hooks/useFcmToken";
 
 export default function EnablePushOnIosButton() {
 	const [isVisible, setIsVisible] = useState(false);
-	const [isPushEnabled, setIsPushEnabled] = useState(false);
 	const [status, setStatus] = useState("Tap to enable push notifications");
-	const { notificationPermissionStatus } = useFcmToken();
+	const { token, notificationPermissionStatus } = useFcmToken();
 
 	useEffect(() => {
-		if (!isIosPwaInstalled()) return;
+		if (typeof window === "undefined" || !("Notification" in window)) return;
+		if (isIosPwaInstalled()) {
+			setIsVisible(true);
+		}
+	}, []);
 
-		setIsVisible(true);
+	useEffect(() => {
+		if (!isVisible) return;
 
-		const checkPermission = () => {
-			// const permission = Notification.permission;
-			if (notificationPermissionStatus === "granted") {
+		switch (notificationPermissionStatus) {
+			case "granted":
 				setStatus("✅ Push already enabled!");
-				setIsPushEnabled(true);
-			} else if (notificationPermissionStatus === "denied") {
+				break;
+			case "denied":
 				setStatus("❌ Notifications blocked");
-				setIsPushEnabled(false);
-			} else {
+				break;
+			default:
 				setStatus("Tap to enable push notifications");
-				setIsPushEnabled(false);
-			}
-		};
-
-		checkPermission();
-		const interval = setInterval(checkPermission, 5000);
-
-		return () => clearInterval(interval);
-	}, [notificationPermissionStatus]);
+		}
+	}, [notificationPermissionStatus, isVisible]);
 
 	const handleClick = async () => {
 		if (!isIosPwaInstalled()) return;
+		if (typeof window === "undefined" || !("Notification" in window)) return;
 
 		try {
 			const permission = await Notification.requestPermission();
 			if (permission === "granted") {
-				const token = await fetchToken();
-				console.log("✅ Push token:", token);
 				setStatus("✅ Push enabled!");
-				setIsPushEnabled(true);
 			} else if (permission === "denied") {
 				setStatus("❌ Permission denied");
-				setIsPushEnabled(false);
 			} else {
-				setStatus("Tap to enable push notifications");
+				setStatus("⚠️ Please enable notifications from settings");
 			}
 		} catch (err) {
-			console.error("Push setup error:", err);
-			setStatus("⚠️ Something went wrong");
+			console.error("Error enabling push:", err);
+			setStatus("⚠️ Could not request permission");
 		}
 	};
-
-	if (!isVisible || isPushEnabled) return null;
+	if (!isVisible || token) return null;
 
 	return (
 		<Container pb="2" px="2">
