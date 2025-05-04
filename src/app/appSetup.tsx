@@ -12,6 +12,7 @@ import Link from "next/link";
 import { useAppDispatch } from "./hooks/useAuth";
 import { setRehydrated } from "./store/authSlice";
 import useFcmToken from "./hooks/useFcmToken";
+import { isIosPwaInstalled } from "./utils/utils";
 
 type Props = {
 	children: ReactNode;
@@ -39,7 +40,7 @@ const AppSetup = ({ children }: Props) => {
 		<Theme appearance="light" className="!font-text">
 			<Provider store={store}>
 				<PersistGate loading={null} persistor={persistor}>
-					{isVisible && (
+					{isVisible && !isIosPwaInstalled() && (
 						<Container py="2" px="2">
 							<Callout.Root color="red">
 								<Callout.Icon>
