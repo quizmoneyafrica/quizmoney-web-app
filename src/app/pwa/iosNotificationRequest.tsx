@@ -1,10 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { isIosPwaInstalled } from "../utils/utils";
-import { Button, Callout, Container, Grid } from "@radix-ui/themes";
-import { BellIcon, InfoCircledIcon, Link2Icon } from "@radix-ui/react-icons";
+import { Button, Callout, Container } from "@radix-ui/themes";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
 import useFcmToken from "../hooks/useFcmToken";
-import Link from "next/link";
+import PermissionGuide from "./permissionGuide";
 
 export default function EnablePushOnIosButton() {
 	const [isVisible, setIsVisible] = useState(false);
@@ -54,26 +54,8 @@ export default function EnablePushOnIosButton() {
 	if (!isVisible || token) return null;
 
 	return (
-		<Grid>
-			<Container py="2" px="2">
-				<Callout.Root color="red">
-					<Callout.Icon>
-						<BellIcon />
-					</Callout.Icon>
-					<Callout.Text className="flex flex-col gap-2">
-						<span>
-							You have not granted permission to receive notifications. Please
-							enable notifications in your browser settings.
-						</span>
-						<Link
-							className="underline font-bold flex items-center gap-1"
-							href="https://quizmoney.ng/enable-notification/"
-							target="_blank">
-							<Link2Icon /> Click to see how
-						</Link>
-					</Callout.Text>
-				</Callout.Root>
-			</Container>
+		<div>
+			<PermissionGuide />
 			<Container pb="2" px="2">
 				<Callout.Root>
 					<Callout.Icon>
@@ -88,6 +70,6 @@ export default function EnablePushOnIosButton() {
 					</Callout.Text>
 				</Callout.Root>
 			</Container>
-		</Grid>
+		</div>
 	);
 }
