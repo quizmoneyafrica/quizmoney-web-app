@@ -7,7 +7,7 @@ import { CircleArrowLeft } from "@/app/icons/icons";
 import { useSearchParams } from "next/navigation";
 import CustomButton from "@/app/utils/CustomBtn";
 import { unstable_OneTimePasswordField as OneTimePasswordField } from "radix-ui";
-import { formatCountDown, toastPosition } from "@/app/utils/utils";
+import { formatCountDown, resendTimer, toastPosition } from "@/app/utils/utils";
 import UserAPI from "@/app/api/userApi";
 import { toast } from "sonner";
 
@@ -16,9 +16,11 @@ function Page() {
 	const email = searchParams.get("email");
 	const router = useRouter();
 	const [otpCode, setOtpCode] = useState("");
-	const [countdown, setCountdown] = useState(10);
+	const [countdown, setCountdown] = useState(resendTimer);
 	const [canResend, setCanResend] = useState(false);
 	const [loading, setLoading] = useState(false);
+
+    
 
 	if (!email) {
 		router.replace("/forgot-password");
@@ -61,7 +63,7 @@ function Page() {
 		}
 	};
 	const handleResendOTP = async () => {
-		setCountdown(300);
+		setCountdown(resendTimer);
 		setCanResend(false);
 		try {
 			const response = await UserAPI.forgotPassword(email || "");
@@ -116,8 +118,8 @@ function Page() {
 						</div>
 					</div>
 				</div>
-				<form onSubmit={handleVerify}>
-					<Container className="flex items-center lg:justify-center px-4 lg:px-28 pt-8 ">
+				<Container className="flex items-center lg:justify-center px-4 lg:px-28 pt-8 ">
+					<form onSubmit={handleVerify}>
 						<div className="space-y-8">
 							<div className="lg:hidden ">
 								<Image
@@ -210,8 +212,8 @@ function Page() {
 								)}
 							</div>
 						</div>
-					</Container>
-				</form>
+					</form>
+				</Container>
 			</Grid>
 		</>
 	);

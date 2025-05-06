@@ -294,6 +294,7 @@ h6,
 	width: 100%;
 	max-width: 50px;
 	line-height: 1;
+	caret-color: var(--color-primary-500) !important;
 
 	&:hover {
 		box-shadow: 0 0 0 1px var(--black-a6);

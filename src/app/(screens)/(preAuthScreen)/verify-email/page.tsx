@@ -7,13 +7,13 @@ import { CircleArrowLeft } from "@/app/icons/icons";
 import { useSearchParams } from "next/navigation";
 import CustomButton from "@/app/utils/CustomBtn";
 import { unstable_OneTimePasswordField as OneTimePasswordField } from "radix-ui";
-import { formatCountDown } from "@/app/utils/utils";
+import { formatCountDown, resendTimer } from "@/app/utils/utils";
 
 function VerifyEmailPage() {
 	const searchParams = useSearchParams();
 	const email = searchParams.get("email");
 	const router = useRouter();
-	const [countdown, setCountdown] = useState(300);
+	const [countdown, setCountdown] = useState(resendTimer);
 	const [canResend, setCanResend] = useState(false);
 
 	const [otpCode, setOtpCode] = useState("");
@@ -39,7 +39,7 @@ function VerifyEmailPage() {
 		e.preventDefault();
 	};
 	const handleResendOTP = async () => {
-		setCountdown(300);
+		setCountdown(resendTimer);
 	};
 	return (
 		<>

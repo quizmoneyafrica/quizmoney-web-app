@@ -85,8 +85,8 @@ function Page() {
 						</div>
 					</div>
 				</div>
-				<form onSubmit={handleForgot}>
-					<Container className="flex items-center lg:justify-center px-4 lg:px-28 pt-8 ">
+				<Container className="flex items-center lg:justify-center px-4 lg:px-28 pt-8 ">
+					<form onSubmit={handleForgot}>
 						<div className="space-y-8">
 							<div className="lg:hidden ">
 								<Image
@@ -149,8 +149,8 @@ function Page() {
 								</Flex>
 							</Flex>
 						</div>
-					</Container>
-				</form>
+					</form>
+				</Container>
 			</Grid>
 		</>
 	);

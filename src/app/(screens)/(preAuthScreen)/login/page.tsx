@@ -24,10 +24,6 @@ const LoginPage = () => {
 
 	return (
 		<>
-			{/* {loading ? (
-				<AppLoader />
-			) : (
-			)} */}
 			<Grid columns={{ initial: "1", md: "2" }} className="h-screen">
 				<div className="hidden lg:inline-block">
 					<Onboarding />
