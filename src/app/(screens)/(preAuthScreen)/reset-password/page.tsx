@@ -7,10 +7,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import CustomTextField from "@/app/utils/CustomTextField";
 import { EyeIcon, EyeSlash } from "@/app/icons/icons";
 import CustomButton from "@/app/utils/CustomBtn";
-import { cn, toastPosition } from "@/app/utils/utils";
-import { CheckIcon } from "@radix-ui/react-icons";
+import { toastPosition } from "@/app/utils/utils";
 import UserAPI from "@/app/api/userApi";
 import { toast } from "sonner";
+import { PasswordChip } from "@/app/utils/passwordChip";
 
 const initialForm = {
 	password: "",
@@ -221,22 +221,3 @@ function Page() {
 
 export default Page;
 
-type Props = {
-	text: string;
-	valid: boolean;
-};
-
-export const PasswordChip = ({ text, valid }: Props) => {
-	return (
-		<div
-			className={cn(
-				"flex items-center gap-2 text-nowrap px-3 py-1 rounded-full text-xs font-medium transition",
-				valid
-					? "bg-positive-100 text-positive-900"
-					: "bg-[#F4F4F4] text-[#6E759F]"
-			)}>
-			{valid && <CheckIcon className="w-4 h-4 text-green-700" />}
-			<span>{text}</span>
-		</div>
-	);
-};

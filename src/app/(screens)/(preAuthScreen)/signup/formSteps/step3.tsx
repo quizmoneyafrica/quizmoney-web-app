@@ -7,10 +7,10 @@ import { toastPosition } from "@/app/utils/utils";
 import { Container, Flex } from "@radix-ui/themes";
 import * as React from "react";
 import { toast } from "sonner";
-import { PasswordChip } from "../../reset-password/page";
 import CustomButton from "@/app/utils/CustomBtn";
 import { useRouter } from "next/navigation";
 import UserAPI from "@/app/api/userApi";
+import { PasswordChip } from "@/app/utils/passwordChip";
 
 interface IStepThreeProps {
 	formData: SignUpFormType;
