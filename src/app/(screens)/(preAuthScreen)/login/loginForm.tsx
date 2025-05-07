@@ -64,34 +64,46 @@ const LoginForm = ({ loading, setLoading }: Props) => {
 			const response = await UserAPI.login(newValues);
 			const userData = response.data.result;
 
-			console.log("Logging in with:", userData);
+			// console.log("Logging in with:", userData);
+			if (userData?.emailVerified) {
+				// console.log("Email verified");
 
-			// 🔐 Encrypt the user data
-			const encryptedUser = encryptData(userData);
-			console.log("Encrypted: ", encryptedUser);
+				// 🔐 Encrypt the user data
+				const encryptedUser = encryptData(userData);
+				console.log("Encrypted: ", encryptedUser);
 
-			// ✅ Dispatch to Redux
-			loginUser(encryptedUser);
+				// ✅ Dispatch to Redux
+				loginUser(encryptedUser);
 
-			router.replace("/home");
+				router.replace("/home");
 
-			toast.success(
-				`Welcome Back ${capitalizeFirstLetter(userData?.firstName)}`,
-				{
-					position: "top-center",
-				}
-			);
+				toast.success(
+					`Welcome Back ${capitalizeFirstLetter(userData?.firstName)}`,
+					{
+						position: "top-center",
+					}
+				);
+			} else {
+				// console.log("Email not verified");
+				toast.error(
+					`${capitalizeFirstLetter(
+						userData?.firstName
+					)} please verify your email`,
+					{
+						position: "top-center",
+					}
+				);
+				verifyEmail(userData?.email);
+			}
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {
 			console.log("ERROR LOGIN", err);
 			toast.error(`${err.response.data.error}`, {
 				position: toastPosition,
 			});
+		} finally {
 			setLoading(false);
 		}
-		// finally {
-		// 	setLoading(false);
-		// }
 	};
 	const handleGoogleAuth = () => {
 		toast.info("Google Sign in Coming soon", {
@@ -112,6 +124,21 @@ const LoginForm = ({ loading, setLoading }: Props) => {
 		});
 	};
 
+	const verifyEmail = async (email: string) => {
+		try {
+			const response = await UserAPI.resendSignupOtp(email);
+			if (response.status === 200) {
+				router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+			}
+
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (err: any) {
+			console.log("ERROR Forgot Password", err);
+			toast.error(`${err.response.data.error}`, {
+				position: toastPosition,
+			});
+		}
+	};
 	return (
 		<>
 			<form onSubmit={handleLogin}>

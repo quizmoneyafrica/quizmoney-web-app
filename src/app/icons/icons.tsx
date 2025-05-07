@@ -309,3 +309,46 @@ export const BellIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
 			d="M15.33 18.82c0 1.83-1.5 3.33-3.33 3.33-.91 0-1.75-.38-2.35-.98s-.98-1.44-.98-2.35"></path>
 	</svg>
 );
+export const CalendarIcon: React.FC<React.SVGProps<SVGSVGElement>> = (
+	props
+) => (
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		width="24"
+		height="24"
+		fill="none"
+		viewBox="0 0 24 24"
+		stroke="currentColor"
+		{...props}>
+		<path
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			strokeMiterlimit="10"
+			strokeWidth="1.5"
+			d="M8 2v3M16 2v3M3.5 9.09h17M21 8.5V17c0 3-1.5 5-5 5H8c-3.5 0-5-2-5-5V8.5c0-3 1.5-5 5-5h8c3.5 0 5 2 5 5"></path>
+		<path
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			strokeWidth="2"
+			d="M15.695 13.7h.009M15.695 16.7h.009M11.996 13.7h.008M11.996 16.7h.008M8.294 13.7h.01M8.294 16.7h.01"></path>
+	</svg>
+);
+export const ArrowDownIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+	<svg
+	  xmlns="http://www.w3.org/2000/svg"
+	  width="18"
+	  height="9"
+	  fill="none"
+	  viewBox="0 0 18 9"
+	  stroke="currentColor"
+	  {...props}
+	>
+	  <path
+		strokeLinecap="round"
+		strokeLinejoin="round"
+		strokeMiterlimit="10"
+		strokeWidth="1.5"
+		d="M16.92.95 10.4 7.47c-.77.77-2.03.77-2.8 0L1.08.95"
+	  ></path>
+	</svg>
+  );
