@@ -38,4 +38,4 @@ export const formatCountDown = (seconds: number) => {
 	const s = (seconds % 60).toString().padStart(2, "0");
 	return `${m}:${s}`;
 };
-export const resendTimer = 120;
+export const resendTimer = 300;

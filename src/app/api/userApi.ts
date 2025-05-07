@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import {
 	ApiResponse,
 	LoginForm,
-	ResendSignupOTPForm,
+	ResetPasswordForm,
 	SignUpForm,
 	VerifyEmailForm,
 	VerifyForgotPasswordOtpForm,
@@ -43,12 +43,24 @@ const UserAPI = {
 			},
 		});
 	},
-	resendSignupOtp(
-		email: ResendSignupOTPForm
-	): Promise<AxiosResponse<ApiResponse>> {
+	resendSignupOtp(email: string): Promise<AxiosResponse<ApiResponse>> {
 		console.log("Form: ", email);
 		return axios.post(
 			`${BASE_URL}/resendSignupOtp`,
+			{ email },
+			{
+				headers: {
+					"X-Parse-Application-Id": XParseApplicationId,
+					"X-Parse-REST-API-Key": XParseRESTAPIKey,
+					"Content-Type": "application/json",
+				},
+			}
+		);
+	},
+
+	forgotPassword(email: string): Promise<AxiosResponse<ApiResponse>> {
+		return axios.post(
+			`${BASE_URL}/forgotPassword`,
 			{ email },
 			{
 				headers: {
@@ -70,18 +82,16 @@ const UserAPI = {
 			},
 		});
 	},
-	forgotPassword(email: string): Promise<AxiosResponse<ApiResponse>> {
-		return axios.post(
-			`${BASE_URL}/forgotPassword`,
-			{ email },
-			{
-				headers: {
-					"X-Parse-Application-Id": XParseApplicationId,
-					"X-Parse-REST-API-Key": XParseRESTAPIKey,
-					"Content-Type": "application/json",
-				},
-			}
-		);
+	resetPasswordAuth(
+		form: ResetPasswordForm
+	): Promise<AxiosResponse<ApiResponse>> {
+		return axios.post(`${BASE_URL}/changePassword`, form, {
+			headers: {
+				"X-Parse-Application-Id": XParseApplicationId,
+				"X-Parse-REST-API-Key": XParseRESTAPIKey,
+				"Content-Type": "application/json",
+			},
+		});
 	},
 };
 

@@ -10,6 +10,7 @@ import { unstable_OneTimePasswordField as OneTimePasswordField } from "radix-ui"
 import { formatCountDown, resendTimer, toastPosition } from "@/app/utils/utils";
 import UserAPI from "@/app/api/userApi";
 import { toast } from "sonner";
+import LeftSide from "../forgot-password/leftSide";
 
 function Page() {
 	const searchParams = useSearchParams();
@@ -19,8 +20,6 @@ function Page() {
 	const [countdown, setCountdown] = useState(resendTimer);
 	const [canResend, setCanResend] = useState(false);
 	const [loading, setLoading] = useState(false);
-
-    
 
 	if (!email) {
 		router.replace("/forgot-password");
@@ -48,7 +47,6 @@ function Page() {
 		};
 		try {
 			const response = await UserAPI.verifyForgotPasswordOtp(newValues);
-			console.log("Forgot Password:", response);
 			if (response.status === 200) {
 				router.push(`/reset-password?email=${encodeURIComponent(email || "")}`);
 			}
@@ -83,41 +81,7 @@ function Page() {
 	return (
 		<>
 			<Grid columns={{ initial: "1", md: "2" }} className="h-screen">
-				<div className="hidden lg:inline-block">
-					<div className="bg-primary-50 h-screen lg:h-full w-full p-4 lg:px-10 grid grid-cols-1 ">
-						<div>
-							<Flex align="center" justify="between">
-								<Image
-									src="/icons/quizmoney-logo-blue.svg"
-									alt="Quiz Money"
-									width={100}
-									height={55}
-									priority
-								/>
-							</Flex>
-						</div>
-
-						<div>
-							<div className="flex-col items-center justify-between text-center px-4 pt-4">
-								<div className="flex items-center justify-center">
-									<Image
-										src="/assets/images/reset-password.png"
-										alt="Quiz Money Verify Email"
-										width={300}
-										height={300}
-										className="mb-6"
-									/>
-								</div>
-								<h2 className="text-xl font-heading font-semibold mb-2">
-									Reset Your Password
-								</h2>
-								<p className="font-text text-gray-600 md:max-w-[70%] mx-auto">
-									Don&apos;t worry you can reset your password with ease
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
+				<LeftSide />
 				<Container className="flex items-center lg:justify-center px-4 lg:px-28 pt-8 ">
 					<form onSubmit={handleVerify}>
 						<div className="space-y-8">
@@ -159,7 +123,7 @@ function Page() {
 									<Heading as="h3" size="4" weight="medium">
 										Enter OTP Code
 									</Heading>
-									<div className="w-full lg:max-w-[80%]">
+									<div className="w-full md:max-w-[50%] lg:max-w-[80%]">
 										<OneTimePasswordField.Root
 											className="OTPRoot"
 											name="otp"

@@ -20,7 +20,7 @@ export interface SignUpForm {
 //VerifyEmail interface
 export interface VerifyEmailForm {
 	email: string;
-	password: string;
+	otp: string;
 }
 
 //ResendSignupOTP interface
@@ -33,8 +33,25 @@ export interface VerifyForgotPasswordOtpForm {
 	email: string;
 	otp: string;
 }
-
-//forgotPassword interface
-export interface forgotPasswordForm {
+//verifyForgotPasswordOtp interface
+export interface ResetPasswordForm {
 	email: string;
+	password: string;
+}
+
+//Signup
+export interface SignUpFormType {
+	firstName: string;
+	lastName: string;
+	email: string;
+	dob: string;
+	gender: string;
+	country: string;
+	password: string;
+	confirmPassword: string;
+	referralCode: string;
+	showPassword: boolean;
+	showConfirmPassword: boolean;
+	promotionalMails: boolean;
+	referredBy: string;
 }
