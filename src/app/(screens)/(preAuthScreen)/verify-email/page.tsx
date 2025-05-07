@@ -3,11 +3,12 @@ import { Container, Flex, Grid, Heading, Text } from "@radix-ui/themes";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { CircleArrowLeft } from "@/app/icons/icons";
 import { useSearchParams } from "next/navigation";
 import CustomButton from "@/app/utils/CustomBtn";
 import { unstable_OneTimePasswordField as OneTimePasswordField } from "radix-ui";
-import { formatCountDown, resendTimer } from "@/app/utils/utils";
+import { formatCountDown, resendTimer, toastPosition } from "@/app/utils/utils";
+import { toast } from "sonner";
+import UserAPI from "@/app/api/userApi";
 
 function VerifyEmailPage() {
 	const searchParams = useSearchParams();
@@ -15,6 +16,7 @@ function VerifyEmailPage() {
 	const router = useRouter();
 	const [countdown, setCountdown] = useState(resendTimer);
 	const [canResend, setCanResend] = useState(false);
+	const [loading, setLoading] = React.useState(false);
 
 	const [otpCode, setOtpCode] = useState("");
 
@@ -37,6 +39,43 @@ function VerifyEmailPage() {
 
 	const handleVerify = async (e: React.FormEvent) => {
 		e.preventDefault();
+		setLoading(true);
+
+		const newValues = {
+			email: email?.toLowerCase().trim() || "",
+			otp: otpCode,
+		};
+		try {
+			const response = await UserAPI.verifyEmail(newValues);
+			const userData = response.data.result;
+
+			console.log("Verify Signup:", userData);
+
+			// 🔐 Encrypt the user data
+			// const encryptedUser = encryptData(userData);
+			// console.log("Encrypted: ", encryptedUser);
+
+			// ✅ Dispatch to Redux
+			// loginUser(encryptedUser);
+
+			// router.replace("/home");
+			router.replace("/account-created");
+
+			// toast.success(
+			// 	`Welcome Back ${capitalizeFirstLetter(userData?.firstName)}`,
+			// 	{
+			// 		position: "top-center",
+			// 	}
+			// );
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (err: any) {
+			console.log("ERROR SIGNUP", err);
+			toast.error(`${err.response.data.error}`, {
+				position: toastPosition,
+			});
+		} finally {
+			setLoading(false);
+		}
 	};
 	const handleResendOTP = async () => {
 		setCountdown(resendTimer);
@@ -91,15 +130,7 @@ function VerifyEmailPage() {
 									priority
 								/>
 							</div>
-							<div className="">
-								<Flex
-									align="center"
-									gap="2"
-									onClick={() => router.back()}
-									className="cursor-pointer">
-									<CircleArrowLeft /> Back
-								</Flex>
-							</div>
+
 							<Flex direction="column" gap="1">
 								<Heading as="h2">Verify Email</Heading>
 								<Text className="text-neutral-600 ">
@@ -120,7 +151,7 @@ function VerifyEmailPage() {
 									<Heading as="h3" size="4" weight="medium">
 										Enter OTP Code
 									</Heading>
-									<div className="w-full lg:max-w-[80%]">
+									<div className="w-full md:max-w-[50%] lg:max-w-[80%]">
 										<OneTimePasswordField.Root
 											className="OTPRoot"
 											name="otp"
@@ -160,9 +191,13 @@ function VerifyEmailPage() {
 							</div>
 
 							<div className="pt-10 lg:pt-4">
-								<CustomButton type="submit" width="full">
-									Verify Account
-								</CustomButton>
+								{!loading ? (
+									<CustomButton type="submit" width="full">
+										Verify Account
+									</CustomButton>
+								) : (
+									<CustomButton type="button" loader width="full" />
+								)}
 							</div>
 						</div>
 					</Container>
