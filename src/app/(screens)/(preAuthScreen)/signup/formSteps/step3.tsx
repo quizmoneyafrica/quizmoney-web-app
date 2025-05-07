@@ -26,6 +26,15 @@ const StepThree: React.FunctionComponent<IStepThreeProps> = (props) => {
 	const router = useRouter();
 	const [loading, setLoading] = React.useState(false);
 
+	const isPasswordValid =
+		formData.password.length >= 8 &&
+		/[A-Z]/.test(formData.password) &&
+		/[!@#$%^&*]/.test(formData.password) &&
+		/[0-9]/.test(formData.password);
+
+	const isFormValid =
+		isPasswordValid && formData.password === formData.confirmPassword;
+
 	const handleSignUp = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setLoading(true);
@@ -179,7 +188,7 @@ const StepThree: React.FunctionComponent<IStepThreeProps> = (props) => {
 					</Container>
 					<div className="pt-4">
 						{!loading ? (
-							<CustomButton type="submit" width="full">
+							<CustomButton type="submit" width="full" disabled={isFormValid}>
 								Create Account
 							</CustomButton>
 						) : (
