@@ -5,12 +5,6 @@ import { motion } from "framer-motion";
 import ProductCard from "./productCard";
 import StoreAPI from "@/app/api/storeApi";
 function Page() {
-  useEffect(() => {
-    StoreAPI.getStoreItems().then((res) => {
-      console.log(res);
-    });
-  }, []);
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
