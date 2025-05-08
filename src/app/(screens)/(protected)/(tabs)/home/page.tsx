@@ -19,58 +19,28 @@ function HomeTab() {
 
   // console.log("USER: ", user);
 
-<<<<<<< Updated upstream
-	const handleLogout = () => {
-		performLogout(dispatch);
-		router.replace("/login");
-	};
-
-	return (
-		<motion.div
-			initial={{ opacity: 0, y: 10 }}
-			animate={{ opacity: 1, y: 0 }}
-			exit={{ opacity: 0, y: -10 }}
-			transition={{ duration: 0.25, ease: "easeInOut" }}>
-			<AppLayout>
-				{capitalizeFirstLetter(user?.firstName)}
-				<CustomButton onClick={handleLogout}>
-					<Flex align="center" gap="2">
-						<ExitIcon /> Logout
-					</Flex>
-				</CustomButton>
-			</AppLayout>
-		</motion.div>
-	);
-=======
   const handleLogout = () => {
     performLogout(dispatch);
     router.replace("/login");
   };
-  const countdown = true;
+
   return (
-    <>
-      {countdown ? (
-        <LaunchCountdown />
-      ) : (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.25, ease: "easeInOut" }}
-        >
-          <AppLayout>
-            {capitalizeFirstLetter(user?.firstName)}
-            <CustomButton onClick={handleLogout}>
-              <Flex align="center" gap="2">
-                <ExitIcon /> Logout
-              </Flex>
-            </CustomButton>
-          </AppLayout>
-        </motion.div>
-      )}
-    </>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.25, ease: "easeInOut" }}
+    >
+      <AppLayout>
+        {capitalizeFirstLetter(user?.firstName)}
+        <CustomButton onClick={handleLogout}>
+          <Flex align="center" gap="2">
+            <ExitIcon /> Logout
+          </Flex>
+        </CustomButton>
+      </AppLayout>
+    </motion.div>
   );
->>>>>>> Stashed changes
 }
 
 export default HomeTab;
