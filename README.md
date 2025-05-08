@@ -25,7 +25,7 @@ This is the frontend codebase for the QuizMoney trivia platform where users comp
 | UI Library    | [Radix UI](https://www.radix-ui.com/) + Tailwind CSS |
 | PWA Features  | Service Worker + Web Manifest |
 | Push System   | Firebase Cloud Messaging (FCM) |
-| State Mgmt    | Zustand / Context API (as needed) |
+| State Mgmt    | Redux / Context API (as needed) |
 | Notifications | [Sonner](https://sonner.emilkowal.ski/) for toast UI |
 | Auth Backend  | Parse Server (REST + sessions) |
 
