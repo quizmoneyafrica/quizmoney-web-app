@@ -1,13 +1,8 @@
 "use client";
-import BottomNavigation from "@/app/layout/BottomNavigation";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-export default function ProtectedLayout({
-	children,
-}: {
-	children: React.ReactNode;
-}) {
+export default function Layout({ children }: { children: React.ReactNode }) {
 	const router = useRouter();
 
 	useEffect(() => {
@@ -17,11 +12,5 @@ export default function ProtectedLayout({
 		router.prefetch("/leaderboard");
 		router.prefetch("/settings");
 	});
-	return (
-		<>
-        <div></div>
-			{children}
-			<BottomNavigation />
-		</>
-	);
+	return <>{children}</>;
 }

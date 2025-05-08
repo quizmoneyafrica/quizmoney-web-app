@@ -13,6 +13,11 @@ const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL;
 const XParseApplicationId = process.env.NEXT_PUBLIC_XParseApplicationId;
 const XParseRESTAPIKey = process.env.NEXT_PUBLIC_XParseRESTAPIKey;
 
+export const headers = {
+	"X-Parse-Application-Id": XParseApplicationId,
+	"X-Parse-REST-API-Key": XParseRESTAPIKey,
+	"Content-Type": "application/json",
+};
 const UserAPI = {
 	login(form: LoginForm): Promise<AxiosResponse<ApiResponse>> {
 		return axios.post(`${BASE_URL}/login`, form, {
