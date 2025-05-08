@@ -1,19 +1,47 @@
 "use client";
-import { Heading } from "@radix-ui/themes";
-import React from "react";
+import { Grid, Heading } from "@radix-ui/themes";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
-
+import ProductCard from "./productCard";
+import StoreAPI from "@/app/api/storeApi";
 function Page() {
-	return (
-		<motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -10 }}
-        transition={{ duration: 0.25, ease: "easeInOut" }}>
-                <Heading as="h1">Store</Heading>
+  useEffect(() => {
+    StoreAPI.getStoreItems().then((res) => {
+      console.log(res);
+    });
+  }, []);
 
-		</motion.div>
-	);
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.25, ease: "easeInOut" }}
+    >
+      <div className="p-4 space-y-6 bg-zinc-50  min-h-[100dvh] pb-40">
+        <p>Get more erasers to stay in the game</p>
+
+        <Grid
+          columns={{
+            initial: "1",
+            md: "2",
+            lg: "3",
+          }}
+          gap={"20px"}
+        >
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+        </Grid>
+      </div>
+    </motion.div>
+  );
 }
 
 export default Page;
