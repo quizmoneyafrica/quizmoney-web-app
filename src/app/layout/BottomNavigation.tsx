@@ -1,49 +1,15 @@
 "use client";
 import React, { useState } from "react";
-import {
-	CupIcon,
-	HomeIcon,
-	SettingIcon,
-	StoreIcon,
-	WalletIcon,
-} from "../icons/icons";
 import { Flex, Grid, Text } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
+import { navs } from "./nav";
 
 function BottomNavigation() {
 	const router = useRouter();
 	const pathname = usePathname();
 	const [activeTab, setActiveTab] = useState(pathname);
-
-	const navs = [
-		{
-			icon: <HomeIcon />,
-			path: "/home",
-			name: "Home",
-		},
-		{
-			icon: <WalletIcon />,
-			path: "/wallet",
-			name: "Wallet",
-		},
-		{
-			icon: <StoreIcon />,
-			path: "/store",
-			name: "Store",
-		},
-		{
-			icon: <CupIcon />,
-			path: "/leaderboard",
-			name: "Chart",
-		},
-		{
-			icon: <SettingIcon />,
-			path: "/settings",
-			name: "Settings",
-		},
-	];
 
 	const handleTabRoute = (path: string) => {
 		console.log(path);
@@ -54,7 +20,7 @@ function BottomNavigation() {
 		}
 	};
 	return (
-		<div className="fixed z-50 bottom-0 pb-6 left-0 w-full bg-primary-900 py-4 flex items-center">
+		<div className="md:hidden fixed z-50 bottom-0 pb-6 left-0 w-full bg-primary-900 py-4 flex items-center">
 			<div className="w-full">
 				<Grid columns="5" align="center" justify="between">
 					{navs.map((nav, index) => {
