@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import {
 	ApiResponse,
 	LoginForm,
-	ResendSignupOTPForm,
+	ResetPasswordForm,
 	SignUpForm,
 	VerifyEmailForm,
 	VerifyForgotPasswordOtpForm,
@@ -13,6 +13,11 @@ const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL;
 const XParseApplicationId = process.env.NEXT_PUBLIC_XParseApplicationId;
 const XParseRESTAPIKey = process.env.NEXT_PUBLIC_XParseRESTAPIKey;
 
+export const headers = {
+	"X-Parse-Application-Id": XParseApplicationId,
+	"X-Parse-REST-API-Key": XParseRESTAPIKey,
+	"Content-Type": "application/json",
+};
 const UserAPI = {
 	login(form: LoginForm): Promise<AxiosResponse<ApiResponse>> {
 		return axios.post(`${BASE_URL}/login`, form, {
@@ -43,12 +48,24 @@ const UserAPI = {
 			},
 		});
 	},
-	resendSignupOtp(
-		email: ResendSignupOTPForm
-	): Promise<AxiosResponse<ApiResponse>> {
+	resendSignupOtp(email: string): Promise<AxiosResponse<ApiResponse>> {
 		console.log("Form: ", email);
 		return axios.post(
 			`${BASE_URL}/resendSignupOtp`,
+			{ email },
+			{
+				headers: {
+					"X-Parse-Application-Id": XParseApplicationId,
+					"X-Parse-REST-API-Key": XParseRESTAPIKey,
+					"Content-Type": "application/json",
+				},
+			}
+		);
+	},
+
+	forgotPassword(email: string): Promise<AxiosResponse<ApiResponse>> {
+		return axios.post(
+			`${BASE_URL}/forgotPassword`,
 			{ email },
 			{
 				headers: {
@@ -70,18 +87,16 @@ const UserAPI = {
 			},
 		});
 	},
-	forgotPassword(email: string): Promise<AxiosResponse<ApiResponse>> {
-		return axios.post(
-			`${BASE_URL}/forgotPassword`,
-			{ email },
-			{
-				headers: {
-					"X-Parse-Application-Id": XParseApplicationId,
-					"X-Parse-REST-API-Key": XParseRESTAPIKey,
-					"Content-Type": "application/json",
-				},
-			}
-		);
+	resetPasswordAuth(
+		form: ResetPasswordForm
+	): Promise<AxiosResponse<ApiResponse>> {
+		return axios.post(`${BASE_URL}/changePassword`, form, {
+			headers: {
+				"X-Parse-Application-Id": XParseApplicationId,
+				"X-Parse-REST-API-Key": XParseRESTAPIKey,
+				"Content-Type": "application/json",
+			},
+		});
 	},
 };
 

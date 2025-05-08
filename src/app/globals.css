@@ -260,6 +260,13 @@ h6,
 .rt-Heading {
 	font-family: var(--dmsans) !important;
 }
+input[type="date"]::-webkit-calendar-picker-indicator {
+	display: none;
+	opacity: 0;
+}
+input[type="date"]::-moz-focus-inner {
+	border: 0;
+}
 #splash {
 	background-image: url("/assets/images/background.png");
 	background-position: center center;
