@@ -3,6 +3,7 @@ import { Box, Container, Flex, Grid, Heading, Text } from "@radix-ui/themes";
 import React, { useEffect, useState } from "react";
 import Onboarding from "../onboarding/onboarding";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 type Countdown = {
 	days: number;
@@ -28,7 +29,6 @@ function calculateTimeLeft(targetDate: Date): Countdown {
 }
 
 const LaunchCountdown: React.FC = () => {
-	// const target = new Date("2025-07-06T19:00:00");
 	const target = new Date("2025-06-06T19:00:00");
 	const [timeLeft, setTimeLeft] = useState<Countdown>(
 		calculateTimeLeft(target)
@@ -46,13 +46,25 @@ const LaunchCountdown: React.FC = () => {
 		<>
 			<Grid
 				columns={{ initial: "1", md: "2" }}
-				className="h-screen fixed top-0 left-0 inset-0 bg-white z-[10000]">
+				className="h-screen fixed top-0 left-0 inset-0 bg-primary-100 md:bg-white z-[10000]">
 				<div className="hidden lg:inline-block">
 					<Onboarding />
 				</div>
 				<Container className="flex items-center lg:justify-center px-4 lg:px-28 pt-8 ">
 					<Flex direction="column" gap="4" className="text-center">
-						<Heading as="h1" size="8" className="text-primary-900">
+						<div className="lg:hidden flex items-center justify-center pb-10">
+							<Image
+								src="/icons/quizmoney-logo-blue.svg"
+								alt="Quiz Money"
+								width={100}
+								height={55}
+								priority
+							/>
+						</div>
+						<Heading
+							as="h1"
+							size={{ initial: "6", md: "7", lg: "8" }}
+							className="text-primary-900">
 							<motion.span
 								animate={{
 									rotate: [0, -15, 15, -15, 0], // swing motion
@@ -99,7 +111,7 @@ const CountDown = ({ title, count }: Props) => {
 	return (
 		<Flex direction="column" align="center" gap="3">
 			<Text className="text-primary-500">{title}</Text>
-			<Box className="border-3 border-primary-50 text-primary-500 text-lg rounded-lg p-10">
+			<Box className="border-3 border-primary-50 text-primary-500 text-lg rounded-lg p-4 md:p-8 lg:p-10">
 				<Text>{count}</Text>
 			</Box>
 		</Flex>
