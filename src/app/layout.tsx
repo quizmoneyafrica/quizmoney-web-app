@@ -4,6 +4,7 @@ import "./globals.css";
 import InstallAppButton from "./pwa/install";
 import AppSetup from "./appSetup";
 import "@radix-ui/themes/styles.css";
+import Script from "next/script";
 
 const spacegrotesk = Space_Grotesk({
 	variable: "--spacegrotesk",
@@ -76,6 +77,18 @@ export default function RootLayout({
 					name="apple-mobile-web-app-status-bar-style"
 					content="black-translucent"
 				/>
+				<Script
+					src="https://www.googletagmanager.com/gtag/js?id=G-YTQCGWY62B"
+					strategy="afterInteractive"
+				/>
+				<Script id="gtag-init" strategy="afterInteractive">
+					{`
+						window.dataLayer = window.dataLayer || [];
+						function gtag(){dataLayer.push(arguments);}
+						gtag('js', new Date());
+						gtag('config', 'G-YTQCGWY62B');
+					`}
+				</Script>
 			</head>
 			<body
 				className={`${spacegrotesk.variable} ${dmsans.variable} antialiased`}>
