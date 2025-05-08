@@ -22,7 +22,7 @@ function SidebarNav() {
 	};
 	return (
 		<>
-			<div className="relative w-full h-screen bg-primary-900">
+			<div className="hidden md:inline-block relative w-full h-screen bg-primary-900">
 				<div className="grid place-items-center py-4">
 					<Image
 						src="/icons/quizmoney-logo-white.svg"
