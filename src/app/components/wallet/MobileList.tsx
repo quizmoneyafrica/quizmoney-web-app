@@ -1,9 +1,10 @@
 import classNames from "classnames";
 import React from "react";
 import CustomImage from "./CustomImage";
+import { Transaction } from "./TransactionHistory";
 
 type Props = {
-  transaction: any;
+  transaction: Transaction;
 };
 
 export default function MobileList({ transaction }: Props) {

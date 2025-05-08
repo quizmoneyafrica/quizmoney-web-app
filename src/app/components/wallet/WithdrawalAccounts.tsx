@@ -1,4 +1,4 @@
-import { PenLine, Trash2, Eye, EyeOff, Plus } from "lucide-react";
+import { Trash2, Eye, EyeOff, Plus } from "lucide-react";
 import { useState } from "react";
 import CustomImage from "./CustomImage";
 

@@ -1,10 +1,4 @@
-import {
-  EyeOpenIcon,
-  EyeClosedIcon,
-  EyeNoneIcon,
-  PlusIcon,
-} from "@radix-ui/react-icons";
-import { Button } from "@radix-ui/themes/components/button";
+import { EyeOpenIcon, EyeNoneIcon, PlusIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import CustomImage from "./CustomImage";
 

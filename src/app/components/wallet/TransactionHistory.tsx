@@ -4,7 +4,7 @@ import CustomImage from "./CustomImage";
 import classNames from "classnames";
 import MobileList from "./MobileList";
 
-interface Transaction {
+export interface Transaction {
   type: "deposit" | "withdrawal";
   amount: number;
   description: string;

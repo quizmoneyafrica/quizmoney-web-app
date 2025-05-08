@@ -1,5 +1,4 @@
 import React from "react";
-import WalletBalance from "./WalletBalance";
 import TransactionHistory from "./TransactionHistory";
 import WithdrawalAccounts from "./WithdrawalAccounts";
 
