@@ -12,7 +12,8 @@ import { CircleArrowLeft } from "@/app/icons/icons";
 function SignUpPage() {
 	const router = useRouter();
 	const { isAuthenticated, rehydrated } = useAppSelector((s) => s.auth);
-	const [loading, setLoading] = useState(false);
+	const [step, setStep] = useState(1);
+
 	useEffect(() => {
 		if (rehydrated && isAuthenticated) {
 			router.replace("/home");
@@ -20,14 +21,15 @@ function SignUpPage() {
 	}, [isAuthenticated, rehydrated, router]);
 
 	if (!rehydrated) return <AppLoader />;
+	const nextStep = () => setStep((prev) => Math.min(prev + 1, 3));
+	const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
 	return (
 		<>
-			{loading && <AppLoader />}
 			<Grid columns={{ initial: "1", md: "2" }} className="h-screen">
 				<div className="hidden lg:inline-block">
 					<Onboarding />
 				</div>
-				<Container className="flex items-center lg:justify-center px-4 lg:px-28 pt-8 ">
+				<Container className="flex items-center lg:justify-center px-4 py-6 lg:px-28 pt-8 ">
 					<div className="space-y-8">
 						<div className="lg:hidden ">
 							<Image
@@ -38,11 +40,11 @@ function SignUpPage() {
 								priority
 							/>
 						</div>
-						<div className="hidden lg:inline-flex">
+						<div className={`${step > 1 ? "inline-flex" : "hidden"}`}>
 							<Flex
 								align="center"
 								gap="2"
-								onClick={() => router.back()}
+								onClick={prevStep}
 								className="cursor-pointer">
 								<CircleArrowLeft /> Back
 							</Flex>
@@ -55,7 +57,7 @@ function SignUpPage() {
 						</Flex>
 
 						<Container>
-							<SignupForm setLoading={setLoading} />
+							<SignupForm step={step} nextStep={nextStep} />
 						</Container>
 					</div>
 				</Container>

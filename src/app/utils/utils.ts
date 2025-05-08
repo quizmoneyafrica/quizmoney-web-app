@@ -13,9 +13,14 @@ export function isIosPwaInstalled(): boolean {
 
 export const isMobileOrTablet = () => {
 	if (typeof window === "undefined") return false;
-	return /iphone|ipad|ipod|android|mobile/i.test(
-		window.navigator.userAgent.toLowerCase()
+	const userAgent = window.navigator.userAgent.toLowerCase();
+	const isMobileOrTabletDevice = /iphone|ipad|ipod|android|mobile|tablet/i.test(
+		userAgent
 	);
+
+	const isPortrait = window.innerHeight > window.innerWidth;
+
+	return isMobileOrTabletDevice && isPortrait;
 };
 
 export function capitalizeFirstLetter(str: string) {
@@ -38,4 +43,4 @@ export const formatCountDown = (seconds: number) => {
 	const s = (seconds % 60).toString().padStart(2, "0");
 	return `${m}:${s}`;
 };
-export const resendTimer = 120;
+export const resendTimer = 300;
