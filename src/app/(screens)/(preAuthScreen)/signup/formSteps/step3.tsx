@@ -188,7 +188,7 @@ const StepThree: React.FunctionComponent<IStepThreeProps> = (props) => {
 					</Container>
 					<div className="pt-4">
 						{!loading ? (
-							<CustomButton type="submit" width="full" disabled={isFormValid}>
+							<CustomButton type="submit" width="full" disabled={!isFormValid}>
 								Create Account
 							</CustomButton>
 						) : (
