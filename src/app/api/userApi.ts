@@ -18,7 +18,6 @@ const XParseRESTAPIKey = process.env.NEXT_PUBLIC_XParseRESTAPIKey;
 const appHeaders = {
 	"X-Parse-Application-Id": XParseApplicationId,
 	"X-Parse-REST-API-Key": XParseRESTAPIKey,
-	"X-Parse-Session-Token": XParseRESTAPIKey,
 	"Content-Type": "application/json",
 };
 const getSessionTokenHeaders = () => {
