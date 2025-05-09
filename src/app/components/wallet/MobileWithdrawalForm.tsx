@@ -4,8 +4,13 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-// Define schema with Zod
-const depositFormSchema = z.object({
+// Dummy bank data
+const dummyBanks = [
+  { id: "1", name: "Firstbank", accountNumber: "1234567890" },
+  { id: "2", name: "GTBank", accountNumber: "0987654321" },
+];
+
+const withdrawFormSchema = z.object({
   amount: z
     .string()
     .min(1, { message: "Amount is required" })
@@ -16,16 +21,19 @@ const depositFormSchema = z.object({
       },
       { message: "Please enter a valid amount" }
     ),
+  bankId: z.string().min(1, { message: "Please select a bank" }),
 });
 
-type DepositFormData = z.infer<typeof depositFormSchema>;
+type WithdrawFormData = z.infer<typeof withdrawFormSchema>;
 
-export const MobileDepositForm = ({
+export const MobileWithdrawalForm = ({
   onSubmit,
   close,
+  banks = dummyBanks, // Allow override or use dummy
 }: {
-  onSubmit: (data: { amount: number }) => void;
+  onSubmit: (data: { amount: number; bankId: string }) => void;
   close?: () => void;
+  banks?: typeof dummyBanks;
 }) => {
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
 
@@ -42,42 +50,46 @@ export const MobileDepositForm = ({
     setValue,
     formState: { errors },
     reset,
-  } = useForm<DepositFormData>({
-    resolver: zodResolver(depositFormSchema),
+    watch,
+  } = useForm<WithdrawFormData>({
+    resolver: zodResolver(withdrawFormSchema),
     mode: "onChange",
     defaultValues: {
       amount: "",
+      bankId: banks[0]?.id || "",
     },
   });
 
+  // Handle predefined amount selection
   const handleAmountSelect = (amount: number) => {
     setSelectedAmount(amount);
     setValue("amount", `₦${amount.toLocaleString()}`, { shouldValidate: true });
   };
 
+  // Handle custom amount input
   const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedAmount(null);
   };
 
-  const onFormSubmit = (data: DepositFormData) => {
+  // Form submission handler
+  const onFormSubmit = (data: WithdrawFormData) => {
     const numericAmount =
       selectedAmount || Number(data.amount.replace(/[₦,]/g, ""));
-    onSubmit({ amount: numericAmount });
+    onSubmit({ amount: numericAmount, bankId: data.bankId });
     reset();
     setSelectedAmount(null);
     close?.();
   };
 
   return (
-    <div className=" bg-white rounded-3xl h-full">
-      <div className="mb-8">
-        <p className="text-gray-600">Fund your QuizMoney wallet Let's play</p>
-      </div>
-
+    <div className="bg-white rounded-3xl h-full">
+      <p className="text-gray-600 mb-8">
+        Withdraw your money directly to your Bank account
+      </p>
       <form onSubmit={handleSubmit(onFormSubmit)}>
         <div className="mb-6">
           <label className="block text-gray-800 mb-3">
-            Enter the amount you want to deposit
+            Enter the amount you want to Withdraw
           </label>
           <input
             type="text"
@@ -95,8 +107,7 @@ export const MobileDepositForm = ({
             <p className="text-red-500 text-sm mt-1">{errors.amount.message}</p>
           )}
         </div>
-
-        <div className="flex flex-wrap gap-2 mb-20">
+        <div className="flex flex-wrap gap-2 mb-6">
           {amountOptions.map((option) => (
             <button
               key={option.value}
@@ -112,7 +123,36 @@ export const MobileDepositForm = ({
             </button>
           ))}
         </div>
-
+        <div className="mb-6">
+          <label className="block text-gray-800 mb-3">
+            Select Bank you want to withdraw to
+          </label>
+          <select
+            {...register("bankId")}
+            className={`w-full border ${
+              errors.bankId ? "border-red-500" : "border-gray-300"
+            } rounded-lg px-4 py-2 focus:outline-none focus:ring-transparent`}
+          >
+            {banks.map((bank) => (
+              <option key={bank.id} value={bank.id}>
+                {bank.accountNumber} - {bank.name}
+              </option>
+            ))}
+          </select>
+          {errors.bankId && (
+            <p className="text-red-500 text-sm mt-1">{errors.bankId.message}</p>
+          )}
+          <div className="flex items-center mt-2">
+            <span className="text-primary-900 text-lg font-bold mr-2">+</span>
+            <button
+              type="button"
+              className="text-primary-900 underline text-sm"
+              onClick={() => alert("Add New Bank logic here")}
+            >
+              Add New Bank
+            </button>
+          </div>
+        </div>
         <CustomButton
           type="submit"
           className="bg-primary-900 text-white w-full rounded-full py-4 hover:bg-primary-700"

@@ -7,8 +7,11 @@ import AddBankModal from "./AddBankModal";
 import { MobileAddBankAccount } from "./MobileAddBankAccount";
 import DepositModalModal from "./DepositModalModal";
 import { MobileDepositForm } from "./MobileDepositForm";
+import WithdrawalModalModal from "./WithdrawalModal";
+import { MobileWithdrawalForm } from "./MobileWithdrawalForm";
 
 export default function WalletBalance() {
+  const [withdrawalModal, setOpenWithdrawal] = useState(false);
   const [open, setOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -74,7 +77,10 @@ export default function WalletBalance() {
                 <PlusIcon className=" text-white" />
               </span>
             </button>
-            <button className="bg-[#E4F1FA] cursor-pointer hover:bg-gray-100 text-primary-700 px-6 py-3 rounded-full flex items-center gap-2 font-medium">
+            <button
+              onClick={() => setOpenWithdrawal(true)}
+              className="bg-[#E4F1FA] cursor-pointer hover:bg-gray-100 text-primary-700 px-6 py-3 rounded-full flex items-center gap-2 font-medium"
+            >
               Withdraw <CustomImage alt="" src={"/icons/arrow-up.svg"} />
             </button>
           </div>
@@ -95,6 +101,26 @@ export default function WalletBalance() {
             open={open}
             onOpenChange={setOpen}
             onSubmit={() => {}}
+          />
+        </Dialog.Root>
+      )}
+      {/* =============================================WITHDRAWAL=================== */}
+      {isMobile ? (
+        <BottomSheet
+          isOpen={withdrawalModal}
+          onClose={() => setOpenWithdrawal(false)}
+          title="Withdraw"
+        >
+          <MobileWithdrawalForm onSubmit={() => {}} />
+        </BottomSheet>
+      ) : (
+        <Dialog.Root open={withdrawalModal} onOpenChange={setOpen}>
+          <WithdrawalModalModal
+            open={withdrawalModal}
+            onOpenChange={setOpenWithdrawal}
+            onSubmit={() => {}}
+            onAddBank={function (): void {}}
+            banks={[]}
           />
         </Dialog.Root>
       )}
