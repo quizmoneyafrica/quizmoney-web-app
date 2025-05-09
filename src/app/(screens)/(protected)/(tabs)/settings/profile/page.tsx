@@ -1,5 +1,6 @@
 "use client";
 import { genders } from "@/app/(screens)/(preAuthScreen)/signup/formSteps/step2";
+import ImagePickerModal from "@/app/components/modal/ImagePickerModal";
 import {
   ArrowDownIcon,
   FacebookIcon,
@@ -22,6 +23,7 @@ import React, { useState } from "react";
 
 const page = () => {
   const [isEditing, setIsEditing] = useState(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -31,7 +33,7 @@ const page = () => {
       className="pb-20"
     >
       <div className="rounded-lg w-full bg-white overflow-hidden">
-        <div className="w-full h-[160px] bg-primary-500 overflow-hidden rounded-br-[60px]">
+        <div className="w-full h-[120px] md:h-[160px] bg-primary-500 overflow-hidden rounded-br-[60px]">
           <Image
             src="/assets/images/background-desktop.png"
             alt="background"
@@ -59,7 +61,12 @@ const page = () => {
 
               <Flex justify="between" className="w-full mt-4">
                 <div className="flex flex-col gap-2">
-                  <p className=" font-medium text-primary-500">Change Image</p>
+                  <p
+                    onClick={() => setIsImageModalOpen(true)}
+                    className=" font-medium text-primary-500 cursor-pointer"
+                  >
+                    Change Image
+                  </p>
                   <p className=" font-semibold">Joseph Michael</p>
                   <p className=" font-light">olamideolamide@gmail.com</p>
                 </div>
@@ -230,6 +237,7 @@ const page = () => {
           </div>
         </div>
       </div>
+      <ImagePickerModal open={isImageModalOpen} setOpen={setIsImageModalOpen} />
     </motion.div>
   );
 };

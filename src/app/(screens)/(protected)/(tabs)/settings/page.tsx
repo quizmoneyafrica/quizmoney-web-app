@@ -1,4 +1,5 @@
 "use client";
+import LogoutDialog from "@/app/components/logout/logout";
 import { LogoutIcon, SettingIcon, SupportIcon } from "@/app/icons/icons";
 import { ArrowRightIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { Flex, Grid } from "@radix-ui/themes";
@@ -40,13 +41,19 @@ function Page() {
           <p className="text-lg  font-semibold">General</p>
           <Grid columns={{ initial: "1", md: "2" }} gap={"18px"}>
             <Flex
+              onClick={() => router.push("/settings/how-it-works")}
               className=" bg-white p-4 md:p-6 rounded-2xl sm:rounded-xl border border-zinc-200"
               align={"center"}
               justify={"between"}
             >
               <Flex gap={"3"} align={"center"}>
                 <div className="h-12 w-12 bg-primary-50 rounded-full flex justify-center items-center">
-                  <SettingIcon className="text-primary-500" />
+                  <Image
+                    src="/icons/setting.svg"
+                    alt="terms"
+                    width={24}
+                    height={24}
+                  />{" "}
                 </div>
                 <p className=" text-lg font-semibold ">How it Works</p>
               </Flex>
@@ -56,6 +63,7 @@ function Page() {
               className=" bg-white p-4 md:p-6 rounded-2xl sm:rounded-xl border border-zinc-200"
               align={"center"}
               justify={"between"}
+              onClick={() => router.push("/settings/support")}
             >
               <Flex gap={"3"} align={"center"}>
                 <div className="h-12 w-12 bg-primary-50 rounded-full flex justify-center items-center">
@@ -66,13 +74,19 @@ function Page() {
               <ChevronRightIcon height={25} width={25} />
             </Flex>
             <Flex
+              onClick={() => router.push("/settings/change-password")}
               className=" bg-white p-4 md:p-6 rounded-2xl sm:rounded-xl border border-zinc-200"
               align={"center"}
               justify={"between"}
             >
               <Flex gap={"3"} align={"center"}>
                 <div className="h-12 w-12 bg-primary-50 rounded-full flex justify-center items-center">
-                  <SettingIcon className="text-primary-500" />
+                  <Image
+                    src="/icons/security-safe.svg"
+                    alt="terms"
+                    width={24}
+                    height={24}
+                  />{" "}
                 </div>
                 <p className=" text-lg font-semibold ">Change Password</p>
               </Flex>
@@ -89,28 +103,42 @@ function Page() {
               className=" bg-white p-4 md:p-6 rounded-2xl sm:rounded-xl border border-zinc-200"
               align={"center"}
               justify={"between"}
+              onClick={() => router.push("/settings/terms-and-conditions")}
             >
               <Flex gap={"3"} align={"center"}>
                 <div className="h-12 w-12 bg-primary-50 rounded-full flex justify-center items-center">
-                  <SettingIcon className="text-primary-500" />
+                  <Image
+                    src="/icons/document-text.svg"
+                    alt="terms"
+                    width={24}
+                    height={24}
+                  />
                 </div>
                 <p className=" text-lg font-semibold ">Terms & Condition</p>
               </Flex>
               <ChevronRightIcon height={25} width={25} />
             </Flex>
-            <Flex
-              className=" bg-white p-4 md:p-6 rounded-2xl sm:rounded-xl border border-zinc-200"
-              align={"center"}
-              justify={"between"}
-            >
-              <Flex gap={"3"} align={"center"}>
-                <div className="h-12 w-12 bg-rose-50 rounded-full flex justify-center items-center">
-                  <LogoutIcon className="text-rose-500" />
-                </div>
-                <p className=" text-lg font-semibold ">Logout</p>
+
+            <LogoutDialog>
+              <Flex
+                className=" bg-white p-4 md:p-6 rounded-2xl sm:rounded-xl border border-zinc-200"
+                align={"center"}
+                justify={"between"}
+              >
+                <Flex gap={"3"} align={"center"}>
+                  <div className="h-12 w-12 bg-rose-50 rounded-full flex justify-center items-center">
+                    <Image
+                      src="/icons/logout.svg"
+                      alt="terms"
+                      width={24}
+                      height={24}
+                    />
+                  </div>
+                  <p className=" text-lg font-semibold ">Logout</p>
+                </Flex>
+                <ChevronRightIcon height={25} width={25} />
               </Flex>
-              <ChevronRightIcon height={25} width={25} />
-            </Flex>
+            </LogoutDialog>
           </Grid>
         </Flex>
       </Flex>
