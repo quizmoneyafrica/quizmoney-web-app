@@ -1,4 +1,7 @@
+"use client";
+
 import { ReactNode } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 export const BottomSheet = ({
   isOpen,
@@ -11,25 +14,36 @@ export const BottomSheet = ({
   children: ReactNode;
   title?: string;
 }) => {
-  if (!isOpen) return null;
-
   return (
-    <div className="md:hidden fixed z-[100] inset-0">
-      {/* Overlay */}
-      <div
-        className="absolute inset-0 bg-black/20 bg-opacity-40"
-        onClick={onClose}
-      />
+    <AnimatePresence>
+      {isOpen && (
+        <div className="md:hidden fixed z-[100] inset-0">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="absolute inset-0 bg-black/20"
+            onClick={onClose}
+          />
 
-      <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-lg p-5 pb-8 flex flex-col max-h-[90vh] overflow-y-auto">
-        <div className="w-16 h-1 bg-gray-300 rounded-full mx-auto mb-6" />
+          <motion.div
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-lg p-5 pb-8 flex flex-col max-h-[90vh] overflow-y-auto"
+          >
+            <div className="w-16 h-1 bg-gray-300 rounded-full mx-auto mb-6" />
 
-        {title && (
-          <h2 className="text-xl font-bold text-gray-800 mb-4">{title}</h2>
-        )}
+            {title && (
+              <h2 className="text-xl font-bold text-gray-800 mb-4">{title}</h2>
+            )}
 
-        {children}
-      </div>
-    </div>
+            {children}
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
   );
 };
