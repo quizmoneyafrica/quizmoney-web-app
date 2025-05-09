@@ -1,6 +1,10 @@
 import { Trash2, Eye, EyeOff, Plus } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CustomImage from "./CustomImage";
+import * as Dialog from "@radix-ui/react-dialog";
+import AddBankModal from "./AddBankModal";
+import { BottomSheet } from "./BottomSheet";
+import { MobileAddBankAccount } from "./MobileAddBankAccount";
 
 export default function WithdrawalAccounts() {
   const [accounts, setAccounts] = useState([
@@ -19,6 +23,29 @@ export default function WithdrawalAccounts() {
       hidden: true,
     },
   ]);
+
+  const [open, setOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkIfMobile();
+
+    window.addEventListener("resize", checkIfMobile);
+
+    return () => window.removeEventListener("resize", checkIfMobile);
+  }, []);
+
+  const handleBankFormSubmit = (data: {
+    accountNumber: string;
+    bank: string;
+  }) => {
+    console.log("Form submitted:", data);
+    setOpen(false);
+  };
 
   interface Account {
     id: number;
@@ -41,7 +68,7 @@ export default function WithdrawalAccounts() {
   };
 
   return (
-    <div className=" w-full bg-white p-4 rounded-3xl">
+    <div className="w-full bg-white p-4 rounded-3xl">
       <h1 className="text-xl font-bold mb-4">Withdrawal Accounts</h1>
 
       <div className="space-y-4">
@@ -71,12 +98,12 @@ export default function WithdrawalAccounts() {
               </div>
             </div>
 
-            <div className="flex justify-between  items-center">
+            <div className="flex justify-between items-center">
               <span className="font-bold truncate">{account.name}</span>
               <div className="flex items-center">
                 <CustomImage
                   alt="access-logo"
-                  className=" md:block hidden"
+                  className="md:block hidden"
                   src={"/icons/access-logo.svg"}
                 />
                 <span className="text-gray-700 md:text-sm text-xs">
@@ -87,9 +114,30 @@ export default function WithdrawalAccounts() {
           </div>
         ))}
 
-        <button className="border-2 border-dashed border-[#070707CC] rounded-full cursor-pointer py-4 w-full flex items-center justify-center space-x-2 hover:bg-gray-50">
+        {isMobile ? (
+          <BottomSheet
+            isOpen={open}
+            onClose={() => setOpen(false)}
+            title="Add Bank account"
+          >
+            <MobileAddBankAccount onSubmit={handleBankFormSubmit} />
+          </BottomSheet>
+        ) : (
+          <Dialog.Root open={open} onOpenChange={setOpen}>
+            <AddBankModal
+              open={open}
+              onOpenChange={setOpen}
+              onSubmit={handleBankFormSubmit}
+            />
+          </Dialog.Root>
+        )}
+
+        <button
+          onClick={() => setOpen(true)}
+          className="border-2 border-dashed border-[#070707CC] rounded-full cursor-pointer py-4 w-full flex items-center justify-center space-x-2 hover:bg-gray-50"
+        >
           <Plus size={20} />
-          <span className=" tex-[#070707] text-base">Add new Bank</span>
+          <span className="tex-[#070707] text-base">Add new Bank</span>
         </button>
       </div>
     </div>

@@ -6,82 +6,83 @@ import AppSetup from "./appSetup";
 import "@radix-ui/themes/styles.css";
 
 const spacegrotesk = Space_Grotesk({
-	variable: "--spacegrotesk",
-	subsets: ["latin"],
+  variable: "--spacegrotesk",
+  subsets: ["latin"],
 });
 
 const dmsans = DM_Sans({
-	variable: "--dmsans",
-	subsets: ["latin"],
+  variable: "--dmsans",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-	title: {
-		template: "%s | Quiz Money",
-		default: "Quiz Money - Rewarding Knowledge with Financial Income",
-	},
-	description: "Engage in quiz game and win amazing cash prices",
-	generator: "Quiz Money",
-	applicationName: "Quiz Money",
-	keywords: ["Quiz Money", "make money online", "betting"],
-	referrer: "origin-when-cross-origin",
-	alternates: {
-		canonical: "https://app.quizmoney.ng",
-		languages: {
-			"en-US": "/en-US",
-		},
-	},
-	openGraph: {
-		title: "Quiz Money - Rewarding Knowledge with Financial Income",
-		description: "Engage in quiz game and win amazing cash prices",
-		url: "https://quizmoney.ng",
-		type: "website",
-		locale: "en_US",
-		images: [
-			{
-				url: "/opengraph-image.png",
-				width: 1024,
-				height: 1024,
-				alt: "Quiz Money",
-			},
-		],
-	},
-	twitter: {
-		card: "summary_large_image",
-		title: "Quiz Money - Rewarding Knowledge with Financial Income",
-		description: "Engage in quiz game and win amazing cash prices",
-		images: ["/opengraph-image.png"],
-	},
-	robots: "index, follow",
+  title: {
+    template: "%s | Quiz Money",
+    default: "Quiz Money - Rewarding Knowledge with Financial Income",
+  },
+  description: "Engage in quiz game and win amazing cash prices",
+  generator: "Quiz Money",
+  applicationName: "Quiz Money",
+  keywords: ["Quiz Money", "make money online", "betting"],
+  referrer: "origin-when-cross-origin",
+  alternates: {
+    canonical: "https://app.quizmoney.ng",
+    languages: {
+      "en-US": "/en-US",
+    },
+  },
+  openGraph: {
+    title: "Quiz Money - Rewarding Knowledge with Financial Income",
+    description: "Engage in quiz game and win amazing cash prices",
+    url: "https://quizmoney.ng",
+    type: "website",
+    locale: "en_US",
+    images: [
+      {
+        url: "/opengraph-image.png",
+        width: 1024,
+        height: 1024,
+        alt: "Quiz Money",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Quiz Money - Rewarding Knowledge with Financial Income",
+    description: "Engage in quiz game and win amazing cash prices",
+    images: ["/opengraph-image.png"],
+  },
+  robots: "index, follow",
 };
 
 export default function RootLayout({
-	children,
+  children,
 }: Readonly<{
-	children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
-	return (
-		<html lang="en">
-			<head>
-				<link rel="manifest" href="/manifest.json" />
-				<link rel="icon" href="/favicon.ico" />
-				<meta name="apple-mobile-web-app-title" content="Quiz Money" />
-				<meta
-					name="viewport"
-					content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
-				/>
-				{/* iOS-specific */}
-				<meta name="apple-mobile-web-app-capable" content="yes" />
-				<meta
-					name="apple-mobile-web-app-status-bar-style"
-					content="black-translucent"
-				/>
-			</head>
-			<body
-				className={`${spacegrotesk.variable} ${dmsans.variable} antialiased`}>
-				<AppSetup>{children}</AppSetup>
-				<InstallAppButton />
-			</body>
-		</html>
-	);
+  return (
+    <html lang="en">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" href="/favicon.ico" />
+        <meta name="apple-mobile-web-app-title" content="Quiz Money" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+        />
+        {/* iOS-specific */}
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
+        />
+      </head>
+      <body
+        className={`${spacegrotesk.variable} ${dmsans.variable} antialiased`}
+      >
+        <AppSetup>{children}</AppSetup>
+        {/* <InstallAppButton /> */}
+      </body>
+    </html>
+  );
 }
