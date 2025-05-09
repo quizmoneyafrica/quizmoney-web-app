@@ -99,7 +99,7 @@ export default function WithdrawalModal({
     setValue("amount", `₦${amount.toLocaleString()}`, { shouldValidate: true });
   };
 
-  const handleCustomAmountChange = (e: unknown) => {
+  const handleCustomAmountChange = () => {
     setSelectedAmount(null);
   };
 
@@ -198,7 +198,7 @@ export default function WithdrawalModal({
                       {...register("amount")}
                       onChange={(e) => {
                         register("amount").onChange(e);
-                        handleCustomAmountChange(e);
+                        handleCustomAmountChange();
                       }}
                       className={`w-full border ${
                         errors.amount ? "border-red-500" : "border-gray-300"

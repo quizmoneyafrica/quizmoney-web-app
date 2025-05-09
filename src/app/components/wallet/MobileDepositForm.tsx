@@ -87,7 +87,7 @@ export const MobileDepositForm = ({
             {...register("amount")}
             onChange={(e) => {
               register("amount").onChange(e);
-              handleCustomAmountChange(e);
+              handleCustomAmountChange();
             }}
             className={`w-full border ${
               errors.amount ? "border-red-500" : "border-gray-300"

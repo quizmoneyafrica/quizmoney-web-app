@@ -66,7 +66,7 @@ export const MobileWithdrawalForm = ({
   };
 
   // Handle custom amount input
-  const handleCustomAmountChange = (e: unknown) => {
+  const handleCustomAmountChange = () => {
     setSelectedAmount(null);
   };
 
@@ -96,7 +96,7 @@ export const MobileWithdrawalForm = ({
             {...register("amount")}
             onChange={(e) => {
               register("amount").onChange(e);
-              handleCustomAmountChange(e);
+              handleCustomAmountChange();
             }}
             className={`w-full border ${
               errors.amount ? "border-red-500" : "border-gray-300"
