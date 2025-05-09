@@ -39,10 +39,9 @@ export const MobileAddBankAccount = ({
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid, isDirty },
+    formState: { errors, isValid },
     setValue,
     watch,
-    trigger,
   } = useForm<BankAccountFormData>({
     resolver: zodResolver(bankAccountSchema),
     mode: "onChange",

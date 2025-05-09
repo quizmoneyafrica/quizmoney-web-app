@@ -1,6 +1,5 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
-import CustomTextField from "@/app/utils/CustomTextField";
 import CustomButton from "@/app/utils/CustomBtn";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -70,7 +69,7 @@ export default function DepositModal({
     setValue("amount", `₦${amount.toLocaleString()}`, { shouldValidate: true });
   };
 
-  const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCustomAmountChange = (e: unknown) => {
     setSelectedAmount(null);
   };
 
@@ -148,7 +147,7 @@ export default function DepositModal({
                 </div>
 
                 <p className="text-gray-600 mb-6">
-                  Fund your QuizMoney wallet Let's play
+                  {"Fund your QuizMoney wallet Let's play"}
                 </p>
 
                 <form

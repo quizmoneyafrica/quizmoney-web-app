@@ -55,7 +55,7 @@ export const MobileDepositForm = ({
     setValue("amount", `₦${amount.toLocaleString()}`, { shouldValidate: true });
   };
 
-  const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCustomAmountChange = () => {
     setSelectedAmount(null);
   };
 
@@ -71,7 +71,9 @@ export const MobileDepositForm = ({
   return (
     <div className=" bg-white rounded-3xl h-full">
       <div className="mb-8">
-        <p className="text-gray-600">Fund your QuizMoney wallet Let's play</p>
+        <p className="text-gray-600">
+          {"Fund your QuizMoney wallet Let's play"}
+        </p>
       </div>
 
       <form onSubmit={handleSubmit(onFormSubmit)}>

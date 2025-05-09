@@ -50,7 +50,6 @@ export const MobileWithdrawalForm = ({
     setValue,
     formState: { errors },
     reset,
-    watch,
   } = useForm<WithdrawFormData>({
     resolver: zodResolver(withdrawFormSchema),
     mode: "onChange",
@@ -67,7 +66,7 @@ export const MobileWithdrawalForm = ({
   };
 
   // Handle custom amount input
-  const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCustomAmountChange = (e: unknown) => {
     setSelectedAmount(null);
   };
 

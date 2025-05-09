@@ -100,7 +100,7 @@ export default function WithdrawalModal({
     setValue("amount", `₦${amount.toLocaleString()}`, { shouldValidate: true });
   };
 
-  const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCustomAmountChange = (e: unknown) => {
     setSelectedAmount(null);
   };
 

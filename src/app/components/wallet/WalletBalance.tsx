@@ -3,8 +3,6 @@ import { useEffect, useState } from "react";
 import CustomImage from "./CustomImage";
 import { BottomSheet } from "./BottomSheet";
 import { Dialog } from "radix-ui";
-import AddBankModal from "./AddBankModal";
-import { MobileAddBankAccount } from "./MobileAddBankAccount";
 import DepositModalModal from "./DepositModalModal";
 import { MobileDepositForm } from "./MobileDepositForm";
 import WithdrawalModalModal from "./WithdrawalModal";

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, DM_Sans } from "next/font/google";
 import "./globals.css";
-import InstallAppButton from "./pwa/install";
 import AppSetup from "./appSetup";
 import "@radix-ui/themes/styles.css";
 
