@@ -3,9 +3,9 @@ import { appHeaders, BASE_URL, getSessionTokenHeaders } from "./userApi";
 import { ApiResponse } from "./interface";
 
 const StoreAPI = {
-	getProducts(): Promise<AxiosResponse<ApiResponse>> {
-		return axios.post(`${BASE_URL}/getProducts`, {}, { headers: appHeaders });
-	},
+  getProducts(): Promise<AxiosResponse<ApiResponse>> {
+    return axios.post(`${BASE_URL}/getProducts`, {}, { headers: appHeaders });
+  },
 
 	getProductById(productId: string): Promise<AxiosResponse<ApiResponse>> {
 		return axios.post(
