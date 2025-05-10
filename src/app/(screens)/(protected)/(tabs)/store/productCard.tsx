@@ -3,16 +3,46 @@ import { ArrowRightIcon } from "@radix-ui/react-icons";
 import React, { useState } from "react";
 import Image from "next/image";
 import Modal from "@/app/components/modal/Modal";
-
-const ProductCard = () => {
+import { Product } from "@/app/api/interface";
+import SuccessMessageModal from "@/app/components/modal/store/SuccessMessageModal";
+import StoreAPI from "@/app/api/storeApi";
+import { useRouter } from "next/navigation";
+import CustomButton from "@/app/utils/CustomBtn";
+const ProductCard = ({ product }: { product: Product }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  const handlePurchase = async () => {
+    setIsLoading(true);
+    await StoreAPI.purchaseItem(product.objectId)
+      .then((res) => {
+        if (res.status === 200) {
+          setIsOpen(false);
+          setIsSuccess(true);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsOpen(false);
+        setIsError(true);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
   return (
     <div className=" h-[187px] md:h-[217px] bg-white border-zinc-200 border rounded-3xl p-8">
       <Flex justify="between" className=" h-full" align="center">
         <Flex direction="column" justify="between" gap="2" className=" h-full">
-          <p className=" text-lg md:text-2xl font-bold">Eraser</p>
+          <p className=" text-lg md:text-2xl font-bold">
+            {product?.productName ?? "Eraser"}
+          </p>
           <p className=" text-sm md:text-base">
-            Let you correct wrong answers in the game.
+            {product?.productDescription ??
+              "Let you correct wrong answers in the game."}
           </p>
           <div
             className="bg-primary-900 text-white px-6 py-2 md:py-3 rounded-full flex items-center gap-2 w-fit font-semibold"
@@ -28,7 +58,14 @@ const ProductCard = () => {
           direction="column"
         >
           <div className="w-full flex-1 h-full flex flex-row justify-center items-center gap-2">
-            <p>x2</p>
+            <Image
+              src="/icons/eraser.svg"
+              alt="eraser"
+              height={100}
+              width={100}
+              className="w-6 h-6 scale-150 border"
+            />
+            <p>x{product?.productQuantity ?? "2"}</p>
           </div>
           <div className="w-full h-[33px] -space-x-5 font-bold flex-[.5] overflow-hidden flex flex-row justify-center items-center gap-2 bg-primary-900 text-white rounded-b-xl">
             <Image
@@ -39,7 +76,9 @@ const ProductCard = () => {
               className="w-10 h-10 scale-150 border"
             />
 
-            <p className=" text-sm sm:text-lg font-bold pr-2">₦100</p>
+            <p className=" text-sm sm:text-lg font-bold pr-2">
+              ₦{product?.productPrice}
+            </p>
           </div>
         </Flex>
       </Flex>
@@ -48,7 +87,9 @@ const ProductCard = () => {
         onOpenChange={setIsOpen}
         className=" !w-[1000px]"
         title="Verify Purchase"
-        description="Buy 2 erasers"
+        description={`Buy ${product?.productQuantity ?? "2"} ${
+          product?.productName ?? "Eraser"
+        }`}
       >
         <Flex
           direction={"column"}
@@ -62,8 +103,17 @@ const ProductCard = () => {
             justify={"between"}
           >
             <div className="flex gap-2 items-center">
-              <p>x2</p>
-              <p className="text-lg font-bold ">Eraser</p>
+              <Image
+                src="/icons/eraser.svg"
+                alt="eraser"
+                height={100}
+                width={100}
+                className="w-6 h-6 scale-150 border"
+              />
+              <p>x{product?.productQuantity ?? "2"}</p>
+              <p className="text-lg font-bold ">
+                {product?.productName ?? "Eraser"}
+              </p>
             </div>
 
             <div className="w-fit h-[33px] px-4 -space-x-5 font-bold  overflow-hidden flex flex-row justify-center items-center gap-2 bg-primary-900 text-white rounded-2xl">
@@ -75,18 +125,42 @@ const ProductCard = () => {
                 className="w-10 h-10 scale-150 border"
               />
 
-              <p className=" text-sm sm:text-base font-bold pr-2">₦100</p>
+              <p className=" text-sm sm:text-base font-bold pr-2">
+                ₦{product?.productPrice ?? "100"}
+              </p>
             </div>
           </Flex>
 
-          <div
-            className="bg-primary-900 text-white px-6 py-3 rounded-full flex items-center gap-2 justify-center font-semibold"
-            onClick={() => setIsOpen(true)}
-          >
-            Proceed to Pay ₦100
-          </div>
+          {isLoading ? (
+            <CustomButton type="button" loader width="full" />
+          ) : (
+            <div
+              className="bg-primary-900 text-white px-6 py-3 rounded-full flex items-center gap-2 justify-center font-semibold"
+              onClick={handlePurchase}
+            >
+              Proceed to Pay ₦ + {product?.productPrice}
+            </div>
+          )}
         </Flex>
       </Modal>
+      <SuccessMessageModal
+        open={isSuccess}
+        setOpen={setIsSuccess}
+        success={true}
+        message="Purchase successful"
+        subMessage="Your purchase of 2 erasers was successful"
+        onClose={() => router.push("/home")}
+        actionLabel="Fund Account"
+      />
+      <SuccessMessageModal
+        open={isError}
+        setOpen={setIsError}
+        success={false}
+        message="Insufficient Wallet Balance"
+        subMessage="Your purchase of 2 erasers failed due to insufficient funds"
+        onClose={() => router.push("/wallet")}
+        actionLabel="Fund Account"
+      />
     </div>
   );
 };

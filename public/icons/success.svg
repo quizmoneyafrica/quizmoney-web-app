@@ -1,3 +1,13 @@
+<<<<<<< HEAD
+<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="30" cy="30" r="30" fill="#2364AA"/>
+<g clip-path="url(#clip0_5716_4383)">
+<path d="M26.0002 35.5598L20.4402 29.9998L18.5469 31.8798L26.0002 39.3331L42.0002 23.3331L40.1202 21.4531L26.0002 35.5598Z" fill="white"/>
+</g>
+<defs>
+<clipPath id="clip0_5716_4383">
+<rect width="32" height="32" fill="white" transform="translate(14 14)"/>
+=======
 <svg width="268" height="210" viewBox="0 0 268 210" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g clip-path="url(#clip0_5745_4964)">
 <circle cx="34" cy="181" r="10" fill="#FFF6C5"/>
@@ -15,6 +25,7 @@
 </clipPath>
 <clipPath id="clip1_5745_4964">
 <rect width="120" height="120" fill="white" transform="translate(73 61)"/>
+>>>>>>> fdc3f30c891c3990ee0093e63a9e36fc7b954c5d
 </clipPath>
 </defs>
 </svg>
