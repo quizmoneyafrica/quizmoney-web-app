@@ -7,10 +7,13 @@ import DepositModalModal from "./DepositModalModal";
 import { MobileDepositForm } from "./MobileDepositForm";
 import WithdrawalModalModal from "./WithdrawalModal";
 import { MobileWithdrawalForm } from "./MobileWithdrawalForm";
+import { MobileWithdrawalPinForm } from "./MobileWithdrawalPinForm";
+import WithdrawalPinModal from "./WithdrawalPinModal";
 
 export default function WalletBalance() {
   const [withdrawalModal, setOpenWithdrawal] = useState(false);
   const [open, setOpen] = useState(false);
+  const [openPinModal, setOpenPinModal] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -102,7 +105,6 @@ export default function WalletBalance() {
           />
         </Dialog.Root>
       )}
-      {/* =============================================WITHDRAWAL=================== */}
       {isMobile ? (
         <BottomSheet
           isOpen={withdrawalModal}
@@ -116,6 +118,26 @@ export default function WalletBalance() {
           <WithdrawalModalModal
             open={withdrawalModal}
             onOpenChange={setOpenWithdrawal}
+            onSubmit={() => {}}
+            onAddBank={function (): void {}}
+            banks={[]}
+          />
+        </Dialog.Root>
+      )}
+
+      {isMobile ? (
+        <BottomSheet
+          isOpen={openPinModal}
+          onClose={() => setOpenPinModal(false)}
+          title="Withdraw"
+        >
+          <MobileWithdrawalPinForm onSubmit={() => {}} />
+        </BottomSheet>
+      ) : (
+        <Dialog.Root open={openPinModal} onOpenChange={setOpenPinModal}>
+          <WithdrawalPinModal
+            open={openPinModal}
+            onOpenChange={setOpenPinModal}
             onSubmit={() => {}}
             onAddBank={function (): void {}}
             banks={[]}
