@@ -1,14 +1,14 @@
 "use client";
-import { Grid, Heading } from "@radix-ui/themes";
+import { Grid } from "@radix-ui/themes";
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import ProductCard from "./productCard";
-import StoreAPI from "@/app/api/storeApi";
+// import StoreAPI from "@/app/api/storeApi";
 function Page() {
   useEffect(() => {
-    StoreAPI.getStoreItems().then((res) => {
-      console.log(res);
-    });
+    // StoreAPI.getStoreItems().then((res) => {
+    //   console.log(res);
+    // });
   }, []);
 
   return (
