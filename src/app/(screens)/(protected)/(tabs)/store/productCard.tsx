@@ -1,4 +1,4 @@
-import { Button, Flex } from "@radix-ui/themes";
+import { Flex } from "@radix-ui/themes";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
 import React, { useState } from "react";
 import Image from "next/image";

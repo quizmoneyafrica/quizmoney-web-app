@@ -79,4 +79,12 @@ export default function CustomSelect({
       </div>
     </div>
   );
+        {icon && (
+          <div className="absolute z-10 inset-y-0 right-3 flex items-center pointer-events-none">
+            {icon}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }

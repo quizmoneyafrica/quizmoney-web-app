@@ -69,4 +69,12 @@ export default function CustomTextField({
       </div>
     </div>
   );
+        {icon && (
+          <div className="absolute z-10 inset-y-0 right-3 flex items-center cursor-pointer ">
+            {icon}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
