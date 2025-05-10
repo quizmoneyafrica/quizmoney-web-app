@@ -21,6 +21,18 @@ const StoreAPI = {
 			{ headers: getSessionTokenHeaders() }
 		);
 	},
+	fetchCustomerWallet(): Promise<AxiosResponse<ApiResponse>> {
+		return axios.post(
+			`${BASE_URL}/fetchCustomerWallet`,
+			{ headers: getSessionTokenHeaders() }
+		);
+	},
+	fetchTransactions(): Promise<AxiosResponse<ApiResponse>> {
+		return axios.post(
+			`${BASE_URL}/fetchTransactions`,
+			{ headers: getSessionTokenHeaders() }
+		);
+	},
 };
 
 export default StoreAPI;
