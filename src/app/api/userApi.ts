@@ -7,45 +7,47 @@ import {
 	VerifyEmailForm,
 	VerifyForgotPasswordOtpForm,
 } from "./interface";
+import { store } from "@/app/store/store";
+import { decryptData } from "../utils/crypto";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL;
 const XParseApplicationId = process.env.NEXT_PUBLIC_XParseApplicationId;
 const XParseRESTAPIKey = process.env.NEXT_PUBLIC_XParseRESTAPIKey;
 
-export const headers = {
+const appHeaders = {
 	"X-Parse-Application-Id": XParseApplicationId,
 	"X-Parse-REST-API-Key": XParseRESTAPIKey,
 	"Content-Type": "application/json",
 };
+const getSessionTokenHeaders = () => {
+	const encrypted = store.getState().auth.userEncryptedData;
+	const user = encrypted ? decryptData(encrypted) : null;
+	const sessionToken = user?.sessionToken;
+
+	return {
+		"X-Parse-Application-Id": process.env.NEXT_PUBLIC_XParseApplicationId!,
+		"X-Parse-REST-API-Key": process.env.NEXT_PUBLIC_XParseRESTAPIKey!,
+		"X-Parse-Session-Token": sessionToken || "",
+		"Content-Type": "application/json",
+	};
+};
 const UserAPI = {
 	login(form: LoginForm): Promise<AxiosResponse<ApiResponse>> {
 		return axios.post(`${BASE_URL}/login`, form, {
-			headers: {
-				"X-Parse-Application-Id": XParseApplicationId,
-				"X-Parse-REST-API-Key": XParseRESTAPIKey,
-				"Content-Type": "application/json",
-			},
+			headers: appHeaders,
 		});
 	},
 	signUp(form: SignUpForm): Promise<AxiosResponse<ApiResponse>> {
 		console.log("Form: ", form);
 		return axios.post(`${BASE_URL}/signup`, form, {
-			headers: {
-				"X-Parse-Application-Id": XParseApplicationId,
-				"X-Parse-REST-API-Key": XParseRESTAPIKey,
-				"Content-Type": "application/json",
-			},
+			headers: appHeaders,
 		});
 	},
 	verifyEmail(form: VerifyEmailForm): Promise<AxiosResponse<ApiResponse>> {
 		console.log("Form: ", form);
 		return axios.post(`${BASE_URL}/verifyMail`, form, {
-			headers: {
-				"X-Parse-Application-Id": XParseApplicationId,
-				"X-Parse-REST-API-Key": XParseRESTAPIKey,
-				"Content-Type": "application/json",
-			},
+			headers: appHeaders,
 		});
 	},
 	resendSignupOtp(email: string): Promise<AxiosResponse<ApiResponse>> {
@@ -54,11 +56,7 @@ const UserAPI = {
 			`${BASE_URL}/resendSignupOtp`,
 			{ email },
 			{
-				headers: {
-					"X-Parse-Application-Id": XParseApplicationId,
-					"X-Parse-REST-API-Key": XParseRESTAPIKey,
-					"Content-Type": "application/json",
-				},
+				headers: appHeaders,
 			}
 		);
 	},
@@ -68,11 +66,7 @@ const UserAPI = {
 			`${BASE_URL}/forgotPassword`,
 			{ email },
 			{
-				headers: {
-					"X-Parse-Application-Id": XParseApplicationId,
-					"X-Parse-REST-API-Key": XParseRESTAPIKey,
-					"Content-Type": "application/json",
-				},
+				headers: appHeaders,
 			}
 		);
 	},
@@ -80,25 +74,24 @@ const UserAPI = {
 		form: VerifyForgotPasswordOtpForm
 	): Promise<AxiosResponse<ApiResponse>> {
 		return axios.post(`${BASE_URL}/verifyForgotPasswordOtp`, form, {
-			headers: {
-				"X-Parse-Application-Id": XParseApplicationId,
-				"X-Parse-REST-API-Key": XParseRESTAPIKey,
-				"Content-Type": "application/json",
-			},
+			headers: appHeaders,
 		});
 	},
 	resetPasswordAuth(
 		form: ResetPasswordForm
 	): Promise<AxiosResponse<ApiResponse>> {
 		return axios.post(`${BASE_URL}/changePassword`, form, {
-			headers: {
-				"X-Parse-Application-Id": XParseApplicationId,
-				"X-Parse-REST-API-Key": XParseRESTAPIKey,
-				"Content-Type": "application/json",
-			},
+			headers: appHeaders,
 		});
 	},
 };
 
-export { BASE_URL, SOCKET_URL, XParseApplicationId, XParseRESTAPIKey };
+export {
+	appHeaders,
+	getSessionTokenHeaders,
+	BASE_URL,
+	SOCKET_URL,
+	XParseApplicationId,
+	XParseRESTAPIKey,
+};
 export default UserAPI;

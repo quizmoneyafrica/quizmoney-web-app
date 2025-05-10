@@ -10,7 +10,7 @@ function HomeTab() {
   const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
   const user = encrypted ? decryptData(encrypted) : null;
 
-  // console.log("USER: ", user);
+  //   console.log("USER: ", user);
 
   return (
     <>

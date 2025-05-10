@@ -13,14 +13,9 @@ export function isIosPwaInstalled(): boolean {
 
 export const isMobileOrTablet = () => {
 	if (typeof window === "undefined") return false;
-	const userAgent = window.navigator.userAgent.toLowerCase();
-	const isMobileOrTabletDevice = /iphone|ipad|ipod|android|mobile|tablet/i.test(
-		userAgent
+	return /iphone|ipad|ipod|android|mobile/i.test(
+		window.navigator.userAgent.toLowerCase()
 	);
-
-	const isPortrait = window.innerHeight > window.innerWidth;
-
-	return isMobileOrTabletDevice && isPortrait;
 };
 
 export function capitalizeFirstLetter(str: string) {
