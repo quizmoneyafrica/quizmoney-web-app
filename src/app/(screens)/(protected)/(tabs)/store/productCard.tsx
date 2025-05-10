@@ -1,14 +1,38 @@
-import { Button, Flex } from "@radix-ui/themes";
+import { Flex } from "@radix-ui/themes";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
 import React, { useState } from "react";
 import Image from "next/image";
 import Modal from "@/app/components/modal/Modal";
 import { Product } from "@/app/api/interface";
 import SuccessMessageModal from "@/app/components/modal/store/SuccessMessageModal";
-
+import StoreAPI from "@/app/api/storeApi";
+import { useRouter } from "next/navigation";
+import CustomButton from "@/app/utils/CustomBtn";
 const ProductCard = ({ product }: { product: Product }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isPurchaseMessageOpen, setIsPurchaseMessageOpen] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  const handlePurchase = async () => {
+    setIsLoading(true);
+    await StoreAPI.purchaseItem(product.objectId)
+      .then((res) => {
+        if (res.status === 200) {
+          setIsOpen(false);
+          setIsSuccess(true);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsOpen(false);
+        setIsError(true);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
   return (
     <div className=" h-[187px] md:h-[217px] bg-white border-zinc-200 border rounded-3xl p-8">
       <Flex justify="between" className=" h-full" align="center">
@@ -34,6 +58,13 @@ const ProductCard = ({ product }: { product: Product }) => {
           direction="column"
         >
           <div className="w-full flex-1 h-full flex flex-row justify-center items-center gap-2">
+            <Image
+              src="/icons/eraser.svg"
+              alt="eraser"
+              height={100}
+              width={100}
+              className="w-6 h-6 scale-150 border"
+            />
             <p>x{product?.productQuantity ?? "2"}</p>
           </div>
           <div className="w-full h-[33px] -space-x-5 font-bold flex-[.5] overflow-hidden flex flex-row justify-center items-center gap-2 bg-primary-900 text-white rounded-b-xl">
@@ -72,6 +103,13 @@ const ProductCard = ({ product }: { product: Product }) => {
             justify={"between"}
           >
             <div className="flex gap-2 items-center">
+              <Image
+                src="/icons/eraser.svg"
+                alt="eraser"
+                height={100}
+                width={100}
+                className="w-6 h-6 scale-150 border"
+              />
               <p>x{product?.productQuantity ?? "2"}</p>
               <p className="text-lg font-bold ">
                 {product?.productName ?? "Eraser"}
@@ -93,21 +131,34 @@ const ProductCard = ({ product }: { product: Product }) => {
             </div>
           </Flex>
 
-          <div
-            className="bg-primary-900 text-white px-6 py-3 rounded-full flex items-center gap-2 justify-center font-semibold"
-            onClick={() => setIsOpen(true)}
-          >
-            Proceed to Pay ₦{product?.productPrice ?? "100"}
-          </div>
+          {isLoading ? (
+            <CustomButton type="button" loader width="full" />
+          ) : (
+            <div
+              className="bg-primary-900 text-white px-6 py-3 rounded-full flex items-center gap-2 justify-center font-semibold"
+              onClick={handlePurchase}
+            >
+              Proceed to Pay ₦ + {product?.productPrice}
+            </div>
+          )}
         </Flex>
       </Modal>
       <SuccessMessageModal
-        open={isPurchaseMessageOpen}
-        setOpen={setIsPurchaseMessageOpen}
+        open={isSuccess}
+        setOpen={setIsSuccess}
+        success={true}
+        message="Purchase successful"
+        subMessage="Your purchase of 2 erasers was successful"
+        onClose={() => router.push("/home")}
+        actionLabel="Fund Account"
+      />
+      <SuccessMessageModal
+        open={isError}
+        setOpen={setIsError}
         success={false}
-        message="Insufficient balance"
+        message="Insufficient Wallet Balance"
         subMessage="Your purchase of 2 erasers failed due to insufficient funds"
-        onClose={() => {}}
+        onClose={() => router.push("/wallet")}
         actionLabel="Fund Account"
       />
     </div>

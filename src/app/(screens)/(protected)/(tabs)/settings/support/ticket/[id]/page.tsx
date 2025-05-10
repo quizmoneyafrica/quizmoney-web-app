@@ -2,7 +2,7 @@
 import CustomButton from "@/app/utils/CustomBtn";
 import CustomTextField from "@/app/utils/CustomTextField";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
-import { Button, Flex } from "@radix-ui/themes";
+import { Flex } from "@radix-ui/themes";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
@@ -68,7 +68,7 @@ const Message = ({
   );
 };
 
-const page = () => {
+const Page = () => {
   const router = useRouter();
   const { id } = useParams();
 
@@ -130,4 +130,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

@@ -1,7 +1,10 @@
 "use client";
+import { User } from "@/app/api/interface";
 import LogoutDialog from "@/app/components/logout/logout";
-import { LogoutIcon, SettingIcon, SupportIcon } from "@/app/icons/icons";
-import { ArrowRightIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+import { useAppSelector } from "@/app/hooks/useAuth";
+import { SupportIcon } from "@/app/icons/icons";
+import { decryptData } from "@/app/utils/crypto";
+import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { Flex, Grid } from "@radix-ui/themes";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -9,6 +12,10 @@ import { useRouter } from "next/navigation";
 
 function Page() {
   const router = useRouter();
+  const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
+  const user: User | null = encrypted ? decryptData(encrypted) : null;
+
+  console.log(user);
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -24,14 +31,16 @@ function Page() {
           <Flex gap="10px">
             <div className="w-[60px] h-[60px] rounded-full overflow-hidden border border-zinc-200">
               <Image
-                src="/assets/images/profile.png"
+                src={user?.avatar ?? "/assets/images/profile.png"}
                 alt="profile"
                 width={100}
                 height={100}
               />
             </div>
             <Flex direction="column">
-              <p className="text-lg sm:text-2xl font-semibold">Joseph moraks</p>
+              <p className="text-lg sm:text-2xl font-semibold">
+                {user?.firstName} {user?.lastName}
+              </p>
               <p>Edit Profile</p>
             </Flex>
           </Flex>

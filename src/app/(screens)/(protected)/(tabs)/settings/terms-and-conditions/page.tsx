@@ -64,7 +64,7 @@ const terms = [
   },
 ];
 
-const page = () => {
+const Page = () => {
   const router = useRouter();
   return (
     <motion.div
@@ -122,10 +122,11 @@ const page = () => {
 
           <div className=" text-xs md:text-sm text-zinc-500">
             <p>
-              Please read these Terms and Conditions ("Terms", "Terms and
-              Conditions") carefully before participating in Quiz- Money (the
-              "Game", "Service") operated by [QM Technologies] ("us", "we", or
-              "our").
+              Please read these Terms and Conditions (&quot;Terms&quot;,
+              &quot;Terms and Conditions&quot;) carefully before participating
+              in Quiz- Money (the &quot;Game&quot;, &quot;Service&quot;)
+              operated by [QM Technologies] (&quot;us&quot;, &quot;we&quot;, or
+              &quot;our&quot;).
             </p>
             <p>
               By accessing or using the Service, you agree to be bound by these
@@ -135,7 +136,7 @@ const page = () => {
           </div>
 
           <Flex direction={"column"} gap={"5"}>
-            {terms.map((term, index) => (
+            {terms.map((term) => (
               <Flex key={term.id} direction={"column"} gap={"2"}>
                 <p className="text-base md:text-lg font-bold">
                   {term.id}. {term.title}:
@@ -156,4 +157,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
