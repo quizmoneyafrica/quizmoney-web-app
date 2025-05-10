@@ -11,6 +11,7 @@ import WithdrawalPinModal from "./WithdrawalPinModal";
 import MobileWithdrawalPinForm from "./MobileWithdrawalPinForm";
 import WithdrawalSuccessModal from "./WithdrawalSuccessModal";
 import MobileWithdrawalSuccess from "./MobileWithdrawalSuccess";
+import StoreAPI from "@/app/api/storeApi";
 
 export default function WalletBalance() {
   const [withdrawalModal, setOpenWithdrawal] = useState(false);
@@ -36,6 +37,15 @@ export default function WalletBalance() {
   const toggleBalanceVisibility = () => {
     setIsBalanceHidden(!isBalanceHidden);
   };
+
+  useEffect(() => {
+    StoreAPI.fetchCustomerWallet().then((res) => {
+      console.log(
+        JSON.stringify(res, null, 2),
+        "=============WALLET DATA======="
+      );
+    });
+  }, []);
 
   return (
     <>
