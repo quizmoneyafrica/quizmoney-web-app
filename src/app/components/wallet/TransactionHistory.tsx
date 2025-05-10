@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import WalletBalance from "./WalletBalance";
 import CustomImage from "./CustomImage";
 import classNames from "classnames";
 import MobileList from "./MobileList";
+import StoreAPI from "@/app/api/storeApi";
 
 export interface Transaction {
   type: "deposit" | "withdrawal";
@@ -26,7 +27,14 @@ export default function TransactionHistory() {
       date: "Feb 12 09:00am",
     },
   ];
-
+  useEffect(() => {
+    StoreAPI.fetchTransactions().then((res) => {
+      console.log(
+        JSON.stringify(res, null, 2),
+        "=============TRANSACTIONS DATA======="
+      );
+    });
+  }, []);
   return (
     <div className="w-full gap-4 md:gap-8 flex flex-col">
       <WalletBalance />

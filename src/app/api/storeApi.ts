@@ -27,6 +27,12 @@ const StoreAPI = {
 			{ headers: getSessionTokenHeaders() }
 		);
 	},
+	fetchTransactions(): Promise<AxiosResponse<ApiResponse>> {
+		return axios.post(
+			`${BASE_URL}/fetchTransactions`,
+			{ headers: getSessionTokenHeaders() }
+		);
+	},
 };
 
 export default StoreAPI;
