@@ -18,8 +18,6 @@ export default function OtpVerificationModal({
   open,
   onOpenChange,
   onVerify,
-  withdrawalAmount,
-  bankName,
   isError = false,
   errorMessage = "Invalid OTP code. Please try again.",
 }: OtpVerificationModalProps) {

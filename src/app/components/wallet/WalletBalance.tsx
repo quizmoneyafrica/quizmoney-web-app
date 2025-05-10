@@ -141,7 +141,9 @@ export default function WalletBalance() {
           <WithdrawalPinModal
             open={openPinModal}
             onOpenChange={setOpenPinModal}
-            onVerify={function (pin: string): void {}}
+            onVerify={function (pin: string): void {
+              console.log(pin);
+            }}
           />
         </Dialog.Root>
       )}

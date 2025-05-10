@@ -1,5 +1,4 @@
 import CustomButton from "@/app/utils/CustomBtn";
-import { useState } from "react";
 import CustomImage from "./CustomImage";
 
 export default function MobileWithdrawalSuccess({
@@ -7,14 +6,6 @@ export default function MobileWithdrawalSuccess({
 }: {
   close?: () => void;
 }) {
-  // Decorative dots
-  const coloredDots = [
-    { color: "bg-blue-200", top: "top-32", left: "left-32" },
-    { color: "bg-green-200", top: "top-36", right: "right-16" },
-    { color: "bg-yellow-100", bottom: "bottom-36", left: "left-44" },
-    { color: "bg-pink-200", bottom: "bottom-32", right: "right-24" },
-  ];
-
   const handleGoBack = () => {
     if (close) {
       close();
@@ -35,8 +26,9 @@ export default function MobileWithdrawalSuccess({
         </h1>
 
         <p className="text-[#6D6D6D] text-center mb-8">
-          ₦10,000 withdrawal request is in process you will get a notification
-          when it's approved
+          {
+            " ₦10,000 withdrawal request is in process you will get a notification when it's approved"
+          }
         </p>
       </div>
 
@@ -46,7 +38,7 @@ export default function MobileWithdrawalSuccess({
           onClick={handleGoBack}
           className="bg-primary-900 text-white w-full rounded-full py-4 hover:bg-primary-700"
         >
-          Go back
+          {"Go back"}
         </CustomButton>
       </div>
     </div>

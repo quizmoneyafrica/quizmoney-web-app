@@ -88,8 +88,10 @@ export default function WithdrawalSuccessModal({
                   </h2>
 
                   <p className="text-gray-600 text-center mb-8">
-                    {withdrawalAmount} withdrawal request is in process you
-                    willl get a notification when it's approved
+                    {withdrawalAmount}
+                    {
+                      " withdrawal request is in process you will get a notification when it's approved"
+                    }
                   </p>
 
                   <CustomButton

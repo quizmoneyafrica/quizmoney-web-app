@@ -23,7 +23,6 @@ export default function ResponsiveDialog({
   className,
 }: ResponsiveDialogProps) {
   const [isMobile, setIsMobile] = useState(false);
-  const [controlled] = useState(open !== undefined);
 
   // Detect if we're on mobile
   useEffect(() => {
