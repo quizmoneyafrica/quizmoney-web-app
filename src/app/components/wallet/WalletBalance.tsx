@@ -7,13 +7,16 @@ import DepositModalModal from "./DepositModalModal";
 import { MobileDepositForm } from "./MobileDepositForm";
 import WithdrawalModalModal from "./WithdrawalModal";
 import { MobileWithdrawalForm } from "./MobileWithdrawalForm";
-import { MobileWithdrawalPinForm } from "./MobileWithdrawalPinForm";
 import WithdrawalPinModal from "./WithdrawalPinModal";
+import MobileWithdrawalPinForm from "./MobileWithdrawalPinForm";
+import WithdrawalSuccessModal from "./WithdrawalSuccessModal";
+import MobileWithdrawalSuccess from "./MobileWithdrawalSuccess";
 
 export default function WalletBalance() {
   const [withdrawalModal, setOpenWithdrawal] = useState(false);
   const [open, setOpen] = useState(false);
   const [openPinModal, setOpenPinModal] = useState(false);
+  const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -79,7 +82,7 @@ export default function WalletBalance() {
               </span>
             </button>
             <button
-              onClick={() => setOpenWithdrawal(true)}
+              onClick={() => setOpenSuccessModal(true)}
               className="bg-[#E4F1FA] cursor-pointer hover:bg-gray-100 text-primary-700 px-6 py-3 rounded-full flex items-center gap-2 font-medium"
             >
               Withdraw <CustomImage alt="" src={"/icons/arrow-up.svg"} />
@@ -129,7 +132,7 @@ export default function WalletBalance() {
         <BottomSheet
           isOpen={openPinModal}
           onClose={() => setOpenPinModal(false)}
-          title="Withdraw"
+          title="Create withdrawal pin "
         >
           <MobileWithdrawalPinForm onSubmit={() => {}} />
         </BottomSheet>
@@ -138,9 +141,24 @@ export default function WalletBalance() {
           <WithdrawalPinModal
             open={openPinModal}
             onOpenChange={setOpenPinModal}
-            onSubmit={() => {}}
-            onAddBank={function (): void {}}
-            banks={[]}
+            onVerify={function (pin: string): void {}}
+          />
+        </Dialog.Root>
+      )}
+      {isMobile ? (
+        <BottomSheet
+          full
+          isOpen={openSuccessModal}
+          onClose={() => setOpenSuccessModal(false)}
+          title=" "
+        >
+          <MobileWithdrawalSuccess close={() => setOpenSuccessModal(false)} />
+        </BottomSheet>
+      ) : (
+        <Dialog.Root open={openSuccessModal} onOpenChange={setOpenSuccessModal}>
+          <WithdrawalSuccessModal
+            open={openSuccessModal}
+            onOpenChange={setOpenSuccessModal}
           />
         </Dialog.Root>
       )}

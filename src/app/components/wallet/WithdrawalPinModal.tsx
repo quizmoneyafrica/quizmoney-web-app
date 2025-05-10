@@ -1,113 +1,87 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
-import CustomButton from "@/app/utils/CustomBtn";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import CustomButton from "@/app/utils/CustomBtn";
 
-const dummyBanks = [
-  {
-    id: "1",
-    name: "First Bank of Nigeria",
-    accountNumber: "1234567890",
-  },
-  {
-    id: "2",
-    name: "GTBank",
-    accountNumber: "0987654321",
-  },
-  {
-    id: "3",
-    name: "Access Bank",
-    accountNumber: "1122334455",
-  },
-];
-
-// Zod schema for validation
-const withdrawalFormSchema = z.object({
-  amount: z
-    .string()
-    .min(1, "Amount is required")
-    .refine(
-      (val) => {
-        const num = Number(val.replace(/[₦,]/g, ""));
-        return !isNaN(num) && num > 0;
-      },
-      { message: "Please enter a valid amount" }
-    ),
-  bank: z.string().optional(),
-});
-
-type WithdrawalFormData = z.infer<typeof withdrawalFormSchema>;
-
-interface WithdrawalModalProps {
+interface OtpVerificationModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: { amount: number; bank?: string }) => void;
-  onAddBank: () => void;
-  banks: Array<{ id: string; name: string; accountNumber: string }>;
+  onVerify: (pin: string) => void;
+  withdrawalAmount?: number;
+  bankName?: string;
+  isError?: boolean;
+  errorMessage?: string;
 }
 
-const predefinedAmounts = [
-  { label: "₦500", value: 500 },
-  { label: "₦1,000", value: 1000 },
-  { label: "₦2,000", value: 2000 },
-  { label: "₦5,000", value: 5000 },
-];
-
-export default function WithdrawalPinModal({
+export default function OtpVerificationModal({
   open,
   onOpenChange,
-  onSubmit,
-  onAddBank,
-}: WithdrawalModalProps) {
-  const banks = dummyBanks;
-  const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
-  const [selectedBank, setSelectedBank] = useState<string | null>(
-    banks.length > 0 ? banks[0].id : null
-  );
+  onVerify,
+  withdrawalAmount,
+  bankName,
+  isError = false,
+  errorMessage = "Invalid OTP code. Please try again.",
+}: OtpVerificationModalProps) {
+  const [otpValues, setOtpValues] = useState<string[]>(["", "", "", ""]);
+  const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors, isSubmitting },
-    reset,
-  } = useForm<WithdrawalFormData>({
-    resolver: zodResolver(withdrawalFormSchema),
-    defaultValues: {
-      amount: "",
-      bank: banks.length > 0 ? banks[0].id : "",
-    },
-  });
+  useEffect(() => {
+    if (open) {
+      setOtpValues(["", "", "", ""]);
+      setTimeout(() => {
+        if (inputRefs.current?.[0]) {
+          inputRefs.current[0]?.focus();
+        }
+      }, 100);
+    }
+  }, [open]);
 
-  const handleFormSubmit = (data: WithdrawalFormData) => {
-    const numericAmount =
-      selectedAmount || Number(data.amount.replace(/[₦,]/g, ""));
-    onSubmit({
-      amount: numericAmount,
-      bank: selectedBank || undefined,
-    });
-    reset();
-    setSelectedAmount(null);
+  // Clear error state when user starts typing again
+  useEffect(() => {
+    if (isError && otpValues.some((val) => val !== "")) {
+      // You can add a callback here to clear the error state
+    }
+  }, [otpValues, isError]);
+
+  const handleInputChange = (index: number, value: string) => {
+    if (!/^\d*$/.test(value)) return;
+
+    const newOtpValues = [...otpValues];
+    newOtpValues[index] = value.slice(0, 1);
+    setOtpValues(newOtpValues);
+
+    if (
+      value &&
+      index < otpValues.length - 1 &&
+      inputRefs.current?.[index + 1]
+    ) {
+      inputRefs.current[index + 1]?.focus();
+    }
   };
 
-  const handlePredefinedAmountClick = (amount: number) => {
-    setSelectedAmount(amount);
-    setValue("amount", `₦${amount.toLocaleString()}`, { shouldValidate: true });
+  const handleKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (e.key === "Backspace") {
+      if (!otpValues[index] && index > 0 && inputRefs.current?.[index - 1]) {
+        inputRefs.current[index - 1]?.focus();
+      }
+    } else if (e.key === "ArrowLeft" && index > 0) {
+      inputRefs.current?.[index - 1]?.focus();
+    } else if (e.key === "ArrowRight" && index < otpValues.length - 1) {
+      inputRefs.current?.[index + 1]?.focus();
+    }
   };
 
-  const handleCustomAmountChange = () => {
-    setSelectedAmount(null);
+  const handleSubmit = () => {
+    const pin = otpValues.join("");
+    if (pin.length === 4) {
+      onVerify(pin);
+    }
   };
 
-  const handleBankChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedBank(e.target.value);
-  };
-
-  // Animation variants for the overlay
   const overlayVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -120,7 +94,6 @@ export default function WithdrawalPinModal({
     },
   };
 
-  // Animation variants for the modal
   const modalVariants = {
     hidden: {
       y: "50%",
@@ -173,7 +146,7 @@ export default function WithdrawalPinModal({
               >
                 <div className="flex justify-between items-center mb-2">
                   <Dialog.Title className="text-2xl font-semibold">
-                    Withdraw
+                    Create withdrawal pin
                   </Dialog.Title>
                   <Dialog.Close className="rounded-full p-1 hover:bg-gray-100">
                     <Cross2Icon className="w-6 h-6" />
@@ -184,133 +157,53 @@ export default function WithdrawalPinModal({
                   Withdraw your money directly to your Bank account
                 </p>
 
-                <form
-                  onSubmit={handleSubmit(handleFormSubmit)}
-                  className="space-y-6"
-                >
-                  <div>
-                    <label className="block mb-2 text-gray-800">
-                      Enter the amount you want to withdraw
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Amount"
-                      {...register("amount")}
-                      onChange={(e) => {
-                        register("amount").onChange(e);
-                        handleCustomAmountChange();
-                      }}
-                      className={`w-full border ${
-                        errors.amount ? "border-red-500" : "border-gray-300"
-                      } rounded-lg px-4 py-3 focus:outline-none focus:ring-transparent`}
-                    />
-                    {errors.amount && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {errors.amount.message}
-                      </p>
-                    )}
-                  </div>
+                <div className="space-y-6">
+                  <div className="flex flex-col items-center pt-4 pb-8">
+                    <h2 className="text-2xl font-medium mb-8">
+                      Enter OTP Code
+                    </h2>
 
-                  <div className="flex flex-wrap gap-2">
-                    {predefinedAmounts.map((option) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        onClick={() =>
-                          handlePredefinedAmountClick(option.value)
-                        }
-                        className={`px-5 py-2 rounded ${
-                          selectedAmount === option.value
-                            ? "bg-[#E4F1FA] text-primary-900"
-                            : "bg-gray-100 text-gray-800"
-                        } hover:bg-blue-50`}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-
-                  <div>
-                    <label className="block mb-2 text-gray-800">
-                      Select Bank you want to withdraw to
-                    </label>
-                    {banks.length > 0 ? (
-                      <div className="relative">
-                        <div className="relative w-full">
-                          <select
-                            {...register("bank")}
-                            onChange={handleBankChange}
-                            className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-3 pr-10 focus:outline-none"
-                          >
-                            {banks.map((bank) => (
-                              <option key={bank.id} value={bank.id}>
-                                {bank.accountNumber} - {bank.name}
-                              </option>
-                            ))}
-                          </select>
-                          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
-                            <svg
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M6 9L12 15L18 9"
-                                stroke="#667085"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </div>
+                    <div className="flex justify-center space-x-4 w-full relative">
+                      {otpValues.map((digit, index) => (
+                        <div key={index} className="relative">
+                          <input
+                            ref={(el) => {
+                              inputRefs.current[index] = el;
+                            }}
+                            type="text"
+                            inputMode="numeric"
+                            autoComplete="one-time-code"
+                            value={digit}
+                            onChange={(e) =>
+                              handleInputChange(index, e.target.value)
+                            }
+                            onKeyDown={(e) => handleKeyDown(index, e)}
+                            className={` size-14 text-center text-4xl border ${
+                              isError ? "border-red-500" : "border-gray-300"
+                            } rounded-lg focus:outline-none focus:${
+                              isError ? "border-red-500" : "border-primary-900"
+                            }`}
+                          />
                         </div>
+                      ))}
+                    </div>
+
+                    {isError && (
+                      <div className="w-full text-center mt-4 text-red-500">
+                        {errorMessage}
                       </div>
-                    ) : (
-                      <div className="text-gray-600">No banks added yet</div>
                     )}
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={onAddBank}
-                    className="flex items-center text-primary-900 font-medium mt-2 ml-auto"
-                  >
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="mr-2"
-                    >
-                      <path
-                        d="M10 4.16666V15.8333"
-                        stroke="#1849A9"
-                        strokeWidth="1.67"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M4.16669 10H15.8334"
-                        stroke="#1849A9"
-                        strokeWidth="1.67"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    Add New Bank
-                  </button>
 
                   <CustomButton
-                    type="submit"
-                    className="bg-primary-900 text-white w-full rounded-full py-3 hover:bg-blue-700 mt-8"
-                    disabled={isSubmitting || banks.length === 0}
+                    type="button"
+                    onClick={handleSubmit}
+                    className="bg-[#2364AA] text-white w-full rounded-full py-3 hover:bg-primary-500"
+                    disabled={otpValues.some((val) => !val)}
                   >
                     Proceed
                   </CustomButton>
-                </form>
+                </div>
               </motion.div>
             </Dialog.Content>
           </Dialog.Portal>

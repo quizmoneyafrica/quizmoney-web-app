@@ -4,7 +4,6 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-// Define schema with Zod
 const depositFormSchema = z.object({
   amount: z
     .string()
