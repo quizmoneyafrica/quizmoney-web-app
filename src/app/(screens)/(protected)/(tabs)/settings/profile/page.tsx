@@ -151,7 +151,7 @@ const Page = () => {
                   autoComplete="first-name"
                   placeholder="Enter your first name"
                   onChange={onChange}
-                  readOnly={!isEditing}
+                  disabled={!isEditing}
                   icon={<PersonIcon className="text-[#A6ABC4]" />}
                   required
                 />
@@ -163,7 +163,7 @@ const Page = () => {
                   autoComplete="family-name"
                   placeholder="Enter your last name"
                   onChange={onChange}
-                  readOnly={!isEditing}
+                  disabled={!isEditing}
                   icon={<PersonIcon className="text-[#A6ABC4]" />}
                   required
                 />
@@ -175,7 +175,7 @@ const Page = () => {
                   autoComplete="email"
                   placeholder="Enter your email address"
                   onChange={onChange}
-                  readOnly={!isEditing}
+                  disabled={!isEditing}
                   icon={<MailIcon className="text-[#A6ABC4]" />}
                   required
                 />
@@ -187,7 +187,7 @@ const Page = () => {
                   onChange={onChange}
                   disabledOption="Select your gender"
                   icon={<ArrowDownIcon className="text-[#A6ABC4]" />}
-                  readOnly={!isEditing}
+                  disabled={!isEditing}
                 />
                 <CustomTextField
                   label="Date of Birth"
@@ -196,7 +196,7 @@ const Page = () => {
                   type="date"
                   autoComplete="bday"
                   // onChange={onChange}
-                  readOnly={!isEditing}
+                  disabled={!isEditing}
                   icon={<CalendarIcon className="text-[#A6ABC4] h-6 w-6" />}
                   required
                 />
@@ -207,7 +207,7 @@ const Page = () => {
                   value={formData.gender}
                   options={[{ label: "Nigeria", value: "nigeria" }]}
                   onChange={onChange}
-                  readOnly={!isEditing}
+                  disabled={!isEditing}
                   disabledOption="Select your country"
                   icon={<GlobeIcon className="text-[#A6ABC4] h-6 w-6" />}
                 />
@@ -227,7 +227,7 @@ const Page = () => {
                     type="text"
                     placeholder="Enter your facebook link"
                     onChange={onChange}
-                    readOnly={!isEditing}
+                    disabled={!isEditing}
                     icon={<FacebookIcon className="text-[#A6ABC4] h-6 w-6" />}
                     required
                   />
@@ -239,7 +239,7 @@ const Page = () => {
                     type="text"
                     placeholder="Enter your instagram link"
                     onChange={onChange}
-                    readOnly={!isEditing}
+                    disabled={!isEditing}
                     icon={
                       <InstagramLogoIcon className="text-[#A6ABC4] h-6 w-6" />
                     }
@@ -253,7 +253,7 @@ const Page = () => {
                     type="text"
                     placeholder="Enter your twitter link"
                     onChange={onChange}
-                    readOnly={!isEditing}
+                    disabled={!isEditing}
                     icon={
                       <TwitterLogoIcon className="text-[#A6ABC4] h-6 w-6" />
                     }
@@ -267,7 +267,7 @@ const Page = () => {
                     type="text"
                     placeholder="Enter your whatsapp link"
                     onChange={onChange}
-                    readOnly={!isEditing}
+                    disabled={!isEditing}
                     icon={<PersonIcon className="text-[#A6ABC4] h-6 w-6" />}
                     required
                   />

@@ -19,7 +19,6 @@ type CustomSelectProps = {
   required?: boolean;
   icon?: React.ReactNode;
   disabledOption: string;
-  readOnly?: boolean;
 };
 
 export default function CustomSelect({
@@ -33,7 +32,6 @@ export default function CustomSelect({
   required = false,
   icon,
   disabledOption = "Select an option",
-  readOnly = false,
 }: CustomSelectProps) {
   return (
     <div className="w-full space-y-1">
@@ -52,12 +50,10 @@ export default function CustomSelect({
           name={name}
           value={value}
           onChange={onChange}
-          disabled={disabled || readOnly}
+          disabled={disabled}
           required={required}
-          aria-readonly={readOnly}
           className={cn(
-            "w-full appearance-none rounded-[6px] caret-primary-500 border border-neutral-300 px-4 py-3 pr-12 text-base focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 disabled:bg-neutral-100  disabled:cursor-not-allowed",
-            readOnly && "cursor-not-allowed",
+            "w-full appearance-none rounded-[6px] caret-primary-500 border border-neutral-300 px-4 py-3 pr-12 text-base focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 disabled:bg-neutral-100 dark:disabled:bg-neutral-900 disabled:cursor-not-allowed",
             className
           )}
         >

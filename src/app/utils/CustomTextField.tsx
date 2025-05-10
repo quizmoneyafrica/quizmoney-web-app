@@ -15,7 +15,6 @@ type CustomTextFieldProps = {
   required?: boolean;
   icon?: React.ReactNode;
   autoComplete?: string;
-  readOnly?: boolean;
 };
 
 export default function CustomTextField({
@@ -30,7 +29,6 @@ export default function CustomTextField({
   required = false,
   icon,
   autoComplete = "off",
-  readOnly = false,
 }: CustomTextFieldProps) {
   return (
     <div className="w-full space-y-1">
@@ -51,12 +49,11 @@ export default function CustomTextField({
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          disabled={disabled || readOnly}
+          disabled={disabled}
           required={required}
           autoComplete={autoComplete}
-          readOnly={readOnly}
           className={cn(
-            "w-full rounded-[6px] caret-primary-500 border border-neutral-300 px-4 py-3 pr-12 text-base focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 disabled:bg-neutral-100  disabled:cursor-not-allowed",
+            "w-full rounded-[6px] caret-primary-500 border border-neutral-300 px-4 py-3 pr-12 text-base focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 disabled:bg-neutral-100 dark:disabled:bg-neutral-900 disabled:cursor-not-allowed",
             className
           )}
         />
