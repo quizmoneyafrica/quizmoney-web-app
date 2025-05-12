@@ -1,9 +1,8 @@
-import React, { useEffect } from "react";
+import React, { Fragment } from "react";
 import WalletBalance from "./WalletBalance";
 import CustomImage from "./CustomImage";
 import classNames from "classnames";
 import MobileList from "./MobileList";
-import StoreAPI from "@/app/api/storeApi";
 
 export interface Transaction {
   type: "deposit" | "withdrawal";
@@ -27,14 +26,7 @@ export default function TransactionHistory() {
       date: "Feb 12 09:00am",
     },
   ];
-  useEffect(() => {
-    StoreAPI.fetchTransactions().then((res) => {
-      console.log(
-        JSON.stringify(res, null, 2),
-        "=============TRANSACTIONS DATA======="
-      );
-    });
-  }, []);
+
   return (
     <div className="w-full gap-4 md:gap-8 flex flex-col">
       <WalletBalance />
@@ -56,9 +48,8 @@ export default function TransactionHistory() {
             </h2>
           </div>
           {transactions.map((transaction, index) => (
-            <>
+            <Fragment key={index.toString()}>
               <div
-                key={index}
                 className={classNames(
                   "bg-white px-3 md:px-4 py-3 md:py-4 hidden md:flex justify-between items-center ",
                   "border-b border-b-[#D9D9D9] "
@@ -115,7 +106,7 @@ export default function TransactionHistory() {
               </div>
 
               <MobileList transaction={transaction} />
-            </>
+            </Fragment>
           ))}
         </div>
 
@@ -128,7 +119,7 @@ export default function TransactionHistory() {
           {transactions.map((transaction, index) => (
             <>
               <div
-                key={index}
+                key={index.toString()}
                 className={classNames(
                   "bg-white px-3 md:px-4 py-3 md:py-4 justify-between items-center hidden md:flex",
                   transactions.length - 1 !== index &&

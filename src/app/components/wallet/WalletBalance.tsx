@@ -12,6 +12,12 @@ import MobileWithdrawalPinForm from "./MobileWithdrawalPinForm";
 import WithdrawalSuccessModal from "./WithdrawalSuccessModal";
 import MobileWithdrawalSuccess from "./MobileWithdrawalSuccess";
 import StoreAPI from "@/app/api/storeApi";
+import { useSelector } from "react-redux";
+import { useAppDispatch, useAuth } from "@/app/hooks/useAuth";
+import { RootState } from "@/app/store/store";
+import WalletApi from "@/app/api/wallet";
+import { setWallet } from "@/app/store/walletSlice";
+import { Loader } from "lucide-react";
 
 export default function WalletBalance() {
   const [withdrawalModal, setOpenWithdrawal] = useState(false);
@@ -19,6 +25,9 @@ export default function WalletBalance() {
   const [openPinModal, setOpenPinModal] = useState(false);
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const { wallet, isWalletLoading } = useSelector(
+    (state: RootState) => state?.wallet
+  );
 
   useEffect(() => {
     const checkIfMobile = () => {
@@ -38,18 +47,6 @@ export default function WalletBalance() {
     setIsBalanceHidden(!isBalanceHidden);
   };
 
-  useEffect(() => {
-    StoreAPI.fetchCustomerWallet()
-      .then((response) => {
-        console.log("====================================");
-        console.log(response.data.result);
-        console.log("====================================");
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, []);
-
   return (
     <>
       <div className="bg-[#17478B] text-white py-12 px-8 rounded-3xl relative overflow-hidden w-full shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm bg-opacity-95 bg-[url('/assets/images/bg.svg')] bg-cover bg-center bg-no-repeat">
@@ -58,17 +55,20 @@ export default function WalletBalance() {
             Available Wallet Balance
           </p>
 
-          <h1 className="text-4xl font-bold text-center flex items-center justify-center gap-1">
-            <span>₦</span>
-            <span>{isBalanceHidden ? "****" : "50,000"}.</span>
-            <span className="text-lg text-[#BCBCBB]">
-              {isBalanceHidden ? "**" : "00"}
-            </span>
-            <button onClick={toggleBalanceVisibility}>
-              {isBalanceHidden ? <EyeNoneIcon /> : <EyeOpenIcon />}
-            </button>
-          </h1>
-
+          {isWalletLoading ? (
+            <Loader className=" animate-spin size-3 text-white" />
+          ) : (
+            <h1 className="text-4xl font-bold text-center flex items-center justify-center gap-1">
+              <span>₦</span>
+              <span>{isBalanceHidden ? "****" : `${wallet?.balance}`}.</span>
+              <span className="text-lg text-[#BCBCBB]">
+                {isBalanceHidden ? "**" : "00"}
+              </span>
+              <button onClick={toggleBalanceVisibility}>
+                {isBalanceHidden ? <EyeNoneIcon /> : <EyeOpenIcon />}
+              </button>
+            </h1>
+          )}
           <div className="flex justify-center  gap-2 my-2">
             <button
               onClick={() => setActiveDot(0)}

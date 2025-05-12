@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./authSlice";
+import walletReducer from "./walletSlice";
 import {
 	persistStore,
 	persistReducer,
@@ -18,10 +19,12 @@ const persistConfig = {
 };
 
 const persistedAuthReducer = persistReducer(persistConfig, authReducer);
+const persistedWalletReducer = persistReducer(persistConfig, walletReducer);
 
 export const store = configureStore({
 	reducer: {
 		auth: persistedAuthReducer,
+		wallet: persistedWalletReducer,
 	},
 	middleware: (getDefaultMiddleware) =>
 		getDefaultMiddleware({
