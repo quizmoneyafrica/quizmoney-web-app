@@ -1,6 +1,6 @@
 "use client";
 import { Box, Container, Flex, Grid, Heading, Text } from "@radix-ui/themes";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Onboarding from "../onboarding/onboarding";
 import { motion } from "framer-motion";
 
@@ -28,8 +28,7 @@ function calculateTimeLeft(targetDate: Date): Countdown {
 }
 
 const LaunchCountdown: React.FC = () => {
-	// const target = new Date("2025-07-06T19:00:00");
-	const target = new Date("2025-06-06T19:00:00");
+	const target = useMemo(() => new Date("2025-06-06T19:00:00"), []);
 	const [timeLeft, setTimeLeft] = useState<Countdown>(
 		calculateTimeLeft(target)
 	);
