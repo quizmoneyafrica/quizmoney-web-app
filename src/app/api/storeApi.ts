@@ -22,14 +22,21 @@ const StoreAPI = {
 		);
 	},
 	fetchCustomerWallet(): Promise<AxiosResponse<ApiResponse>> {
+		const headers=getSessionTokenHeaders() 
+		console.log('=========fetchCustomerWallet===========================');
+		console.log(JSON.stringify(headers,null,2));
+		console.log('===========fetchCustomerWallet=========================');
 		return axios.post(
 			`${BASE_URL}/fetchCustomerWallet`,
-			{ headers: getSessionTokenHeaders() }
+			{ headers: {
+				...headers
+			}}
 		);
 	},
 	fetchTransactions(): Promise<AxiosResponse<ApiResponse>> {
 		return axios.post(
 			`${BASE_URL}/fetchTransactions`,
+			{},
 			{ headers: getSessionTokenHeaders() }
 		);
 	},

@@ -39,12 +39,15 @@ export default function WalletBalance() {
   };
 
   useEffect(() => {
-    StoreAPI.fetchCustomerWallet().then((res) => {
-      console.log(
-        JSON.stringify(res, null, 2),
-        "=============WALLET DATA======="
-      );
-    });
+    StoreAPI.fetchCustomerWallet()
+      .then((response) => {
+        console.log("====================================");
+        console.log(response.data.result);
+        console.log("====================================");
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }, []);
 
   return (
@@ -92,7 +95,7 @@ export default function WalletBalance() {
               </span>
             </button>
             <button
-              onClick={() => setOpenSuccessModal(true)}
+              onClick={() => setOpenWithdrawal(true)}
               className="bg-[#E4F1FA] cursor-pointer hover:bg-gray-100 text-primary-700 px-6 py-3 rounded-full flex items-center gap-2 font-medium"
             >
               Withdraw <CustomImage alt="" src={"/icons/arrow-up.svg"} />
