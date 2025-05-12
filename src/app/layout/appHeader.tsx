@@ -39,7 +39,7 @@ function AppHeader() {
 	console.log(user);
 
 	return (
-		<Container className="pb-4">
+		<div className="pb-4">
 			<Flex align="center" justify="between" gap="2">
 				<Heading
 					size={{ initial: "4", lg: "5" }}
@@ -135,7 +135,7 @@ function AppHeader() {
 				</Heading>
 			)}
 			<LogoutDialog open={openLogout} onOpenChange={setOpenLogout} />
-		</Container>
+		</div>
 	);
 }
 
