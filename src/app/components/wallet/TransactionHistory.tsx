@@ -114,7 +114,7 @@ export default function TransactionHistory(): JSX.Element {
         className="w-16 h-16 mb-4"
       />
       <p className="text-gray-500 text-center text-sm md:text-base">
-        You've not made any recent <br />
+        {"You've not made any recent"} <br />
         transactions yet
       </p>
     </div>

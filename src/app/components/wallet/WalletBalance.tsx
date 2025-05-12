@@ -11,12 +11,8 @@ import WithdrawalPinModal from "./WithdrawalPinModal";
 import MobileWithdrawalPinForm from "./MobileWithdrawalPinForm";
 import WithdrawalSuccessModal from "./WithdrawalSuccessModal";
 import MobileWithdrawalSuccess from "./MobileWithdrawalSuccess";
-import StoreAPI from "@/app/api/storeApi";
 import { useSelector } from "react-redux";
-import { useAppDispatch, useAuth } from "@/app/hooks/useAuth";
 import { RootState } from "@/app/store/store";
-import WalletApi from "@/app/api/wallet";
-import { setWallet } from "@/app/store/walletSlice";
 import { Loader } from "lucide-react";
 
 export default function WalletBalance() {
