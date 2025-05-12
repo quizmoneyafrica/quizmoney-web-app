@@ -16,14 +16,12 @@ interface TransactionGroup {
 export default function TransactionHistory(): JSX.Element {
   const { transactions, isTransactionsLoading } = useSelector(useWallet);
 
-  // Group transactions by date
   const groupedTransactions: TransactionGroup = {
     today: [],
     yesterday: [],
     other: [],
   };
 
-  // Sort and group transactions by date
   transactions.forEach((transaction: UserWalletTransaction) => {
     const date = parseISO(transaction?.createdAt ?? new Date().toISOString());
 
@@ -155,15 +153,12 @@ export default function TransactionHistory(): JSX.Element {
         </div>
 
         {isTransactionsLoading ? (
-          // Loading state
           <div className="py-8 flex justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2364AA]"></div>
           </div>
         ) : transactions.length === 0 ? (
-          // Empty state
           renderEmptyState()
         ) : (
-          // Transactions list
           <React.Fragment>
             {renderTransactionSection("Today", groupedTransactions.today)}
             {renderTransactionSection(
