@@ -84,16 +84,7 @@ const LoginForm = ({ loading, setLoading }: Props) => {
 					}
 				);
 			} else {
-				// console.log("Email not verified");
-				toast.error(
-					`${capitalizeFirstLetter(
-						userData?.firstName
-					)} please verify your email`,
-					{
-						position: "top-center",
-					}
-				);
-				verifyEmail(userData?.email);
+				verifyEmail(userData?.email, userData?.firstName);
 			}
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {
@@ -103,9 +94,6 @@ const LoginForm = ({ loading, setLoading }: Props) => {
 				position: toastPosition,
 			});
 		}
-		// finally {
-		// 	 setLoading(false);
-		// }
 	};
 	const handleGoogleAuth = () => {
 		toast.info("Google Sign in Coming soon", {
@@ -126,11 +114,17 @@ const LoginForm = ({ loading, setLoading }: Props) => {
 		});
 	};
 
-	const verifyEmail = async (email: string) => {
+	const verifyEmail = async (email: string, firstName: string) => {
 		try {
 			const response = await UserAPI.resendSignupOtp(email);
 			if (response.status === 200) {
 				router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+				toast.error(
+					`${capitalizeFirstLetter(firstName)} please verify your email.`,
+					{
+						position: "top-center",
+					}
+				);
 			}
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any

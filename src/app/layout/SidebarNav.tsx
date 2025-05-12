@@ -5,10 +5,12 @@ import { usePathname, useRouter } from "next/navigation";
 import { bottomNav, navs } from "./nav";
 import { AnimatePresence, motion } from "framer-motion";
 import LogoutDialog from "../components/logout/logout";
+import { useState } from "react";
 
 function SidebarNav() {
 	const router = useRouter();
 	const pathname = usePathname();
+	const [openLogout, setOpenLogout] = useState(false);
 
 	const handleTabRoute = (path: string) => {
 		console.log(path);
@@ -92,11 +94,11 @@ function SidebarNav() {
 							</Flex>
 						);
 						return isLogout ? (
-							<LogoutDialog key={index}>
-								<button className="relative  hover:bg-error-900 opacity-70 rounded-[8px] cursor-pointer transition text-sm py-4">
-									{buttonContent}
-								</button>
-							</LogoutDialog>
+							<button
+								onClick={() => setOpenLogout(true)}
+								className="relative  hover:bg-error-900 opacity-70 rounded-[8px] cursor-pointer transition text-sm py-4">
+								{buttonContent}
+							</button>
 						) : (
 							<button
 								key={index}
@@ -126,6 +128,8 @@ function SidebarNav() {
 					})}
 				</Flex>
 			</div>
+
+			<LogoutDialog open={openLogout} onOpenChange={setOpenLogout} />
 		</>
 	);
 }
