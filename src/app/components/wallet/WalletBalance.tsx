@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import CustomImage from "./CustomImage";
 import { BottomSheet } from "./BottomSheet";
 import { Dialog } from "radix-ui";
-import DepositModalModal from "./DepositModalModal";
+import DepositModalModal from "./DepositModal";
 import { MobileDepositForm } from "./MobileDepositForm";
 import WithdrawalModalModal from "./WithdrawalModal";
 import { MobileWithdrawalForm } from "./MobileWithdrawalForm";
@@ -110,15 +110,11 @@ export default function WalletBalance() {
           onClose={() => setOpen(false)}
           title="Deposit"
         >
-          <MobileDepositForm onSubmit={() => {}} />
+          <MobileDepositForm />
         </BottomSheet>
       ) : (
         <Dialog.Root open={open} onOpenChange={setOpen}>
-          <DepositModalModal
-            open={open}
-            onOpenChange={setOpen}
-            onSubmit={() => {}}
-          />
+          <DepositModalModal open={open} onOpenChange={setOpen} />
         </Dialog.Root>
       )}
       {isMobile ? (
