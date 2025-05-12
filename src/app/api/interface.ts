@@ -39,6 +39,11 @@ export interface ResetPasswordForm {
   password: string;
 }
 
+export interface InAppChangePasswordForm {
+  oldPassword: string;
+  newPassword: string;
+}
+
 //Signup
 export interface SignUpFormType {
   firstName: string;
@@ -70,4 +75,38 @@ export interface Product {
   createdAt: string; // or Date if you're parsing it
   updatedAt: string; // or Date
   objectId: string;
+}
+
+export interface User {
+  admin: boolean;
+  avatar: string;
+  balance: string;
+  country: string;
+  createdAt: Date; // ISO Date string
+  deviceToken: string;
+  dob: {
+    __type: "Date";
+    iso: string; // ISO Date string
+  };
+  dummyAccount: boolean;
+  email: string;
+  emailVerified: boolean;
+  erasers: number;
+  firstName: string;
+  // games: []; // You can replace `any` with a proper Game interface if known
+  gender: "male" | "female";
+  influencer: boolean;
+  lastName: string;
+  objectId: string;
+  otp: string;
+  otpExpiry: {
+    __type: "Date";
+    iso: Date;
+  };
+  promotionalMails: boolean;
+  referralCode: string;
+  referralPoints: number;
+  sessionToken: string;
+  updatedAt: Date; // ISO Date string
+  username: string;
 }

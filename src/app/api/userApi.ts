@@ -1,11 +1,12 @@
 import axios, { AxiosResponse } from "axios";
 import {
-	ApiResponse,
-	LoginForm,
-	ResetPasswordForm,
-	SignUpForm,
-	VerifyEmailForm,
-	VerifyForgotPasswordOtpForm,
+  ApiResponse,
+  InAppChangePasswordForm,
+  LoginForm,
+  ResetPasswordForm,
+  SignUpForm,
+  VerifyEmailForm,
+  VerifyForgotPasswordOtpForm,
 } from "./interface";
 import { store } from "@/app/store/store";
 import { decryptData } from "../utils/crypto";
@@ -16,14 +17,14 @@ const XParseApplicationId = process.env.NEXT_PUBLIC_XParseApplicationId;
 const XParseRESTAPIKey = process.env.NEXT_PUBLIC_XParseRESTAPIKey;
 
 const appHeaders = {
-	"X-Parse-Application-Id": XParseApplicationId,
-	"X-Parse-REST-API-Key": XParseRESTAPIKey,
-	"Content-Type": "application/json",
+  "X-Parse-Application-Id": XParseApplicationId,
+  "X-Parse-REST-API-Key": XParseRESTAPIKey,
+  "Content-Type": "application/json",
 };
 const getSessionTokenHeaders = () => {
-	const encrypted = store.getState().auth.userEncryptedData;
-	const user = encrypted ? decryptData(encrypted) : null;
-	const sessionToken = user?.sessionToken;
+  const encrypted = store.getState().auth.userEncryptedData;
+  const user = encrypted ? decryptData(encrypted) : null;
+  const sessionToken = user?.sessionToken;
 
 	return {
 		"X-Parse-Application-Id": process.env.NEXT_PUBLIC_XParseApplicationId!,
@@ -33,65 +34,72 @@ const getSessionTokenHeaders = () => {
 	};
 };
 const UserAPI = {
-	login(form: LoginForm): Promise<AxiosResponse<ApiResponse>> {
-		return axios.post(`${BASE_URL}/login`, form, {
-			headers: appHeaders,
-		});
-	},
-	signUp(form: SignUpForm): Promise<AxiosResponse<ApiResponse>> {
-		console.log("Form: ", form);
-		return axios.post(`${BASE_URL}/signup`, form, {
-			headers: appHeaders,
-		});
-	},
-	verifyEmail(form: VerifyEmailForm): Promise<AxiosResponse<ApiResponse>> {
-		console.log("Form: ", form);
-		return axios.post(`${BASE_URL}/verifyMail`, form, {
-			headers: appHeaders,
-		});
-	},
-	resendSignupOtp(email: string): Promise<AxiosResponse<ApiResponse>> {
-		console.log("Form: ", email);
-		return axios.post(
-			`${BASE_URL}/resendSignupOtp`,
-			{ email },
-			{
-				headers: appHeaders,
-			}
-		);
-	},
+  login(form: LoginForm): Promise<AxiosResponse<ApiResponse>> {
+    return axios.post(`${BASE_URL}/login`, form, {
+      headers: appHeaders,
+    });
+  },
+  signUp(form: SignUpForm): Promise<AxiosResponse<ApiResponse>> {
+    console.log("Form: ", form);
+    return axios.post(`${BASE_URL}/signup`, form, {
+      headers: appHeaders,
+    });
+  },
+  verifyEmail(form: VerifyEmailForm): Promise<AxiosResponse<ApiResponse>> {
+    console.log("Form: ", form);
+    return axios.post(`${BASE_URL}/verifyMail`, form, {
+      headers: appHeaders,
+    });
+  },
+  resendSignupOtp(email: string): Promise<AxiosResponse<ApiResponse>> {
+    console.log("Form: ", email);
+    return axios.post(
+      `${BASE_URL}/resendSignupOtp`,
+      { email },
+      {
+        headers: appHeaders,
+      }
+    );
+  },
 
-	forgotPassword(email: string): Promise<AxiosResponse<ApiResponse>> {
-		return axios.post(
-			`${BASE_URL}/forgotPassword`,
-			{ email },
-			{
-				headers: appHeaders,
-			}
-		);
-	},
-	verifyForgotPasswordOtp(
-		form: VerifyForgotPasswordOtpForm
-	): Promise<AxiosResponse<ApiResponse>> {
-		return axios.post(`${BASE_URL}/verifyForgotPasswordOtp`, form, {
-			headers: appHeaders,
-		});
-	},
-	resetPasswordAuth(
-		form: ResetPasswordForm
-	): Promise<AxiosResponse<ApiResponse>> {
-		return axios.post(`${BASE_URL}/changePassword`, form, {
-			headers: appHeaders,
-		});
-	},
+  forgotPassword(email: string): Promise<AxiosResponse<ApiResponse>> {
+    return axios.post(
+      `${BASE_URL}/forgotPassword`,
+      { email },
+      {
+        headers: appHeaders,
+      }
+    );
+  },
+  verifyForgotPasswordOtp(
+    form: VerifyForgotPasswordOtpForm
+  ): Promise<AxiosResponse<ApiResponse>> {
+    return axios.post(`${BASE_URL}/verifyForgotPasswordOtp`, form, {
+      headers: appHeaders,
+    });
+  },
+  resetPasswordAuth(
+    form: ResetPasswordForm
+  ): Promise<AxiosResponse<ApiResponse>> {
+    return axios.post(`${BASE_URL}/changePassword`, form, {
+      headers: appHeaders,
+    });
+  },
+  inAppChangePassword(
+    form: InAppChangePasswordForm
+  ): Promise<AxiosResponse<ApiResponse>> {
+    return axios.post(`${BASE_URL}/inAppChangePassword`, form, {
+      headers: getSessionTokenHeaders(),
+    });
+  },
 };
 
 export {
-	appHeaders,
-	getSessionTokenHeaders,
-	BASE_URL,
-	SOCKET_URL,
-	XParseApplicationId,
-	XParseRESTAPIKey,
+  appHeaders,
+  getSessionTokenHeaders,
+  BASE_URL,
+  SOCKET_URL,
+  XParseApplicationId,
+  XParseRESTAPIKey,
 };
 export default UserAPI;
