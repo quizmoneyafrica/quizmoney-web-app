@@ -6,6 +6,7 @@ import {
   setWallet,
   setWalletLoading,
   setTransactionsLoading,
+  setTransactions,
 } from "@/app/store/walletSlice";
 import WalletApi from "@/app/api/wallet";
 import { useAppDispatch } from "@/app/hooks/useAuth";
@@ -29,17 +30,15 @@ function Page() {
   useEffect(() => {
     const fetchWallet = async () => {
       try {
-        dispatch(setWalletLoading(true));
+        dispatch(setTransactionsLoading(true));
         const res = await WalletApi.fetchTransactions();
-        console.log("====================================");
         console.log(res?.data);
-        if (res?.data?.result !== "No transactions found for this user") {
+        if (res?.data?.result?.transactions) {
+          dispatch(setTransactions(res?.data?.result?.transactions));
         } else {
         }
-        console.log("====================================");
-        // dispatch(setWallet(res.data.result.wallet));
       } catch (error) {
-        console.log(error, "Wallet Error");
+        console.log(error, "Transaction Error");
       } finally {
         dispatch(setTransactionsLoading(false));
       }
