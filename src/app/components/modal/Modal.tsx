@@ -50,11 +50,12 @@ export default function ResponsiveDialog({
         <Dialog.Content
           className={`
             fixed z-50 bg-white min-h-[400px] outline-none
-            data-[state=open]:animate-in data-[state=closed]:animate-out duration-200
+            data-[state=open]:animate-in data-[state=closed]:animate-out duration-200 
+
             ${
               isMobile
                 ? "inset-x-0 bottom-0 rounded-t-lg w-full max-w-full data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom"
-                : "top-1/2 left-1/2  -translate-x-1/2 -translate-y-1/2 rounded-lg data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 max-w-lg w-full shadow-lg"
+                : "top-1/2 left-1/2 min-w-[700px]  -translate-x-1/2 -translate-y-1/2 rounded-lg data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 max-w-lg w-full shadow-lg"
             }
             ${className}
           `}

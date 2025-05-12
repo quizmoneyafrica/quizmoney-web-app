@@ -11,6 +11,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 		router.prefetch("/store");
 		router.prefetch("/leaderboard");
 		router.prefetch("/settings");
+		router.prefetch("/support");
 	});
 	return <>{children}</>;
 }

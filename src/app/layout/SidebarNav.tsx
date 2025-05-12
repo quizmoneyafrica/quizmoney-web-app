@@ -2,7 +2,6 @@
 import { Flex, Text } from "@radix-ui/themes";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useState } from "react";
 import { bottomNav, navs } from "./nav";
 import { AnimatePresence, motion } from "framer-motion";
 import LogoutDialog from "../components/logout/logout";
@@ -10,19 +9,17 @@ import LogoutDialog from "../components/logout/logout";
 function SidebarNav() {
 	const router = useRouter();
 	const pathname = usePathname();
-	const [activeTab, setActiveTab] = useState(pathname);
 
 	const handleTabRoute = (path: string) => {
 		console.log(path);
 		if (pathname !== path) {
-			setActiveTab(path);
 			router.push(path);
 			window.scrollTo(0, 0);
 		}
 	};
 	return (
 		<>
-			<div className="hidden md:inline-block relative w-full h-screen bg-primary-900">
+			<div className="hidden lg:inline-block relative w-full h-screen bg-primary-900">
 				<div className="grid place-items-center py-4">
 					<Image
 						src="/icons/quizmoney-logo-white.svg"
@@ -34,7 +31,7 @@ function SidebarNav() {
 				</div>
 				<Flex direction="column" px="2" className="relative">
 					{navs.map((nav, index) => {
-						const isActive = activeTab === nav.path;
+						const isActive = pathname === nav.path;
 						return (
 							<button
 								key={index}
@@ -43,7 +40,7 @@ function SidebarNav() {
 									isActive ? "text-white font-semibold" : "text-primary-300"
 								}`}>
 								<AnimatePresence>
-									{isActive && (
+									{isActive ? (
 										<motion.div
 											layoutId="nav-active-indicator"
 											initial={{ opacity: 0 }}
@@ -56,7 +53,7 @@ function SidebarNav() {
 												damping: 20,
 											}}
 										/>
-									)}
+									) : null}
 								</AnimatePresence>
 
 								<Flex
@@ -73,9 +70,14 @@ function SidebarNav() {
 						);
 					})}
 				</Flex>
-				<Flex direction="column" px="2" pb="4" gap="2" className="absolute bottom-0 w-full">
+				<Flex
+					direction="column"
+					px="2"
+					pb="4"
+					gap="2"
+					className="absolute bottom-0 w-full">
 					{bottomNav.map((nav, index) => {
-						const isActive = activeTab === nav.path;
+						const isActive = pathname === nav.path;
 						const isLogout = nav.name === "Logout";
 						const buttonContent = (
 							<Flex

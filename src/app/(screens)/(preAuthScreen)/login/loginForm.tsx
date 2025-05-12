@@ -97,13 +97,15 @@ const LoginForm = ({ loading, setLoading }: Props) => {
 			}
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {
-			console.log("ERROR LOGIN", err);
+			// console.log("ERROR LOGIN", err);
+			setLoading(false);
 			toast.error(`${err.response.data.error}`, {
 				position: toastPosition,
 			});
-		} finally {
-			setLoading(false);
 		}
+		// finally {
+		// 	 setLoading(false);
+		// }
 	};
 	const handleGoogleAuth = () => {
 		toast.info("Google Sign in Coming soon", {
