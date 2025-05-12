@@ -1,5 +1,4 @@
 "use client";
-import UserAPI from "@/app/api/userApi";
 import SuccessMessageModal from "@/app/components/modal/store/SuccessMessageModal";
 import { EyeIcon, EyeSlash } from "@/app/icons/icons";
 import CustomButton from "@/app/utils/CustomBtn";
@@ -10,7 +9,6 @@ import { Flex } from "@radix-ui/themes";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { toast } from "sonner";
 
 const initialForm = {
   newPassword: "",
