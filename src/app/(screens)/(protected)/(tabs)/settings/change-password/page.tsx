@@ -5,7 +5,7 @@ import CustomButton from "@/app/utils/CustomBtn";
 import CustomTextField from "@/app/utils/CustomTextField";
 import { PasswordChip } from "@/app/utils/passwordChip";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
-import { Container, Flex } from "@radix-ui/themes";
+import { Flex } from "@radix-ui/themes";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -16,7 +16,7 @@ const initialForm = {
   showPassword: false,
   showConfirmPassword: false,
 };
-const page = () => {
+const Page = () => {
   const [formData, setFormData] = useState(initialForm);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(false);
@@ -53,7 +53,9 @@ const page = () => {
 
   const handleChangePassword = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true)
     console.log(formData);
+    setLoading(false)
   };
   return (
     <motion.div
@@ -196,4 +198,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
