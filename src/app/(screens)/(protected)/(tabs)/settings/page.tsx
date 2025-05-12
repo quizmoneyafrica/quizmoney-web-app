@@ -1,5 +1,4 @@
 "use client";
-import { User } from "@/app/api/interface";
 import LogoutDialog from "@/app/components/logout/logout";
 import { SupportIcon } from "@/app/icons/icons";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
