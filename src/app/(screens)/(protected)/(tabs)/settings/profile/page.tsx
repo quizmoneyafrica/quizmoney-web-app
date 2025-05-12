@@ -1,6 +1,7 @@
 "use client";
 import { genders } from "@/app/(screens)/(preAuthScreen)/signup/formSteps/step2";
 import { User } from "@/app/api/interface";
+import userApi from "@/app/api/userApi";
 import ImagePickerModal from "@/app/components/modal/ImagePickerModal";
 import { useAppSelector } from "@/app/hooks/useAuth";
 import {
@@ -10,6 +11,7 @@ import {
   PersonIcon,
 } from "@/app/icons/icons";
 import { decryptData } from "@/app/utils/crypto";
+import CustomButton from "@/app/utils/CustomBtn";
 import CustomSelect from "@/app/utils/CustomSelect";
 import CustomTextField from "@/app/utils/CustomTextField";
 import {
@@ -23,6 +25,7 @@ import { Flex, Grid } from "@radix-ui/themes";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import React, { useState } from "react";
+import { toast } from "sonner";
 
 const initialForm = {
   firstName: "",
@@ -48,6 +51,7 @@ const Page = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -55,6 +59,40 @@ const Page = () => {
     const target = e.target as HTMLInputElement | HTMLSelectElement;
     const { name, value } = target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const updateUser = async () => {
+    setIsUpdating(true);
+    await userApi
+      .updateUser({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        dob: formData.dob,
+        gender: formData.gender,
+        country: formData.country,
+        facebook: formData.facebook,
+        instagram: formData.instagram,
+        twitter: formData.twitter,
+        whatsapp: formData.whatsapp,
+        avatar: user?.avatar ?? "",
+        promotionalMails: user?.promotionalMails ?? false,
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          setIsEditing(false);
+          toast.success("Profile updated successfully", {
+            position: "top-center",
+          });
+        }
+      })
+      .catch(() => {
+        toast.error("Failed to update profile", {
+          position: "top-center",
+        });
+      })
+      .finally(() => {
+        setIsUpdating(false);
+      });
   };
 
   return (
@@ -175,7 +213,7 @@ const Page = () => {
                   autoComplete="email"
                   placeholder="Enter your email address"
                   onChange={onChange}
-                  disabled={!isEditing}
+                  disabled={true}
                   icon={<MailIcon className="text-[#A6ABC4]" />}
                   required
                 />
@@ -225,7 +263,7 @@ const Page = () => {
                     name="facebook"
                     value={formData.facebook}
                     type="text"
-                    placeholder="Enter your facebook link"
+                    placeholder="@username"
                     onChange={onChange}
                     disabled={!isEditing}
                     icon={<FacebookIcon className="text-[#A6ABC4] h-6 w-6" />}
@@ -237,7 +275,7 @@ const Page = () => {
                     name="instagram"
                     value={formData.instagram}
                     type="text"
-                    placeholder="Enter your instagram link"
+                    placeholder="@username"
                     onChange={onChange}
                     disabled={!isEditing}
                     icon={
@@ -251,7 +289,7 @@ const Page = () => {
                     name="twitter"
                     value={formData.twitter}
                     type="text"
-                    placeholder="Enter your twitter link"
+                    placeholder="@username"
                     onChange={onChange}
                     disabled={!isEditing}
                     icon={
@@ -265,7 +303,7 @@ const Page = () => {
                     name="whatsapp"
                     value={formData.whatsapp}
                     type="text"
-                    placeholder="Enter your whatsapp link"
+                    placeholder="Enter your whatsapp number"
                     onChange={onChange}
                     disabled={!isEditing}
                     icon={<PersonIcon className="text-[#A6ABC4] h-6 w-6" />}
@@ -273,12 +311,13 @@ const Page = () => {
                   />
 
                   {isEditing && (
-                    <div
-                      onClick={() => setIsEditing(false)}
-                      className=" rounded-3xl py-3 bg-primary-700 w-full flex cursor-pointer items-center justify-center text-white"
+                    <CustomButton
+                      onClick={updateUser}
+                      loader={isUpdating}
+                      disabled={isUpdating}
                     >
                       Update Profile
-                    </div>
+                    </CustomButton>
                   )}
                 </Grid>
               </div>

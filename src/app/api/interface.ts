@@ -110,3 +110,17 @@ export interface User {
   updatedAt: Date; // ISO Date string
   username: string;
 }
+
+export interface UpdateUserForm {
+  firstName: string;
+  lastName: string;
+  dob: string;
+  gender: string;
+  country: string;
+  avatar: string;
+  promotionalMails: boolean;
+  facebook: string;
+  instagram: string;
+  twitter: string;
+  whatsapp: string;
+}

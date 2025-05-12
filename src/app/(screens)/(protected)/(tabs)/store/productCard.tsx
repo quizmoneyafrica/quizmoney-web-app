@@ -131,16 +131,13 @@ const ProductCard = ({ product }: { product: Product }) => {
             </div>
           </Flex>
 
-          {isLoading ? (
-            <CustomButton type="button" loader width="full" />
-          ) : (
-            <div
-              className="bg-primary-900 text-white px-6 py-3 rounded-full flex items-center gap-2 justify-center font-semibold"
-              onClick={handlePurchase}
-            >
-              Proceed to Pay ₦ + {product?.productPrice}
-            </div>
-          )}
+          <CustomButton
+            onClick={handlePurchase}
+            loader={isLoading}
+            disabled={isLoading}
+          >
+            Proceed to Pay ₦ + {product?.productPrice}
+          </CustomButton>
         </Flex>
       </Modal>
       <SuccessMessageModal
