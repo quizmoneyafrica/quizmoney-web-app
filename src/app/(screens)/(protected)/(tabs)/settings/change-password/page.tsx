@@ -13,6 +13,8 @@ import React, { useState } from "react";
 const initialForm = {
   newPassword: "",
   confirmPassword: "",
+  oldPassword: "",
+  showOldPassword: false,
   showPassword: false,
   showConfirmPassword: false,
 };
@@ -30,11 +32,7 @@ const Page = () => {
   };
 
   const toggleResetFieldVisibility = (
-    field:
-      | "newPassword"
-      | "confirmPassword"
-      | "showPassword"
-      | "showConfirmPassword"
+    field: "showPassword" | "showConfirmPassword" | "showOldPassword"
   ) => {
     setFormData((prev) => ({
       ...prev,
@@ -48,14 +46,22 @@ const Page = () => {
     /[!@#$%^&*]/.test(formData.newPassword) &&
     /[0-9]/.test(formData.newPassword);
 
-  const isFormValid =
-    isPasswordValid && formData.newPassword === formData.confirmPassword;
+  const isOldPasswordValid =
+    formData.oldPassword.length >= 8 &&
+    /[A-Z]/.test(formData.oldPassword) &&
+    /[!@#$%^&*]/.test(formData.oldPassword) &&
+    /[0-9]/.test(formData.oldPassword);
 
-  const handleChangePassword = (e: React.FormEvent<HTMLFormElement>) => {
+  const isFormValid =
+    isPasswordValid &&
+    isOldPasswordValid &&
+    formData.newPassword === formData.confirmPassword;
+
+  const handleChangePassword = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true)
+    setLoading(true);
     console.log(formData);
-    setLoading(false)
+    setLoading(false);
   };
   return (
     <motion.div
@@ -82,10 +88,56 @@ const Page = () => {
           <form onSubmit={handleChangePassword}>
             <Flex direction="column" gap="4" className="w-full md:w-[60%]">
               <CustomTextField
+                label="Old Password"
+                name="oldPassword"
+                value={formData.oldPassword}
+                type={formData.showOldPassword ? "text" : "password"}
+                autoComplete="current-password"
+                placeholder="Enter your password"
+                onChange={handleChange}
+                icon={
+                  formData.showOldPassword ? (
+                    <EyeIcon
+                      className="text-[#A6ABC4]"
+                      onClick={() =>
+                        toggleResetFieldVisibility("showOldPassword")
+                      }
+                    />
+                  ) : (
+                    <EyeSlash
+                      className="text-[#A6ABC4]"
+                      onClick={() =>
+                        toggleResetFieldVisibility("showOldPassword")
+                      }
+                    />
+                  )
+                }
+                disabled={loading}
+              />
+              <Flex mt="2" gap="2" wrap="wrap">
+                <PasswordChip
+                  text="At least 8 characters"
+                  valid={formData.oldPassword.length >= 8}
+                />
+                <PasswordChip
+                  text="One uppercase letter"
+                  valid={/[A-Z]/.test(formData.oldPassword)}
+                />
+                <PasswordChip
+                  text="One special character"
+                  valid={/[!@#$%^&*]/.test(formData.oldPassword)}
+                />
+                <PasswordChip
+                  text="One digit"
+                  valid={/[0-9]/.test(formData.oldPassword)}
+                />
+              </Flex>
+
+              <CustomTextField
                 label="Password"
-                name="password"
+                name="newPassword"
                 value={formData.newPassword}
-                type={formData.newPassword ? "text" : "password"}
+                type={formData.showPassword ? "text" : "password"}
                 autoComplete="current-password"
                 placeholder="Enter your password"
                 onChange={handleChange}
