@@ -29,8 +29,8 @@ function Page() {
 						<CustomButton
 							type="button"
 							width="full"
-							onClick={() => router.replace("/login")}>
-							Proceed to Dashboard
+							onClick={() => router.replace("/home")}>
+							Proceed to Home
 						</CustomButton>
 					</div>
 				</Container>

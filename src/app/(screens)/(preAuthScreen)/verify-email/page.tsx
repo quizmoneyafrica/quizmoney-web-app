@@ -9,11 +9,15 @@ import { unstable_OneTimePasswordField as OneTimePasswordField } from "radix-ui"
 import { formatCountDown, resendTimer, toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
 import UserAPI from "@/app/api/userApi";
+import Link from "next/link";
+import { useAuth } from "@/app/hooks/useAuth";
+import { encryptData } from "@/app/utils/crypto";
 
 function VerifyEmailPage() {
 	const searchParams = useSearchParams();
 	const email = searchParams.get("email");
 	const router = useRouter();
+	const { loginUser } = useAuth();
 	const [countdown, setCountdown] = useState(resendTimer);
 	const [canResend, setCanResend] = useState(false);
 	const [loading, setLoading] = React.useState(false);
@@ -47,16 +51,16 @@ function VerifyEmailPage() {
 		};
 		try {
 			const response = await UserAPI.verifyEmail(newValues);
-			const userData = response.data.result;
+			const userData = response.data.result.verifiedUser;
 
 			console.log("Verify Signup:", userData);
 
 			// 🔐 Encrypt the user data
-			// const encryptedUser = encryptData(userData);
-			// console.log("Encrypted: ", encryptedUser);
+			const encryptedUser = encryptData(userData);
+			console.log("Encrypted: ", encryptedUser);
 
 			// ✅ Dispatch to Redux
-			// loginUser(encryptedUser);
+			loginUser(encryptedUser);
 
 			// router.replace("/home");
 			router.replace("/account-created");
@@ -69,12 +73,10 @@ function VerifyEmailPage() {
 			// );
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {
-			console.log("ERROR SIGNUP", err);
+			setLoading(false);
 			toast.error(`${err.response.data.error}`, {
 				position: toastPosition,
 			});
-		} finally {
-			setLoading(false);
 		}
 	};
 	const handleResendOTP = async () => {
@@ -85,7 +87,7 @@ function VerifyEmailPage() {
 			<Grid columns={{ initial: "1", md: "2" }} className="h-screen">
 				<div className="hidden lg:inline-block">
 					<div className="bg-primary-50 h-screen lg:h-full w-full p-4 lg:px-10 grid grid-cols-1 ">
-						<div>
+						<Link href="/">
 							<Flex align="center" justify="between">
 								<Image
 									src="/icons/quizmoney-logo-blue.svg"
@@ -95,7 +97,7 @@ function VerifyEmailPage() {
 									priority
 								/>
 							</Flex>
-						</div>
+						</Link>
 
 						<div>
 							<div className="flex-col items-center justify-between text-center px-4 pt-4">
@@ -118,8 +120,8 @@ function VerifyEmailPage() {
 						</div>
 					</div>
 				</div>
-				<form onSubmit={handleVerify}>
-					<Container className="flex items-center lg:justify-center px-4 lg:px-28 pt-8 ">
+				<Container className="flex items-center lg:justify-center px-4 lg:px-28 pt-8 ">
+					<form onSubmit={handleVerify}>
 						<div className="space-y-8">
 							<div className="lg:hidden ">
 								<Image
@@ -200,8 +202,8 @@ function VerifyEmailPage() {
 								)}
 							</div>
 						</div>
-					</Container>
-				</form>
+					</form>
+				</Container>
 			</Grid>
 		</>
 	);

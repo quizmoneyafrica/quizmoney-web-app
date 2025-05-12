@@ -1,5 +1,6 @@
 import { Flex } from "@radix-ui/themes";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 function LeftSide() {
@@ -7,7 +8,7 @@ function LeftSide() {
 		<>
 			<div className="hidden lg:inline-block">
 				<div className="bg-primary-50 h-screen lg:h-full w-full p-4 lg:px-10 grid grid-cols-1 ">
-					<div>
+					<Link href="/">
 						<Flex align="center" justify="between">
 							<Image
 								src="/icons/quizmoney-logo-blue.svg"
@@ -17,7 +18,7 @@ function LeftSide() {
 								priority
 							/>
 						</Flex>
-					</div>
+					</Link>
 
 					<div>
 						<div className="flex-col items-center justify-between text-center px-4 pt-4">

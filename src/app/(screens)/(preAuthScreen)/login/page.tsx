@@ -1,27 +1,13 @@
 "use client";
 import { Container, Flex, Grid, Heading, Text } from "@radix-ui/themes";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Onboarding from "../../../components/onboarding/onboarding";
 import LoginForm from "./loginForm";
-import { useRouter } from "next/navigation";
-import { useAppSelector } from "@/app/hooks/useAuth";
-import AppLoader from "@/app/components/loader/loader";
 import Image from "next/image";
 
 const LoginPage = () => {
-	const router = useRouter();
-	const { isAuthenticated, rehydrated } = useAppSelector((s) => s.auth);
 	const [loading, setLoading] = useState(false);
-
-	useEffect(() => {
-		if (rehydrated && isAuthenticated) {
-			setLoading(false);
-			router.replace("/home");
-		}
-	}, [isAuthenticated, rehydrated, router]);
-
-	if (!rehydrated) return <AppLoader />;
-
+	
 	return (
 		<>
 			<Grid columns={{ initial: "1", md: "2" }} className="h-screen">
