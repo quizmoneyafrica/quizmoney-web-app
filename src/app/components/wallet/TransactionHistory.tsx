@@ -105,7 +105,6 @@ export default function TransactionHistory(): JSX.Element {
     );
   };
 
-  // Render an empty state placeholder
   const renderEmptyState = (): JSX.Element => (
     <div className="flex flex-col items-center justify-center py-44 px-4 bg-white rounded-lg">
       <CustomImage
@@ -120,7 +119,6 @@ export default function TransactionHistory(): JSX.Element {
     </div>
   );
 
-  // Render a section with transactions for a specific day
   const renderTransactionSection = (
     title: string,
     transactions: UserWalletTransaction[]
