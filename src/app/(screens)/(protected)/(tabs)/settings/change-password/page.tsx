@@ -62,27 +62,8 @@ const Page = () => {
   const handleChangePassword = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    await UserAPI.inAppChangePassword({
-      oldPassword: formData.oldPassword,
-      newPassword: formData.newPassword,
-    })
-      .then((res) => {
-        console.log(res);
-        if (res.status === 200) {
-          setSuccessMessage(true);
-          setLoading(false);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error(err?.response.data.error, {
-          position: "top-center",
-        });
-        setLoading(false);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    console.log(formData);
+    setLoading(false);
   };
   return (
     <motion.div

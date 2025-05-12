@@ -15,7 +15,7 @@ const Toaster = ({ appearance = "light", ...props }: ToasterProps) => {
 			toastOptions={{
 				classNames: {
 					icon: [
-						"text-primary-500 dark:text--primary-300",
+						"text-primary-500 ",
 						"group-data-[type=success]:!text-positive-700",
 						"group-data-[type=error]:!text-error-600",
 						"group-data-[type=info]:!text-primary-500",

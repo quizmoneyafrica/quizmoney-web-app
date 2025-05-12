@@ -37,7 +37,7 @@ const steps = [
   },
 ];
 
-const page = () => {
+const Page = () => {
   const router = useRouter();
   return (
     <motion.div
@@ -125,7 +125,7 @@ const page = () => {
 
           <p className="px-4 text-primary-600 text-sm md:text-base md:text-start text-center">
             {" "}
-            Here's how it works:
+            Here&apos;s how it works:
           </p>
 
           <div className="flex flex-col gap-1 ">
@@ -151,4 +151,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

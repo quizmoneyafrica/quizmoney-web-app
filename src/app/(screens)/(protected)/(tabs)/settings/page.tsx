@@ -1,21 +1,17 @@
 "use client";
 import { User } from "@/app/api/interface";
 import LogoutDialog from "@/app/components/logout/logout";
-import { useAppSelector } from "@/app/hooks/useAuth";
 import { SupportIcon } from "@/app/icons/icons";
-import { decryptData } from "@/app/utils/crypto";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { Flex, Grid } from "@radix-ui/themes";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 function Page() {
   const router = useRouter();
-  const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
-  const user: User | null = encrypted ? decryptData(encrypted) : null;
-
-  console.log(user);
+  const [openLogout, setOpenLogout] = useState(false);
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -31,16 +27,14 @@ function Page() {
           <Flex gap="10px">
             <div className="w-[60px] h-[60px] rounded-full overflow-hidden border border-zinc-200">
               <Image
-                src={user?.avatar ?? "/assets/images/profile.png"}
+                src="/assets/images/profile.png"
                 alt="profile"
                 width={100}
                 height={100}
               />
             </div>
             <Flex direction="column">
-              <p className="text-lg sm:text-2xl font-semibold">
-                {user?.firstName} {user?.lastName}
-              </p>
+              <p className="text-lg sm:text-2xl font-semibold">Joseph moraks</p>
               <p>Edit Profile</p>
             </Flex>
           </Flex>
@@ -128,29 +122,29 @@ function Page() {
               <ChevronRightIcon height={25} width={25} />
             </Flex>
 
-            <LogoutDialog>
-              <Flex
-                className=" bg-white p-4 md:p-6 rounded-2xl sm:rounded-xl border border-zinc-200"
-                align={"center"}
-                justify={"between"}
-              >
-                <Flex gap={"3"} align={"center"}>
-                  <div className="h-12 w-12 bg-rose-50 rounded-full flex justify-center items-center">
-                    <Image
-                      src="/icons/logout.svg"
-                      alt="terms"
-                      width={24}
-                      height={24}
-                    />
-                  </div>
-                  <p className=" text-lg font-semibold ">Logout</p>
-                </Flex>
-                <ChevronRightIcon height={25} width={25} />
+            <Flex
+              onClick={() => setOpenLogout(true)}
+              className=" bg-white p-4 md:p-6 rounded-2xl sm:rounded-xl border border-zinc-200"
+              align={"center"}
+              justify={"between"}
+            >
+              <Flex gap={"3"} align={"center"}>
+                <div className="h-12 w-12 bg-rose-50 rounded-full flex justify-center items-center">
+                  <Image
+                    src="/icons/logout.svg"
+                    alt="terms"
+                    width={24}
+                    height={24}
+                  />
+                </div>
+                <p className=" text-lg font-semibold ">Logout</p>
               </Flex>
-            </LogoutDialog>
+              <ChevronRightIcon height={25} width={25} />
+            </Flex>
           </Grid>
         </Flex>
       </Flex>
+      <LogoutDialog open={openLogout} onOpenChange={setOpenLogout} />
     </motion.div>
   );
 }

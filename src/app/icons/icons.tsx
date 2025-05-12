@@ -333,22 +333,55 @@ export const CalendarIcon: React.FC<React.SVGProps<SVGSVGElement>> = (
 			d="M15.695 13.7h.009M15.695 16.7h.009M11.996 13.7h.008M11.996 16.7h.008M8.294 13.7h.01M8.294 16.7h.01"></path>
 	</svg>
 );
-export const ArrowDownIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+export const ArrowDownIcon: React.FC<React.SVGProps<SVGSVGElement>> = (
+	props
+) => (
 	<svg
-	  xmlns="http://www.w3.org/2000/svg"
-	  width="18"
-	  height="9"
-	  fill="none"
-	  viewBox="0 0 18 9"
-	  stroke="currentColor"
-	  {...props}
-	>
-	  <path
-		strokeLinecap="round"
-		strokeLinejoin="round"
-		strokeMiterlimit="10"
-		strokeWidth="1.5"
-		d="M16.92.95 10.4 7.47c-.77.77-2.03.77-2.8 0L1.08.95"
-	  ></path>
+		xmlns="http://www.w3.org/2000/svg"
+		width="18"
+		height="9"
+		fill="none"
+		viewBox="0 0 18 9"
+		stroke="currentColor"
+		{...props}>
+		<path
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			strokeMiterlimit="10"
+			strokeWidth="1.5"
+			d="M16.92.95 10.4 7.47c-.77.77-2.03.77-2.8 0L1.08.95"></path>
 	</svg>
-  );
+);
+export const EraserIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		width="14"
+		height="14"
+		fill="currentColor"
+		viewBox="0 0 14 14"
+		{...props}>
+		<path d="M.952 7.96a1.2 1.2 0 0 0 0 1.698l3.394 3.393a1.2 1.2 0 0 0 1.696 0l1.77-1.77a3.3 3.3 0 0 1 .146-1.276l-.563.563-3.96-3.96 5.091-5.091a.4.4 0 0 1 .566 0l3.394 3.394a.4.4 0 0 1 0 .566l-2.48 2.48a3.2 3.2 0 0 1 1.276-.145l1.77-1.77a1.2 1.2 0 0 0 0-1.696L9.657.95a1.2 1.2 0 0 0-1.698 0zm.565 1.132a.4.4 0 0 1 0-.565l1.352-1.352 3.96 3.96-1.352 1.352a.4.4 0 0 1-.566 0zM11 13.4a2.4 2.4 0 1 0 0-4.8 2.4 2.4 0 0 0 0 4.8"></path>
+	</svg>
+);
+export const PlusIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		width="16"
+		height="16"
+		fill="currentColor"
+		viewBox="0 0 16 16"
+		{...props}>
+		<path d="M8 0C3.589 0 0 3.589 0 8s3.589 8 8 8 8-3.589 8-8-3.589-8-8-8m0 1.23A6.76 6.76 0 0 1 14.77 8 6.76 6.76 0 0 1 8 14.77 6.76 6.76 0 0 1 1.23 8 6.76 6.76 0 0 1 8 1.23m-.615 3.078v3.077H4.308v1.23h3.077v3.077h1.23V8.615h3.077v-1.23H8.615V4.308z"></path>
+	</svg>
+);
+export const ArrowDownFillIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		width="11"
+		height="6"
+		fill="currentColor"
+		viewBox="0 0 11 6"
+		{...props}>
+		<path d="M9.693.295H1.306a.763.763 0 0 0-.538 1.303l3.669 3.67a1.51 1.51 0 0 0 2.132 0l1.395-1.396 2.274-2.274c.475-.481.135-1.303-.545-1.303"></path>
+	</svg>
+);
