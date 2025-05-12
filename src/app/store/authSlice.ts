@@ -4,6 +4,7 @@ interface AuthState {
 	isAuthenticated: boolean;
 	userEmail: string | null;
 	userEncryptedData?: string | null;
+	walletBalance?: number;
 	rehydrated: boolean;
 }
 
@@ -31,8 +32,11 @@ const authSlice = createSlice({
 		setRehydrated(state, action: PayloadAction<boolean>) {
 			state.rehydrated = action.payload;
 		},
+		setWalletBalance(state, action: PayloadAction<number>) {
+			state.walletBalance = action.payload;
+		},
 	},
 });
 
-export const { login, logout, setRehydrated } = authSlice.actions;
+export const { login, logout, setRehydrated, setWalletBalance } = authSlice.actions;
 export default authSlice.reducer;

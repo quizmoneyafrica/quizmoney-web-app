@@ -11,6 +11,7 @@ import { formatCountDown, resendTimer, toastPosition } from "@/app/utils/utils";
 import UserAPI from "@/app/api/userApi";
 import { toast } from "sonner";
 import LeftSide from "../forgot-password/leftSide";
+import Link from "next/link";
 
 function Page() {
 	const searchParams = useSearchParams();
@@ -52,13 +53,11 @@ function Page() {
 			}
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {
-			console.log("ERROR Forgot Password", err);
+			setLoading(false);
 			toast.error(`${err.response.data.error}`, {
 				position: toastPosition,
 			});
-		} finally {
-			setLoading(false);
-		}
+		} 
 	};
 	const handleResendOTP = async () => {
 		setCountdown(resendTimer);
@@ -85,7 +84,7 @@ function Page() {
 				<Container className="flex items-center lg:justify-center px-4 lg:px-28 pt-8 ">
 					<form onSubmit={handleVerify}>
 						<div className="space-y-8">
-							<div className="lg:hidden ">
+							<Link href="/" className="lg:hidden ">
 								<Image
 									src="/icons/quizmoney-logo-blue.svg"
 									alt="Quiz Money"
@@ -93,7 +92,7 @@ function Page() {
 									height={55}
 									priority
 								/>
-							</div>
+							</Link>
 							<div className="">
 								<Flex
 									align="center"

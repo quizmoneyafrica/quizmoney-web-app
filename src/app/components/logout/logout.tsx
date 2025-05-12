@@ -1,16 +1,18 @@
 "use client";
 import * as Dialog from "@radix-ui/react-dialog";
-import { Flex } from "@radix-ui/themes";
+import { Flex, Spinner } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/app/hooks/useAuth";
 import { logout } from "@/app/store/authSlice";
 import React, { useState } from "react";
 
 type Props = {
-	children: React.ReactNode;
+	// children: React.ReactNode;
+	open: boolean;
+	onOpenChange: (open: boolean) => void;
 };
 
-const LogoutDialog = ({ children }: Props) => {
+const LogoutDialog = ({ open, onOpenChange }: Props) => {
 	const router = useRouter();
 	const dispatch = useAppDispatch();
 	const [loading, setLoading] = useState(false);
@@ -20,12 +22,11 @@ const LogoutDialog = ({ children }: Props) => {
 		dispatch(logout());
 		router.replace("/login");
 		setLoading(false);
+		onOpenChange(false);
 	};
 
 	return (
-		<Dialog.Root>
-			<Dialog.Trigger asChild>{children}</Dialog.Trigger>
-
+		<Dialog.Root open={open} onOpenChange={onOpenChange}>
 			<Dialog.Portal>
 				<Dialog.Overlay className="fixed inset-0 bg-black/50 z-40" />
 				<Dialog.Content className="fixed z-50 top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-xl shadow-xl max-w-sm w-full focus:outline-none">
@@ -36,21 +37,24 @@ const LogoutDialog = ({ children }: Props) => {
 
 					<Flex gap="3" justify="end">
 						<Dialog.Close asChild>
-							<button className="bg-gray-200 cursor-pointer px-4 py-2 rounded-[8px]">
+							<button
+								disabled={loading}
+								className="bg-gray-200 border border-gray-200 cursor-pointer px-4 py-2 rounded-[8px]">
 								Cancel
 							</button>
 						</Dialog.Close>
 						{!loading ? (
 							<button
-								className="ml-2 cursor-pointer bg-error-900 text-neutral-50 px-4 py-2 rounded-[8px]"
+								className="ml-2 cursor-pointer border border-error-900 bg-error-900 text-neutral-50 px-4 py-2 rounded-[8px]"
 								onClick={handleLogout}>
 								Log Out
 							</button>
 						) : (
 							<button
-								className="ml-2 cursor-pointer bg-error-900 text-neutral-50 px-4 py-2 rounded-[8px]"
-								onClick={handleLogout}>
-								Log Out
+								className="ml-2 cursor-pointer border-none bg-error-900 text-neutral-50 px-4 py-2 rounded-[8px]"
+								onClick={handleLogout}
+								disabled>
+								<Spinner />
 							</button>
 						)}
 					</Flex>

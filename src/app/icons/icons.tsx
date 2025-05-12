@@ -374,3 +374,14 @@ export const PlusIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
 		<path d="M8 0C3.589 0 0 3.589 0 8s3.589 8 8 8 8-3.589 8-8-3.589-8-8-8m0 1.23A6.76 6.76 0 0 1 14.77 8 6.76 6.76 0 0 1 8 14.77 6.76 6.76 0 0 1 1.23 8 6.76 6.76 0 0 1 8 1.23m-.615 3.078v3.077H4.308v1.23h3.077v3.077h1.23V8.615h3.077v-1.23H8.615V4.308z"></path>
 	</svg>
 );
+export const ArrowDownFillIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		width="11"
+		height="6"
+		fill="currentColor"
+		viewBox="0 0 11 6"
+		{...props}>
+		<path d="M9.693.295H1.306a.763.763 0 0 0-.538 1.303l3.669 3.67a1.51 1.51 0 0 0 2.132 0l1.395-1.396 2.274-2.274c.475-.481.135-1.303-.545-1.303"></path>
+	</svg>
+);
