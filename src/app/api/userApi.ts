@@ -28,7 +28,7 @@ const getSessionTokenHeaders = () => {
 	return {
 		"X-Parse-Application-Id": process.env.NEXT_PUBLIC_XParseApplicationId!,
 		"X-Parse-REST-API-Key": process.env.NEXT_PUBLIC_XParseRESTAPIKey!,
-		"X-Parse-Session-Token": sessionToken || "",
+		"X-Parse-Session-Token": sessionToken,
 		"Content-Type": "application/json",
 	};
 };
