@@ -1,6 +1,6 @@
 "use client";
 import { EraserIcon, QuestionMarkCircledIcon } from "@radix-ui/react-icons";
-import { Avatar, Container, Flex, Heading } from "@radix-ui/themes";
+import { Avatar, Container, Flex, Heading, Text } from "@radix-ui/themes";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -130,9 +130,12 @@ function AppHeader() {
 				</Flex>
 			</Flex>
 			{lastSegment === "Home" && (
-				<Heading size={{ initial: "4", lg: "5" }} className="lg:hidden">
-					Hello <span className="capitalize">{user?.firstName}</span> 👋
-				</Heading>
+				<>
+					<Heading size={{ initial: "4", lg: "5" }} className="lg:hidden">
+						Hello <span className="capitalize">{user?.firstName}</span> 👋
+					</Heading>
+					<Text className="text-sm lg:text-base">Let&apos;s play and earn</Text>
+				</>
 			)}
 			<LogoutDialog open={openLogout} onOpenChange={setOpenLogout} />
 		</div>
