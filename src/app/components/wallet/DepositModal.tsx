@@ -1,11 +1,13 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
-import CustomButton from "@/app/utils/CustomBtn";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import WalletApi from "@/app/api/wallet";
+import { toast } from "sonner";
+import { toastPosition } from "@/app/utils/utils";
 
 // Zod schema for validation
 const depositFormSchema = z.object({
@@ -26,11 +28,10 @@ type DepositFormData = z.infer<typeof depositFormSchema>;
 interface DepositModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: { amount: number }) => void;
 }
 
 const predefinedAmounts = [
-  { label: "₦500", value: 500 },
+  { label: "₦600", value: 600 },
   { label: "₦1,000", value: 1000 },
   { label: "₦2,000", value: 2000 },
   { label: "₦5,000", value: 5000 },
@@ -39,15 +40,14 @@ const predefinedAmounts = [
 export default function DepositModal({
   open,
   onOpenChange,
-  onSubmit,
 }: DepositModalProps) {
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
-
+  const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
     setValue,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     reset,
   } = useForm<DepositFormData>({
     resolver: zodResolver(depositFormSchema),
@@ -56,12 +56,32 @@ export default function DepositModal({
     },
   });
 
-  const handleFormSubmit = (data: DepositFormData) => {
+  const handleFormSubmit = async (data: DepositFormData) => {
     const numericAmount =
       selectedAmount || Number(data.amount.replace(/[₦,]/g, ""));
-    onSubmit({ amount: numericAmount });
-    reset();
-    setSelectedAmount(null);
+    try {
+      setLoading(true);
+      const response = await WalletApi.getCheckoutLink({
+        amount: `${numericAmount}`,
+      });
+
+      if (
+        response?.data?.result?.status === "success" ||
+        response?.data.result?.data?.link
+      ) {
+        onOpenChange(false);
+        reset();
+        setSelectedAmount(null);
+        window.location.href = response?.data.result.data.link;
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      toast.error(`${err.response.data.error}`, {
+        position: toastPosition,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handlePredefinedAmountClick = (amount: number) => {
@@ -196,13 +216,17 @@ export default function DepositModal({
                     ))}
                   </div>
 
-                  <CustomButton
+                  <button
                     type="submit"
-                    className="bg-primary-900 text-white w-full rounded-full py-2 hover:bg-blue-700 mt-8"
-                    disabled={isSubmitting}
+                    className="bg-primary-900 text-white items-center justify-center flex-row flex cursor-pointer w-full rounded-full py-3 hover:bg-primary-700 mt-8"
+                    disabled={loading}
                   >
-                    Proceed
-                  </CustomButton>
+                    {loading ? (
+                      <div className=" animate-spin border-b-2 border-b-white rounded-full size-5" />
+                    ) : (
+                      "Proceed"
+                    )}
+                  </button>
                 </form>
               </motion.div>
             </Dialog.Content>

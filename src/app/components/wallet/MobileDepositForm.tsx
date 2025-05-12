@@ -1,8 +1,10 @@
 import { useState } from "react";
-import CustomButton from "@/app/utils/CustomBtn";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import WalletApi from "@/app/api/wallet";
+import { toast } from "sonner";
+import { toastPosition } from "@/app/utils/utils";
 
 const depositFormSchema = z.object({
   amount: z
@@ -19,21 +21,16 @@ const depositFormSchema = z.object({
 
 type DepositFormData = z.infer<typeof depositFormSchema>;
 
-export const MobileDepositForm = ({
-  onSubmit,
-  close,
-}: {
-  onSubmit: (data: { amount: number }) => void;
-  close?: () => void;
-}) => {
+export const MobileDepositForm = ({ close }: { close?: () => void }) => {
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
 
   const amountOptions = [
-    { value: 500, label: "₦500" },
+    { value: 600, label: "₦600" },
     { value: 1000, label: "₦1,000" },
     { value: 2000, label: "₦2,000" },
     { value: 5000, label: "₦5,000" },
   ];
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -58,13 +55,32 @@ export const MobileDepositForm = ({
     setSelectedAmount(null);
   };
 
-  const onFormSubmit = (data: DepositFormData) => {
+  const onFormSubmit = async (data: DepositFormData) => {
     const numericAmount =
       selectedAmount || Number(data.amount.replace(/[₦,]/g, ""));
-    onSubmit({ amount: numericAmount });
-    reset();
-    setSelectedAmount(null);
-    close?.();
+
+    try {
+      setLoading(true);
+      const response = await WalletApi.getCheckoutLink({
+        amount: `${numericAmount}`,
+      });
+      if (
+        response?.data?.result?.status === "success" ||
+        response?.data.result?.data?.link
+      ) {
+        reset();
+        setSelectedAmount(null);
+        window.location.href = response?.data.result.data.link;
+        close?.();
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      toast.error(`${err.response.data.error}`, {
+        position: toastPosition,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -103,7 +119,7 @@ export const MobileDepositForm = ({
               key={option.value}
               type="button"
               onClick={() => handleAmountSelect(option.value)}
-              className={`flex-1 px-4 py-2 rounded-lg ${
+              className={`flex-1 text-sm px-4 py-2 rounded-lg ${
                 selectedAmount === option.value
                   ? "bg-[#E4F1FA] text-primary-900"
                   : "bg-gray-100 text-gray-800"
@@ -114,12 +130,17 @@ export const MobileDepositForm = ({
           ))}
         </div>
 
-        <CustomButton
+        <button
+          disabled={loading}
           type="submit"
-          className="bg-primary-900 text-white w-full rounded-full py-4 hover:bg-primary-700"
+          className="bg-primary-900 text-white items-center justify-center flex flex-row w-full cursor-pointer rounded-full py-4 hover:bg-primary-700"
         >
-          Proceed
-        </CustomButton>
+          {loading ? (
+            <div className=" animate-spin border-b-2 border-b-white rounded-full size-4" />
+          ) : (
+            "Proceed"
+          )}
+        </button>
       </form>
     </div>
   );

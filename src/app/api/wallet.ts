@@ -10,6 +10,20 @@ const WalletApi = {
 			{ headers: getSessionTokenHeaders() }
 		);
 	},
+	fetchTransactions(): Promise<AxiosResponse<ApiResponse>> {
+		return axios.post(
+			`${BASE_URL}/fetchTransactions`,
+			{},
+			{ headers: getSessionTokenHeaders() }
+		);
+	},
+	getCheckoutLink(data:{amount:string}): Promise<AxiosResponse<ApiResponse>> {
+		return axios.post(
+			`${BASE_URL}/getCheckoutLink`,
+			{...data},
+			{ headers: getSessionTokenHeaders() }
+		);
+	},
 };
 
 export default WalletApi;

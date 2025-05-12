@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import CustomImage from "./CustomImage";
 import { BottomSheet } from "./BottomSheet";
 import { Dialog } from "radix-ui";
-import DepositModalModal from "./DepositModalModal";
+import DepositModalModal from "./DepositModal";
 import { MobileDepositForm } from "./MobileDepositForm";
 import WithdrawalModalModal from "./WithdrawalModal";
 import { MobileWithdrawalForm } from "./MobileWithdrawalForm";
@@ -11,7 +11,9 @@ import WithdrawalPinModal from "./WithdrawalPinModal";
 import MobileWithdrawalPinForm from "./MobileWithdrawalPinForm";
 import WithdrawalSuccessModal from "./WithdrawalSuccessModal";
 import MobileWithdrawalSuccess from "./MobileWithdrawalSuccess";
-import StoreAPI from "@/app/api/storeApi";
+import { useSelector } from "react-redux";
+import { RootState } from "@/app/store/store";
+import { Loader } from "lucide-react";
 
 export default function WalletBalance() {
   const [withdrawalModal, setOpenWithdrawal] = useState(false);
@@ -19,6 +21,9 @@ export default function WalletBalance() {
   const [openPinModal, setOpenPinModal] = useState(false);
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const { wallet, isWalletLoading } = useSelector(
+    (state: RootState) => state?.wallet
+  );
 
   useEffect(() => {
     const checkIfMobile = () => {
@@ -38,15 +43,6 @@ export default function WalletBalance() {
     setIsBalanceHidden(!isBalanceHidden);
   };
 
-  useEffect(() => {
-    StoreAPI.fetchCustomerWallet().then((res) => {
-      console.log(
-        JSON.stringify(res, null, 2),
-        "=============WALLET DATA======="
-      );
-    });
-  }, []);
-
   return (
     <>
       <div className="bg-[#17478B] text-white py-12 px-8 rounded-3xl relative overflow-hidden w-full shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm bg-opacity-95 bg-[url('/assets/images/bg.svg')] bg-cover bg-center bg-no-repeat">
@@ -55,17 +51,20 @@ export default function WalletBalance() {
             Available Wallet Balance
           </p>
 
-          <h1 className="text-4xl font-bold text-center flex items-center justify-center gap-1">
-            <span>₦</span>
-            <span>{isBalanceHidden ? "****" : "50,000"}.</span>
-            <span className="text-lg text-[#BCBCBB]">
-              {isBalanceHidden ? "**" : "00"}
-            </span>
-            <button onClick={toggleBalanceVisibility}>
-              {isBalanceHidden ? <EyeNoneIcon /> : <EyeOpenIcon />}
-            </button>
-          </h1>
-
+          {isWalletLoading ? (
+            <Loader className=" animate-spin size-3 text-white" />
+          ) : (
+            <h1 className="text-4xl font-bold text-center flex items-center justify-center gap-1">
+              <span>₦</span>
+              <span>{isBalanceHidden ? "****" : `${wallet?.balance}`}.</span>
+              <span className="text-lg text-[#BCBCBB]">
+                {isBalanceHidden ? "**" : "00"}
+              </span>
+              <button onClick={toggleBalanceVisibility}>
+                {isBalanceHidden ? <EyeNoneIcon /> : <EyeOpenIcon />}
+              </button>
+            </h1>
+          )}
           <div className="flex justify-center  gap-2 my-2">
             <button
               onClick={() => setActiveDot(0)}
@@ -92,7 +91,7 @@ export default function WalletBalance() {
               </span>
             </button>
             <button
-              onClick={() => setOpenSuccessModal(true)}
+              onClick={() => setOpenWithdrawal(true)}
               className="bg-[#E4F1FA] cursor-pointer hover:bg-gray-100 text-primary-700 px-6 py-3 rounded-full flex items-center gap-2 font-medium"
             >
               Withdraw <CustomImage alt="" src={"/icons/arrow-up.svg"} />
@@ -107,15 +106,11 @@ export default function WalletBalance() {
           onClose={() => setOpen(false)}
           title="Deposit"
         >
-          <MobileDepositForm onSubmit={() => {}} />
+          <MobileDepositForm />
         </BottomSheet>
       ) : (
         <Dialog.Root open={open} onOpenChange={setOpen}>
-          <DepositModalModal
-            open={open}
-            onOpenChange={setOpen}
-            onSubmit={() => {}}
-          />
+          <DepositModalModal open={open} onOpenChange={setOpen} />
         </Dialog.Root>
       )}
       {isMobile ? (
