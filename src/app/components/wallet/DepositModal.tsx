@@ -1,15 +1,13 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
-import CustomButton from "@/app/utils/CustomBtn";
 import { useForm } from "react-hook-form";
-import { boolean, z } from "zod";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import WalletApi from "@/app/api/wallet";
 import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
-import { Loader } from "lucide-react";
 
 // Zod schema for validation
 const depositFormSchema = z.object({
