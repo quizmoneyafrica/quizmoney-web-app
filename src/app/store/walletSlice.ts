@@ -6,11 +6,13 @@ interface WalletState {
 	isWalletLoading:boolean;
 	isTransactionsLoading:boolean;
 	transactions:UserWalletTransaction[]|[]
+	banks:Bank[]
 }
-
+export interface Bank { id: number; code: string; name: string }
 const initialState: WalletState = {
 	wallet:undefined,
 	transactions:[],
+	banks:[],
 	isTransactionsLoading:false,
 	isWalletLoading:false
 };
@@ -69,9 +71,12 @@ const walletSlice = createSlice({
 		setTransactions(state, action: PayloadAction<UserWalletTransaction[]|[]>) {
 			state.transactions = action.payload;
 		},
+		setBanks(state, action: PayloadAction<Bank[]|[]>) {
+			state.banks = action.payload;
+		},
 	},
 });
 
-export const {  setWallet,setTransactionsLoading ,setWalletLoading,setTransactions} = walletSlice.actions;
+export const {  setWallet,setTransactionsLoading ,setWalletLoading,setTransactions,setBanks} = walletSlice.actions;
 export default walletSlice.reducer;
 export const useWallet=(state:RootState)=>state?.wallet
