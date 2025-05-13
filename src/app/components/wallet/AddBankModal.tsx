@@ -6,7 +6,7 @@ import CustomButton from "@/app/utils/CustomBtn";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useCallback, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import WalletApi from "@/app/api/wallet";
 import { toastPosition } from "@/app/utils/utils";
@@ -37,11 +37,10 @@ export default function AddBankModal({
   initialData = { accountNumber: "", bank: "" },
 }: AddBankModalProps) {
   const {
-    register,
     handleSubmit,
     setValue,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<BankFormData>({
     resolver: zodResolver(bankFormSchema),
     defaultValues: initialData,
@@ -249,7 +248,7 @@ export default function AddBankModal({
                         const target = e.target as
                           | HTMLInputElement
                           | HTMLSelectElement;
-                        const { name, value } = target;
+                        const { value } = target;
                         setValue("bank", value);
                       }}
                     />
