@@ -6,8 +6,14 @@ import CustomButton from "@/app/utils/CustomBtn";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useCallback, useRef } from "react";
+import { useEffect, useCallback, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import WalletApi from "@/app/api/wallet";
+import { toastPosition } from "@/app/utils/utils";
+import { toast } from "sonner";
+import { useSelector } from "react-redux";
+import { useWallet } from "@/app/store/walletSlice";
+import { getAuthUser } from "@/app/api/userApi";
 
 const bankFormSchema = z.object({
   accountNumber: z
@@ -23,32 +29,31 @@ interface AddBankModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   initialData?: BankFormData;
-  onSubmit: (data: BankFormData) => void;
 }
-
-const banks = [
-  { label: "Access Bank", value: "access" },
-  { label: "GTBank", value: "gtbank" },
-  { label: "First Bank", value: "firstbank" },
-  { label: "UBA", value: "uba" },
-  { label: "Zenith Bank", value: "zenith" },
-];
 
 export default function AddBankModal({
   open,
   onOpenChange,
   initialData = { accountNumber: "", bank: "" },
-  onSubmit,
 }: AddBankModalProps) {
   const {
     register,
     handleSubmit,
+    setValue,
     reset,
     formState: { errors, isSubmitting },
   } = useForm<BankFormData>({
     resolver: zodResolver(bankFormSchema),
     defaultValues: initialData,
   });
+
+  const { banks } = useSelector(useWallet);
+  const formattedBanks = banks
+    ?.map((bank) => ({
+      label: bank.name,
+      value: bank.code,
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 
   const prevInitialData = useRef<BankFormData>(initialData);
 
@@ -62,13 +67,84 @@ export default function AddBankModal({
       prevInitialData.current = initialData;
     }
   }, [open, initialData, reset]);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleFormSubmit = useCallback(
-    handleSubmit((data) => {
-      onSubmit(data);
-    }),
-    [handleSubmit, onSubmit]
-  );
+  const onSubmit = async (data: BankFormData) => {
+    const { email } = await getAuthUser();
+
+    try {
+      setIsVerifying(true);
+
+      console.log("====================================");
+      console.log(
+        JSON.stringify({
+          email: email,
+          accountNumber: data?.accountNumber,
+          bankCode: Number(data?.bank),
+        }),
+        null,
+        2
+      );
+      console.log("====================================");
+      const response = await WalletApi.verifyAccount({
+        email: email,
+        accountNumber: data?.accountNumber,
+        bankCode: Number(data?.bank),
+      });
+      console.log("============verifyAccount========================");
+      console.log(JSON.stringify(response?.data));
+      console.log("============verifyAccount========================");
+      if (response?.data?.result?.status === "success") {
+        // reset();
+        // close?.();
+        addVerifiedAccount({
+          accountNumber: "",
+          bankName: "",
+          accountName: "",
+        });
+      }
+      if (response?.data?.result?.status === "error") {
+        toast.error(`${response?.data?.result?.message}`, {
+          position: toastPosition,
+        });
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      console.log("WalletApi.verifyAccount", err);
+      toast.error(`${err.response.data.error}`, {
+        position: toastPosition,
+      });
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+  const addVerifiedAccount = async (data: {
+    accountNumber: string;
+    bankName: string;
+    accountName: string;
+  }) => {
+    try {
+      setIsLoading(true);
+      const response = await WalletApi.addBankAccount({
+        ...data,
+      });
+      if (
+        response?.data?.result?.status === "success" ||
+        response?.data.result?.data?.link
+      ) {
+        reset();
+        close?.();
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      toast.error(`${err.response.data.error}`, {
+        position: toastPosition,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const overlayVariants = {
     hidden: { opacity: 0 },
@@ -141,11 +217,14 @@ export default function AddBankModal({
                   </Dialog.Close>
                 </div>
 
-                <form onSubmit={handleFormSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                   <div>
                     <CustomTextField
                       label="Account Number"
-                      {...register("accountNumber")}
+                      type="number"
+                      onChange={(e) =>
+                        setValue("accountNumber", e.target.value)
+                      }
                       placeholder="Enter 10-digit account number"
                       className="border rounded-3xl px-4 py-2 w-full"
                     />
@@ -159,10 +238,20 @@ export default function AddBankModal({
                   <div>
                     <CustomSelect
                       label="Select Bank"
-                      options={banks}
+                      options={formattedBanks}
                       disabledOption="Select your bank"
                       className="border rounded-3xl px-4 py-2 w-full"
-                      {...register("bank")}
+                      onChange={(
+                        e: React.ChangeEvent<
+                          HTMLInputElement | HTMLSelectElement
+                        >
+                      ) => {
+                        const target = e.target as
+                          | HTMLInputElement
+                          | HTMLSelectElement;
+                        const { name, value } = target;
+                        setValue("bank", value);
+                      }}
                     />
                     {errors.bank && (
                       <p className="text-red-500 text-sm mt-1">
@@ -174,9 +263,13 @@ export default function AddBankModal({
                   <CustomButton
                     type="submit"
                     className="bg-positive-800 text-white rounded-full px-6 hover:bg-primary-600 mt-6"
-                    disabled={isSubmitting}
+                    disabled={isVerifying || isLoading}
                   >
-                    {isSubmitting ? "Adding..." : "Add Bank"}
+                    {isVerifying
+                      ? "Is verifying..."
+                      : isLoading
+                      ? "Adding... "
+                      : "Add Bank"}
                   </CustomButton>
                 </form>
               </motion.div>
