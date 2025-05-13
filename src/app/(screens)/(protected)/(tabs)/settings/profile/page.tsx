@@ -22,6 +22,7 @@ import {
   TwitterLogoIcon,
 } from "@radix-ui/react-icons";
 import { Flex, Grid } from "@radix-ui/themes";
+import { AxiosError } from "axios";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import React, { useState } from "react";
@@ -85,10 +86,14 @@ const Page = () => {
           });
         }
       })
-      .catch(() => {
-        toast.error("Failed to update profile", {
-          position: "top-center",
-        });
+      .catch((err: AxiosError) => {
+        toast.error(
+          (err.response?.data as unknown as { error: string }).error ||
+            "Failed to update profile. Please try again later.",
+          {
+            position: "top-center",
+          }
+        );
       })
       .finally(() => {
         setIsUpdating(false);
