@@ -124,11 +124,7 @@ export default function WithdrawalAccounts() {
           </BottomSheet>
         ) : (
           <Dialog.Root open={open} onOpenChange={setOpen}>
-            <AddBankModal
-              open={open}
-              onOpenChange={setOpen}
-              onSubmit={handleBankFormSubmit}
-            />
+            <AddBankModal open={open} onOpenChange={setOpen} />
           </Dialog.Root>
         )}
 

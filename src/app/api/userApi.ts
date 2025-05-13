@@ -5,6 +5,7 @@ import {
   LoginForm,
   ResetPasswordForm,
   SignUpForm,
+  UpdateUserForm,
   VerifyEmailForm,
   VerifyForgotPasswordOtpForm,
 } from "./interface";
@@ -26,13 +27,19 @@ const getSessionTokenHeaders = () => {
   const user = encrypted ? decryptData(encrypted) : null;
   const sessionToken = user?.sessionToken;
 
-	return {
-		"X-Parse-Application-Id": process.env.NEXT_PUBLIC_XParseApplicationId!,
-		"X-Parse-REST-API-Key": process.env.NEXT_PUBLIC_XParseRESTAPIKey!,
-		"X-Parse-Session-Token": sessionToken,
-		"Content-Type": "application/json",
-	};
+  return {
+    "X-Parse-Application-Id": process.env.NEXT_PUBLIC_XParseApplicationId!,
+    "X-Parse-REST-API-Key": process.env.NEXT_PUBLIC_XParseRESTAPIKey!,
+    "X-Parse-Session-Token": sessionToken,
+    "Content-Type": "application/json",
+  };
 };
+
+const getAuthUser =()=>{
+  const encrypted =  store.getState().auth.userEncryptedData;
+  const user = encrypted ? decryptData(encrypted) : null;
+  return user
+}
 const UserAPI = {
   login(form: LoginForm): Promise<AxiosResponse<ApiResponse>> {
     return axios.post(`${BASE_URL}/login`, form, {
@@ -92,6 +99,15 @@ const UserAPI = {
       headers: getSessionTokenHeaders(),
     });
   },
+
+  updateUser(form: UpdateUserForm): Promise<AxiosResponse<ApiResponse>> {
+    return axios.post(
+      `${BASE_URL}/updateProfile?firstName=${form.firstName}&lastName=${form.lastName}&dob=${form.dob}&gender=${form.gender}&country=${form.country}&facebook=${form.facebook}&instagram=${form.instagram}&twitter=${form.twitter}&whatsapp=${form.whatsapp}&avatar=${form.avatar}&promotionalMails=${form.promotionalMails}`,
+      {
+        headers: getSessionTokenHeaders(),
+      }
+    );
+  },
 };
 
 export {
@@ -101,5 +117,6 @@ export {
   SOCKET_URL,
   XParseApplicationId,
   XParseRESTAPIKey,
+  getAuthUser
 };
 export default UserAPI;

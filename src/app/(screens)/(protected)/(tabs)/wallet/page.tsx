@@ -7,6 +7,7 @@ import {
   setWalletLoading,
   setTransactionsLoading,
   setTransactions,
+  setBanks,
 } from "@/app/store/walletSlice";
 import WalletApi from "@/app/api/wallet";
 import { useAppDispatch } from "@/app/hooks/useAuth";
@@ -28,6 +29,7 @@ function Page() {
     fetchWallet();
   }, [dispatch]);
   useEffect(() => {
+    // SET AUTH USER WALLET DATA
     const fetchWallet = async () => {
       try {
         dispatch(setTransactionsLoading(true));
@@ -44,7 +46,20 @@ function Page() {
       }
     };
     fetchWallet();
+
+    // SET LIST OF BANKS
+    (async () => {
+      try {
+        const response = await WalletApi.listBanks();
+        if (response.data.result?.data) {
+          dispatch(setBanks(response.data.result?.data));
+        }
+      } catch (error) {
+        console.log(error, "ERROR FETCHING BANKS");
+      }
+    })();
   }, [dispatch]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
