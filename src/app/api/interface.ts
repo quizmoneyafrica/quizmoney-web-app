@@ -78,37 +78,37 @@ export interface Product {
 }
 
 export interface User {
-  admin: boolean;
-  avatar: string;
-  balance: string;
-  country: string;
-  createdAt: Date; // ISO Date string
-  deviceToken: string;
-  dob: {
+  admin?: boolean;
+  avatar?: string;
+  balance?: string;
+  country?: string;
+  createdAt?: Date; // ISO Date string
+  deviceToken?: string;
+  dob?: {
     __type: "Date";
     iso: string; // ISO Date string
   };
-  dummyAccount: boolean;
-  email: string;
-  emailVerified: boolean;
-  erasers: number;
-  firstName: string;
+  dummyAccount?: boolean;
+  email?: string;
+  emailVerified?: boolean;
+  erasers?: number;
+  firstName?: string;
   // games: []; // You can replace `any` with a proper Game interface if known
-  gender: "male" | "female";
-  influencer: boolean;
-  lastName: string;
-  objectId: string;
-  otp: string;
-  otpExpiry: {
+  gender?: "male" | "female";
+  influencer?: boolean;
+  lastName?: string;
+  objectId?: string;
+  otp?: string;
+  otpExpiry?: {
     __type: "Date";
-    iso: Date;
+    iso?: Date;
   };
-  promotionalMails: boolean;
-  referralCode: string;
-  referralPoints: number;
-  sessionToken: string;
-  updatedAt: Date; // ISO Date string
-  username: string;
+  promotionalMails?: boolean;
+  referralCode?: string;
+  referralPoints?: number;
+  sessionToken?: string;
+  updatedAt?: Date; // ISO Date string
+  username?: string;
 }
 
 export interface UpdateUserForm {

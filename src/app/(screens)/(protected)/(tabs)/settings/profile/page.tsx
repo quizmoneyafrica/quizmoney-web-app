@@ -64,6 +64,21 @@ const Page = () => {
 
   const updateUser = async () => {
     setIsUpdating(true);
+
+    console.log({
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      dob: formData.dob,
+      gender: formData.gender,
+      country: formData.country,
+      facebook: formData.facebook,
+      instagram: formData.instagram,
+      twitter: formData.twitter,
+      whatsapp: formData.whatsapp,
+      avatar: user?.avatar ?? "",
+      promotionalMails: user?.promotionalMails ?? false,
+    });
+
     await userApi
       .updateUser({
         firstName: formData.firstName,
