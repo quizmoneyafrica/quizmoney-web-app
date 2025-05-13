@@ -44,16 +44,28 @@ export interface ParsePointer {
 
 export type TransactionType = 'deposit' | 'withdrawal' | 'transfer' | string;
 
-export interface UserWalletTransaction {
-  amount: number;
-  type: TransactionType;
-  user: ParsePointer;
-  createdAt: string;
-  updatedAt: string;
-  objectId: string;
-  __type: 'Object';
-  className: 'UserWalletTransaction';
+
+export interface Transaction  {
+	amount: number;
+	title: string;
+	description: string;
+	type: string;
+	status: string;
+	user: {
+		__type: string;
+		className: string;
+		objectId: string;
+	};
+	createdAt: string;
+	updatedAt: string;
+	objectId: string;
+	__type: string;
+	className: string;
 }
+export type UserWalletTransaction = {
+  date: string;
+  transactions:Array<Transaction>;
+};
 
 const walletSlice = createSlice({
 	name: "wallet",

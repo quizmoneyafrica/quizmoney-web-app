@@ -89,7 +89,8 @@ export default function AddBankModal({
       const response = await WalletApi.verifyAccount({
         email: email,
         accountNumber: data?.accountNumber,
-        bankCode: Number(data?.bank),
+        // bankCode: Number(data?.bank),
+        bankCode: Number("044"),
       });
       console.log("============verifyAccount========================");
       console.log(JSON.stringify(response?.data));
