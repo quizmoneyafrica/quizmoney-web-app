@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import FilterBar from "./FilterBar";
 import ActivitySection from "./ActivitySection";
