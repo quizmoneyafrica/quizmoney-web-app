@@ -17,6 +17,7 @@ export default function WalletActivity(): React.ReactElement {
   );
 
   const grouped: Record<string, ActivityItem[]> = paginated.reduce(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (acc: { [x: string]: any[] }, act: { section: any }) => {
       if (!acc[act.section!]) acc[act.section!] = [];
       acc[act.section!].push(act);
