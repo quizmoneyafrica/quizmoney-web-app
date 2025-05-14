@@ -10,16 +10,53 @@ const WalletApi = {
 			{ headers: getSessionTokenHeaders() }
 		);
 	},
-	fetchTransactions(): Promise<AxiosResponse<ApiResponse>> {
+	fetchTransactions(page?:{
+   page:number,limit:number
+}): Promise<AxiosResponse<ApiResponse>> {
 		return axios.post(
 			`${BASE_URL}/fetchTransactions`,
-			{},
+			page?{...page}:{},
 			{ headers: getSessionTokenHeaders() }
 		);
 	},
 	getCheckoutLink(data:{amount:string}): Promise<AxiosResponse<ApiResponse>> {
 		return axios.post(
 			`${BASE_URL}/getCheckoutLink`,
+			{...data},
+			{ headers: getSessionTokenHeaders() }
+		);
+	},
+	  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+	addBankAccount(data:any): Promise<AxiosResponse<ApiResponse>> {
+		return axios.post(
+			`${BASE_URL}/addBankAccount`,
+			{...data},
+			{ headers: getSessionTokenHeaders() }
+		);
+	},
+	verifyAccount(data:{
+		email:string;
+		accountNumber: string;
+		bankCode: string;
+	}): Promise<AxiosResponse<ApiResponse>> {
+		return axios.post(
+			`${BASE_URL}/verifyAccount`,
+			{...data},
+			{ headers: getSessionTokenHeaders() }
+		);
+	},
+	listBanks(): Promise<AxiosResponse<ApiResponse>> {
+		return axios.post(
+			`${BASE_URL}/listBanks`,
+			{},
+			{ headers: getSessionTokenHeaders() }
+		);
+	},
+	fetchDedicatedAccount(data:{
+		email:string
+	}): Promise<AxiosResponse<ApiResponse>> {
+		return axios.post(
+			`${BASE_URL}/fetchDedicatedAccount`,
 			{...data},
 			{ headers: getSessionTokenHeaders() }
 		);

@@ -6,11 +6,13 @@ interface WalletState {
 	isWalletLoading:boolean;
 	isTransactionsLoading:boolean;
 	transactions:UserWalletTransaction[]|[]
+	banks:Bank[]
 }
-
+export interface Bank { id: number; code: string; name: string }
 const initialState: WalletState = {
 	wallet:undefined,
 	transactions:[],
+	banks:[],
 	isTransactionsLoading:false,
 	isWalletLoading:false
 };
@@ -19,39 +21,54 @@ export interface ParsePointer {
   className: string;
   objectId: string;
 }
-
-export interface ParseDate {
-  __type: 'Date';
-  iso: string;
+export type BankAccount ={
+	accountNumber: string;
+	bankName: string;
+	accountName: string;
 }
-
-export interface Wallet {
-  user: ParsePointer;
+export type Wallet = {
+  user: {
+    __type: "Pointer";
+    className: "_User";
+    objectId: string;
+  };
   balance: string;
-  lastPaymentDate: ParseDate;
+  lastPaymentDate: {
+    __type: "Date";
+    iso: string;
+  };
   createdAt: string;
   updatedAt: string;
+  bankAccounts: BankAccount[];
   objectId: string;
-}
-
-export interface ParsePointer {
-  __type: 'Pointer';
-  className: string;
-  objectId: string;
-}
+  __type: "Object";
+  className: "Wallet";
+};
 
 export type TransactionType = 'deposit' | 'withdrawal' | 'transfer' | string;
 
-export interface UserWalletTransaction {
-  amount: number;
-  type: TransactionType;
-  user: ParsePointer;
-  createdAt: string;
-  updatedAt: string;
-  objectId: string;
-  __type: 'Object';
-  className: 'UserWalletTransaction';
+
+export interface Transaction  {
+	amount: number;
+	title: string;
+	description: string;
+	type: string;
+	status: string;
+	user: {
+		__type: string;
+		className: string;
+		objectId: string;
+	};
+	createdAt: string;
+	updatedAt: string;
+	objectId: string;
+	__type: string;
+	className: string;
 }
+export type UserWalletTransaction = {
+  date: string;
+  transactions:Array<Transaction>;
+};
 
 const walletSlice = createSlice({
 	name: "wallet",
@@ -69,9 +86,12 @@ const walletSlice = createSlice({
 		setTransactions(state, action: PayloadAction<UserWalletTransaction[]|[]>) {
 			state.transactions = action.payload;
 		},
+		setBanks(state, action: PayloadAction<Bank[]|[]>) {
+			state.banks = action.payload;
+		},
 	},
 });
 
-export const {  setWallet,setTransactionsLoading ,setWalletLoading,setTransactions} = walletSlice.actions;
+export const {  setWallet,setTransactionsLoading ,setWalletLoading,setTransactions,setBanks} = walletSlice.actions;
 export default walletSlice.reducer;
 export const useWallet=(state:RootState)=>state?.wallet

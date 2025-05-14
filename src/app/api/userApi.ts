@@ -34,6 +34,12 @@ const getSessionTokenHeaders = () => {
     "Content-Type": "application/json",
   };
 };
+
+const getAuthUser =()=>{
+  const encrypted =  store.getState().auth.userEncryptedData;
+  const user = encrypted ? decryptData(encrypted) : null;
+  return user
+}
 const UserAPI = {
   login(form: LoginForm): Promise<AxiosResponse<ApiResponse>> {
     return axios.post(`${BASE_URL}/login`, form, {
@@ -111,5 +117,6 @@ export {
   SOCKET_URL,
   XParseApplicationId,
   XParseRESTAPIKey,
+  getAuthUser
 };
 export default UserAPI;

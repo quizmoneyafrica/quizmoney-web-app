@@ -5,27 +5,32 @@ import * as Dialog from "@radix-ui/react-dialog";
 import AddBankModal from "./AddBankModal";
 import { BottomSheet } from "./BottomSheet";
 import { MobileAddBankAccount } from "./MobileAddBankAccount";
+import { useSelector } from "react-redux";
+import { BankAccount, useWallet } from "@/app/store/walletSlice";
 
 export default function WithdrawalAccounts() {
-  const [accounts, setAccounts] = useState([
-    {
-      id: 1,
-      accountNumber: "15********7",
-      name: "JOSEPH MICHEAL.O",
-      bank: "Access Bank",
-      hidden: true,
-    },
-    {
-      id: 2,
-      accountNumber: "15********7",
-      name: "JOSEPH MICHEAL.O",
-      bank: "Access Bank",
-      hidden: true,
-    },
-  ]);
+  interface Account extends BankAccount {
+    id: number;
+    hidden: boolean;
+  }
 
+  const { wallet } = useSelector(useWallet);
+
+  const [accounts, setAccounts] = useState<Account[]>([]);
   const [open, setOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (wallet?.bankAccounts) {
+      setAccounts(
+        wallet.bankAccounts.map((account, index) => ({
+          ...account,
+          id: index + 1,
+          hidden: true,
+        }))
+      );
+    }
+  }, [wallet]);
 
   useEffect(() => {
     const checkIfMobile = () => {
@@ -33,38 +38,23 @@ export default function WithdrawalAccounts() {
     };
 
     checkIfMobile();
-
     window.addEventListener("resize", checkIfMobile);
 
     return () => window.removeEventListener("resize", checkIfMobile);
   }, []);
 
-  const handleBankFormSubmit = (data: {
-    accountNumber: string;
-    bank: string;
-  }) => {
-    console.log("Form submitted:", data);
-    setOpen(false);
-  };
-
-  interface Account {
-    id: number;
-    accountNumber: string;
-    name: string;
-    bank: string;
-    hidden: boolean;
-  }
-
+  // Toggle account number visibility
   const toggleVisibility = (id: number): void => {
     setAccounts(
-      accounts.map((account: Account) =>
+      accounts.map((account) =>
         account.id === id ? { ...account, hidden: !account.hidden } : account
       )
     );
   };
 
+  // Delete an account (local state only; consider dispatching to Redux if needed)
   const deleteAccount = (id: number): void => {
-    setAccounts(accounts.filter((account: Account) => account.id !== id));
+    setAccounts(accounts.filter((account) => account.id !== id));
   };
 
   return (
@@ -79,7 +69,14 @@ export default function WithdrawalAccounts() {
           >
             <div className="flex justify-between items-center mb-8">
               <div className="flex items-center">
-                <span className="font-medium">{account.accountNumber}</span>
+                <span className="font-medium">
+                  {account.hidden
+                    ? `${account.accountNumber.slice(
+                        0,
+                        2
+                      )}********${account.accountNumber.slice(-1)}`
+                    : account.accountNumber}
+                </span>
                 <button
                   onClick={() => toggleVisibility(account.id)}
                   className="ml-2"
@@ -90,7 +87,7 @@ export default function WithdrawalAccounts() {
 
               <div className="flex space-x-4">
                 <button>
-                  <CustomImage alt="edit icon" src={"/icons/edit.svg"} />
+                  <CustomImage alt="edit icon" src="/icons/edit.svg" />
                 </button>
                 <button onClick={() => deleteAccount(account.id)}>
                   <Trash2 size={18} color="#ff0000" />
@@ -99,15 +96,15 @@ export default function WithdrawalAccounts() {
             </div>
 
             <div className="flex justify-between items-center">
-              <span className="font-bold truncate">{account.name}</span>
+              <span className="font-bold truncate">{account.accountName}</span>
               <div className="flex items-center">
                 <CustomImage
                   alt="access-logo"
                   className="md:block hidden"
-                  src={"/icons/access-logo.svg"}
+                  src="/icons/access-logo.svg"
                 />
                 <span className="text-gray-700 md:text-sm text-xs">
-                  {account.bank}
+                  {account.bankName}
                 </span>
               </div>
             </div>
@@ -120,15 +117,11 @@ export default function WithdrawalAccounts() {
             onClose={() => setOpen(false)}
             title="Add Bank account"
           >
-            <MobileAddBankAccount onSubmit={handleBankFormSubmit} />
+            <MobileAddBankAccount close={() => setOpen(false)} />
           </BottomSheet>
         ) : (
           <Dialog.Root open={open} onOpenChange={setOpen}>
-            <AddBankModal
-              open={open}
-              onOpenChange={setOpen}
-              onSubmit={handleBankFormSubmit}
-            />
+            <AddBankModal open={open} onOpenChange={setOpen} />
           </Dialog.Root>
         )}
 
@@ -137,7 +130,7 @@ export default function WithdrawalAccounts() {
           className="border-2 border-dashed border-[#070707CC] rounded-full cursor-pointer py-4 w-full flex items-center justify-center space-x-2 hover:bg-gray-50"
         >
           <Plus size={20} />
-          <span className="tex-[#070707] text-base">Add new Bank</span>
+          <span className="text-[#070707] text-base">Add new Bank</span>
         </button>
       </div>
     </div>
