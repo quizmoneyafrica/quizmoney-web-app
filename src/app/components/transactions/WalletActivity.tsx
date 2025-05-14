@@ -1,6 +1,6 @@
 "use client";
 
-import React, { JSX } from "react";
+import React from "react";
 import FilterBar from "./FilterBar";
 import ActivitySection from "./ActivitySection";
 import Pagination from "./Pagination";
