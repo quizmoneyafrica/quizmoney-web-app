@@ -11,8 +11,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import WalletApi from "@/app/api/wallet";
 import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
-import { useSelector } from "react-redux";
-import { useWallet } from "@/app/store/walletSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setWallet,
+  setWalletLoading,
+  useWallet,
+} from "@/app/store/walletSlice";
 import { getAuthUser } from "@/app/api/userApi";
 
 const bankFormSchema = z.object({
@@ -68,39 +72,28 @@ export default function AddBankModal({
   }, [open, initialData, reset]);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
+  const dispatch = useDispatch();
   const onSubmit = async (data: BankFormData) => {
     const { email } = await getAuthUser();
 
     try {
       setIsVerifying(true);
 
-      console.log("====================================");
-      console.log(
-        JSON.stringify({
-          email: email,
-          accountNumber: data?.accountNumber,
-          bankCode: Number(data?.bank),
-        }),
-        null,
-        2
-      );
-      console.log("====================================");
-      const response = await WalletApi.verifyAccount({
+      const payload = {
         email: email,
         accountNumber: data?.accountNumber,
-        bankCode: Number(data?.bank),
-      });
-      console.log("============verifyAccount========================");
-      console.log(JSON.stringify(response?.data));
-      console.log("============verifyAccount========================");
+        bankCode: `${data?.bank}`.trim(),
+        // bankCode: "044",
+      };
+      const response = await WalletApi.verifyAccount(payload);
       if (response?.data?.result?.status === "success") {
-        // reset();
-        // close?.();
+        const { account_name, account_number } = response?.data?.result?.data;
+        const bankName =
+          banks.find((item) => item?.code === data?.bank)?.name ?? "";
         addVerifiedAccount({
-          accountNumber: "",
-          bankName: "",
-          accountName: "",
+          accountNumber: account_number,
+          bankName,
+          accountName: account_name,
         });
       }
       if (response?.data?.result?.status === "error") {
@@ -126,12 +119,14 @@ export default function AddBankModal({
     try {
       setIsLoading(true);
       const response = await WalletApi.addBankAccount({
-        ...data,
+        newBankAccount: {
+          ...data,
+        },
       });
-      if (
-        response?.data?.result?.status === "success" ||
-        response?.data.result?.data?.link
-      ) {
+      if (response?.data?.result?.updatedWallet) {
+        dispatch(setWalletLoading(true));
+        const res = await WalletApi.fetchCustomerWallet();
+        dispatch(setWallet(res.data.result.wallet));
         reset();
         close?.();
       }

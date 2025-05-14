@@ -10,6 +10,8 @@ import { useState } from "react";
 function SidebarNav() {
   const router = useRouter();
   const pathname = usePathname();
+  const splitName = pathname.split("/");
+
   const [openLogout, setOpenLogout] = useState(false);
 
   const handleTabRoute = (path: string) => {
@@ -33,7 +35,7 @@ function SidebarNav() {
         </div>
         <Flex direction="column" px="2" className="relative">
           {navs.map((nav, index) => {
-            const isActive = pathname === nav.path;
+            const isActive = splitName.includes(nav.name.toLowerCase());
             return (
               <button
                 key={index}

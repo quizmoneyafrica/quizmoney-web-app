@@ -21,39 +21,54 @@ export interface ParsePointer {
   className: string;
   objectId: string;
 }
-
-export interface ParseDate {
-  __type: 'Date';
-  iso: string;
+export type BankAccount ={
+	accountNumber: string;
+	bankName: string;
+	accountName: string;
 }
-
-export interface Wallet {
-  user: ParsePointer;
+export type Wallet = {
+  user: {
+    __type: "Pointer";
+    className: "_User";
+    objectId: string;
+  };
   balance: string;
-  lastPaymentDate: ParseDate;
+  lastPaymentDate: {
+    __type: "Date";
+    iso: string;
+  };
   createdAt: string;
   updatedAt: string;
+  bankAccounts: BankAccount[];
   objectId: string;
-}
-
-export interface ParsePointer {
-  __type: 'Pointer';
-  className: string;
-  objectId: string;
-}
+  __type: "Object";
+  className: "Wallet";
+};
 
 export type TransactionType = 'deposit' | 'withdrawal' | 'transfer' | string;
 
-export interface UserWalletTransaction {
-  amount: number;
-  type: TransactionType;
-  user: ParsePointer;
-  createdAt: string;
-  updatedAt: string;
-  objectId: string;
-  __type: 'Object';
-  className: 'UserWalletTransaction';
+
+export interface Transaction  {
+	amount: number;
+	title: string;
+	description: string;
+	type: string;
+	status: string;
+	user: {
+		__type: string;
+		className: string;
+		objectId: string;
+	};
+	createdAt: string;
+	updatedAt: string;
+	objectId: string;
+	__type: string;
+	className: string;
 }
+export type UserWalletTransaction = {
+  date: string;
+  transactions:Array<Transaction>;
+};
 
 const walletSlice = createSlice({
 	name: "wallet",

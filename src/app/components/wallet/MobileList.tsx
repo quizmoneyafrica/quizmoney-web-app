@@ -1,16 +1,17 @@
 import classNames from "classnames";
 import React from "react";
 import CustomImage from "./CustomImage";
-import { UserWalletTransaction } from "@/app/store/walletSlice";
 import { format, parseISO } from "date-fns";
+import { Transaction } from "@/app/store/walletSlice";
 
 type Props = {
-  transaction: UserWalletTransaction;
+  transaction: Transaction;
 };
 
 export default function MobileList({ transaction }: Props) {
-  const date = parseISO(transaction?.createdAt ?? new Date());
+  const date = parseISO(transaction?.createdAt ?? new Date().toISOString());
   const dateData = format(date, "MMM d h:mma").toLowerCase();
+
   return (
     <div
       className={classNames(
@@ -40,9 +41,10 @@ export default function MobileList({ transaction }: Props) {
         </div>
         <div>
           <p className="text-sm md:text-base font-medium text-[#3B3B3B]">
-            {transaction.type === "deposit"
-              ? "Wallet Top up"
-              : "Withdrawal made"}
+            {transaction.title ||
+              (transaction.type === "deposit"
+                ? "Wallet Top up"
+                : "Withdrawal made")}
           </p>
           <p className="text-xs md:text-sm text-gray-500">{transaction.type}</p>
         </div>

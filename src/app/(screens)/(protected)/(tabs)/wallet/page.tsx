@@ -11,6 +11,7 @@ import {
 } from "@/app/store/walletSlice";
 import WalletApi from "@/app/api/wallet";
 import { useAppDispatch } from "@/app/hooks/useAuth";
+import { getAuthUser } from "@/app/api/userApi";
 
 function Page() {
   const dispatch = useAppDispatch();
@@ -19,6 +20,9 @@ function Page() {
       try {
         dispatch(setWalletLoading(true));
         const res = await WalletApi.fetchCustomerWallet();
+        console.log("====================================");
+        console.log(JSON.stringify(res.data.result.wallet, null, 2));
+        console.log("====================================");
         dispatch(setWallet(res.data.result.wallet));
       } catch (error) {
         console.log(error, "Wallet Error");
@@ -27,17 +31,15 @@ function Page() {
       }
     };
     fetchWallet();
-  }, [dispatch]);
-  
-  useEffect(() => {
+
     // SET AUTH USER WALLET DATA
-    const fetchWallet = async () => {
+    const fetchTransactions = async () => {
       try {
         dispatch(setTransactionsLoading(true));
         const res = await WalletApi.fetchTransactions();
         console.log(res?.data);
-        if (res?.data?.result?.transactions) {
-          dispatch(setTransactions(res?.data?.result?.transactions));
+        if (res?.data?.groupedTransactions) {
+          dispatch(setTransactions(res?.data?.groupedTransactions));
         } else {
         }
       } catch (error) {
@@ -46,7 +48,7 @@ function Page() {
         dispatch(setTransactionsLoading(false));
       }
     };
-    fetchWallet();
+    fetchTransactions();
 
     // SET LIST OF BANKS
     (async () => {
@@ -54,6 +56,25 @@ function Page() {
         const response = await WalletApi.listBanks();
         if (response.data.result?.data) {
           dispatch(setBanks(response.data.result?.data));
+        }
+      } catch (error) {
+        console.log(error, "ERROR FETCHING BANKS");
+      }
+    })();
+    (async () => {
+      try {
+        const { email } = getAuthUser();
+        const response = await WalletApi.fetchDedicatedAccount({
+          email,
+        });
+        if (response.data.result?.data) {
+          console.log(
+            "============fetchDedicatedAccount========================"
+          );
+          console.log(JSON.stringify(response.data, null, 2));
+          console.log(
+            "==========fetchDedicatedAccount=========================="
+          );
         }
       } catch (error) {
         console.log(error, "ERROR FETCHING BANKS");

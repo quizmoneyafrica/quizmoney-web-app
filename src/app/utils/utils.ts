@@ -1,3 +1,5 @@
+import { Transaction, UserWalletTransaction } from "../store/walletSlice";
+
 export function isIosPwaInstalled(): boolean {
 	if (typeof window === "undefined") return false;
 
@@ -39,3 +41,21 @@ export const formatCountDown = (seconds: number) => {
 	return `${m}:${s}`;
 };
 export const resendTimer = 300;
+
+
+
+
+export interface FlatTransaction extends Transaction {
+  section: string; 
+}
+
+export function flattenTransactionsByDate(
+  transactionsByDate: UserWalletTransaction[]
+): FlatTransaction[] {
+  return transactionsByDate.flatMap((section) =>
+    section.transactions.map((tx) => ({
+      ...tx,
+      section: section.date,
+    }))
+  );
+}
