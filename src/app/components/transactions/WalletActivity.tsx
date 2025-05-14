@@ -7,7 +7,6 @@ import Pagination from "./Pagination";
 import { useSelector } from "react-redux";
 import { useWallet } from "@/app/store/walletSlice";
 import { FlatTransaction, flattenTransactionsByDate } from "@/app/utils/utils";
-import CustomImage from "../wallet/CustomImage";
 import classNames from "classnames";
 import { EmptyState } from "./EmptyState";
 
@@ -15,20 +14,17 @@ const PAGE_SIZE = 4;
 
 export default function WalletActivity(): React.ReactElement {
   const [page, setPage] = React.useState(1);
-  const { transactions, isTransactionsLoading } = useSelector(useWallet); // transactions: UserWalletTransaction[]
+  const { transactions, isTransactionsLoading } = useSelector(useWallet);
 
-  // Flatten all transactions for pagination
   const flatActivities: FlatTransaction[] =
     flattenTransactionsByDate(transactions);
 
-  // Pagination logic
   const pageCount = Math.ceil(flatActivities.length / PAGE_SIZE);
   const paginated = flatActivities.slice(
     (page - 1) * PAGE_SIZE,
     page * PAGE_SIZE
   );
 
-  // Group paginated activities by section (date)
   const grouped: Record<string, FlatTransaction[]> = paginated.reduce(
     (acc, act) => {
       if (!acc[act.section]) acc[act.section] = [];

@@ -2,10 +2,6 @@ import React from "react";
 import CustomImage from "../wallet/CustomImage";
 import { FlatTransaction } from "@/app/utils/utils";
 
-interface ActivityRowProps {
-  activity: ActivityItem;
-}
-
 export interface ActivityItem {
   type: "deposit" | "withdrawal";
   title: string;
