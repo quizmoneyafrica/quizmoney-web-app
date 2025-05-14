@@ -20,6 +20,9 @@ function Page() {
       try {
         dispatch(setWalletLoading(true));
         const res = await WalletApi.fetchCustomerWallet();
+        console.log("====================================");
+        console.log(JSON.stringify(res.data.result.wallet, null, 2));
+        console.log("====================================");
         dispatch(setWallet(res.data.result.wallet));
       } catch (error) {
         console.log(error, "Wallet Error");

@@ -8,7 +8,6 @@ import { useWallet } from "@/app/store/walletSlice";
 import { format, parseISO, isToday, isYesterday } from "date-fns";
 import Link from "next/link";
 
-// Original Transaction interface
 interface Transaction {
   amount: number;
   title: string;
@@ -27,7 +26,6 @@ interface Transaction {
   className: string;
 }
 
-// User Wallet Transaction as per your requirement
 export type UserWalletTransaction = {
   date: string;
   transactions: Array<Transaction>;
@@ -48,16 +46,13 @@ export default function TransactionHistory(): JSX.Element {
     other: [],
   };
 
-  // Flatten and process transactions
   const flattenedTransactions: Transaction[] = [];
   transactions.forEach((walletTransaction: UserWalletTransaction) => {
-    // Add all transactions from this wallet transaction
     walletTransaction.transactions.forEach((transaction: Transaction) => {
       flattenedTransactions.push(transaction);
     });
   });
 
-  // Group by date
   flattenedTransactions.forEach((transaction: Transaction) => {
     const date = parseISO(transaction?.createdAt ?? new Date().toISOString());
 
@@ -70,7 +65,6 @@ export default function TransactionHistory(): JSX.Element {
     }
   });
 
-  // Render a single transaction item
   const renderTransaction = (
     transaction: Transaction,
     index: number,

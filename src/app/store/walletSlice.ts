@@ -21,26 +21,29 @@ export interface ParsePointer {
   className: string;
   objectId: string;
 }
-
-export interface ParseDate {
-  __type: 'Date';
-  iso: string;
+export type BankAccount ={
+	accountNumber: string;
+	bankName: string;
+	accountName: string;
 }
-
-export interface Wallet {
-  user: ParsePointer;
+export type Wallet = {
+  user: {
+    __type: "Pointer";
+    className: "_User";
+    objectId: string;
+  };
   balance: string;
-  lastPaymentDate: ParseDate;
+  lastPaymentDate: {
+    __type: "Date";
+    iso: string;
+  };
   createdAt: string;
   updatedAt: string;
+  bankAccounts: BankAccount[];
   objectId: string;
-}
-
-export interface ParsePointer {
-  __type: 'Pointer';
-  className: string;
-  objectId: string;
-}
+  __type: "Object";
+  className: "Wallet";
+};
 
 export type TransactionType = 'deposit' | 'withdrawal' | 'transfer' | string;
 

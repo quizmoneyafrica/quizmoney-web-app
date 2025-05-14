@@ -11,8 +11,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import WalletApi from "@/app/api/wallet";
 import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
-import { useSelector } from "react-redux";
-import { useWallet } from "@/app/store/walletSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setWallet,
+  setWalletLoading,
+  useWallet,
+} from "@/app/store/walletSlice";
 import { getAuthUser } from "@/app/api/userApi";
 
 const bankFormSchema = z.object({
@@ -68,7 +72,7 @@ export default function AddBankModal({
   }, [open, initialData, reset]);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
+  const dispatch = useDispatch();
   const onSubmit = async (data: BankFormData) => {
     const { email } = await getAuthUser();
 
@@ -81,9 +85,6 @@ export default function AddBankModal({
         bankCode: `${data?.bank}`.trim(),
         // bankCode: "044",
       };
-      console.log("==============payload======================");
-      console.log(JSON.stringify(payload, null, 2));
-      console.log("====================================");
       const response = await WalletApi.verifyAccount(payload);
       if (response?.data?.result?.status === "success") {
         const { account_name, account_number } = response?.data?.result?.data;
@@ -123,6 +124,9 @@ export default function AddBankModal({
         },
       });
       if (response?.data?.result?.updatedWallet) {
+        dispatch(setWalletLoading(true));
+        const res = await WalletApi.fetchCustomerWallet();
+        dispatch(setWallet(res.data.result.wallet));
         reset();
         close?.();
       }

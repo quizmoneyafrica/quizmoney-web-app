@@ -10,10 +10,12 @@ const WalletApi = {
 			{ headers: getSessionTokenHeaders() }
 		);
 	},
-	fetchTransactions(): Promise<AxiosResponse<ApiResponse>> {
+	fetchTransactions(page?:{
+   page:number,limit:number
+}): Promise<AxiosResponse<ApiResponse>> {
 		return axios.post(
 			`${BASE_URL}/fetchTransactions`,
-			{},
+			page?{...page}:{},
 			{ headers: getSessionTokenHeaders() }
 		);
 	},
