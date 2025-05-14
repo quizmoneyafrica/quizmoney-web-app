@@ -50,6 +50,15 @@ const WalletApi = {
 			{ headers: getSessionTokenHeaders() }
 		);
 	},
+	fetchDedicatedAccount(data:{
+		email:string
+	}): Promise<AxiosResponse<ApiResponse>> {
+		return axios.post(
+			`${BASE_URL}/fetchDedicatedAccount`,
+			{...data},
+			{ headers: getSessionTokenHeaders() }
+		);
+	},
 };
 
 export default WalletApi;

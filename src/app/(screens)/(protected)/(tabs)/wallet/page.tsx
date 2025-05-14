@@ -11,6 +11,7 @@ import {
 } from "@/app/store/walletSlice";
 import WalletApi from "@/app/api/wallet";
 import { useAppDispatch } from "@/app/hooks/useAuth";
+import { getAuthUser } from "@/app/api/userApi";
 
 function Page() {
   const dispatch = useAppDispatch();
@@ -27,10 +28,9 @@ function Page() {
       }
     };
     fetchWallet();
-  }, [dispatch]);
-  useEffect(() => {
+
     // SET AUTH USER WALLET DATA
-    const fetchWallet = async () => {
+    const fetchTransactions = async () => {
       try {
         dispatch(setTransactionsLoading(true));
         const res = await WalletApi.fetchTransactions();
@@ -45,50 +45,33 @@ function Page() {
         dispatch(setTransactionsLoading(false));
       }
     };
-    fetchWallet();
+    fetchTransactions();
 
     // SET LIST OF BANKS
     (async () => {
       try {
         const response = await WalletApi.listBanks();
-
-        let gg = {
-          message: "Transactions fetched successfully",
-          groupedTransactions: [
-            {
-              date: "2025-05-12",
-              transactions: [
-                {
-                  amount: 600,
-                  title: "Wallet top-up",
-                  description: "Funds added to your wallet.",
-                  type: "deposit",
-                  status: "completed",
-                  user: {
-                    __type: "Pointer",
-                    className: "_User",
-                    objectId: "9o2PZV9Gyi",
-                  },
-                  createdAt: "2025-05-12T19:58:21.447Z",
-                  updatedAt: "2025-05-12T19:58:21.447Z",
-                  objectId: "awOp692Qed",
-                  __type: "Object",
-                  className: "UserWalletTransaction",
-                },
-              ],
-            },
-          ],
-          totalTransactions: 1,
-          totalPages: 1,
-          currentPage: 1,
-          hasPreviousPage: false,
-          hasNextPage: false,
-          prevPage: null,
-          nextPage: null,
-        };
-
         if (response.data.result?.data) {
           dispatch(setBanks(response.data.result?.data));
+        }
+      } catch (error) {
+        console.log(error, "ERROR FETCHING BANKS");
+      }
+    })();
+    (async () => {
+      try {
+        const { email } = getAuthUser();
+        const response = await WalletApi.fetchDedicatedAccount({
+          email,
+        });
+        if (response.data.result?.data) {
+          console.log(
+            "============fetchDedicatedAccount========================"
+          );
+          console.log(JSON.stringify(response.data, null, 2));
+          console.log(
+            "==========fetchDedicatedAccount=========================="
+          );
         }
       } catch (error) {
         console.log(error, "ERROR FETCHING BANKS");

@@ -120,7 +120,7 @@ export default function WithdrawalAccounts() {
             onClose={() => setOpen(false)}
             title="Add Bank account"
           >
-            <MobileAddBankAccount onSubmit={handleBankFormSubmit} />
+            <MobileAddBankAccount close={() => setOpen(false)} />
           </BottomSheet>
         ) : (
           <Dialog.Root open={open} onOpenChange={setOpen}>
