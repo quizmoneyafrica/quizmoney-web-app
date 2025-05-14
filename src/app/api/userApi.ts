@@ -5,6 +5,7 @@ import {
   LoginForm,
   ResetPasswordForm,
   SignUpForm,
+  UpdateUserForm,
   VerifyEmailForm,
   VerifyForgotPasswordOtpForm,
 } from "./interface";
@@ -26,12 +27,12 @@ const getSessionTokenHeaders = () => {
   const user = encrypted ? decryptData(encrypted) : null;
   const sessionToken = user?.sessionToken;
 
-	return {
-		"X-Parse-Application-Id": process.env.NEXT_PUBLIC_XParseApplicationId!,
-		"X-Parse-REST-API-Key": process.env.NEXT_PUBLIC_XParseRESTAPIKey!,
-		"X-Parse-Session-Token": sessionToken,
-		"Content-Type": "application/json",
-	};
+  return {
+    "X-Parse-Application-Id": process.env.NEXT_PUBLIC_XParseApplicationId!,
+    "X-Parse-REST-API-Key": process.env.NEXT_PUBLIC_XParseRESTAPIKey!,
+    "X-Parse-Session-Token": sessionToken,
+    "Content-Type": "application/json",
+  };
 };
 
 const getAuthUser =()=>{
@@ -97,6 +98,15 @@ const UserAPI = {
     return axios.post(`${BASE_URL}/inAppChangePassword`, form, {
       headers: getSessionTokenHeaders(),
     });
+  },
+
+  updateUser(form: UpdateUserForm): Promise<AxiosResponse<ApiResponse>> {
+    return axios.post(
+      `${BASE_URL}/updateProfile?firstName=${form.firstName}&lastName=${form.lastName}&dob=${form.dob}&gender=${form.gender}&country=${form.country}&facebook=${form.facebook}&instagram=${form.instagram}&twitter=${form.twitter}&whatsapp=${form.whatsapp}&avatar=${form.avatar}&promotionalMails=${form.promotionalMails}`,
+      {
+        headers: getSessionTokenHeaders(),
+      }
+    );
   },
 };
 
