@@ -35,14 +35,13 @@ type BankAccountFormData = z.infer<typeof bankAccountSchema>;
 
 export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
   const [showBankDropdown, setShowBankDropdown] = useState(false);
-  const [accountName, setAccountName] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
     setValue,
     reset,
     watch,
@@ -220,12 +219,6 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
           )}
         </div>
       </div>
-
-      {accountName && (
-        <div className="text-primary-800 font-medium">
-          Account Name: {accountName}
-        </div>
-      )}
 
       <CustomButton
         type="submit"

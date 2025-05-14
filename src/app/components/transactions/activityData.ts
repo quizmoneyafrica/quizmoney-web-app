@@ -1,4 +1,3 @@
-// data/activityData.ts
 
 import { ActivitySection } from "./ActivityRow";
 

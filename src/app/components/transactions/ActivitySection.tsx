@@ -1,4 +1,3 @@
-// components/ActivitySection.tsx
 import React from "react";
 import ActivityRow, { ActivityItem } from "./ActivityRow";
 

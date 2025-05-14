@@ -39,14 +39,6 @@ export default function WithdrawalAccounts() {
     return () => window.removeEventListener("resize", checkIfMobile);
   }, []);
 
-  const handleBankFormSubmit = (data: {
-    accountNumber: string;
-    bank: string;
-  }) => {
-    console.log("Form submitted:", data);
-    setOpen(false);
-  };
-
   interface Account {
     id: number;
     accountNumber: string;
