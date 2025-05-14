@@ -4,13 +4,37 @@ import CustomImage from "./CustomImage";
 import classNames from "classnames";
 import MobileList from "./MobileList";
 import { useSelector } from "react-redux";
-import { UserWalletTransaction, useWallet } from "@/app/store/walletSlice";
+import { useWallet } from "@/app/store/walletSlice";
 import { format, parseISO, isToday, isYesterday } from "date-fns";
+import Link from "next/link";
+
+interface Transaction {
+  amount: number;
+  title: string;
+  description: string;
+  type: string;
+  status: string;
+  user: {
+    __type: string;
+    className: string;
+    objectId: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  objectId: string;
+  __type: string;
+  className: string;
+}
+
+export type UserWalletTransaction = {
+  date: string;
+  transactions: Array<Transaction>;
+};
 
 interface TransactionGroup {
-  today: UserWalletTransaction[];
-  yesterday: UserWalletTransaction[];
-  other: UserWalletTransaction[];
+  today: Transaction[];
+  yesterday: Transaction[];
+  other: Transaction[];
 }
 
 export default function TransactionHistory(): JSX.Element {
@@ -22,7 +46,14 @@ export default function TransactionHistory(): JSX.Element {
     other: [],
   };
 
-  transactions.forEach((transaction: UserWalletTransaction) => {
+  const flattenedTransactions: Transaction[] = [];
+  transactions.forEach((walletTransaction: UserWalletTransaction) => {
+    walletTransaction.transactions.forEach((transaction: Transaction) => {
+      flattenedTransactions.push(transaction);
+    });
+  });
+
+  flattenedTransactions.forEach((transaction: Transaction) => {
     const date = parseISO(transaction?.createdAt ?? new Date().toISOString());
 
     if (isToday(date)) {
@@ -34,18 +65,17 @@ export default function TransactionHistory(): JSX.Element {
     }
   });
 
-  // Render a single transaction item
   const renderTransaction = (
-    transaction: UserWalletTransaction,
+    transaction: Transaction,
     index: number,
-    array: UserWalletTransaction[]
+    array: Transaction[]
   ): JSX.Element => {
-    const date = parseISO(transaction?.createdAt ?? new Date().toISOString());
+    const date = parseISO(transaction.createdAt ?? new Date().toISOString());
     const dateData = format(date, "MMM d h:mma").toLowerCase();
     const isLastInGroup = index === array.length - 1;
 
     return (
-      <React.Fragment key={index.toString()}>
+      <React.Fragment key={transaction.objectId || index.toString()}>
         <div
           className={classNames(
             "bg-white px-3 md:px-4 py-3 md:py-4 hidden md:flex justify-between items-center",
@@ -74,9 +104,10 @@ export default function TransactionHistory(): JSX.Element {
             </div>
             <div>
               <p className="text-sm md:text-base font-medium text-[#3B3B3B]">
-                {transaction.type === "deposit"
-                  ? "Wallet Top up"
-                  : "Withdrawal made"}
+                {transaction.title ||
+                  (transaction.type === "deposit"
+                    ? "Wallet Top up"
+                    : "Withdrawal made")}
               </p>
               <p className="text-xs md:text-sm text-gray-500">
                 {transaction.type}
@@ -119,7 +150,7 @@ export default function TransactionHistory(): JSX.Element {
 
   const renderTransactionSection = (
     title: string,
-    transactions: UserWalletTransaction[]
+    transactions: Transaction[]
   ): JSX.Element | null => {
     if (transactions.length === 0) return null;
 
@@ -147,16 +178,19 @@ export default function TransactionHistory(): JSX.Element {
           <h2 className="text-lg md:text-xl font-semibold text-[#2364AA]">
             Recent Transactions
           </h2>
-          <button className="text-sm md:text-base text-[#2A75BC]">
+          <Link
+            href={"/wallet/transactions"}
+            className="text-sm md:text-base text-[#2A75BC]"
+          >
             View all
-          </button>
+          </Link>
         </div>
 
         {isTransactionsLoading ? (
           <div className="py-8 flex justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2364AA]"></div>
           </div>
-        ) : transactions.length === 0 ? (
+        ) : flattenedTransactions.length === 0 ? (
           renderEmptyState()
         ) : (
           <React.Fragment>
