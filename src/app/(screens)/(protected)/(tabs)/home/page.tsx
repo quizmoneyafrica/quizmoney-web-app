@@ -1,16 +1,18 @@
 "use client";
 import { useAppSelector } from "@/app/hooks/useAuth";
-import AppLayout from "@/app/layout/appLayout";
 import { decryptData } from "@/app/utils/crypto";
-import { capitalizeFirstLetter } from "@/app/utils/utils";
 import React from "react";
 import { motion } from "framer-motion";
+import GameCard from "@/app/components/home/GameCard";
+import TopGamers from "@/app/components/home/TopGamers";
+import ReferBox from "@/app/components/home/ReferBox";
+import { Grid } from "@radix-ui/themes";
 
 function HomeTab() {
   const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
   const user = encrypted ? decryptData(encrypted) : null;
 
-  //   console.log("USER: ", user);
+  console.log("USER: ", user);
 
   return (
     <>
@@ -20,7 +22,13 @@ function HomeTab() {
         exit={{ opacity: 0, y: -10 }}
         transition={{ duration: 0.25, ease: "easeInOut" }}
       >
-        <AppLayout>{capitalizeFirstLetter(user?.firstName)}</AppLayout>
+        <Grid>
+          <Grid gap="4">
+            <GameCard />
+            <TopGamers />
+            <ReferBox refCode={user?.referralCode} />
+          </Grid>
+        </Grid>
       </motion.div>
     </>
   );

@@ -1,3 +1,4 @@
+import { format, isToday, isTomorrow, isPast, parseISO } from "date-fns";
 import { Transaction, UserWalletTransaction } from "../store/walletSlice";
 
 export function isIosPwaInstalled(): boolean {
@@ -58,4 +59,36 @@ export function flattenTransactionsByDate(
       section: section.date,
     }))
   );
+}
+
+//Format Amounts
+export function formatNaira(amount: number | string, showDecimals = false): string {
+	const value = typeof amount === "string" ? parseFloat(amount) : amount;
+  
+	if (isNaN(value)) return "₦0";
+  
+	return new Intl.NumberFormat("en-NG", {
+	  style: "currency",
+	  currency: "NGN",
+	  minimumFractionDigits: showDecimals ? 2 : 0,
+	  maximumFractionDigits: showDecimals ? 2 : 0,
+	}).format(value);
+  }
+
+  //Date
+  export function formatQuizDate(input: string): string {
+	const date = parseISO(input);
+
+	const time = format(date, "h:mm a");
+
+	if (isToday(date)) {
+		return `Today, ${time}`;
+	} else if (isTomorrow(date)) {
+		return `Tomorrow, ${time}`;
+	} else if (!isPast(date)) {
+		return `${format(date, "EEEE")}, ${time}`; 
+	} else {
+		// Past date
+		return `${format(date, "MMM do")}, ${time}`;
+	}
 }
