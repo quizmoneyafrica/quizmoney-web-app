@@ -1,5 +1,6 @@
 import React from "react";
 import CustomImage from "../wallet/CustomImage";
+import { FlatTransaction } from "@/app/utils/utils";
 
 interface ActivityRowProps {
   activity: ActivityItem;
@@ -25,7 +26,9 @@ export function formatAmount(amount: number): string {
 }
 export function ActivityRow({
   activity,
-}: ActivityRowProps): React.ReactElement {
+}: {
+  activity: FlatTransaction;
+}): React.ReactElement {
   const iconBg =
     activity.type === "deposit"
       ? "bg-green-100 text-green-500"
@@ -54,15 +57,17 @@ export function ActivityRow({
           )}
         </span>
         <div>
-          <div className="font-semibold text-[#3B3B3B]">{activity.title}</div>
-          <div className="text-[#6D6D6D] text-sm ">{activity.desc}</div>
+          <div className="font-semibold">{activity.title}</div>
+          <div className="text-gray-400 text-sm">{activity.description}</div>
         </div>
       </div>
       <div className="flex flex-col items-end">
         <span className={`font-semibold ${amountColor}`}>
           {formatAmount(activity.amount)}
         </span>
-        <span className="text-xs text-[#6D6D6D]">{activity.time}</span>
+        <span className="text-xs text-gray-400">
+          {new Date(activity.createdAt).toLocaleString()}
+        </span>
       </div>
     </div>
   );
