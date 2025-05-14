@@ -6,6 +6,7 @@ import MobileList from "./MobileList";
 import { useSelector } from "react-redux";
 import { useWallet } from "@/app/store/walletSlice";
 import { format, parseISO, isToday, isYesterday } from "date-fns";
+import Link from "next/link";
 
 // Original Transaction interface
 interface Transaction {
@@ -183,9 +184,12 @@ export default function TransactionHistory(): JSX.Element {
           <h2 className="text-lg md:text-xl font-semibold text-[#2364AA]">
             Recent Transactions
           </h2>
-          <button className="text-sm md:text-base text-[#2A75BC]">
+          <Link
+            href={"/wallet/transactions"}
+            className="text-sm md:text-base text-[#2A75BC]"
+          >
             View all
-          </button>
+          </Link>
         </div>
 
         {isTransactionsLoading ? (
