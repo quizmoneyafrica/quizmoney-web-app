@@ -28,6 +28,7 @@ function Page() {
     };
     fetchWallet();
   }, [dispatch]);
+  
   useEffect(() => {
     // SET AUTH USER WALLET DATA
     const fetchWallet = async () => {
