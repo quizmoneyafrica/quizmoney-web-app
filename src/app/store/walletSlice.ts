@@ -37,7 +37,7 @@ export interface ParsePointer {
   objectId: string;
 }
 export type BankAccount ={
-  id: number 
+  id?: number 
 	accountNumber: string;
 	bankName: string;
 	accountName: string;
