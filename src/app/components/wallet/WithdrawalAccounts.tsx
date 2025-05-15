@@ -12,6 +12,7 @@ import {
   useWallet,
 } from "@/app/store/walletSlice";
 import { store } from "@/app/store/store";
+import { toast } from "sonner";
 
 export default function WithdrawalAccounts() {
   interface Account extends BankAccount {
@@ -138,7 +139,16 @@ export default function WithdrawalAccounts() {
         )}
 
         <button
-          onClick={() => store.dispatch(setAddBankModal(true))}
+          onClick={() => {
+            if (wallet?.bankAccounts && wallet?.bankAccounts.length >= 3) {
+              toast.info("You've already have three account number listed", {
+                position: "top-right",
+              });
+
+              return;
+            }
+            store.dispatch(setAddBankModal(true));
+          }}
           className="border-2 border-dashed border-[#070707CC] rounded-full cursor-pointer py-4 w-full flex items-center justify-center space-x-2 hover:bg-gray-50"
         >
           <Plus size={20} />

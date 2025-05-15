@@ -12,7 +12,7 @@ import MobileWithdrawalPinForm from "./MobileWithdrawalPinForm";
 import WithdrawalSuccessModal from "./WithdrawalSuccessModal";
 import MobileWithdrawalSuccess from "./MobileWithdrawalSuccess";
 import { useSelector } from "react-redux";
-import { RootState, store } from "@/app/store/store";
+import { store } from "@/app/store/store";
 import { Loader } from "lucide-react";
 import {
   setAddBankModal,
@@ -20,10 +20,10 @@ import {
   setWithdrawalPinModal,
   useWallet,
 } from "@/app/store/walletSlice";
+import { toast } from "sonner";
 
 export default function WalletBalance() {
   const [open, setOpen] = useState(false);
-  const [openPinModal, setOpenPinModal] = useState(false);
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const { wallet, isWalletLoading, withdrawalModal, withdrawalPinModal } =
@@ -130,7 +130,7 @@ export default function WalletBalance() {
           onClose={() => store.dispatch(setWithdrawalModal(false))}
           title="Withdraw"
         >
-          <MobileWithdrawalForm onSubmit={() => {}} />
+          <MobileWithdrawalForm />
         </BottomSheet>
       ) : (
         <Dialog.Root
@@ -141,6 +141,13 @@ export default function WalletBalance() {
             open={withdrawalModal}
             onOpenChange={(d) => store.dispatch(setWithdrawalModal(d))}
             onAddBank={() => {
+              if (wallet?.bankAccounts && wallet?.bankAccounts.length >= 3) {
+                toast.info("You've already have three account number listed", {
+                  position: "top-right",
+                });
+
+                return;
+              }
               store.dispatch(setWithdrawalModal(false));
 
               store.dispatch(setAddBankModal(true));

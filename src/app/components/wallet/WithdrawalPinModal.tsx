@@ -2,11 +2,8 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import CustomButton from "@/app/utils/CustomBtn";
 import { useSelector } from "react-redux";
 import {
-  setTransactions,
-  setTransactionsLoading,
   setWallet,
   setWalletLoading,
   setWithdrawalModal,
