@@ -3,12 +3,20 @@ import CustomButton from "@/app/utils/CustomBtn";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSelector } from "react-redux";
+import {
+  setWithdrawalData,
+  setWithdrawalPinModal,
+  useWallet,
+} from "@/app/store/walletSlice";
+import { store } from "@/app/store/store";
 
-// Dummy bank data
-const dummyBanks = [
-  { id: "1", name: "Firstbank", accountNumber: "1234567890" },
-  { id: "2", name: "GTBank", accountNumber: "0987654321" },
-];
+export type BankAccount = {
+  id: number;
+  accountNumber: string;
+  bankName: string;
+  accountName: string;
+};
 
 const withdrawFormSchema = z.object({
   amount: z
@@ -29,12 +37,15 @@ type WithdrawFormData = z.infer<typeof withdrawFormSchema>;
 export const MobileWithdrawalForm = ({
   onSubmit,
   close,
-  banks = dummyBanks, // Allow override or use dummy
+  banks, // Allow override from props or use from wallet
 }: {
-  onSubmit: (data: { amount: number; bankId: string }) => void;
+  onSubmit: (data: { amount: number; bankAccount: BankAccount }) => void;
   close?: () => void;
-  banks?: typeof dummyBanks;
+  banks?: BankAccount[];
 }) => {
+  const { wallet } = useSelector(useWallet);
+  // Use banks from props or from wallet
+  const bankAccounts = banks || wallet?.bankAccounts || [];
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
 
   const amountOptions = [
@@ -55,7 +66,7 @@ export const MobileWithdrawalForm = ({
     mode: "onChange",
     defaultValues: {
       amount: "",
-      bankId: banks[0]?.id || "",
+      bankId: bankAccounts.length > 0 ? String(bankAccounts[0].id) : "",
     },
   });
 
@@ -74,10 +85,28 @@ export const MobileWithdrawalForm = ({
   const onFormSubmit = (data: WithdrawFormData) => {
     const numericAmount =
       selectedAmount || Number(data.amount.replace(/[₦,]/g, ""));
-    onSubmit({ amount: numericAmount, bankId: data.bankId });
+
+    // Find the selected bank
+    const selectedBankData = bankAccounts.find(
+      (bank) => String(bank.id) === data.bankId
+    );
+
+    if (!selectedBankData) return;
+
+    const payload = {
+      amount: numericAmount,
+      bankAccount: {
+        accountNumber: selectedBankData.accountNumber,
+        bankName: selectedBankData.bankName,
+        accountName: selectedBankData.accountName,
+      },
+    };
+    store.dispatch(setWithdrawalData(payload));
+
     reset();
     setSelectedAmount(null);
     close?.();
+    store.dispatch(setWithdrawalPinModal(true));
   };
 
   return (
@@ -126,18 +155,22 @@ export const MobileWithdrawalForm = ({
           <label className="block text-gray-800 mb-3">
             Select Bank you want to withdraw to
           </label>
-          <select
-            {...register("bankId")}
-            className={`w-full border ${
-              errors.bankId ? "border-red-500" : "border-gray-300"
-            } rounded-lg px-4 py-2 focus:outline-none focus:ring-transparent`}
-          >
-            {banks.map((bank) => (
-              <option key={bank.id} value={bank.id}>
-                {bank.accountNumber} - {bank.name}
-              </option>
-            ))}
-          </select>
+          {bankAccounts.length > 0 ? (
+            <select
+              {...register("bankId")}
+              className={`w-full border ${
+                errors.bankId ? "border-red-500" : "border-gray-300"
+              } rounded-lg px-4 py-2 focus:outline-none focus:ring-transparent`}
+            >
+              {bankAccounts.map((bank) => (
+                <option key={bank.id} value={String(bank.id)}>
+                  {bank.accountNumber} - {bank.bankName} - {bank.accountName}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <div className="text-gray-600">No banks added yet</div>
+          )}
           {errors.bankId && (
             <p className="text-red-500 text-sm mt-1">{errors.bankId.message}</p>
           )}
@@ -155,6 +188,7 @@ export const MobileWithdrawalForm = ({
         <CustomButton
           type="submit"
           className="bg-primary-900 text-white w-full rounded-full py-4 hover:bg-primary-700"
+          disabled={bankAccounts.length === 0}
         >
           Proceed
         </CustomButton>

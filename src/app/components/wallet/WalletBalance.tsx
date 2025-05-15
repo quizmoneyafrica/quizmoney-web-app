@@ -127,7 +127,7 @@ export default function WalletBalance() {
       {isMobile ? (
         <BottomSheet
           isOpen={withdrawalModal}
-          onClose={() => store.dispatch(setWithdrawalModal(true))}
+          onClose={() => store.dispatch(setWithdrawalModal(false))}
           title="Withdraw"
         >
           <MobileWithdrawalForm onSubmit={() => {}} />
