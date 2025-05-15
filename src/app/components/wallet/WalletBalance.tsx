@@ -17,6 +17,7 @@ import { Loader } from "lucide-react";
 import {
   setAddBankModal,
   setWithdrawalModal,
+  setWithdrawalPinModal,
   useWallet,
 } from "@/app/store/walletSlice";
 
@@ -25,7 +26,8 @@ export default function WalletBalance() {
   const [openPinModal, setOpenPinModal] = useState(false);
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const { wallet, isWalletLoading, withdrawalModal } = useSelector(useWallet);
+  const { wallet, isWalletLoading, withdrawalModal, withdrawalPinModal } =
+    useSelector(useWallet);
 
   useEffect(() => {
     const checkIfMobile = () => {
@@ -39,6 +41,7 @@ export default function WalletBalance() {
     return () => window.removeEventListener("resize", checkIfMobile);
   }, []);
   const [activeDot, setActiveDot] = useState(0);
+
   const [isBalanceHidden, setIsBalanceHidden] = useState(false);
 
   const toggleBalanceVisibility = () => {
@@ -93,7 +96,7 @@ export default function WalletBalance() {
               </span>
             </button>
             <button
-              onClick={() => store.dispatch(setWithdrawalModal(true))}
+              onClick={() => store.dispatch(setWithdrawalPinModal(true))}
               className="bg-[#E4F1FA] cursor-pointer hover:bg-gray-100 text-primary-700 px-6 py-3 rounded-full flex items-center gap-2 font-medium"
             >
               Withdraw <CustomImage alt="" src={"/icons/arrow-up.svg"} />
@@ -142,25 +145,27 @@ export default function WalletBalance() {
         </Dialog.Root>
       )}
 
-      {isMobile ? (
-        <BottomSheet
-          isOpen={openPinModal}
-          onClose={() => setOpenPinModal(false)}
-          title="Create withdrawal pin "
-        >
-          <MobileWithdrawalPinForm onSubmit={() => {}} />
-        </BottomSheet>
-      ) : (
-        <Dialog.Root open={openPinModal} onOpenChange={setOpenPinModal}>
-          <WithdrawalPinModal
-            open={openPinModal}
-            onOpenChange={setOpenPinModal}
-            onVerify={function (pin: string): void {
-              console.log(pin);
-            }}
-          />
-        </Dialog.Root>
-      )}
+      <>
+        {isMobile ? (
+          <BottomSheet
+            isOpen={withdrawalPinModal}
+            onClose={() => store.dispatch(setWithdrawalPinModal(false))}
+            title="Create withdrawal pin "
+          >
+            <MobileWithdrawalPinForm onSubmit={() => {}} />
+          </BottomSheet>
+        ) : (
+          <Dialog.Root
+            open={withdrawalPinModal}
+            onOpenChange={(d) => store.dispatch(setWithdrawalPinModal(d))}
+          >
+            <WithdrawalPinModal
+              open={withdrawalPinModal}
+              onOpenChange={(d) => store.dispatch(setWithdrawalPinModal(d))}
+            />
+          </Dialog.Root>
+        )}
+      </>
       {isMobile ? (
         <BottomSheet
           full
