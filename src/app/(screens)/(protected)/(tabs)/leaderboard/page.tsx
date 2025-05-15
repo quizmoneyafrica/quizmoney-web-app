@@ -1,31 +1,60 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import CustomPagination from "@/app/utils/CustomPagination";
+// import CustomPagination from "@/app/utils/CustomPagination";
 import PlayerCard from "./PlayerCard";
-import { mockPlayers } from "./mockPlayers";
+import LeaderboardAPI from "@/app/api/leaderboardApi";
+import AppLoader from "@/app/components/loader/loader";
+import { User } from "@/app/api/interface";
+
+interface Leaderboard {
+  prize?: number;
+  user?: User;
+  userId: string;
+  position?: number;
+  noOfGamesPlayed?: number;
+  amountWon?: number;
+  overallRank?: number;
+}
 
 function Page() {
   const [activeTab, setActiveTab] = useState<"lastGame" | "allTime">(
     "lastGame"
   );
-
-  //   const getLeaderboard = async (tab: "lastGame" | "allTime") => {
-  //     try {
-  //       const res =
-  //         tab === "lastGame"
-  //           ? await LeaderboardAPI.getLastGameLeaderboard()
-  //           : await LeaderboardAPI.getAllTimeLeaderboard();
-  //       console.log(res.data);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
+  const [loading, setLoading] = useState(true);
+  const [leaderboard, setLeaderboard] = useState<Leaderboard[]>([]);
+  const getLeaderboard = async (tab: "lastGame" | "allTime") => {
+    try {
+      setLoading(true);
+      const res =
+        tab === "lastGame"
+          ? await LeaderboardAPI.getLastGameLeaderboard().then((res) => {
+              setLeaderboard(res.data.result.gameLeaderboard.rankings);
+            })
+          : await LeaderboardAPI.getAllTimeLeaderboard().then((res) => {
+              setLeaderboard(res.data.result);
+            });
+      setLoading(false);
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleTabChange = (tab: "lastGame" | "allTime") => {
     setActiveTab(tab);
+    getLeaderboard(tab);
   };
 
+  useEffect(() => {
+    getLeaderboard("lastGame");
+  }, []);
+
+  if (loading) {
+    return <AppLoader />;
+  }
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -70,18 +99,18 @@ function Page() {
           <p>Amount</p>
         </div>
 
-        {mockPlayers.map((player) => (
-          <PlayerCard player={{ ...player, activeTab }} key={player._id} />
+        {leaderboard?.map((player) => (
+          <PlayerCard player={{ ...player, activeTab }} key={player.userId} />
         ))}
       </div>
 
-      <CustomPagination
+      {/* <CustomPagination
         currentPage={2}
         totalPages={10}
         totalEntries={100}
         entriesPerPage={10}
         onPageChange={() => {}}
-      />
+      /> */}
       <div className="h-30" />
     </motion.div>
   );

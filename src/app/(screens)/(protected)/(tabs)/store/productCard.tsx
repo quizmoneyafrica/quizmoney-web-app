@@ -136,7 +136,7 @@ const ProductCard = ({ product }: { product: Product }) => {
             loader={isLoading}
             disabled={isLoading}
           >
-            Proceed to Pay ₦ + {product?.productPrice}
+            Proceed to Pay ₦{product?.productPrice}
           </CustomButton>
         </Flex>
       </Modal>
