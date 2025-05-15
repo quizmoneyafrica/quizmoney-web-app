@@ -88,6 +88,10 @@ export default function WithdrawalModal({
 
     if (!selectedBankData) return;
 
+    console.log("====================================");
+    console.log("==============here============");
+    console.log("====================================");
+
     const payload = {
       amount: numericAmount,
       bankAccount: {
