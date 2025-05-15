@@ -52,7 +52,7 @@ const Support = () => {
                   Log your issue to the support team
                 </p>
                 <p
-                  onClick={() => router.push("/settings/support/ticket")}
+                  onClick={() => router.push("/support/ticket")}
                   className="text-sm underline text-primary-700 mt-1 cursor-pointer"
                 >
                   View ticket

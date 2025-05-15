@@ -65,7 +65,7 @@ function Page() {
               className=" bg-white p-4 md:p-6 rounded-2xl sm:rounded-xl border border-zinc-200"
               align={"center"}
               justify={"between"}
-              onClick={() => router.push("/settings/support")}
+              onClick={() => router.push("/support")}
             >
               <Flex gap={"3"} align={"center"}>
                 <div className="h-12 w-12 bg-primary-50 rounded-full flex justify-center items-center">
