@@ -96,7 +96,13 @@ export default function WalletBalance() {
               </span>
             </button>
             <button
-              onClick={() => store.dispatch(setWithdrawalPinModal(true))}
+              onClick={() => {
+                if (wallet?.pin) {
+                  store.dispatch(setWithdrawalModal(true));
+                } else {
+                  store.dispatch(setWithdrawalPinModal(true));
+                }
+              }}
               className="bg-[#E4F1FA] cursor-pointer hover:bg-gray-100 text-primary-700 px-6 py-3 rounded-full flex items-center gap-2 font-medium"
             >
               Withdraw <CustomImage alt="" src={"/icons/arrow-up.svg"} />
@@ -134,13 +140,11 @@ export default function WalletBalance() {
           <WithdrawalModalModal
             open={withdrawalModal}
             onOpenChange={(d) => store.dispatch(setWithdrawalModal(d))}
-            onSubmit={() => {}}
             onAddBank={() => {
               store.dispatch(setWithdrawalModal(false));
 
               store.dispatch(setAddBankModal(true));
             }}
-            banks={[]}
           />
         </Dialog.Root>
       )}
