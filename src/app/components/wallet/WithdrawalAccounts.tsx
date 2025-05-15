@@ -6,7 +6,12 @@ import AddBankModal from "./AddBankModal";
 import { BottomSheet } from "./BottomSheet";
 import { MobileAddBankAccount } from "./MobileAddBankAccount";
 import { useSelector } from "react-redux";
-import { BankAccount, useWallet } from "@/app/store/walletSlice";
+import {
+  BankAccount,
+  setAddBankModal,
+  useWallet,
+} from "@/app/store/walletSlice";
+import { store } from "@/app/store/store";
 
 export default function WithdrawalAccounts() {
   interface Account extends BankAccount {
@@ -17,7 +22,6 @@ export default function WithdrawalAccounts() {
   const { wallet } = useSelector(useWallet);
 
   const [accounts, setAccounts] = useState<Account[]>([]);
-  const [open, setOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -43,7 +47,6 @@ export default function WithdrawalAccounts() {
     return () => window.removeEventListener("resize", checkIfMobile);
   }, []);
 
-  // Toggle account number visibility
   const toggleVisibility = (id: number): void => {
     setAccounts(
       accounts.map((account) =>
@@ -52,11 +55,10 @@ export default function WithdrawalAccounts() {
     );
   };
 
-  // Delete an account (local state only; consider dispatching to Redux if needed)
   const deleteAccount = (id: number): void => {
     setAccounts(accounts.filter((account) => account.id !== id));
   };
-
+  const { addBankAccountModal } = useSelector(useWallet);
   return (
     <div className="w-full bg-white p-4 rounded-3xl">
       <h1 className="text-xl font-bold mb-4">Withdrawal Accounts</h1>
@@ -113,20 +115,30 @@ export default function WithdrawalAccounts() {
 
         {isMobile ? (
           <BottomSheet
-            isOpen={open}
-            onClose={() => setOpen(false)}
+            isOpen={addBankAccountModal}
+            onClose={() => store.dispatch(setAddBankModal(false))}
             title="Add Bank account"
           >
-            <MobileAddBankAccount close={() => setOpen(false)} />
+            <MobileAddBankAccount
+              close={() => store.dispatch(setAddBankModal(false))}
+            />
           </BottomSheet>
         ) : (
-          <Dialog.Root open={open} onOpenChange={setOpen}>
-            <AddBankModal open={open} onOpenChange={setOpen} />
+          <Dialog.Root
+            open={addBankAccountModal}
+            onOpenChange={(data) => {
+              store.dispatch(setAddBankModal(data));
+            }}
+          >
+            <AddBankModal
+              open={addBankAccountModal}
+              onOpenChange={(g) => store.dispatch(setAddBankModal(g))}
+            />
           </Dialog.Root>
         )}
 
         <button
-          onClick={() => setOpen(true)}
+          onClick={() => store.dispatch(setAddBankModal(true))}
           className="border-2 border-dashed border-[#070707CC] rounded-full cursor-pointer py-4 w-full flex items-center justify-center space-x-2 hover:bg-gray-50"
         >
           <Plus size={20} />

@@ -12,18 +12,20 @@ import MobileWithdrawalPinForm from "./MobileWithdrawalPinForm";
 import WithdrawalSuccessModal from "./WithdrawalSuccessModal";
 import MobileWithdrawalSuccess from "./MobileWithdrawalSuccess";
 import { useSelector } from "react-redux";
-import { RootState } from "@/app/store/store";
+import { RootState, store } from "@/app/store/store";
 import { Loader } from "lucide-react";
+import {
+  setAddBankModal,
+  setWithdrawalModal,
+  useWallet,
+} from "@/app/store/walletSlice";
 
 export default function WalletBalance() {
-  const [withdrawalModal, setOpenWithdrawal] = useState(false);
   const [open, setOpen] = useState(false);
   const [openPinModal, setOpenPinModal] = useState(false);
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const { wallet, isWalletLoading } = useSelector(
-    (state: RootState) => state?.wallet
-  );
+  const { wallet, isWalletLoading, withdrawalModal } = useSelector(useWallet);
 
   useEffect(() => {
     const checkIfMobile = () => {
@@ -91,7 +93,7 @@ export default function WalletBalance() {
               </span>
             </button>
             <button
-              onClick={() => setOpenWithdrawal(true)}
+              onClick={() => store.dispatch(setWithdrawalModal(true))}
               className="bg-[#E4F1FA] cursor-pointer hover:bg-gray-100 text-primary-700 px-6 py-3 rounded-full flex items-center gap-2 font-medium"
             >
               Withdraw <CustomImage alt="" src={"/icons/arrow-up.svg"} />
@@ -116,18 +118,25 @@ export default function WalletBalance() {
       {isMobile ? (
         <BottomSheet
           isOpen={withdrawalModal}
-          onClose={() => setOpenWithdrawal(false)}
+          onClose={() => store.dispatch(setWithdrawalModal(true))}
           title="Withdraw"
         >
           <MobileWithdrawalForm onSubmit={() => {}} />
         </BottomSheet>
       ) : (
-        <Dialog.Root open={withdrawalModal} onOpenChange={setOpen}>
+        <Dialog.Root
+          open={withdrawalModal}
+          onOpenChange={(d) => store.dispatch(setWithdrawalModal(d))}
+        >
           <WithdrawalModalModal
             open={withdrawalModal}
-            onOpenChange={setOpenWithdrawal}
+            onOpenChange={(d) => store.dispatch(setWithdrawalModal(d))}
             onSubmit={() => {}}
-            onAddBank={function (): void {}}
+            onAddBank={() => {
+              store.dispatch(setWithdrawalModal(false));
+
+              store.dispatch(setAddBankModal(true));
+            }}
             banks={[]}
           />
         </Dialog.Root>

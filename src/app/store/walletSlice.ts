@@ -3,6 +3,8 @@ import { RootState } from "./store";
 
 interface WalletState {
 	wallet: Wallet|undefined;
+	withdrawalModal:boolean
+	addBankAccountModal:boolean
 	isWalletLoading:boolean;
 	isTransactionsLoading:boolean;
 	transactions:UserWalletTransaction[]|[]
@@ -10,6 +12,8 @@ interface WalletState {
 }
 export interface Bank { id: number; code: string; name: string }
 const initialState: WalletState = {
+	withdrawalModal:false,
+	addBankAccountModal:false,
 	wallet:undefined,
 	transactions:[],
 	banks:[],
@@ -89,9 +93,15 @@ const walletSlice = createSlice({
 		setBanks(state, action: PayloadAction<Bank[]|[]>) {
 			state.banks = action.payload;
 		},
+		setWithdrawalModal(state, action: PayloadAction<boolean>) {
+			state.withdrawalModal = action.payload;
+		},
+		setAddBankModal(state, action: PayloadAction<boolean>) {
+			state.addBankAccountModal = action.payload;
+		},
 	},
 });
 
-export const {  setWallet,setTransactionsLoading ,setWalletLoading,setTransactions,setBanks} = walletSlice.actions;
+export const {  setWallet,setTransactionsLoading ,setWalletLoading,setTransactions,setBanks,setAddBankModal,setWithdrawalModal} = walletSlice.actions;
 export default walletSlice.reducer;
 export const useWallet=(state:RootState)=>state?.wallet

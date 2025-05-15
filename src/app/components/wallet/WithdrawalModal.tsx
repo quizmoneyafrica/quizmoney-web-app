@@ -6,6 +6,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Plus } from "lucide-react";
 
 const dummyBanks = [
   {
@@ -275,31 +276,9 @@ export default function WithdrawalModal({
                   <button
                     type="button"
                     onClick={onAddBank}
-                    className="flex items-center text-primary-900 font-medium mt-2 ml-auto"
+                    className="flex items-center cursor-pointer text-primary-900 font-medium mt-2 ml-auto"
                   >
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="mr-2"
-                    >
-                      <path
-                        d="M10 4.16666V15.8333"
-                        stroke="#1849A9"
-                        strokeWidth="1.67"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M4.16669 10H15.8334"
-                        stroke="#1849A9"
-                        strokeWidth="1.67"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
+                    <Plus className=" text-primary-900 size-5" />
                     Add New Bank
                   </button>
 
