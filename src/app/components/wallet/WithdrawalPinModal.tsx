@@ -86,6 +86,7 @@ export default function OtpVerificationModal({
   };
 
   const [isCreatingPin, setIsCreatingPin] = useState<boolean>(false);
+  const [isCreatingRequest, setIsCreatingRequest] = useState<boolean>(false);
 
   const createPin = async (pin: string) => {
     try {
@@ -113,6 +114,7 @@ export default function OtpVerificationModal({
     }
   };
   const handleWithdrawal = async (pin: string) => {
+    setIsCreatingRequest(true);
     if (!withdrawalData) {
       return;
     }
@@ -135,8 +137,7 @@ export default function OtpVerificationModal({
         position: toastPosition,
       });
     } finally {
-      setIsCreatingPin(false);
-      store.dispatch(setTransactionsLoading(false));
+      setIsCreatingRequest(false);
     }
   };
 
@@ -268,9 +269,13 @@ export default function OtpVerificationModal({
                     type="button"
                     onClick={handleSubmit}
                     className="bg-[#2364AA] text-white w-full rounded-full py-3 hover:bg-primary-500"
-                    disabled={otpValues.some((val) => !val) || isCreatingPin}
+                    disabled={
+                      otpValues.some((val) => !val) ||
+                      isCreatingPin ||
+                      isCreatingRequest
+                    }
                   >
-                    {isCreatingPin ? (
+                    {isCreatingPin || isCreatingRequest ? (
                       <div className=" border-b border-b-white animate-spin size-5" />
                     ) : (
                       "Proceed"
