@@ -15,6 +15,7 @@ import WalletApi from "@/app/api/wallet";
 import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
 import { store } from "@/app/store/store";
+import classNames from "classnames";
 
 interface OtpVerificationModalProps {
   open: boolean;
@@ -216,7 +217,9 @@ export default function OtpVerificationModal({
               >
                 <div className="flex justify-between items-center mb-2">
                   <Dialog.Title className="text-2xl font-semibold">
-                    Create withdrawal pin
+                    {wallet?.pin
+                      ? "Enter withdrawal pin"
+                      : "Create withdrawal pin"}
                   </Dialog.Title>
                   <Dialog.Close className="rounded-full p-1 hover:bg-gray-100">
                     <Cross2Icon className="w-6 h-6" />
@@ -268,7 +271,14 @@ export default function OtpVerificationModal({
                   <button
                     type="button"
                     onClick={handleSubmit}
-                    className="bg-[#2364AA] text-white w-full rounded-full py-3 hover:bg-primary-500"
+                    className={classNames(
+                      " text-white w-full rounded-full py-3 hover:bg-primary-500",
+                      otpValues.some((val) => !val) ||
+                        isCreatingPin ||
+                        isCreatingRequest
+                        ? " bg-primary-900/30"
+                        : "bg-[#2364AA]"
+                    )}
                     disabled={
                       otpValues.some((val) => !val) ||
                       isCreatingPin ||
