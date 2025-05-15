@@ -96,9 +96,7 @@ export default function WithdrawalModal({
         accountName: selectedBankData.accountName,
       },
     };
-
     store.dispatch(setWithdrawalData(payload));
-
     reset();
     setSelectedAmount(null);
     store.dispatch(setWithdrawalPinModal(true));
