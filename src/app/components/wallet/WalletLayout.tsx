@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import TransactionHistory from "./TransactionHistory";
 import WithdrawalAccounts from "./WithdrawalAccounts";

@@ -31,8 +31,8 @@ interface DepositModalProps {
 }
 
 const predefinedAmounts = [
-  { label: "₦600", value: 600 },
   { label: "₦1,000", value: 1000 },
+  { label: "₦1,500", value: 1500 },
   { label: "₦2,000", value: 2000 },
   { label: "₦5,000", value: 5000 },
 ];
@@ -205,7 +205,7 @@ export default function DepositModal({
                         onClick={() =>
                           handlePredefinedAmountClick(option.value)
                         }
-                        className={`px-5 py-1 rounded ${
+                        className={`px-5 py-1 rounded cursor-pointer ${
                           selectedAmount === option.value
                             ? "bg-[#E4F1FA] text-primary-900"
                             : "bg-gray-100 text-gray-800"
