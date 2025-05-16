@@ -1,60 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "./Modal";
 import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
 import Image from "next/image";
 import { CheckIcon } from "@radix-ui/react-icons";
+import UserAPI from "@/app/api/userApi";
+import CustomButton from "@/app/utils/CustomBtn";
+import { useAppSelector, useAuth } from "@/app/hooks/useAuth";
+import { decryptData, encryptData } from "@/app/utils/crypto";
+import { User } from "@/app/api/interface";
+import { AxiosError } from "axios";
 // give me 12 images
-const images = [
-  {
-    id: 1,
-    image: "/assets/images/profile.png",
-  },
-  {
-    id: 2,
-    image: "/assets/images/profile.png",
-  },
-  {
-    id: 3,
-    image: "/assets/images/profile.png",
-  },
-  {
-    id: 4,
-    image: "/assets/images/profile.png",
-  },
-  {
-    id: 5,
-    image: "/assets/images/profile.png",
-  },
-  {
-    id: 6,
-    image: "/assets/images/profile.png",
-  },
-  {
-    id: 7,
-    image: "/assets/images/profile.png",
-  },
-  {
-    id: 8,
-    image: "/assets/images/profile.png",
-  },
-  {
-    id: 9,
-    image: "/assets/images/profile.png",
-  },
-  {
-    id: 10,
-    image: "/assets/images/profile.png",
-  },
-  {
-    id: 11,
-    image: "/assets/images/profile.png",
-  },
-  {
-    id: 12,
-    image: "/assets/images/profile.png",
-  },
-];
+
+interface IAvatar {
+  _type: string;
+  url: string;
+  name: string;
+}
 
 const ImagePickerModal = ({
   open,
@@ -64,17 +26,84 @@ const ImagePickerModal = ({
   setOpen: (open: boolean) => void;
 }) => {
   const [showAvatar, setShowAvatar] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<number | null>(null);
+  const [avatars, setAvatars] = useState([]);
+  const [selectedImage, setSelectedImage] = useState<IAvatar>();
   const handleSelectImage = () => {
     toast.info("Gallery Access Coming soon", {
       position: toastPosition,
     });
   };
+  const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
+  const user: User | null = encrypted ? decryptData(encrypted) : null;
+  const [isUpdating, setIsUpdating] = useState(false);
+  const { loginUser } = useAuth();
 
-  const handleSelectAvatar = (id: number) => {
-    setSelectedImage(id);
+  const handleSelectAvatar = (image: IAvatar) => {
+    setSelectedImage(image);
     // setShowAvatar(false);
   };
+
+  const getAvatar = async () => {
+    await UserAPI.getAvatars()
+      .then((res) =>
+        setAvatars(
+          res.data?.results?.map(
+            (data: { avatar: { url: string } }) => data.avatar
+          )
+        )
+      )
+      .catch((err) => console.log(err));
+  };
+
+  useEffect(() => {
+    if (open) {
+      getAvatar();
+    }
+  }, [open]);
+
+  const updateUser = async () => {
+    setIsUpdating(true);
+
+    await UserAPI.updateUser({
+      firstName: user?.firstName,
+      lastName: user?.lastName,
+      dob: user?.dob?.iso,
+      gender: user?.gender,
+      country: user?.country,
+      facebook: user?.facebook,
+      instagram: user?.instagram,
+      twitter: user?.twitter,
+      whatsapp: user?.whatsapp,
+      avatar: selectedImage?.url ? selectedImage?.url : user?.avatar,
+      promotionalMails: user?.promotionalMails ?? false,
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          toast.success("Profile updated successfully", {
+            position: "top-center",
+          });
+          const userData = res.data.result.updatedUser;
+          const encryptedUser = encryptData(userData);
+          console.log("Encrypted: ", encryptedUser);
+
+          // ✅ Dispatch to Redux
+          loginUser(encryptedUser);
+        }
+      })
+      .catch((err: AxiosError) => {
+        toast.error(
+          (err.response?.data as unknown as { error: string }).error ||
+            "Failed to update profile. Please try again later.",
+          {
+            position: "top-center",
+          }
+        );
+      })
+      .finally(() => {
+        setIsUpdating(false);
+      });
+  };
+
   return (
     <Modal
       open={open}
@@ -107,26 +136,26 @@ const ImagePickerModal = ({
           <p className="text-base md:text-lg font-medium">Pick an Avatar</p>
           <div className=" bg-zinc-800 rounded-3xl w-full h-full p-4 md:p-10">
             <div className="grid grid-cols-4 place-items-center gap-4">
-              {images.map((image) => (
+              {avatars.map((image: IAvatar) => (
                 <div
-                  key={image.id}
-                  onClick={() => handleSelectAvatar(image.id)}
+                  key={image.name}
+                  onClick={() => handleSelectAvatar(image)}
                   className={`w-[60px] h-[60px] md:w-20 md:h-20 bg-zinc-700 rounded-full relative ${
-                    selectedImage === image.id
+                    selectedImage?.name === image.name
                       ? "border-2 border-primary-500"
                       : ""
                   }`}
                 >
                   <Image
-                    src={image.image}
+                    src={image.url}
                     alt="avatar"
                     width={100}
                     height={100}
                     className="w-full h-full object-cover rounded-full"
                   />
 
-                  {selectedImage === image.id && (
-                    <div className="absolute bottom-5 md:bottom-4 right-1 md:right-4 bg-primary-400 rounded-full flex items-center justify-center">
+                  {selectedImage?.name === image.name && (
+                    <div className="absolute bottom-0 right-1 md:right-4 bg-primary-400 rounded-full flex items-center justify-center">
                       <div className="text-white text-2xl font-bold">
                         <CheckIcon className="w-4 h-4" />
                       </div>
@@ -136,6 +165,14 @@ const ImagePickerModal = ({
               ))}
             </div>
           </div>
+          <CustomButton
+            loader={isUpdating}
+            disabled={selectedImage === null || selectedImage === undefined}
+            className="w-fit"
+            onClick={updateUser}
+          >
+            Select Avatar
+          </CustomButton>
         </div>
       )}
     </Modal>

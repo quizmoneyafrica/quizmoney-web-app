@@ -3,14 +3,14 @@ import { genders } from "@/app/(screens)/(preAuthScreen)/signup/formSteps/step2"
 import { User } from "@/app/api/interface";
 import userApi from "@/app/api/userApi";
 import ImagePickerModal from "@/app/components/modal/ImagePickerModal";
-import { useAppSelector } from "@/app/hooks/useAuth";
+import { useAppSelector, useAuth } from "@/app/hooks/useAuth";
 import {
   ArrowDownIcon,
   FacebookIcon,
   MailIcon,
   PersonIcon,
 } from "@/app/icons/icons";
-import { decryptData } from "@/app/utils/crypto";
+import { decryptData, encryptData } from "@/app/utils/crypto";
 import CustomButton from "@/app/utils/CustomBtn";
 import CustomSelect from "@/app/utils/CustomSelect";
 import CustomTextField from "@/app/utils/CustomTextField";
@@ -54,6 +54,8 @@ const Page = () => {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
+  const { loginUser } = useAuth();
+
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -65,20 +67,6 @@ const Page = () => {
   const updateUser = async () => {
     setIsUpdating(true);
 
-    console.log({
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      dob: formData.dob,
-      gender: formData.gender,
-      country: formData.country,
-      facebook: formData.facebook,
-      instagram: formData.instagram,
-      twitter: formData.twitter,
-      whatsapp: formData.whatsapp,
-      avatar: user?.avatar ?? "",
-      promotionalMails: user?.promotionalMails ?? false,
-    });
-
     await userApi
       .updateUser({
         firstName: formData.firstName,
@@ -86,10 +74,10 @@ const Page = () => {
         dob: formData.dob,
         gender: formData.gender,
         country: formData.country,
-        facebook: formData.facebook,
-        instagram: formData.instagram,
-        twitter: formData.twitter,
-        whatsapp: formData.whatsapp,
+        facebook: formData.facebook ?? "",
+        instagram: formData.instagram ?? "",
+        twitter: formData.twitter ?? "",
+        whatsapp: formData.whatsapp ?? "",
         avatar: user?.avatar ?? "",
         promotionalMails: user?.promotionalMails ?? false,
       })
@@ -99,6 +87,12 @@ const Page = () => {
           toast.success("Profile updated successfully", {
             position: "top-center",
           });
+
+          const userData = res.data.result.updatedUser;
+          const encryptedUser = encryptData(userData);
+
+          // ✅ Dispatch to Redux
+          loginUser(encryptedUser);
         }
       })
       .catch((err: AxiosError) => {
@@ -281,7 +275,9 @@ const Page = () => {
                   <CustomTextField
                     label="Facebook"
                     name="facebook"
-                    value={formData.facebook}
+                    value={
+                      formData.facebook == "undefined" ? "" : formData.facebook
+                    }
                     type="text"
                     placeholder="@username"
                     onChange={onChange}
@@ -293,7 +289,11 @@ const Page = () => {
                   <CustomTextField
                     label="Instagram"
                     name="instagram"
-                    value={formData.instagram}
+                    value={
+                      formData.instagram == "undefined"
+                        ? ""
+                        : formData.instagram
+                    }
                     type="text"
                     placeholder="@username"
                     onChange={onChange}
@@ -307,7 +307,9 @@ const Page = () => {
                   <CustomTextField
                     label="X Formerly Twitter"
                     name="twitter"
-                    value={formData.twitter}
+                    value={
+                      formData.twitter == "undefined" ? "" : formData.twitter
+                    }
                     type="text"
                     placeholder="@username"
                     onChange={onChange}
