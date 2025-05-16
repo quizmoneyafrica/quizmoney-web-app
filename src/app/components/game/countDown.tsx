@@ -67,7 +67,7 @@ export default function CountdownScreen({ startDate }: Props) {
         setAnimatedCountdown(diff);
       }
 
-      if (diff < 0) {
+      if (diff === -1) {
         clearInterval(intervalRef.current!);
         audioRef.current?.pause();
         audioRef.current = null;
@@ -122,8 +122,10 @@ export default function CountdownScreen({ startDate }: Props) {
             <h1 className="text-3xl font-bold mb-4 text-secondary-300">
               Game Starting in
             </h1>
-            <p className="text-4xl font-heading font-bold">{`${minutes}:${seconds}`}</p>
-           
+            <p className="text-4xl font-heading font-bold">{`${
+              minutes !== 0 ? `${minutes}:` : ""
+            }${seconds}`}</p>
+
             <button
               onClick={handleDismiss}
               className="mt-6 w-full py-3 rounded-full bg-secondary-500 text-neutral-900 font-medium text-sm hover:bg-gray-200 transition"
