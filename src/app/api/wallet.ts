@@ -61,6 +61,32 @@ const WalletApi = {
 			{ headers: getSessionTokenHeaders() }
 		);
 	},
+	createWithdrawalPin(data:{
+		pin:string;
+		edit?:boolean;
+		oldPin?:string
+	}): Promise<AxiosResponse<ApiResponse>> {
+		return axios.post(
+			`${BASE_URL}/createWithdrawalPin`,
+			data?.edit?{...data}:{pin:data?.pin},
+			{ headers: getSessionTokenHeaders() }
+		);
+	},
+	requestWithdrawal(data:{
+			amount:number;
+			pin: string;
+			bankAccount: {
+					accountNumber: string,
+					bankName:string,
+					accountName: string
+	}
+	}): Promise<AxiosResponse<ApiResponse>> {
+		return axios.post(
+			`${BASE_URL}/requestWithdrawal`,
+			{...data},
+			{ headers: getSessionTokenHeaders() }
+		);
+	},
 };
 
 export default WalletApi;
