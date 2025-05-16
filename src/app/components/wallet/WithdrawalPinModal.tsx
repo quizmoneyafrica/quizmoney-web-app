@@ -2,12 +2,23 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import CustomButton from "@/app/utils/CustomBtn";
+import { useSelector } from "react-redux";
+import {
+  setWallet,
+  setWalletLoading,
+  setWithdrawalModal,
+  setWithdrawalPinModal,
+  useWallet,
+} from "@/app/store/walletSlice";
+import WalletApi from "@/app/api/wallet";
+import { toastPosition } from "@/app/utils/utils";
+import { toast } from "sonner";
+import { store } from "@/app/store/store";
+import classNames from "classnames";
 
 interface OtpVerificationModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onVerify: (pin: string) => void;
   withdrawalAmount?: number;
   bankName?: string;
   isError?: boolean;
@@ -17,13 +28,12 @@ interface OtpVerificationModalProps {
 export default function OtpVerificationModal({
   open,
   onOpenChange,
-  onVerify,
   isError = false,
   errorMessage = "Invalid OTP code. Please try again.",
 }: OtpVerificationModalProps) {
   const [otpValues, setOtpValues] = useState<string[]>(["", "", "", ""]);
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
-
+  const { wallet, withdrawalData } = useSelector(useWallet);
   useEffect(() => {
     if (open) {
       setOtpValues(["", "", "", ""]);
@@ -34,7 +44,9 @@ export default function OtpVerificationModal({
       }, 100);
     }
   }, [open]);
-
+  // console.log("========wallet data============================");
+  // console.log(JSON.stringify(wallet, null, 2));
+  // console.log("==========wallet data==========================");
   // Clear error state when user starts typing again
   useEffect(() => {
     if (isError && otpValues.some((val) => val !== "")) {
@@ -73,10 +85,73 @@ export default function OtpVerificationModal({
     }
   };
 
+  const [isCreatingPin, setIsCreatingPin] = useState<boolean>(false);
+  const [isCreatingRequest, setIsCreatingRequest] = useState<boolean>(false);
+
+  const createPin = async (pin: string) => {
+    try {
+      const response = await WalletApi.createWithdrawalPin({
+        pin,
+      });
+      if (response?.data?.data?.result?.updatedWallet) {
+        toast.success(response?.data?.data?.result?.message, {
+          position: toastPosition,
+        });
+        store.dispatch(setWalletLoading(true));
+        const res = await WalletApi.fetchCustomerWallet();
+        if (res.data.result.wallet) {
+          store.dispatch(setWallet(res.data.result.wallet));
+        }
+
+        store.dispatch(setWithdrawalPinModal(false));
+        store.dispatch(setWithdrawalModal(true));
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      toast.error(`${err.response.data.error}`, {
+        position: toastPosition,
+      });
+    } finally {
+      setIsCreatingPin(false);
+      store.dispatch(setWalletLoading(false));
+    }
+  };
+  const handleWithdrawal = async (pin: string) => {
+    setIsCreatingRequest(true);
+    if (!withdrawalData) {
+      return;
+    }
+    try {
+      const response = await WalletApi.requestWithdrawal({
+        amount: withdrawalData?.amount,
+        pin,
+        bankAccount: withdrawalData?.bankAccount,
+      });
+      console.log(
+        "==========createWithdrawal Request=========================="
+      );
+      console.log(JSON.stringify(response.data, null, 2));
+      console.log(
+        "==========createWithdrawal Request=========================="
+      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      toast.error(`${err.response.data.error}`, {
+        position: toastPosition,
+      });
+    } finally {
+      setIsCreatingRequest(false);
+    }
+  };
+
   const handleSubmit = () => {
     const pin = otpValues.join("");
     if (pin.length === 4) {
-      onVerify(pin);
+      if (wallet?.pin) {
+        handleWithdrawal(pin);
+      } else {
+        createPin(pin);
+      }
     }
   };
 
@@ -144,7 +219,9 @@ export default function OtpVerificationModal({
               >
                 <div className="flex justify-between items-center mb-2">
                   <Dialog.Title className="text-2xl font-semibold">
-                    Create withdrawal pin
+                    {wallet?.pin
+                      ? "Enter withdrawal pin"
+                      : "Create withdrawal pin"}
                   </Dialog.Title>
                   <Dialog.Close className="rounded-full p-1 hover:bg-gray-100">
                     <Cross2Icon className="w-6 h-6" />
@@ -193,14 +270,29 @@ export default function OtpVerificationModal({
                     )}
                   </div>
 
-                  <CustomButton
+                  <button
                     type="button"
                     onClick={handleSubmit}
-                    className="bg-[#2364AA] text-white w-full rounded-full py-3 hover:bg-primary-500"
-                    disabled={otpValues.some((val) => !val)}
+                    className={classNames(
+                      " text-white w-full rounded-full py-3 hover:bg-primary-500",
+                      otpValues.some((val) => !val) ||
+                        isCreatingPin ||
+                        isCreatingRequest
+                        ? " bg-primary-900/30"
+                        : "bg-[#2364AA]"
+                    )}
+                    disabled={
+                      otpValues.some((val) => !val) ||
+                      isCreatingPin ||
+                      isCreatingRequest
+                    }
                   >
-                    Proceed
-                  </CustomButton>
+                    {isCreatingPin || isCreatingRequest ? (
+                      <div className=" border-b border-b-white animate-spin size-5" />
+                    ) : (
+                      "Proceed"
+                    )}
+                  </button>
                 </div>
               </motion.div>
             </Dialog.Content>

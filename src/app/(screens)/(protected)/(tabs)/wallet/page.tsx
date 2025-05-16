@@ -20,10 +20,9 @@ function Page() {
       try {
         dispatch(setWalletLoading(true));
         const res = await WalletApi.fetchCustomerWallet();
-        console.log("====================================");
-        console.log(JSON.stringify(res.data.result.wallet, null, 2));
-        console.log("====================================");
-        dispatch(setWallet(res.data.result.wallet));
+        if (res.data.result.wallet) {
+          dispatch(setWallet(res.data.result.wallet));
+        }
       } catch (error) {
         console.log(error, "Wallet Error");
       } finally {
@@ -40,7 +39,6 @@ function Page() {
         console.log(res?.data);
         if (res?.data?.groupedTransactions) {
           dispatch(setTransactions(res?.data?.groupedTransactions));
-        } else {
         }
       } catch (error) {
         console.log(error, "Transaction Error");

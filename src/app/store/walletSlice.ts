@@ -1,8 +1,19 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "./store";
-
+type WithdrawalData={
+	amount:number;
+	bankAccount: {
+			accountNumber: string,
+			bankName:string,
+			accountName: string
+}
+}
 interface WalletState {
+	withdrawalData:WithdrawalData|null;
 	wallet: Wallet|undefined;
+	withdrawalModal:boolean
+	withdrawalPinModal:boolean
+	addBankAccountModal:boolean
 	isWalletLoading:boolean;
 	isTransactionsLoading:boolean;
 	transactions:UserWalletTransaction[]|[]
@@ -10,6 +21,10 @@ interface WalletState {
 }
 export interface Bank { id: number; code: string; name: string }
 const initialState: WalletState = {
+	withdrawalModal:false,
+	withdrawalData:null,
+	withdrawalPinModal:false,
+	addBankAccountModal:false,
 	wallet:undefined,
 	transactions:[],
 	banks:[],
@@ -22,6 +37,7 @@ export interface ParsePointer {
   objectId: string;
 }
 export type BankAccount ={
+  id?: number 
 	accountNumber: string;
 	bankName: string;
 	accountName: string;
@@ -40,6 +56,7 @@ export type Wallet = {
   createdAt: string;
   updatedAt: string;
   bankAccounts: BankAccount[];
+	pin:string;
   objectId: string;
   __type: "Object";
   className: "Wallet";
@@ -89,9 +106,21 @@ const walletSlice = createSlice({
 		setBanks(state, action: PayloadAction<Bank[]|[]>) {
 			state.banks = action.payload;
 		},
+		setWithdrawalModal(state, action: PayloadAction<boolean>) {
+			state.withdrawalModal = action.payload;
+		},
+		setAddBankModal(state, action: PayloadAction<boolean>) {
+			state.addBankAccountModal = action.payload;
+		},
+		setWithdrawalPinModal(state, action: PayloadAction<boolean>) {
+			state.withdrawalPinModal = action.payload;
+		},
+		setWithdrawalData(state, action: PayloadAction<WithdrawalData|null>) {
+			state.withdrawalData = action.payload;
+		},
 	},
 });
 
-export const {  setWallet,setTransactionsLoading ,setWalletLoading,setTransactions,setBanks} = walletSlice.actions;
+export const {  setWallet,setTransactionsLoading ,setWalletLoading,setTransactions,setBanks,setAddBankModal,setWithdrawalModal,setWithdrawalPinModal,setWithdrawalData} = walletSlice.actions;
 export default walletSlice.reducer;
 export const useWallet=(state:RootState)=>state?.wallet

@@ -1,29 +1,26 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
-import CustomButton from "@/app/utils/CustomBtn";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Plus } from "lucide-react";
+import { useSelector } from "react-redux";
+import {
+  setWithdrawalData,
+  setWithdrawalModal,
+  setWithdrawalPinModal,
+  useWallet,
+} from "@/app/store/walletSlice";
+import { store } from "@/app/store/store";
 
-const dummyBanks = [
-  {
-    id: "1",
-    name: "First Bank of Nigeria",
-    accountNumber: "1234567890",
-  },
-  {
-    id: "2",
-    name: "GTBank",
-    accountNumber: "0987654321",
-  },
-  {
-    id: "3",
-    name: "Access Bank",
-    accountNumber: "1122334455",
-  },
-];
+export type BankAccount = {
+  id: number;
+  accountNumber: string;
+  bankName: string;
+  accountName: string;
+};
 
 // Zod schema for validation
 const withdrawalFormSchema = z.object({
@@ -37,7 +34,7 @@ const withdrawalFormSchema = z.object({
       },
       { message: "Please enter a valid amount" }
     ),
-  bank: z.string().optional(),
+  bank: z.string().min(1, "Please select a bank"), // Make bank required
 });
 
 type WithdrawalFormData = z.infer<typeof withdrawalFormSchema>;
@@ -45,9 +42,7 @@ type WithdrawalFormData = z.infer<typeof withdrawalFormSchema>;
 interface WithdrawalModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: { amount: number; bank?: string }) => void;
   onAddBank: () => void;
-  banks: Array<{ id: string; name: string; accountNumber: string }>;
 }
 
 const predefinedAmounts = [
@@ -60,12 +55,16 @@ const predefinedAmounts = [
 export default function WithdrawalModal({
   open,
   onOpenChange,
-  onSubmit,
   onAddBank,
 }: WithdrawalModalProps) {
-  const banks = dummyBanks;
+  const { wallet } = useSelector(useWallet);
+  const banks =
+    wallet?.bankAccounts.map((item, index) => ({
+      ...item,
+      id: index,
+    })) || [];
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
-  const [selectedBank, setSelectedBank] = useState<string | null>(
+  const [selectedBank, setSelectedBank] = useState<number | null>(
     banks.length > 0 ? banks[0].id : null
   );
 
@@ -79,19 +78,43 @@ export default function WithdrawalModal({
     resolver: zodResolver(withdrawalFormSchema),
     defaultValues: {
       amount: "",
-      bank: banks.length > 0 ? banks[0].id : "",
+      bank: banks.length > 0 ? String(banks[0].id) : undefined,
     },
   });
 
   const handleFormSubmit = (data: WithdrawalFormData) => {
+    console.log("Form Data:", data);
+
     const numericAmount =
       selectedAmount || Number(data.amount.replace(/[₦,]/g, ""));
-    onSubmit({
+
+    if (!selectedBank || banks.length === 0) {
+      console.error("No bank selected or no banks available");
+      return;
+    }
+
+    const selectedBankData = banks.find((bank) => bank.id === selectedBank);
+
+    if (!selectedBankData) {
+      console.error("Selected bank not found");
+      return;
+    }
+
+    const payload = {
       amount: numericAmount,
-      bank: selectedBank || undefined,
-    });
+      bankAccount: {
+        accountNumber: selectedBankData.accountNumber,
+        bankName: selectedBankData.bankName,
+        accountName: selectedBankData.accountName,
+      },
+    };
+
+    store.dispatch(setWithdrawalData(payload));
     reset();
     setSelectedAmount(null);
+    store.dispatch(setWithdrawalModal(false));
+
+    store.dispatch(setWithdrawalPinModal(true));
   };
 
   const handlePredefinedAmountClick = (amount: number) => {
@@ -104,7 +127,9 @@ export default function WithdrawalModal({
   };
 
   const handleBankChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedBank(e.target.value);
+    const value = e.target.value;
+    setSelectedBank(value ? Number(value) : null);
+    setValue("bank", value, { shouldValidate: true });
   };
 
   // Animation variants for the overlay
@@ -240,11 +265,15 @@ export default function WithdrawalModal({
                           <select
                             {...register("bank")}
                             onChange={handleBankChange}
+                            value={
+                              selectedBank !== null ? String(selectedBank) : ""
+                            }
                             className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-3 pr-10 focus:outline-none"
                           >
                             {banks.map((bank) => (
-                              <option key={bank.id} value={bank.id}>
-                                {bank.accountNumber} - {bank.name}
+                              <option key={bank.id} value={String(bank.id)}>
+                                {bank.accountNumber} - {bank.bankName} -{" "}
+                                {bank.accountName}
                               </option>
                             ))}
                           </select>
@@ -266,6 +295,11 @@ export default function WithdrawalModal({
                             </svg>
                           </div>
                         </div>
+                        {errors.bank && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.bank.message}
+                          </p>
+                        )}
                       </div>
                     ) : (
                       <div className="text-gray-600">No banks added yet</div>
@@ -275,41 +309,19 @@ export default function WithdrawalModal({
                   <button
                     type="button"
                     onClick={onAddBank}
-                    className="flex items-center text-primary-900 font-medium mt-2 ml-auto"
+                    className="flex items-center cursor-pointer text-primary-900 font-medium mt-2 ml-auto"
                   >
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="mr-2"
-                    >
-                      <path
-                        d="M10 4.16666V15.8333"
-                        stroke="#1849A9"
-                        strokeWidth="1.67"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M4.16669 10H15.8334"
-                        stroke="#1849A9"
-                        strokeWidth="1.67"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
+                    <Plus className="text-primary-900 size-5" />
                     Add New Bank
                   </button>
 
-                  <CustomButton
+                  <button
                     type="submit"
-                    className="bg-primary-900 text-white w-full rounded-full py-3 hover:bg-blue-700 mt-8"
+                    className="bg-primary-900 text-white w-full rounded-full py-3 hover:bg-primary-900 mt-8"
                     disabled={isSubmitting || banks.length === 0}
                   >
                     Proceed
-                  </CustomButton>
+                  </button>
                 </form>
               </motion.div>
             </Dialog.Content>
