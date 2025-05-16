@@ -117,48 +117,52 @@ function AppHeader() {
                   </span>
                 </DropdownMenu.Item>
 
-                <DropdownMenu.Item className="DropdownMenuItem">
+                <DropdownMenu.Item
+                  className="DropdownMenuItem"
+                  onClick={() => router.push("/support")}
+                >
                   Support{" "}
                   <span className="RightSlot">
                     <SupportIcon />
                   </span>
                 </DropdownMenu.Item>
 
-								<Link href="https://quizmoney.ng/how-it-works">
-									<DropdownMenu.Item className="DropdownMenuItem">
-										How It Works{" "}
-										<span className="RightSlot">
-											<QuestionMarkCircledIcon />
-										</span>
-									</DropdownMenu.Item>
-								</Link>
-								<DropdownMenu.Item
-									onSelect={(e) => {
-										e.preventDefault();
-										setOpenLogout(true);
-									}}
-									className="DropdownMenuItem hover:!bg-error-900">
-									Logout{" "}
-									<span className="RightSlot">
-										<LogoutIcon />
-									</span>
-								</DropdownMenu.Item>
-							</DropdownMenu.Content>
-						</DropdownMenu.Portal>
-					</DropdownMenu.Root>
-				</Flex>
-			</Flex>
-			{lastSegment === "Home" && (
-				<>
-					{/* <Heading size={{ initial: "4", lg: "5" }} className="lg:hidden">
+                <Link href="https://quizmoney.ng/how-it-works">
+                  <DropdownMenu.Item className="DropdownMenuItem">
+                    How It Works{" "}
+                    <span className="RightSlot">
+                      <QuestionMarkCircledIcon />
+                    </span>
+                  </DropdownMenu.Item>
+                </Link>
+                <DropdownMenu.Item
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    setOpenLogout(true);
+                  }}
+                  className="DropdownMenuItem hover:!bg-error-900"
+                >
+                  Logout{" "}
+                  <span className="RightSlot">
+                    <LogoutIcon />
+                  </span>
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Root>
+        </Flex>
+      </Flex>
+      {lastSegment === "Home" && (
+        <>
+          {/* <Heading size={{ initial: "4", lg: "5" }} className="lg:hidden">
 						Hello <span className="capitalize">{user?.firstName}</span> 👋
 					</Heading> */}
-					<Text className="text-sm lg:text-base">Let&apos;s play and earn</Text>
-				</>
-			)}
-			<LogoutDialog open={openLogout} onOpenChange={setOpenLogout} />
-		</div>
-	);
+          <Text className="text-sm lg:text-base">Let&apos;s play and earn</Text>
+        </>
+      )}
+      <LogoutDialog open={openLogout} onOpenChange={setOpenLogout} />
+    </div>
+  );
 }
 
 export default AppHeader;

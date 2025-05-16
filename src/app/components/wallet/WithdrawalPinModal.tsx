@@ -14,7 +14,8 @@ import WalletApi from "@/app/api/wallet";
 import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
 import { store } from "@/app/store/store";
-import classNames from "classnames";
+// import classNames from "classnames";
+import CustomButton from "@/app/utils/CustomBtn";
 
 interface OtpVerificationModalProps {
   open: boolean;
@@ -269,8 +270,24 @@ export default function OtpVerificationModal({
                       </div>
                     )}
                   </div>
-
-                  <button
+                  {isCreatingPin ||
+                    (isCreatingRequest ? (
+                      <CustomButton loader disabled width="full" />
+                    ) : (
+                      <CustomButton
+                        type="button"
+                        onClick={handleSubmit}
+                        width="full"
+                        disabled={
+                          otpValues.some((val) => !val) ||
+                          isCreatingPin ||
+                          isCreatingRequest
+                        }
+                      >
+                        Proceed
+                      </CustomButton>
+                    ))}
+                  {/* <button
                     type="button"
                     onClick={handleSubmit}
                     className={classNames(
@@ -292,7 +309,7 @@ export default function OtpVerificationModal({
                     ) : (
                       "Proceed"
                     )}
-                  </button>
+                  </button> */}
                 </div>
               </motion.div>
             </Dialog.Content>
