@@ -59,7 +59,7 @@ export default function WithdrawalModal({
 }: WithdrawalModalProps) {
   const { wallet } = useSelector(useWallet);
   const banks =
-    wallet?.bankAccounts.map((item, index) => ({
+    wallet?.bankAccounts?.map((item, index) => ({
       ...item,
       id: index,
     })) || [];
