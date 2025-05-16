@@ -35,11 +35,11 @@ const getSessionTokenHeaders = () => {
   };
 };
 
-const getAuthUser =()=>{
-  const encrypted =  store.getState().auth.userEncryptedData;
+const getAuthUser = () => {
+  const encrypted = store.getState().auth.userEncryptedData;
   const user = encrypted ? decryptData(encrypted) : null;
-  return user
-}
+  return user;
+};
 const UserAPI = {
   login(form: LoginForm): Promise<AxiosResponse<ApiResponse>> {
     return axios.post(`${BASE_URL}/login`, form, {
@@ -102,7 +102,8 @@ const UserAPI = {
 
   updateUser(form: UpdateUserForm): Promise<AxiosResponse<ApiResponse>> {
     return axios.post(
-      `${BASE_URL}/updateProfile?firstName=${form.firstName}&lastName=${form.lastName}&dob=${form.dob}&gender=${form.gender}&country=${form.country}&facebook=${form.facebook}&instagram=${form.instagram}&twitter=${form.twitter}&whatsapp=${form.whatsapp}&avatar=${form.avatar}&promotionalMails=${form.promotionalMails}`,
+      `${BASE_URL}/updateProfile?firstName=${form.firstName}&lastName=${form.lastName}&dob=${form.dob}&gender=${form.gender}&country=${form.country}&facebook=${form.facebook}&instagram=${form.instagram}&twitter=${form.twitter}&whatsapp=${form.whatsapp}&avatar=${form.avatar}`,
+      {},
       {
         headers: getSessionTokenHeaders(),
       }
@@ -117,6 +118,6 @@ export {
   SOCKET_URL,
   XParseApplicationId,
   XParseRESTAPIKey,
-  getAuthUser
+  getAuthUser,
 };
 export default UserAPI;

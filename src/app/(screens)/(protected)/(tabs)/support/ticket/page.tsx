@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 
 const tikets = [
   {
-    id: "ID1234567",
+    id: "ID123467",
     name: "Joemicky",
     status: "closed",
     message:
@@ -17,7 +17,7 @@ const tikets = [
     createdAt: new Date(),
   },
   {
-    id: "ID1234567",
+    id: "ID123456",
     name: "Joemicky",
     status: "pending",
     message:
@@ -25,7 +25,7 @@ const tikets = [
     createdAt: new Date(),
   },
   {
-    id: "ID1234567",
+    id: "ID123567",
     name: "Joemicky",
     status: "open",
     message:
@@ -81,9 +81,7 @@ const Ticket = () => {
 
           {tikets.map((ticket) => (
             <div
-              onClick={() =>
-                router.push(`/settings/support/ticket/${ticket.id}`)
-              }
+              onClick={() => router.push(`/support/ticket/${ticket.id}`)}
               key={ticket.id}
               className={`flex flex-col gap-4 border-l-6 bg-zinc-50 p-4 rounded-lg cursor-pointer ${
                 ticket.status === "open"

@@ -9,23 +9,17 @@ const rank = {
   1: "🥇",
   2: "🥈",
   3: "🥉",
-  4: "🎖️",
-  5: "🎖️",
-  6: "🎖️",
-  7: "🎖️",
-  8: "🎖️",
-  9: "🎖️",
 };
 
 interface PlayerCardProps {
   player: {
-    prize: number;
-    user: User;
+    prize?: number;
+    user?: User;
     userId: string;
-    position: number;
-    noOfGamesPlayed: number;
-    amountWon: number;
-    overallRank: number;
+    position?: number;
+    noOfGamesPlayed?: number;
+    amountWon?: number;
+    overallRank?: number;
     activeTab: "lastGame" | "allTime";
   };
 }
@@ -40,13 +34,11 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
       <div className="flex-1 flex gap-[10%] items-center">
         <div className="">
           <p className="text-3xl md:text-5xl">
-            {
-              rank[
-                player.activeTab === "lastGame"
-                  ? (player?.position as keyof typeof rank)
-                  : (player?.overallRank as keyof typeof rank)
-              ]
-            }
+            {rank[
+              player.activeTab === "lastGame"
+                ? (player?.position as keyof typeof rank)
+                : (player?.overallRank as keyof typeof rank)
+            ] ?? "🎖️"}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -61,6 +53,7 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
         </div>
       </div>
       <p className="text-primary-800 bg-primary-100 rounded-4xl px-2 md:px-4 py-1 md:py-2 text-sm md:text-base">
+        ₦
         {player?.activeTab === "lastGame"
           ? player?.prize?.toLocaleString()
           : player?.amountWon?.toLocaleString()}
@@ -100,7 +93,10 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
               <div>
                 <p>Prize</p>
                 <div className="flex h-10 w-10 items-center justify-center font-semibold text-primary-800  p-2">
-                  ₦{player.prize.toLocaleString()}
+                  ₦
+                  {player?.activeTab === "lastGame"
+                    ? player?.prize?.toLocaleString()
+                    : player?.amountWon?.toLocaleString()}{" "}
                 </div>
               </div>
             </div>
