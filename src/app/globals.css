@@ -19,6 +19,7 @@
 	--color-primary-700: #2a75bc;
 	--color-primary-800: #2364aa;
 	--color-primary-900: #17478b;
+	/* --color-primary-900: #0a326a; */
 
 	--color-secondary-50: #dff9ff;
 	--color-secondary-100: #aff0ff;
@@ -242,7 +243,7 @@
 }
 
 body {
-	background: var(--background);
+	background: #F7F7F7;
 	color: var(--foreground);
 	font-family: var(--spacegrotesk);
 	padding-top: env(safe-area-inset-top);
@@ -260,8 +261,37 @@ h6,
 .rt-Heading {
 	font-family: var(--dmsans) !important;
 }
+#bg-main {
+	position: relative;
+	min-height: 100vh;
+	overflow: hidden;
+}
 
+#bg-main::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-image: url("/background-desktop.png");
+	background-size: cover;
+	background-position: center center;
+	opacity: 0.4; 
+	z-index: 0;
+}
 
+#bg-main > * {
+	position: relative;
+	z-index: 1;
+}
+.scrollbar-hide {
+	-ms-overflow-style: none; /* IE/Edge */
+	scrollbar-width: none; /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+	display: none; /* Chrome, Safari */
+  }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
 	display: none;

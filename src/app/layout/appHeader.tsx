@@ -57,14 +57,14 @@ function AppHeader() {
                 />
               </button>
             )}
-            <span className="hidden lg:flex">
+            <span className=" lg:flex">
               {lastSegment === "Home"
                 ? `Hello ${user?.firstName} 👋`
                 : lastSegment}
             </span>
           </div>
 
-          <span className="lg:hidden">{lastSegment}</span>
+          {/* <span className="lg:hidden">{lastSegment}</span> */}
         </Heading>
         <Flex align="center" gap={{ initial: "3", lg: "6" }}>
           <Link href="/store">
@@ -150,9 +150,9 @@ function AppHeader() {
 			</Flex>
 			{lastSegment === "Home" && (
 				<>
-					<Heading size={{ initial: "4", lg: "5" }} className="lg:hidden">
+					{/* <Heading size={{ initial: "4", lg: "5" }} className="lg:hidden">
 						Hello <span className="capitalize">{user?.firstName}</span> 👋
-					</Heading>
+					</Heading> */}
 					<Text className="text-sm lg:text-base">Let&apos;s play and earn</Text>
 				</>
 			)}
