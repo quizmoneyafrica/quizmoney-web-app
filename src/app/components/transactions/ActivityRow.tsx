@@ -81,7 +81,7 @@ export const ActivityRow = ({
         </div>
       </div>
 
-      <MobileList onClick={handleCloseModal} transaction={transaction} />
+      <MobileList onClick={handleOpenModal} transaction={transaction} />
 
       <TransactionDetailsModal
         transaction={transaction}
