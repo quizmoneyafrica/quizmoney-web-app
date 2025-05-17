@@ -9,16 +9,13 @@ import {
   Transaction,
   useWallet,
 } from "@/app/store/walletSlice";
-import { FlatTransaction, flattenTransactionsByDate } from "@/app/utils/utils";
-import classNames from "classnames";
 import WalletApi from "@/app/api/wallet";
 import {
   TransactionGroup,
   UserWalletTransaction,
 } from "../wallet/TransactionHistory";
-import { parseISO, isToday, isYesterday, format } from "date-fns";
+import { parseISO, isToday, isYesterday } from "date-fns";
 import CustomImage from "../wallet/CustomImage";
-import MobileList from "../wallet/MobileList";
 import { ActivityRow } from "./ActivityRow";
 
 const PAGE_SIZE = 15;
@@ -56,17 +53,6 @@ export default function WalletActivity(): React.ReactElement {
     };
     fetchTransactions();
   }, [page, dispatch]);
-
-  const flatActivities: FlatTransaction[] =
-    flattenTransactionsByDate(transactions);
-  const grouped: Record<string, FlatTransaction[]> = flatActivities.reduce(
-    (acc, act) => {
-      if (!acc[act.section]) acc[act.section] = [];
-      acc[act.section].push(act);
-      return acc;
-    },
-    {} as Record<string, FlatTransaction[]>
-  );
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -111,7 +97,7 @@ export default function WalletActivity(): React.ReactElement {
             {title}
           </h2>
         </div>
-        {transactions.map((transaction, index, array) => (
+        {transactions.map((transaction, index) => (
           <ActivityRow
             transaction={transaction}
             key={transaction.objectId || index.toString()}

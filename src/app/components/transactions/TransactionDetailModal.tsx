@@ -1,4 +1,3 @@
-import { FlatTransaction } from "@/app/utils/utils";
 import { formatAmount } from "./ActivityRow";
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
