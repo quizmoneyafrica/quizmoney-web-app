@@ -107,16 +107,16 @@ export default function TransactionHistory(): React.JSX.Element {
                 />
               )}
             </div>
-            <div>
-              <p className="text-sm md:text-base font-medium text-[#3B3B3B]">
+            <div className=" flex flex-col items-start">
+              <span className="text-sm md:text-base font-medium text-[#3B3B3B]">
                 {transaction.title ||
                   (transaction.type === "deposit"
                     ? "Wallet Top up"
                     : "Withdrawal made")}
-              </p>
-              <p className="text-xs md:text-sm text-gray-500">
+              </span>
+              <span className="text-xs md:text-sm text-gray-500">
                 {transaction.type}
-              </p>
+              </span>
             </div>
           </div>
           <div className="text-right">
