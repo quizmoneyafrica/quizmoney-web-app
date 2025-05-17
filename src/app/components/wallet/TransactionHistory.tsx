@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { useWallet } from "@/app/store/walletSlice";
 import { format, parseISO, isToday, isYesterday } from "date-fns";
 import Link from "next/link";
+import { renderEmptyState } from "../transactions/WalletActivity";
 
 interface Transaction {
   amount: number;
@@ -32,7 +33,7 @@ export type UserWalletTransaction = {
   transactions: Array<Transaction>;
 };
 
-interface TransactionGroup {
+export interface TransactionGroup {
   today: Transaction[];
   yesterday: Transaction[];
   other: Transaction[];
@@ -137,20 +138,6 @@ export default function TransactionHistory(): React.JSX.Element {
       </React.Fragment>
     );
   };
-
-  const renderEmptyState = (): React.JSX.Element => (
-    <div className="flex flex-col items-center justify-center py-44 px-4 bg-white rounded-lg">
-      <CustomImage
-        alt="empty-transactions"
-        src="/icons/empty-state.svg"
-        className="w-16 h-16 mb-4"
-      />
-      <p className="text-gray-500 text-center text-sm md:text-base">
-        {"You've not made any recent"} <br />
-        transactions yet
-      </p>
-    </div>
-  );
 
   const renderTransactionSection = (
     title: string,
