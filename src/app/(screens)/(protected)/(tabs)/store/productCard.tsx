@@ -8,12 +8,15 @@ import SuccessMessageModal from "@/app/components/modal/store/SuccessMessageModa
 import StoreAPI from "@/app/api/storeApi";
 import { useRouter } from "next/navigation";
 import CustomButton from "@/app/utils/CustomBtn";
+import { encryptData } from "@/app/utils/crypto";
+import { useAuth } from "@/app/hooks/useAuth";
 const ProductCard = ({ product }: { product: Product }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { loginUser } = useAuth();
 
   const handlePurchase = async () => {
     setIsLoading(true);
@@ -22,6 +25,10 @@ const ProductCard = ({ product }: { product: Product }) => {
         if (res.status === 200) {
           setIsOpen(false);
           setIsSuccess(true);
+          const userData = res.data.result.updatedUser;
+          const encryptedUser = encryptData(userData);
+          // ✅ Dispatch to Redux
+          loginUser(encryptedUser);
         }
       })
       .catch((err) => {
@@ -44,12 +51,15 @@ const ProductCard = ({ product }: { product: Product }) => {
             {product?.productDescription ??
               "Let you correct wrong answers in the game."}
           </p>
-          <div
-            className="bg-primary-900 text-white px-6 py-2 md:py-3 rounded-full flex items-center gap-2 w-fit font-semibold"
+
+          <CustomButton
             onClick={() => setIsOpen(true)}
+            className="!px-6 !py-2 md:!py-3 w-fit"
           >
-            Buy <ArrowRightIcon />
-          </div>
+            <div className="flex items-center gap-2 text-white font-semibold ">
+              Buy <ArrowRightIcon />
+            </div>
+          </CustomButton>
         </Flex>
         <Flex
           height={{ md: "107px", initial: "90px" }}
@@ -144,17 +154,17 @@ const ProductCard = ({ product }: { product: Product }) => {
         open={isSuccess}
         setOpen={setIsSuccess}
         success={true}
-        message="Purchase successful"
-        subMessage="Your purchase of 2 erasers was successful"
+        message="Awesome!"
+        subMessage={`You have successfully purchase ${product?.productQuantity} erasers.`}
         onClose={() => router.push("/home")}
-        actionLabel="Fund Account"
+        actionLabel="Go back Home"
       />
       <SuccessMessageModal
         open={isError}
         setOpen={setIsError}
         success={false}
         message="Insufficient Wallet Balance"
-        subMessage="Your purchase of 2 erasers failed due to insufficient funds"
+        subMessage={`Your purchase of ${product?.productQuantity} erasers failed due to insufficient funds`}
         onClose={() => router.push("/wallet")}
         actionLabel="Fund Account"
       />
