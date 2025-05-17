@@ -14,7 +14,7 @@ export default function MobileList({ transaction, onClick, ...props }: Props) {
   const dateData = format(date, "MMM d h:mma").toLowerCase();
 
   return (
-    <div
+    <button
       onClick={() => onClick?.()}
       className={classNames(
         "bg-white cursor-pointer px-3 md:px-4 py-3 rounded-3xl md:py-4 flex md:hidden justify-between items-center ",
@@ -62,6 +62,6 @@ export default function MobileList({ transaction, onClick, ...props }: Props) {
         </p>
         <p className="text-xs md:text-sm text-gray-500">{dateData}</p>
       </div>
-    </div>
+    </button>
   );
 }
