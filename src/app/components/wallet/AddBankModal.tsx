@@ -12,11 +12,7 @@ import WalletApi from "@/app/api/wallet";
 import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setWallet,
-  setWalletLoading,
-  useWallet,
-} from "@/app/store/walletSlice";
+import { setWallet, useWallet } from "@/app/store/walletSlice";
 import { getAuthUser } from "@/app/api/userApi";
 
 const bankFormSchema = z.object({

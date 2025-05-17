@@ -93,6 +93,7 @@ export default function WithdrawalAccounts() {
           }
         );
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.error(
         error.response?.data?.error || "Failed to delete bank account",

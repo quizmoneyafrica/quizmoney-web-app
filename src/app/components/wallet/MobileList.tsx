@@ -17,7 +17,7 @@ export default function MobileList({ transaction, onClick }: Props) {
     <button
       onClick={() => onClick?.()}
       className={classNames(
-        "bg-white cursor-pointer px-3 md:px-4 py-3 rounded-3xl md:py-4 flex md:hidden justify-between items-center ",
+        "bg-white cursor-pointer px-3 md:px-4 w-full py-3 rounded-3xl md:py-4 flex md:hidden justify-between items-center ",
         "border border-[#D9D9D9] "
       )}
     >
