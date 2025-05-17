@@ -141,7 +141,20 @@ export default function WalletBalance() {
           onClose={() => store.dispatch(setWithdrawalModal(false))}
           title="Withdraw"
         >
-          <MobileWithdrawalForm />
+          <MobileWithdrawalForm
+            onAddBank={() => {
+              if (wallet?.bankAccounts && wallet?.bankAccounts.length >= 3) {
+                toast.info("You've already have three account number listed", {
+                  position: "top-right",
+                });
+
+                return;
+              }
+              store.dispatch(setWithdrawalModal(false));
+
+              store.dispatch(setAddBankModal(true));
+            }}
+          />
         </BottomSheet>
       ) : (
         <Dialog.Root

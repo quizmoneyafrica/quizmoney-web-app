@@ -99,6 +99,7 @@ export default function WalletActivity(): React.ReactElement {
         </div>
         {transactions.map((transaction, index) => (
           <ActivityRow
+            isLast={transactions.length == index + 1}
             transaction={transaction}
             key={transaction.objectId || index.toString()}
           />
