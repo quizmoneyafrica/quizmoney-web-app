@@ -1,4 +1,5 @@
-import React, { JSX } from "react";
+"use client";
+import React from "react";
 import WalletBalance from "./WalletBalance";
 import CustomImage from "./CustomImage";
 import classNames from "classnames";
@@ -38,7 +39,7 @@ export interface TransactionGroup {
   other: Transaction[];
 }
 
-export default function TransactionHistory(): JSX.Element {
+export default function TransactionHistory(): React.JSX.Element {
   const { transactions, isTransactionsLoading } = useSelector(useWallet);
 
   const groupedTransactions: TransactionGroup = {
@@ -47,12 +48,15 @@ export default function TransactionHistory(): JSX.Element {
     other: [],
   };
 
-  const flattenedTransactions: Transaction[] = [];
-  transactions.forEach((walletTransaction: UserWalletTransaction) => {
-    walletTransaction.transactions.forEach((transaction: Transaction) => {
-      flattenedTransactions.push(transaction);
-    });
-  });
+  // const flattenedTransactions: Transaction[] = [];
+  // transactions.forEach((walletTransaction: UserWalletTransaction) => {
+  //   walletTransaction.transactions.forEach((transaction: Transaction) => {
+  //     flattenedTransactions.push(transaction);
+  //   });
+  // });
+  const flattenedTransactions = transactions.flatMap(
+    (walletTransaction) => walletTransaction.transactions
+  );
 
   flattenedTransactions.forEach((transaction: Transaction) => {
     const date = parseISO(transaction?.createdAt ?? new Date().toISOString());
@@ -70,7 +74,7 @@ export default function TransactionHistory(): JSX.Element {
     transaction: Transaction,
     index: number,
     array: Transaction[]
-  ): JSX.Element => {
+  ): React.JSX.Element => {
     const date = parseISO(transaction.createdAt ?? new Date().toISOString());
     const dateData = format(date, "MMM d h:mma").toLowerCase();
     const isLastInGroup = index === array.length - 1;
@@ -138,7 +142,7 @@ export default function TransactionHistory(): JSX.Element {
   const renderTransactionSection = (
     title: string,
     transactions: Transaction[]
-  ): JSX.Element | null => {
+  ): React.JSX.Element | null => {
     if (transactions.length === 0) return null;
 
     return (

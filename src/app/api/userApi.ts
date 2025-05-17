@@ -109,6 +109,12 @@ const UserAPI = {
       }
     );
   },
+
+  getAvatars(): Promise<AxiosResponse<ApiResponse>> {
+    return axios.get(`https://quizmoney.b4a.io/classes/Avatars`, {
+      headers: getSessionTokenHeaders(),
+    });
+  },
 };
 
 export {

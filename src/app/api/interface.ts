@@ -109,18 +109,27 @@ export interface User {
   sessionToken?: string;
   updatedAt?: Date; // ISO Date string
   username?: string;
+  facebook?: string;
+  instagram?: string;
+  twitter?: string;
+  whatsapp?: string;
 }
 
 export interface UpdateUserForm {
-  firstName: string;
-  lastName: string;
-  dob: string;
-  gender: string;
-  country: string;
-  avatar: string;
-  promotionalMails: boolean;
-  facebook: string;
-  instagram: string;
-  twitter: string;
-  whatsapp: string;
+  firstName?: string;
+  lastName?: string;
+  dob?:
+    | string
+    | {
+        __type: "Date";
+        iso: string; // ISO Date string
+      };
+  gender?: string;
+  country?: string;
+  avatar?: string;
+  promotionalMails?: boolean;
+  facebook?: string;
+  instagram?: string;
+  twitter?: string;
+  whatsapp?: string;
 }

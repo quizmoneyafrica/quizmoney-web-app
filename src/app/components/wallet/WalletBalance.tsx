@@ -1,4 +1,4 @@
-import { EyeOpenIcon, EyeNoneIcon, PlusIcon } from "@radix-ui/react-icons";
+import { PlusIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import CustomImage from "./CustomImage";
 import { BottomSheet } from "./BottomSheet";
@@ -21,6 +21,8 @@ import {
   useWallet,
 } from "@/app/store/walletSlice";
 import { toast } from "sonner";
+import { formatNaira } from "@/app/utils/utils";
+import { EyeIcon, EyeSlash } from "@/app/icons/icons";
 
 export default function WalletBalance() {
   const [open, setOpen] = useState(false);
@@ -60,13 +62,22 @@ export default function WalletBalance() {
             <Loader className=" animate-spin size-3 text-white" />
           ) : (
             <h1 className="text-4xl font-bold text-center flex items-center justify-center gap-1">
-              <span>₦</span>
-              <span>{isBalanceHidden ? "****" : `${wallet?.balance}`}.</span>
-              <span className="text-lg text-[#BCBCBB]">
-                {isBalanceHidden ? "**" : "00"}
+              <span>
+                {isBalanceHidden
+                  ? "****"
+                  : `${formatNaira(
+                      wallet?.balance ? wallet?.balance : "0",
+                      true
+                    )}`}
               </span>
-              <button onClick={toggleBalanceVisibility}>
-                {isBalanceHidden ? <EyeNoneIcon /> : <EyeOpenIcon />}
+              {/* <span className="text-lg text-[#BCBCBB]">
+                {isBalanceHidden ? "**" : "00"}
+              </span> */}
+              <button
+                onClick={toggleBalanceVisibility}
+                className="cursor-pointer"
+              >
+                {isBalanceHidden ? <EyeSlash /> : <EyeIcon />}
               </button>
             </h1>
           )}
