@@ -12,8 +12,10 @@ export function formatAmount(amount: number): string {
 
 export const ActivityRow = ({
   transaction,
+  isLast = false,
 }: {
   transaction: Transaction;
+  isLast?: boolean;
 }): JSX.Element => {
   const date = parseISO(transaction.createdAt ?? new Date().toISOString());
   const dateData = format(date, "MMM d h:mma").toLowerCase();
@@ -30,7 +32,9 @@ export const ActivityRow = ({
     <React.Fragment>
       <div
         onClick={handleOpenModal}
-        className="flex items-center justify-between py-4 border-b border-b-[#D9D9D9] cursor-pointer px-3 md:px-4 last:border-b-0"
+        className={`flex items-center justify-between py-4 cursor-pointer px-3 md:px-4 ${
+          isLast ? "" : "border-b border-b-[#D9D9D9]"
+        }`}
       >
         <div className="flex gap-2 md:gap-4 items-center">
           <div
