@@ -153,9 +153,6 @@ export default function WithdrawalAccounts() {
                 </div>
 
                 <div className="flex space-x-4">
-                  <button>
-                    <CustomImage alt="edit icon" src="/icons/edit.svg" />
-                  </button>
                   <button
                     className="cursor-pointer"
                     disabled={isDeleting && deleteId === account.uniqueId}
