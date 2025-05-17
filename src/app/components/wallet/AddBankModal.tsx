@@ -124,11 +124,13 @@ export default function AddBankModal({
         },
       });
       if (response?.data?.result?.updatedWallet) {
-        dispatch(setWalletLoading(true));
         const res = await WalletApi.fetchCustomerWallet();
         dispatch(setWallet(res.data.result.wallet));
-        reset();
-        close?.();
+        reset({
+          accountNumber: "",
+          bank: "",
+        });
+        onOpenChange(false);
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
