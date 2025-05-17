@@ -1,41 +1,23 @@
-import React, { useState } from "react";
+import React, { JSX, useState } from "react";
+import MobileList from "../wallet/MobileList";
 import CustomImage from "../wallet/CustomImage";
-import { FlatTransaction } from "@/app/utils/utils";
+import { format, parseISO } from "date-fns";
+import { Transaction } from "@/app/store/walletSlice";
 import { TransactionDetailsModal } from "./TransactionDetailModal";
-
-export interface ActivityItem {
-  type: "deposit" | "withdrawal";
-  title: string;
-  desc: string;
-  amount: number;
-  time: string;
-  section?: string;
-}
-
-export interface ActivitySection {
-  date: string;
-  items: ActivityItem[];
-}
 
 export function formatAmount(amount: number): string {
   const sign = amount > 0 ? "+" : "-";
   return `${sign} ₦${Math.abs(amount).toLocaleString()}`;
 }
 
-export function ActivityRow({
-  activity,
+export const ActivityRow = ({
+  transaction,
 }: {
-  activity: FlatTransaction;
-}): React.ReactElement {
+  transaction: Transaction;
+}): JSX.Element => {
+  const date = parseISO(transaction.createdAt ?? new Date().toISOString());
+  const dateData = format(date, "MMM d h:mma").toLowerCase();
   const [showModal, setShowModal] = useState(false);
-
-  const iconBg =
-    activity.type === "deposit"
-      ? "bg-green-100 text-green-500"
-      : "bg-red-100 text-red-500";
-  const amountColor =
-    activity.type === "deposit" ? "text-green-600" : "text-red-600";
-
   const handleOpenModal = () => {
     setShowModal(true);
   };
@@ -45,16 +27,18 @@ export function ActivityRow({
   };
 
   return (
-    <>
+    <React.Fragment>
       <div
         onClick={handleOpenModal}
-        className="flex items-center justify-between py-4 border-b border-b-[#D9D9D9] last:border-b-0 cursor-pointer"
+        className="flex items-center justify-between py-4 border-b border-b-[#D9D9D9] cursor-pointer px-3 md:px-4 last:border-b-0"
       >
-        <div className="flex items-center gap-4">
-          <span
-            className={`w-8 h-8 flex items-center justify-center rounded-full ${iconBg}`}
+        <div className="flex gap-2 md:gap-4 items-center">
+          <div
+            className={`p-1.5 md:p-2 rounded-full ${
+              transaction.type === "deposit" ? "bg-green-100" : "bg-red-100"
+            }`}
           >
-            {activity.type === "deposit" ? (
+            {transaction.type === "deposit" ? (
               <CustomImage
                 alt="arrow-up"
                 src="/icons/arrow-down-green.svg"
@@ -67,29 +51,39 @@ export function ActivityRow({
                 className="w-4 h-4 md:w-5 md:h-5"
               />
             )}
-          </span>
+          </div>
           <div>
-            <div className="font-semibold">{activity.title}</div>
-            <div className="text-gray-400 text-sm">{activity.description}</div>
+            <p className="text-sm md:text-base font-medium text-[#3B3B3B]">
+              {transaction.title ||
+                (transaction.type === "deposit"
+                  ? "Wallet Top up"
+                  : "Withdrawal made")}
+            </p>
+            <p className="text-xs md:text-sm text-gray-500">
+              {transaction.type}
+            </p>
           </div>
         </div>
-        <div className="flex flex-col items-end">
-          <span className={`font-semibold ${amountColor}`}>
-            {formatAmount(activity.amount)}
-          </span>
-          <span className="text-xs text-gray-400">
-            {new Date(activity.createdAt).toLocaleString()}
-          </span>
+        <div className="text-right">
+          <p
+            className={`text-sm md:text-base font-medium ${
+              transaction.type === "deposit" ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            {transaction.type === "deposit" ? "+" : "-"} ₦
+            {transaction.amount.toLocaleString()}
+          </p>
+          <p className="text-xs md:text-sm text-gray-500">{dateData}</p>
         </div>
       </div>
 
+      <MobileList transaction={transaction} />
+
       <TransactionDetailsModal
-        transaction={activity}
+        transaction={transaction}
         isOpen={showModal}
         onClose={handleCloseModal}
       />
-    </>
+    </React.Fragment>
   );
-}
-
-export default ActivityRow;
+};
