@@ -9,7 +9,7 @@ type Props = {
   onClick?: () => void;
 };
 
-export default function MobileList({ transaction, onClick, ...props }: Props) {
+export default function MobileList({ transaction, onClick }: Props) {
   const date = parseISO(transaction?.createdAt ?? new Date().toISOString());
   const dateData = format(date, "MMM d h:mma").toLowerCase();
 
