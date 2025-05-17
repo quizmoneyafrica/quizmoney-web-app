@@ -32,7 +32,7 @@ export const ActivityRow = ({
     <React.Fragment>
       <div
         onClick={handleOpenModal}
-        className={`flex items-center justify-between py-4 cursor-pointer px-3 md:px-4 ${
+        className={`md:flex hidden items-center   justify-between py-4 cursor-pointer px-3 md:px-4 ${
           isLast ? "" : "border-b border-b-[#D9D9D9]"
         }`}
       >
@@ -81,7 +81,7 @@ export const ActivityRow = ({
         </div>
       </div>
 
-      <MobileList transaction={transaction} />
+      <MobileList onClick={handleCloseModal} transaction={transaction} />
 
       <TransactionDetailsModal
         transaction={transaction}

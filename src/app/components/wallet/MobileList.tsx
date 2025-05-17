@@ -6,16 +6,18 @@ import { Transaction } from "@/app/store/walletSlice";
 
 type Props = {
   transaction: Transaction;
+  onClick?: () => void;
 };
 
-export default function MobileList({ transaction }: Props) {
+export default function MobileList({ transaction, onClick, ...props }: Props) {
   const date = parseISO(transaction?.createdAt ?? new Date().toISOString());
   const dateData = format(date, "MMM d h:mma").toLowerCase();
 
   return (
     <div
+      onClick={() => onClick?.()}
       className={classNames(
-        "bg-white px-3 md:px-4 py-3 rounded-3xl md:py-4 flex md:hidden justify-between items-center ",
+        "bg-white cursor-pointer px-3 md:px-4 py-3 rounded-3xl md:py-4 flex md:hidden justify-between items-center ",
         "border border-[#D9D9D9] "
       )}
     >

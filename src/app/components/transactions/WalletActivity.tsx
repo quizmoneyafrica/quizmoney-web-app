@@ -91,7 +91,7 @@ export default function WalletActivity(): React.ReactElement {
     if (transactions.length === 0) return null;
 
     return (
-      <div className="space-y-2 md:space-y-3 py-5 bg-white rounded-2xl mt-3 md:mt-5">
+      <div className="space-y-2 md:space-y-3 py-5  md:bg-white rounded-2xl mt-3 md:mt-5">
         <div className="px-3 md:px-4">
           <h2 className="text-sm md:text-base font-semibold text-[#3B3B3B]">
             {title}
