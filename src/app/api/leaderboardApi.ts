@@ -3,10 +3,12 @@ import { BASE_URL, getSessionTokenHeaders } from "./userApi";
 import { ApiResponse } from "./interface";
 
 const LeaderboardAPI = {
-  getAllTimeLeaderboard(): Promise<AxiosResponse<ApiResponse>> {
+  getAllTimeLeaderboard(page?: number): Promise<AxiosResponse<ApiResponse>> {
     return axios.post(
       `${BASE_URL}/getAllTimeLeaderboard`,
-      {},
+      {
+        page: page ?? 1,
+      },
       {
         headers: getSessionTokenHeaders(),
       }

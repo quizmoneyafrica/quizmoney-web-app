@@ -4,18 +4,30 @@ import { motion } from "framer-motion";
 import CustomPagination from "@/app/utils/CustomPagination";
 import PlayerCard from "./PlayerCard";
 import LeaderboardAPI from "@/app/api/leaderboardApi";
-import { User } from "@/app/api/interface";
 import { CupIcon } from "@/app/icons/icons";
 import LeaderboardLoader from "./LeaderboardLoader";
 
-interface Leaderboard {
-  prize?: number;
-  user?: User;
+export interface Leaderboard {
+  amountWon: number;
+  avatar: string;
+  facebook: string;
+  firstName: string;
+  instagram: string;
+  lastName: string;
+  noOfGamesPlayed: number;
+  overallRank: number;
+  twitter: string;
   userId: string;
-  position?: number;
-  noOfGamesPlayed?: number;
-  amountWon?: number;
-  overallRank?: number;
+  position: number;
+  prize: number;
+}
+
+export interface LeaderboardData {
+  currentPage?: number;
+  leaderboard: Leaderboard[];
+  limit?: number;
+  total?: number;
+  totalPages?: number;
 }
 
 function Page() {
@@ -23,8 +35,13 @@ function Page() {
     "lastGame"
   );
   const [loading, setLoading] = useState(true);
-  const [leaderboard, setLeaderboard] = useState<Leaderboard[]>([]);
-  console.log({ leaderboard });
+  const [leaderboardData, setLeaderboardData] = useState<
+    LeaderboardData | undefined
+  >();
+  const [page, setPage] = useState(1);
+  const leaderboard: Leaderboard[] | undefined = leaderboardData?.leaderboard;
+  console.log({ page });
+
   const getLeaderboard = async (tab: "lastGame" | "allTime") => {
     try {
       setLoading(true);
@@ -32,14 +49,36 @@ function Page() {
         tab === "lastGame"
           ? await LeaderboardAPI.getLastGameLeaderboard()
               .then((res) => {
-                setLeaderboard(res.data.result.gameLeaderboard.rankings ?? []);
+                setLeaderboardData({
+                  leaderboard: res.data.result.gameLeaderboard.rankings.map(
+                    (data: {
+                      position: number;
+                      prize: number;
+                      user: {
+                        avatar: string;
+                        facebook: string;
+                        firstName: string;
+                        instagram: string;
+                        lastName: string;
+                        noOfGamesPlayed: number;
+                        twitter: string;
+                        userId: string;
+                      };
+                    }) => ({
+                      position: data?.position,
+                      prize: data?.prize,
+                      ...data?.user,
+                    })
+                  ),
+                });
               })
-              .catch(() => setLeaderboard([]))
-          : await LeaderboardAPI.getAllTimeLeaderboard()
+              .catch(() => setLeaderboardData(undefined))
+          : await LeaderboardAPI.getAllTimeLeaderboard(page)
               .then((res) => {
-                setLeaderboard(res.data.result ?? []);
+                // setPage(res.data.currentPage ?? 1);
+                setLeaderboardData(res.data.result);
               })
-              .catch(() => setLeaderboard([]));
+              .catch(() => setLeaderboardData(undefined));
       setLoading(false);
       console.log(res);
     } catch (error) {
@@ -58,6 +97,12 @@ function Page() {
     getLeaderboard("lastGame");
   }, []);
 
+  useEffect(() => {
+    if (activeTab == "allTime") {
+      getLeaderboard("allTime");
+    }
+  }, [page, activeTab]);
+
   let content: ReactNode;
   if (loading) {
     content = (
@@ -70,7 +115,7 @@ function Page() {
       </div>
     );
   }
-  if (!loading && leaderboard.length > 0) {
+  if (!loading && leaderboard && leaderboard?.length > 0) {
     content = (
       <div className="flex flex-col gap-5">
         <div className="hidden md:flex justify-between items-center text-sm md:text-base text-black font-semibold px-10">
@@ -93,6 +138,7 @@ function Page() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.25, ease: "easeInOut" }}
+      className=" min-h-screen"
     >
       <p className=" text-lg md:text-xl">
         See who is topping the leaderboard charts
@@ -122,7 +168,7 @@ function Page() {
         </div>
       </div>
 
-      {!loading && leaderboard && leaderboard.length <= 0 && (
+      {!loading && (leaderboard === undefined || leaderboard?.length <= 0) && (
         <div className=" flex flex-col justify-center items-center">
           <div className="relative h-[10rem] md:h-[14rem] flex flex-col justify-end items-center ">
             <CupIcon className=" text-primary-500 fill-primary-300 h-[10rem] w-[5rem] md:w-[10rem] top-0 opacity-25 absolute" />
@@ -136,11 +182,11 @@ function Page() {
 
       {activeTab == "allTime" && (
         <CustomPagination
-          currentPage={2}
-          totalPages={10}
-          totalEntries={100}
-          entriesPerPage={10}
-          onPageChange={() => {}}
+          currentPage={page ?? 1}
+          totalPages={leaderboardData?.totalPages ?? 1}
+          totalEntries={leaderboardData?.total ?? 1}
+          entriesPerPage={leaderboardData?.limit ?? 10}
+          onPageChange={(value) => setPage(value)}
         />
       )}
       <div className="h-30" />
