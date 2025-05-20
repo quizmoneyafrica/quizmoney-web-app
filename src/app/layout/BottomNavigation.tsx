@@ -26,7 +26,6 @@ function BottomNavigation() {
 
             return (
               <div key={index}>
-                {isActive ? "True" : "false"}
                 <Flex
                   direction="column"
                   gap="1"
