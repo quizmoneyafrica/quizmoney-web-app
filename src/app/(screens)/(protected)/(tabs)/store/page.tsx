@@ -88,8 +88,12 @@ function Page() {
           }}
           gap={"20px"}
         >
-          {products.map((product) => (
-            <ProductCard key={product.objectId} product={product} />
+          {products.map((product, index) => (
+            <ProductCard
+              key={product.objectId}
+              product={product}
+              index={index}
+            />
           ))}
         </Grid>
       </div>
