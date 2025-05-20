@@ -10,7 +10,7 @@ import { useState } from "react";
 function SidebarNav() {
   const router = useRouter();
   const pathname = usePathname();
-  const splitName = pathname.split("/");
+  // const splitName = pathname.split("/");
 
   const [openLogout, setOpenLogout] = useState(false);
 
@@ -23,7 +23,10 @@ function SidebarNav() {
   };
   return (
     <>
-      <div className="hidden lg:inline-block relative w-full h-screen bg-primary-900">
+      <motion.div
+        layout
+        className="hidden lg:inline-block relative w-full h-screen bg-primary-900"
+      >
         <div className="grid place-items-center py-4">
           <Image
             src="/icons/quizmoney-logo-white.svg"
@@ -35,31 +38,34 @@ function SidebarNav() {
         </div>
         <Flex direction="column" px="2" className="relative">
           {navs.map((nav, index) => {
-            const isActive = splitName.includes(nav.name.toLowerCase());
+            // const isActive = splitName.includes(nav.name.toLowerCase());
+            const isActive =
+              pathname === nav.path || pathname.startsWith(nav.path + "/");
             return (
-              <button
+              <motion.button
+                layout
                 key={index}
                 onClick={() => handleTabRoute(`${nav.path}`)}
+                // className={`relative cursor-pointer transition text-sm py-4 ${
+                //   isActive ? "text-white font-semibold" : "text-primary-300"
+                // }`}
                 className={`relative cursor-pointer transition text-sm py-4 ${
-                  isActive ? "text-white font-semibold" : "text-primary-300"
+                  isActive
+                    ? "text-white font-semibold bg-primary-500 rounded-[8px]"
+                    : "text-primary-300"
                 }`}
               >
-                <AnimatePresence>
-                  {isActive ? (
-                    <motion.div
-                      layoutId="nav-active-indicator"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="absolute inset-0 bg-primary-500 rounded-[8px] z-0"
-                      transition={{
-                        type: "spring",
-                        stiffness: 300,
-                        damping: 20,
-                      }}
-                    />
-                  ) : null}
-                </AnimatePresence>
+                {isActive && (
+                  <motion.div
+                    layoutId="nav-active-indicator"
+                    className="absolute inset-0 bg-primary-500 rounded-[8px] z-0"
+                    transition={{
+                      type: "spring",
+                      stiffness: 500,
+                      damping: 30,
+                    }}
+                  />
+                )}
 
                 <Flex
                   align="center"
@@ -72,10 +78,11 @@ function SidebarNav() {
                   {nav.icon}
                   <Text>{nav.name}</Text>
                 </Flex>
-              </button>
+              </motion.button>
             );
           })}
         </Flex>
+        {/* Bottom  */}
         <Flex
           direction="column"
           px="2"
@@ -137,7 +144,7 @@ function SidebarNav() {
             );
           })}
         </Flex>
-      </div>
+      </motion.div>
 
       <LogoutDialog open={openLogout} onOpenChange={setOpenLogout} />
     </>

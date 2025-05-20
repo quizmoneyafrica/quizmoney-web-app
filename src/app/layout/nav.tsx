@@ -27,7 +27,7 @@ export const navs = [
   {
     icon: <CupIcon />,
     path: "/leaderboard",
-    name: "Chart",
+    name: "Leaderboard",
   },
   {
     icon: <SettingIcon />,
