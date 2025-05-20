@@ -37,8 +37,8 @@ function Page() {
         dispatch(setTransactionsLoading(true));
         const res = await WalletApi.fetchTransactions();
         console.log(res?.data);
-        if (res?.data?.groupedTransactions) {
-          dispatch(setTransactions(res?.data?.groupedTransactions));
+        if (res?.data?.result?.groupedTransactions) {
+          dispatch(setTransactions(res?.data?.result?.groupedTransactions));
         }
       } catch (error) {
         console.log(error, "Transaction Error");

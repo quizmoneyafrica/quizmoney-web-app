@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, PanInfo } from "framer-motion";
 import { cn } from "@/app/utils/utils";
 
 export const BottomSheet = ({
@@ -17,6 +17,16 @@ export const BottomSheet = ({
   title?: string;
   full?: boolean;
 }) => {
+  const handleDragEnd = (
+    event: MouseEvent | TouchEvent | PointerEvent,
+    info: PanInfo
+  ) => {
+    const threshold = 100;
+    if (info.offset.y > threshold || info.velocity.y > 500) {
+      onClose();
+    }
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -35,23 +45,24 @@ export const BottomSheet = ({
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            drag="y"
+            dragConstraints={{ top: 0 }}
+            dragElastic={0.2}
+            onDragEnd={handleDragEnd}
             className={cn(
-              "absolute bottom-0 left-0 right-0 bg-white  shadow-lg p-5 pb-8 flex flex-col  overflow-y-auto",
+              "absolute bottom-0 left-0 right-0 bg-white shadow-lg p-5 pb-8 flex flex-col overflow-y-auto",
               full ? "max-h-[100vh]" : "max-h-[90vh] rounded-t-3xl"
             )}
           >
-            {!full && (
-              <div
-                onClick={onClose}
-                className="w-16 h-1 bg-gray-300 rounded-full mx-auto mb-6"
-              />
-            )}
+            <div className="w-full cursor-grab active:cursor-grabbing touch-none">
+              <div className="w-16 h-1 bg-gray-300 rounded-full mx-auto mb-6" />
+            </div>
 
             {title && (
               <h2 className="text-xl font-bold text-gray-800 mb-4">{title}</h2>
             )}
 
-            {children}
+            <div className="overflow-y-auto flex-1">{children}</div>
           </motion.div>
         </div>
       )}

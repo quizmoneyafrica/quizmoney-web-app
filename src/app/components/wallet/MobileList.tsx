@@ -6,16 +6,18 @@ import { Transaction } from "@/app/store/walletSlice";
 
 type Props = {
   transaction: Transaction;
+  onClick?: () => void;
 };
 
-export default function MobileList({ transaction }: Props) {
+export default function MobileList({ transaction, onClick }: Props) {
   const date = parseISO(transaction?.createdAt ?? new Date().toISOString());
   const dateData = format(date, "MMM d h:mma").toLowerCase();
 
   return (
-    <div
+    <button
+      onClick={() => onClick?.()}
       className={classNames(
-        "bg-white px-3 md:px-4 py-3 rounded-3xl md:py-4 flex md:hidden justify-between items-center ",
+        "bg-white cursor-pointer px-3 md:px-4 w-full py-3 rounded-3xl md:py-4 flex md:hidden justify-between items-center ",
         "border border-[#D9D9D9] "
       )}
     >
@@ -39,14 +41,16 @@ export default function MobileList({ transaction }: Props) {
             />
           )}
         </div>
-        <div>
-          <p className="text-sm md:text-base font-medium text-[#3B3B3B]">
+        <div className=" flex flex-col items-start">
+          <span className="text-sm md:text-base font-medium text-[#3B3B3B]">
             {transaction.title ||
               (transaction.type === "deposit"
                 ? "Wallet Top up"
                 : "Withdrawal made")}
-          </p>
-          <p className="text-xs md:text-sm text-gray-500">{transaction.type}</p>
+          </span>
+          <span className="text-xs md:text-sm text-gray-500">
+            {transaction.type}
+          </span>
         </div>
       </div>
       <div className="text-right">
@@ -60,6 +64,6 @@ export default function MobileList({ transaction }: Props) {
         </p>
         <p className="text-xs md:text-sm text-gray-500">{dateData}</p>
       </div>
-    </div>
+    </button>
   );
 }

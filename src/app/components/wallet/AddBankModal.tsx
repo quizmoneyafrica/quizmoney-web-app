@@ -12,11 +12,7 @@ import WalletApi from "@/app/api/wallet";
 import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setWallet,
-  setWalletLoading,
-  useWallet,
-} from "@/app/store/walletSlice";
+import { setWallet, useWallet } from "@/app/store/walletSlice";
 import { getAuthUser } from "@/app/api/userApi";
 
 const bankFormSchema = z.object({
@@ -124,11 +120,13 @@ export default function AddBankModal({
         },
       });
       if (response?.data?.result?.updatedWallet) {
-        dispatch(setWalletLoading(true));
         const res = await WalletApi.fetchCustomerWallet();
         dispatch(setWallet(res.data.result.wallet));
-        reset();
-        close?.();
+        reset({
+          accountNumber: "",
+          bank: "",
+        });
+        onOpenChange(false);
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {

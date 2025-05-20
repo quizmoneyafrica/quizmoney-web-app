@@ -101,7 +101,7 @@ const walletSlice = createSlice({
       state.isTransactionsLoading = action.payload;
     },
     setWalletLoading(state, action: PayloadAction<boolean>) {
-      state.isTransactionsLoading = action.payload;
+      state.isWalletLoading = action.payload;
     },
     setTransactions(
       state,

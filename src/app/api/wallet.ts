@@ -87,6 +87,19 @@ const WalletApi = {
 			{ headers: getSessionTokenHeaders() }
 		);
 	},
+	removeBankAccount(data:{
+			bankAccount: {
+					accountNumber: string,
+					bankName:string,
+					accountName: string
+	}
+	}): Promise<AxiosResponse<ApiResponse>> {
+		return axios.post(
+			`${BASE_URL}/removeBankAccount`,
+			{...data},
+			{ headers: getSessionTokenHeaders() }
+		);
+	},
 };
 
 export default WalletApi;
