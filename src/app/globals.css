@@ -285,6 +285,15 @@ h6,
   position: relative;
   z-index: 1;
 }
+
+.hero {
+  background-image: url("/assets/images/background-desktop.png");
+  background-size: cover;
+  background-position: top;
+  background-repeat: no-repeat;
+  background-clip: border-box;
+  /* background-color: #0a326a; */
+}
 .scrollbar-hide {
   -ms-overflow-style: none; /* IE/Edge */
   scrollbar-width: none; /* Firefox */

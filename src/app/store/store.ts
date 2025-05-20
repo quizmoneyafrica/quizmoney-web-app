@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./authSlice";
 import walletReducer from "./walletSlice";
 import gameReducer from "./gameSlice";
+import demoReducer from "./demoSlice";
 
 import {
 	persistStore,
@@ -28,6 +29,7 @@ export const store = configureStore({
 		auth: persistedAuthReducer,
 		wallet: persistedWalletReducer,
 		game: gameReducer,
+		demo: demoReducer,
 	},
 	middleware: (getDefaultMiddleware) =>
 		getDefaultMiddleware({

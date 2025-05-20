@@ -85,6 +85,7 @@ function GameCard() {
               {formatNaira(nextGameData?.gamePrize)}
             </Heading>
             <Flex direction="column" gap="2" align="center" justify="center">
+              {/* <p className="text-error-500 font-bold">Game in Session</p> */}
               <Text className="text-neutral-800">
                 Next Game: {formatQuizDate(nextGameData?.startDate)}
               </Text>
