@@ -75,6 +75,7 @@ export interface Product {
   createdAt: string; // or Date if you're parsing it
   updatedAt: string; // or Date
   objectId: string;
+  bonus: number;
 }
 
 export interface User {
