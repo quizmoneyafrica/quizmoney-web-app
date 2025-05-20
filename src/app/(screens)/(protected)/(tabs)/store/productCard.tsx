@@ -11,6 +11,47 @@ import CustomButton from "@/app/utils/CustomBtn";
 import { encryptData } from "@/app/utils/crypto";
 import { useAuth } from "@/app/hooks/useAuth";
 import { Eraser } from "@/app/icons/icons";
+import { toast } from "sonner";
+
+const displayColor = [
+  {
+    bg: "bg-[#ECF6FD]",
+    text: "text-[#2A75BC]",
+    button: "!bg-[#17478B]",
+    border: "border-[#2980D6]",
+  },
+  {
+    bg: "bg-[#E7FEED]",
+    text: "text-[#00C449]",
+    button: "!bg-[#009028]",
+    border: "border-[#00B23D]",
+  },
+  {
+    bg: "bg-[#F6E4F6]",
+    text: "text-[#85119F]",
+    button: "!bg-[#85119F]",
+    border: "border-[#9817A6]",
+  },
+  {
+    bg: "bg-[#FFEAEE]",
+    text: "text-[#DE1528]",
+    button: "!bg-[#C30012]",
+    border: "border-[#DE1528]",
+  },
+  {
+    bg: "bg-[#DFF9FF]",
+    text: "text-[#00BBE3]",
+    button: "!bg-[#00BBE3]",
+    border: "border-[#00BBE3]",
+  },
+  {
+    bg: "bg-[#FFFCE7]",
+    text: "text-[#F8B93C]",
+    button: "!bg-[#F8B93C]",
+    border: "border-[#F4A235]",
+  },
+];
+
 const ProductCard = ({
   product,
   index,
@@ -24,45 +65,6 @@ const ProductCard = ({
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { loginUser } = useAuth();
-
-  const displayColor = [
-    {
-      bg: "bg-[#ECF6FD]",
-      text: "text-[#2A75BC]",
-      button: "!bg-[#17478B]",
-      border: "border-[#2980D6]",
-    },
-    {
-      bg: "bg-[#E7FEED]",
-      text: "text-[#00C449]",
-      button: "!bg-[#009028]",
-      border: "border-[#00B23D]",
-    },
-    {
-      bg: "bg-[#F6E4F6]",
-      text: "text-[#85119F]",
-      button: "!bg-[#85119F]",
-      border: "border-[#9817A6]",
-    },
-    {
-      bg: "bg-[#FFEAEE]",
-      text: "text-[#DE1528]",
-      button: "!bg-[#C30012]",
-      border: "border-[#DE1528]",
-    },
-    {
-      bg: "bg-[#DFF9FF]",
-      text: "text-[#00BBE3]",
-      button: "!bg-[#00BBE3]",
-      border: "border-[#00BBE3]",
-    },
-    {
-      bg: "bg-[#FFFCE7]",
-      text: "text-[#F8B93C]",
-      button: "!bg-[#F8B93C]",
-      border: "border-[#F4A235]",
-    },
-  ];
 
   console.log(6 % (6 - index), index);
   // console.log(displayColor[index % displayColor.length]);
@@ -83,6 +85,13 @@ const ProductCard = ({
       .catch((err) => {
         console.log(err);
         setIsOpen(false);
+        const error =
+          "Customer's balance is less than the amount you are about to deduct";
+        if (err.response.data.error != error) {
+          return toast.error(err.response.data.error, {
+            position: "top-center",
+          });
+        }
         setIsError(true);
       })
       .finally(() => {
