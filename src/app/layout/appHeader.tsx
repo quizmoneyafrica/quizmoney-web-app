@@ -3,7 +3,7 @@ import { EraserIcon, QuestionMarkCircledIcon } from "@radix-ui/react-icons";
 import { Avatar, Container, Flex, Heading, Text } from "@radix-ui/themes";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ArrowDownFillIcon,
   BellIcon,
@@ -17,14 +17,75 @@ import { useAppSelector } from "../hooks/useAuth";
 import { decryptData } from "../utils/crypto";
 import { DropdownMenu } from "radix-ui";
 import LogoutDialog from "../components/logout/logout";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store/store";
+import NotificationApi from "../api/notification";
+import { setNotifications } from "../store/notificationSlice";
+import Parse from "parse";
+import { liveQueryClient } from "@/app/api/parse/parseClient";
 
 function AppHeader() {
+  const dispatch = useDispatch();
   const pathname = usePathname();
   const excludedPaths = ["/practice-game"];
   const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
   const router = useRouter();
   const [openLogout, setOpenLogout] = useState(false);
+  const unreadCount = useSelector((state: RootState) => {
+    const list = state.notifications.notifications;
+    return Array.isArray(list) ? list.filter((n) => !n.read).length : 0;
+  });
 
+  const fetchNotifications = useCallback(async () => {
+    try {
+      const res = await NotificationApi.fetchNotifications();
+      console.log("NOTIFICATIONS: ", res.data.result.notifications);
+      dispatch(setNotifications(res.data.result.notifications));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      console.log(err.message);
+    }
+  }, [dispatch]);
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let subscription: any;
+    const NotificationLiveQuery = async () => {
+      const userPointer = {
+        __type: "Pointer",
+        className: "_User",
+        objectId: user.objectId,
+      };
+
+      const query = new Parse.Query("Notification");
+      query.equalTo("user", userPointer);
+      subscription = await liveQueryClient.subscribe(query);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      subscription?.on("create", (object: any) => {
+        console.log("this object was created: ", object.toJSON());
+        fetchNotifications();
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      subscription?.on("update", (object: any) => {
+        console.log("this object was updated: ", object.toJSON());
+        fetchNotifications();
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      subscription?.on("delete", (object: any) => {
+        console.log("this object was deleted: ", object.toJSON());
+        fetchNotifications();
+      });
+    };
+
+    NotificationLiveQuery();
+    return () => {
+      if (subscription) subscription.unsubscribe();
+    };
+  }, []);
   if (excludedPaths.includes(pathname)) return null;
 
   const lastSegment =
@@ -77,9 +138,14 @@ function AppHeader() {
           </Link>
           <Link
             href="/notification"
-            className="text-neutral-600 hover:text-primary-900"
+            className="text-neutral-600 hover:text-primary-900 relative"
           >
             <BellIcon />
+            {unreadCount > 0 && (
+              <div className="flex items-center justify-center h-4 w-4 rounded-full bg-primary-900 absolute -top-1 right-0 text-white text-xs">
+                {unreadCount}
+              </div>
+            )}
           </Link>
           <DropdownMenu.Root>
             <DropdownMenu.Trigger asChild>

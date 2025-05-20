@@ -41,6 +41,7 @@ export const formatCountDown = (seconds: number) => {
   const s = (seconds % 60).toString().padStart(2, "0");
   return `${m}:${s}`;
 };
+//For auth verification
 export const resendTimer = 300;
 
 export interface FlatTransaction extends Transaction {
@@ -93,6 +94,18 @@ export function formatQuizDate(input: string): string {
   }
 }
 
+//notification
+export function formatDateTime(isoString: string) {
+  const date = new Date(isoString);
+  const time = format(date, "h:mm a");
+  const fullDate = format(date, "MMM dd, yyyy");
+
+  return {
+    time,
+    fullDate,
+  };
+}
+
 export function readTotalTime(ms: number): string {
   const hours = Math.floor(ms / 3600000);
   const minutes = Math.floor((ms % 3600000) / 60000);
@@ -113,4 +126,10 @@ export function parseTimeStringToMilliseconds(time: string): number {
   const [mm, ss, ms] = time.split(":").map(Number);
 
   return (mm || 0) * 60000 + (ss || 0) * 1000 + (ms || 0);
+}
+
+export function truncateWords(text: string, limit: number = 5): string {
+  const words = text.trim().split(/\s+/);
+  if (words.length <= limit) return text;
+  return words.slice(0, limit).join(" ") + " ...";
 }

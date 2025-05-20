@@ -17,6 +17,7 @@ import {
   readTotalTime,
 } from "@/app/utils/utils";
 import { ApiResponse } from "@/app/api/interface";
+import UseBlockBackNavigation from "../blockBackNav";
 
 type Props = {
   totalTimeUsed: string;
@@ -30,10 +31,16 @@ function DemoResult({
   totalQuestion,
   user,
 }: Props) {
+  UseBlockBackNavigation();
   const dispatch = useDispatch();
   const router = useRouter();
 
   const handlePlayAgain = () => dispatch(clearDemoData());
+
+  const handleGoBack = () => {
+    dispatch(clearDemoData());
+    router.replace("/home");
+  };
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -44,7 +51,7 @@ function DemoResult({
       <div className="bg-neutral-50 w-full min-h-screen">
         <div className="w-full max-w-screen-lg mx-auto px-4 pt-6 pb-4 space-y-6">
           <Flex align="center" justify="between">
-            <button onClick={() => router.back()} className="cursor-pointer">
+            <button onClick={handleGoBack} className="cursor-pointer">
               <CircleArrowLeft />
             </button>
             <button
@@ -108,7 +115,7 @@ function DemoResult({
               🚀 Don&apos;t just play for fun! play to earn with Quiz Money! Tap
               the button 👇{" "}
             </p>
-            <CustomButton onClick={() => router.replace("/home")} width="full">
+            <CustomButton onClick={handleGoBack} width="full">
               Join Next Game
             </CustomButton>
           </div>

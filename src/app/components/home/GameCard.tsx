@@ -22,17 +22,25 @@ function GameCard() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    let subscription: any;
     const gameDataLiveQuery = async () => {
       const query = new Parse.Query("Game");
-      const subscription = liveQueryClient.subscribe(query);
+      subscription = await liveQueryClient.subscribe(query);
 
-      subscription?.on("update", (object) => {
+      subscription?.on("create", (object: any) => {
+        console.log("this object was updated: ", object.toJSON());
+        dispatch(setNextGameData(object.toJSON()));
+      });
+      subscription?.on("update", (object: any) => {
         console.log("this object was updated: ", object.toJSON());
         dispatch(setNextGameData(object.toJSON()));
       });
     };
 
     gameDataLiveQuery();
+    return () => {
+      if (subscription) subscription.unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
