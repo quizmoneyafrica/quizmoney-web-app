@@ -100,6 +100,13 @@ const WalletApi = {
 			{ headers: getSessionTokenHeaders() }
 		);
 	},
+	searchTransactions(data:{	query:string}): Promise<AxiosResponse<ApiResponse>> {
+		return axios.post(
+			`${BASE_URL}/searchTransactions`,
+			{...data},
+			{ headers: getSessionTokenHeaders() }
+		);
+	},
 };
 
 export default WalletApi;

@@ -69,7 +69,9 @@ export default function TransactionHistory(): React.JSX.Element {
       groupedTransactions.other.push(transaction);
     }
   });
-
+  console.log("============flattenedTransactions========================");
+  console.log(JSON.stringify(flattenedTransactions, null, 2));
+  console.log("=============flattenedTransactions=======================");
   const renderTransaction = (
     transaction: Transaction,
     index: number,
