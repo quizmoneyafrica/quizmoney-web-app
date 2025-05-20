@@ -7,6 +7,7 @@ import React, { useState } from "react";
 import {
   ArrowDownFillIcon,
   BellIcon,
+  CircleArrowLeft,
   LogoutIcon,
   PersonIcon,
   PlusIcon,
@@ -16,7 +17,6 @@ import { useAppSelector } from "../hooks/useAuth";
 import { decryptData } from "../utils/crypto";
 import { DropdownMenu } from "radix-ui";
 import LogoutDialog from "../components/logout/logout";
-import CustomImage from "../components/wallet/CustomImage";
 
 function AppHeader() {
   const pathname = usePathname();
@@ -51,10 +51,7 @@ function AppHeader() {
                 onClick={() => router?.back()}
                 className=" cursor-pointer "
               >
-                <CustomImage
-                  alt="back icon"
-                  src={"/icons/back-transaction.svg"}
-                />
+                <CircleArrowLeft />
               </button>
             )}
             <span className=" lg:flex">
