@@ -22,6 +22,7 @@ function GameCard() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let subscription: any;
     const gameDataLiveQuery = async () => {
       const query = new Parse.Query("Game");
