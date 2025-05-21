@@ -17,6 +17,7 @@ import {
 import { parseISO, isToday, isYesterday } from "date-fns";
 import CustomImage from "../wallet/CustomImage";
 import { ActivityRow } from "./ActivityRow";
+import { Skeleton } from "@radix-ui/themes";
 
 const PAGE_SIZE = 15;
 
@@ -108,14 +109,32 @@ export default function WalletActivity(): React.ReactElement {
     );
   };
 
+  const renderSkeletonLoader = (): JSX.Element => (
+    <div className="space-y-2 md:space-y-3 py-5 md:bg-white rounded-2xl mt-3 md:mt-5 px-3 md:px-4">
+      {[...Array(5)].map((_, index) => (
+        <div
+          key={index}
+          className="flex justify-between items-center  pb-3 mb-3"
+        >
+          <div className="flex items-center gap-3">
+            <Skeleton width="40px" height="40px" />
+            <div className="space-y-1">
+              <Skeleton width="112px" height="12px" />
+              <Skeleton width="64px" height="12px" />
+            </div>
+          </div>
+          <Skeleton width="64px" height="12px" />
+        </div>
+      ))}
+    </div>
+  );
+
   return (
     <div className="py-5">
       <FilterBar />
       <div className="w-full gap-4 md:gap-8 flex flex-col">
         {isTransactionsLoading ? (
-          <div className="py-8 flex justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2364AA]"></div>
-          </div>
+          renderSkeletonLoader()
         ) : flattenedTransactions.length === 0 ? (
           renderEmptyState()
         ) : (

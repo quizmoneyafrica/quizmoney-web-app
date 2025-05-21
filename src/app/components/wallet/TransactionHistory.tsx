@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useMemo } from "react";
 import WalletBalance from "./WalletBalance";
 import CustomImage from "./CustomImage";
 import classNames from "classnames";
@@ -9,6 +9,7 @@ import { useWallet } from "@/app/store/walletSlice";
 import { format, parseISO, isToday, isYesterday } from "date-fns";
 import Link from "next/link";
 import { renderEmptyState } from "../transactions/WalletActivity";
+import { Skeleton } from "@radix-ui/themes";
 
 interface Transaction {
   amount: number;
@@ -42,33 +43,32 @@ export interface TransactionGroup {
 export default function TransactionHistory(): React.JSX.Element {
   const { transactions, isTransactionsLoading } = useSelector(useWallet);
 
-  const groupedTransactions: TransactionGroup = {
-    today: [],
-    yesterday: [],
-    other: [],
-  };
-
-  // const flattenedTransactions: Transaction[] = [];
-  // transactions.forEach((walletTransaction: UserWalletTransaction) => {
-  //   walletTransaction.transactions.forEach((transaction: Transaction) => {
-  //     flattenedTransactions.push(transaction);
-  //   });
-  // });
-  const flattenedTransactions = transactions.flatMap(
-    (walletTransaction) => walletTransaction.transactions
+  const flattenedTransactions = useMemo(
+    () => transactions.flatMap((walletTx) => walletTx.transactions),
+    [transactions]
   );
 
-  flattenedTransactions.forEach((transaction: Transaction) => {
-    const date = parseISO(transaction?.createdAt ?? new Date().toISOString());
+  const groupedTransactions: TransactionGroup = useMemo(() => {
+    const group: TransactionGroup = {
+      today: [],
+      yesterday: [],
+      other: [],
+    };
 
-    if (isToday(date)) {
-      groupedTransactions.today.push(transaction);
-    } else if (isYesterday(date)) {
-      groupedTransactions.yesterday.push(transaction);
-    } else {
-      groupedTransactions.other.push(transaction);
-    }
-  });
+    flattenedTransactions.forEach((transaction: Transaction) => {
+      const date = parseISO(transaction?.createdAt ?? new Date().toISOString());
+
+      if (isToday(date)) {
+        group.today.push(transaction);
+      } else if (isYesterday(date)) {
+        group.yesterday.push(transaction);
+      } else {
+        group.other.push(transaction);
+      }
+    });
+
+    return group;
+  }, [flattenedTransactions]);
 
   const renderTransaction = (
     transaction: Transaction,
@@ -93,21 +93,17 @@ export default function TransactionHistory(): React.JSX.Element {
                 transaction.type === "deposit" ? "bg-green-100" : "bg-red-100"
               }`}
             >
-              {transaction.type === "deposit" ? (
-                <CustomImage
-                  alt="arrow-up"
-                  src="/icons/arrow-down-green.svg"
-                  className="w-4 h-4 md:w-5 md:h-5"
-                />
-              ) : (
-                <CustomImage
-                  alt="arrow-up"
-                  src="/icons/arrow-down-red.svg"
-                  className="w-4 h-4 md:w-5 md:h-5"
-                />
-              )}
+              <CustomImage
+                alt="arrow-icon"
+                src={
+                  transaction.type === "deposit"
+                    ? "/icons/arrow-down-green.svg"
+                    : "/icons/arrow-down-red.svg"
+                }
+                className="w-4 h-4 md:w-5 md:h-5"
+              />
             </div>
-            <div className=" flex flex-col items-start">
+            <div className="flex flex-col items-start">
               <span className="text-sm md:text-base font-medium text-[#3B3B3B]">
                 {transaction.title ||
                   (transaction.type === "deposit"
@@ -133,7 +129,6 @@ export default function TransactionHistory(): React.JSX.Element {
             <p className="text-xs md:text-sm text-gray-500">{dateData}</p>
           </div>
         </div>
-
         <MobileList transaction={transaction} />
       </React.Fragment>
     );
@@ -143,7 +138,19 @@ export default function TransactionHistory(): React.JSX.Element {
     title: string,
     transactions: Transaction[]
   ): React.JSX.Element | null => {
-    if (transactions.length === 0) return null;
+    if (transactions.length === 0)
+      return (
+        <div className="space-y-2 md:space-y-3 pb-3 md:pb-5 mt-3 md:mt-5">
+          <div className="px-3 md:px-4">
+            <h2 className="text-sm md:text-base font-semibold text-[#3B3B3B]">
+              {title}
+            </h2>
+          </div>
+          <div className="px-3 md:px-4 py-3 md:py-4 flex justify-center items-center">
+            <p className="text-sm text-gray-500">No transactions</p>
+          </div>
+        </div>
+      );
 
     return (
       <div className="space-y-2 md:space-y-3 pb-3 md:pb-5 mt-3 md:mt-5">
@@ -178,20 +185,36 @@ export default function TransactionHistory(): React.JSX.Element {
         </div>
 
         {isTransactionsLoading ? (
-          <div className="py-8 flex justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2364AA]" />
+          <div className="space-y-4 px-3 md:px-4">
+            {[...Array(5)].map((_, i) => (
+              <div
+                key={i}
+                className="flex items-center justify-between p-3 md:p-4 bg-white rounded-xl"
+              >
+                <div className="flex items-center gap-3 md:gap-4">
+                  <Skeleton className="h-10 w-10 rounded-full" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-32 md:w-48 rounded" />
+                    <Skeleton className="h-3 w-24 md:w-32 rounded" />
+                  </div>
+                </div>
+                <div className="text-right space-y-2">
+                  <Skeleton className="h-4 w-20 md:w-28 rounded" />
+                  <Skeleton className="h-3 w-16 md:w-24 rounded" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : flattenedTransactions.length === 0 ? (
           renderEmptyState()
         ) : (
-          <React.Fragment>
+          <>
             {renderTransactionSection("Today", groupedTransactions.today)}
             {renderTransactionSection(
               "Yesterday",
               groupedTransactions.yesterday
             )}
-            {/* {renderTransactionSection("Earlier", groupedTransactions.other)} */}
-          </React.Fragment>
+          </>
         )}
       </div>
     </div>
