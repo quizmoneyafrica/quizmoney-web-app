@@ -17,7 +17,9 @@ export function FilterBar(): React.ReactElement {
           setTransactions(response?.data?.result?.groupedTransactions)
         );
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error, "ERROR FETCHING TRANSACTIONS");
+    }
   };
   return (
     <div className="mb-6 flex items-center gap-3 justify-between">
