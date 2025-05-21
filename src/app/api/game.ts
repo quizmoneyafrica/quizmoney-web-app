@@ -2,7 +2,6 @@ import axios, { AxiosResponse } from "axios";
 import {
   appHeaders,
   BASE_URL,
-  getAuthUser,
   getSessionTokenHeaders,
   SECRET_KEY,
 } from "./userApi";
@@ -24,23 +23,21 @@ const GameApi = {
     return axios.post(
       `${BASE_URL}/removeUserFromGame`,
       { gameId },
-      { headers: appHeaders }
+      { headers: getSessionTokenHeaders() }
     );
   },
   deactivateSession(gameId: string) {
     return axios.post(
       `${BASE_URL}/functions/deactivateSession`,
       { gameId },
-      {
-        headers: appHeaders,
-      }
+      { headers: getSessionTokenHeaders() }
     );
   },
   checkSessionStatus(gameId: string) {
     return axios.post(
       `${BASE_URL}/functions/checkGameSession`,
       { gameId },
-      { headers: appHeaders }
+      { headers: getSessionTokenHeaders() }
     );
   },
 };
