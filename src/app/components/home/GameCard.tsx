@@ -41,7 +41,7 @@ function GameCard() {
     return () => {
       if (subscription) subscription.unsubscribe();
     };
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     const fetchNextGame = async () => {
