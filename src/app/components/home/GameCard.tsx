@@ -11,7 +11,7 @@ import PlayDemoBtn from "./PlayDemo";
 import { toast } from "sonner";
 import JoinGameBtn from "./JoinGameBtn";
 import { differenceInSeconds } from "date-fns";
-import Parse from "parse";
+import Parse, { Object as ParseObject } from "parse";
 import { liveQueryClient } from "@/app/api/parse/parseClient";
 
 function GameCard() {
@@ -22,17 +22,16 @@ function GameCard() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let subscription: any;
     const gameDataLiveQuery = async () => {
       const query = new Parse.Query("Game");
       subscription = await liveQueryClient.subscribe(query);
 
-      subscription?.on("create", (object: any) => {
+      subscription?.on("create", (object: Parse.Object) => {
         console.log("this object was updated: ", object.toJSON());
         dispatch(setNextGameData(object.toJSON()));
       });
-      subscription?.on("update", (object: any) => {
+      subscription?.on("update", (object: Parse.Object) => {
         console.log("this object was updated: ", object.toJSON());
         dispatch(setNextGameData(object.toJSON()));
       });
