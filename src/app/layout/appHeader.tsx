@@ -35,6 +35,8 @@ function AppHeader() {
     const list = state.notifications.notifications;
     return Array.isArray(list) ? list.filter((n) => !n.read).length : 0;
   });
+  const user = encrypted ? decryptData(encrypted) : null;
+  console.log(user);
 
   const fetchNotifications = useCallback(async () => {
     try {
@@ -85,7 +87,7 @@ function AppHeader() {
     return () => {
       if (subscription) subscription.unsubscribe();
     };
-  }, []);
+  }, [fetchNotifications, user.objectId]);
   if (excludedPaths.includes(pathname)) return null;
 
   const lastSegment =
@@ -95,9 +97,6 @@ function AppHeader() {
       .pop()
       ?.replace(/-/g, " ")
       .replace(/\b\w/g, (char) => char.toUpperCase()) || "";
-
-  const user = encrypted ? decryptData(encrypted) : null;
-  console.log(user);
 
   return (
     <div className="pb-4">
