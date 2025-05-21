@@ -1,4 +1,3 @@
-// "use client";
 import { ApiResponse } from "@/app/api/interface";
 import { CircleArrowLeft } from "@/app/icons/icons";
 import { useRouter } from "next/navigation";
@@ -25,8 +24,6 @@ export default function WelcomeScreen({
   router,
 }: Props) {
   const dispatch = useDispatch();
-  // const router = useRouter();
-  // const [loading, setLoading] = useState(false);
 
   const handleFetchDemoData = async () => {
     setLoading(true);
