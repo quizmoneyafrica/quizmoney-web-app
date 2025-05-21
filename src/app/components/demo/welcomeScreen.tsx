@@ -1,8 +1,8 @@
-"use client";
+// "use client";
 import { ApiResponse } from "@/app/api/interface";
 import { CircleArrowLeft } from "@/app/icons/icons";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import CustomButton from "@/app/utils/CustomBtn";
 import { Grid, Heading, Text } from "@radix-ui/themes";
@@ -11,10 +11,22 @@ import { useDispatch } from "react-redux";
 import DemoApi from "@/app/api/demo";
 import { setDemoData } from "@/app/store/demoSlice";
 
-export default function WelcomeScreen() {
+type RouterType = ReturnType<typeof useRouter>;
+type Props = {
+  setShowGame: React.Dispatch<React.SetStateAction<boolean>>;
+  loading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  router: RouterType;
+};
+export default function WelcomeScreen({
+  setShowGame,
+  loading,
+  setLoading,
+  router,
+}: Props) {
   const dispatch = useDispatch();
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  // const router = useRouter();
+  // const [loading, setLoading] = useState(false);
 
   const handleFetchDemoData = async () => {
     setLoading(true);
@@ -24,7 +36,7 @@ export default function WelcomeScreen() {
       const demoData = res.data.result;
       dispatch(setDemoData(demoData));
       // console.log("Practice Questions: ", demoData);
-
+      setShowGame(true);
       setLoading(false);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
