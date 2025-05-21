@@ -4,12 +4,14 @@ import { useAppDispatch } from "@/app/hooks/useAuth";
 import { setLiveGameData, setShowGameCountdown } from "@/app/store/gameSlice";
 import { RootState } from "@/app/store/store";
 import { toastPosition } from "@/app/utils/utils";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 
 function JoinGameBtn() {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const gameData = useSelector((state: RootState) => state.game.nextGameData);
 
   const handleJoinBtn = async () => {
@@ -19,7 +21,7 @@ function JoinGameBtn() {
 
       dispatch(setLiveGameData(decryptGameData(game)));
       dispatch(setShowGameCountdown(true));
-      // router.push("/game");
+      router.push("/game");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.log(err.message);
