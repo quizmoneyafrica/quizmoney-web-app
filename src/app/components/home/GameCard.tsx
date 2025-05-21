@@ -11,6 +11,10 @@ import PlayDemoBtn from "./PlayDemo";
 import { toast } from "sonner";
 import JoinGameBtn from "./JoinGameBtn";
 import { differenceInSeconds } from "date-fns";
+import Parse from "parse";
+import {
+  liveQueryClient,
+} from "@/app/api/parse/parseClient";
 
 function GameCard() {
   const dispatch = useAppDispatch();
@@ -18,6 +22,29 @@ function GameCard() {
   const [loading, setLoading] = useState(true);
   const [showJoinBtn, setShowJoinBtn] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let subscription: any;
+    const gameDataLiveQuery = async () => {
+      const query = new Parse.Query("Game");
+      subscription = await liveQueryClient.subscribe(query);
+
+      subscription?.on("create", (object: Parse.Object) => {
+        console.log("this object was updated: ", object.toJSON());
+        dispatch(setNextGameData(object.toJSON()));
+      });
+      subscription?.on("update", (object: Parse.Object) => {
+        console.log("this object was updated: ", object.toJSON());
+        dispatch(setNextGameData(object.toJSON()));
+      });
+    };
+
+    gameDataLiveQuery();
+    return () => {
+      if (subscription) subscription.unsubscribe();
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     const fetchNextGame = async () => {
@@ -85,6 +112,7 @@ function GameCard() {
               {formatNaira(nextGameData?.gamePrize)}
             </Heading>
             <Flex direction="column" gap="2" align="center" justify="center">
+              {/* <p className="text-error-500 font-bold">Game in Session</p> */}
               <Text className="text-neutral-800">
                 Next Game: {formatQuizDate(nextGameData?.startDate)}
               </Text>

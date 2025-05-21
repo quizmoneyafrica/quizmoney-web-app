@@ -1,4 +1,3 @@
-import { User } from "@/app/api/interface";
 import Modal from "@/app/components/modal/Modal";
 import { FacebookIcon } from "@/app/icons/icons";
 import { InstagramLogoIcon, TwitterLogoIcon } from "@radix-ui/react-icons";
@@ -14,12 +13,17 @@ const rank = {
 interface PlayerCardProps {
   player: {
     prize?: number;
-    user?: User;
-    userId: string;
     position?: number;
-    noOfGamesPlayed?: number;
-    amountWon?: number;
-    overallRank?: number;
+    amountWon: number;
+    avatar: string;
+    facebook: string;
+    firstName: string;
+    instagram: string;
+    lastName: string;
+    noOfGamesPlayed: number;
+    overallRank: number;
+    twitter: string;
+    userId: string;
     activeTab: "lastGame" | "allTime";
   };
 }
@@ -43,13 +47,13 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
         </div>
         <div className="flex items-center gap-2">
           <Image
-            src={player?.user?.avatar || ""}
-            alt={player?.user?.username || ""}
+            src={player?.avatar || ""}
+            alt={player?.firstName || ""}
             width={50}
             height={50}
             className="rounded-full"
           />
-          <p>{player?.user?.username}</p>
+          <p>{player?.firstName}</p>
         </div>
       </div>
       <p className="text-primary-800 bg-primary-100 rounded-4xl px-2 md:px-4 py-1 md:py-2 text-sm md:text-base">
@@ -64,15 +68,15 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
           <p className=" text-xl sm:text-2xl font-semibold">Users Stats</p>
           <div className=" bg-primary-100 rounded-full p-2">
             <Image
-              src={player?.user?.avatar || ""}
-              alt={player?.user?.username || ""}
+              src={player?.avatar || ""}
+              alt={player?.firstName || ""}
               width={50}
               height={50}
               className="rounded-full"
             />
           </div>
           <p className=" text-primary-700 text-xl sm:text-2xl font-semibold">
-            {player?.user?.username}
+            {player?.firstName}
           </p>
 
           <div className="flex flex-col gap-2 w-full md:w-[80%]">
@@ -81,13 +85,15 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
               <div>
                 <p>Rank</p>
                 <div className="flex h-10 w-10 items-center text-primary-800 justify-center gap-2 border-2 border-primary-800 rounded-full p-2">
-                  {player?.position}
+                  {player.activeTab == "allTime"
+                    ? player?.overallRank
+                    : player?.position}
                 </div>
               </div>
               <div>
                 <p>Games</p>
                 <div className="flex h-10 w-10 items-center text-primary-800 justify-center gap-2 border-2 border-primary-800 rounded-full p-2">
-                  10
+                  {player?.noOfGamesPlayed}
                 </div>
               </div>
               <div>
@@ -104,15 +110,21 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
 
           <p className=" text-lg sm:text-xl font-semibold">Social Links</p>
           <div className="flex gap-2">
-            <div className="h-[30px] w-[30px] rounded-full bg-primary-50 flex justify-center items-center">
-              <FacebookIcon />
-            </div>
-            <div className="h-[30px] w-[30px] rounded-full bg-primary-50 flex justify-center items-center">
-              <InstagramLogoIcon />
-            </div>
-            <div className="h-[30px] w-[30px] rounded-full bg-primary-50 flex justify-center items-center">
-              <TwitterLogoIcon />
-            </div>
+            {player?.facebook && (
+              <div className="h-[30px] w-[30px] rounded-full bg-primary-50 flex justify-center items-center">
+                <FacebookIcon />
+              </div>
+            )}
+            {player?.instagram && (
+              <div className="h-[30px] w-[30px] rounded-full bg-primary-50 flex justify-center items-center">
+                <InstagramLogoIcon />
+              </div>
+            )}
+            {player?.twitter && (
+              <div className="h-[30px] w-[30px] rounded-full bg-primary-50 flex justify-center items-center">
+                <TwitterLogoIcon />
+              </div>
+            )}
           </div>
         </div>
       </Modal>

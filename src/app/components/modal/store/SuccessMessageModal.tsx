@@ -2,6 +2,7 @@ import React from "react";
 import Modal from "../Modal";
 import { Flex } from "@radix-ui/themes";
 import Image from "next/image";
+import CustomButton from "@/app/utils/CustomBtn";
 
 const SuccessMessageModal = ({
   open,
@@ -51,12 +52,10 @@ const SuccessMessageModal = ({
         <p className="text-sm text-gray-500 text-center w-[80%]">
           {subMessage}
         </p>
-        <div
-          className="bg-primary-900 text-white px-6 py-3 w-full rounded-full flex items-center gap-2 justify-center font-semibold"
-          onClick={handleClose}
-        >
+
+        <CustomButton onClick={handleClose} className=" w-full font-semibold">
           {actionLabel}
-        </div>
+        </CustomButton>
       </Flex>
     </Modal>
   );

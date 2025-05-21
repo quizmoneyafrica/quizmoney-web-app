@@ -1,20 +1,33 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { ReactNode, useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-// import CustomPagination from "@/app/utils/CustomPagination";
+import CustomPagination from "@/app/utils/CustomPagination";
 import PlayerCard from "./PlayerCard";
 import LeaderboardAPI from "@/app/api/leaderboardApi";
-import AppLoader from "@/app/components/loader/loader";
-import { User } from "@/app/api/interface";
+import { CupIcon } from "@/app/icons/icons";
+import LeaderboardLoader from "./LeaderboardLoader";
 
-interface Leaderboard {
-  prize?: number;
-  user?: User;
+export interface Leaderboard {
+  amountWon: number;
+  avatar: string;
+  facebook: string;
+  firstName: string;
+  instagram: string;
+  lastName: string;
+  noOfGamesPlayed: number;
+  overallRank: number;
+  twitter: string;
   userId: string;
-  position?: number;
-  noOfGamesPlayed?: number;
-  amountWon?: number;
-  overallRank?: number;
+  position: number;
+  prize: number;
+}
+
+export interface LeaderboardData {
+  currentPage?: number;
+  leaderboard: Leaderboard[];
+  limit?: number;
+  total?: number;
+  totalPages?: number;
 }
 
 function Page() {
@@ -22,26 +35,61 @@ function Page() {
     "lastGame"
   );
   const [loading, setLoading] = useState(true);
-  const [leaderboard, setLeaderboard] = useState<Leaderboard[]>([]);
-  const getLeaderboard = async (tab: "lastGame" | "allTime") => {
-    try {
-      setLoading(true);
-      const res =
-        tab === "lastGame"
-          ? await LeaderboardAPI.getLastGameLeaderboard().then((res) => {
-              setLeaderboard(res.data.result.gameLeaderboard.rankings);
-            })
-          : await LeaderboardAPI.getAllTimeLeaderboard().then((res) => {
-              setLeaderboard(res.data.result);
-            });
-      setLoading(false);
-      console.log(res);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [leaderboardData, setLeaderboardData] = useState<
+    LeaderboardData | undefined
+  >();
+  const [page, setPage] = useState(1);
+  const leaderboard: Leaderboard[] | undefined = leaderboardData?.leaderboard;
+  console.log({ page });
+
+  const getLeaderboard = useCallback(
+    async (tab: "lastGame" | "allTime") => {
+      try {
+        setLoading(true);
+        const res =
+          tab === "lastGame"
+            ? await LeaderboardAPI.getLastGameLeaderboard()
+                .then((res) => {
+                  setLeaderboardData({
+                    leaderboard: res.data.result.gameLeaderboard.rankings.map(
+                      (data: {
+                        position: number;
+                        prize: number;
+                        user: {
+                          avatar: string;
+                          facebook: string;
+                          firstName: string;
+                          instagram: string;
+                          lastName: string;
+                          noOfGamesPlayed: number;
+                          twitter: string;
+                          userId: string;
+                        };
+                      }) => ({
+                        position: data?.position,
+                        prize: data?.prize,
+                        ...data?.user,
+                      })
+                    ),
+                  });
+                })
+                .catch(() => setLeaderboardData(undefined))
+            : await LeaderboardAPI.getAllTimeLeaderboard(page)
+                .then((res) => {
+                  // setPage(res.data.currentPage ?? 1);
+                  setLeaderboardData(res.data.result);
+                })
+                .catch(() => setLeaderboardData(undefined));
+        setLoading(false);
+        console.log(res);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [page]
+  );
 
   const handleTabChange = (tab: "lastGame" | "allTime") => {
     setActiveTab(tab);
@@ -50,10 +98,43 @@ function Page() {
 
   useEffect(() => {
     getLeaderboard("lastGame");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (activeTab == "allTime") {
+      getLeaderboard("allTime");
+    }
+  }, [page, activeTab, getLeaderboard]);
+
+  let content: ReactNode;
   if (loading) {
-    return <AppLoader />;
+    content = (
+      <div className="flex flex-col gap-5">
+        {Array(7)
+          .fill(0)
+          .map((_, index) => (
+            <LeaderboardLoader key={index} />
+          ))}
+      </div>
+    );
+  }
+  if (!loading && leaderboard && leaderboard?.length > 0) {
+    content = (
+      <div className="flex flex-col gap-5">
+        <div className="hidden md:flex justify-between items-center text-sm md:text-base text-black font-semibold px-10">
+          <div className="flex-1 flex gap-[10%]">
+            <p>Rank</p>
+            <p>Username</p>
+          </div>
+          <p>Amount</p>
+        </div>
+
+        {leaderboard?.map((player) => (
+          <PlayerCard player={{ ...player, activeTab }} key={player.userId} />
+        ))}
+      </div>
+    );
   }
   return (
     <motion.div
@@ -61,6 +142,7 @@ function Page() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.25, ease: "easeInOut" }}
+      className=" min-h-screen"
     >
       <p className=" text-lg md:text-xl">
         See who is topping the leaderboard charts
@@ -90,27 +172,27 @@ function Page() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-5">
-        <div className="hidden md:flex justify-between items-center text-sm md:text-base text-black font-semibold px-10">
-          <div className="flex-1 flex gap-[10%]">
-            <p>Rank</p>
-            <p>Username</p>
+      {!loading && (leaderboard === undefined || leaderboard?.length <= 0) && (
+        <div className=" flex flex-col justify-center items-center">
+          <div className="relative h-[10rem] md:h-[14rem] flex flex-col justify-end items-center ">
+            <CupIcon className=" text-primary-500 fill-primary-300 h-[10rem] w-[5rem] md:w-[10rem] top-0 opacity-25 absolute" />
+            <CupIcon className=" text-primary-500 fill-primary-300 h-[10rem] w-[5rem] md:w-[10rem] top-0 opacity-5 absolute translate-y-2 translate-x-3" />
+            <p className="  font-semibold opacity-50">Leaderboard is empty</p>
           </div>
-          <p>Amount</p>
         </div>
+      )}
 
-        {leaderboard?.map((player) => (
-          <PlayerCard player={{ ...player, activeTab }} key={player.userId} />
-        ))}
-      </div>
+      {content}
 
-      {/* <CustomPagination
-        currentPage={2}
-        totalPages={10}
-        totalEntries={100}
-        entriesPerPage={10}
-        onPageChange={() => {}}
-      /> */}
+      {activeTab == "allTime" && (
+        <CustomPagination
+          currentPage={page ?? 1}
+          totalPages={leaderboardData?.totalPages ?? 1}
+          totalEntries={leaderboardData?.total ?? 1}
+          entriesPerPage={leaderboardData?.limit ?? 10}
+          onPageChange={(value) => setPage(value)}
+        />
+      )}
       <div className="h-30" />
     </motion.div>
   );
