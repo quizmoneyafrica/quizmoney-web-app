@@ -14,7 +14,6 @@ import { differenceInSeconds } from "date-fns";
 import Parse from "parse";
 import {
   liveQueryClient,
-  ParseLiveQuerySubscription,
 } from "@/app/api/parse/parseClient";
 
 function GameCard() {
