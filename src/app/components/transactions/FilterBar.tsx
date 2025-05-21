@@ -11,7 +11,9 @@ export function FilterBar(): React.ReactElement {
       const response = await WalletApi.searchTransactions({
         query,
       });
-
+      console.log("====================================");
+      console.log(JSON.stringify(response, null, 2));
+      console.log("====================================");
       if (response?.data?.result?.groupedTransactions) {
         store.dispatch(
           setTransactions(response?.data?.result?.groupedTransactions)
