@@ -101,6 +101,25 @@ function Page() {
               </Flex>
               <ChevronRightIcon height={25} width={25} />
             </Flex>
+            <Flex
+              onClick={() => router.push("/settings/invite-&-earn")}
+              className=" bg-white p-4 md:p-6 rounded-2xl sm:rounded-xl border border-zinc-200"
+              align={"center"}
+              justify={"between"}
+            >
+              <Flex gap={"3"} align={"center"}>
+                <div className="h-12 w-12 bg-primary-50 rounded-full flex justify-center items-center">
+                  <Image
+                    src="/icons/security-safe.svg"
+                    alt="terms"
+                    width={24}
+                    height={24}
+                  />{" "}
+                </div>
+                <p className=" text-lg font-semibold ">Invite & Earn</p>
+              </Flex>
+              <ChevronRightIcon height={25} width={25} />
+            </Flex>
           </Grid>
         </Flex>
 
