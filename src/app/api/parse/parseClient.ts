@@ -19,3 +19,11 @@ export const liveQueryClient = new Parse.LiveQueryClient({
 liveQueryClient.open();
 
 export default Parse;
+
+export type ParseLiveQuerySubscription<T extends Parse.Object> = {
+  on: (
+    event: "create" | "update" | "delete" | "enter" | "leave" | "close",
+    callback: (object: T) => void
+  ) => void;
+  unsubscribe: () => void;
+};

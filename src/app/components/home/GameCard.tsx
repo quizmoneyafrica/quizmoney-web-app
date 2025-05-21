@@ -11,8 +11,11 @@ import PlayDemoBtn from "./PlayDemo";
 import { toast } from "sonner";
 import JoinGameBtn from "./JoinGameBtn";
 import { differenceInSeconds } from "date-fns";
-import Parse, { Object as ParseObject } from "parse";
-import { liveQueryClient } from "@/app/api/parse/parseClient";
+import Parse from "parse";
+import {
+  liveQueryClient,
+  ParseLiveQuerySubscription,
+} from "@/app/api/parse/parseClient";
 
 function GameCard() {
   const dispatch = useAppDispatch();
@@ -22,6 +25,7 @@ function GameCard() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let subscription: any;
     const gameDataLiveQuery = async () => {
       const query = new Parse.Query("Game");
