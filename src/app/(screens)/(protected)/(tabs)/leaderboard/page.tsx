@@ -1,5 +1,5 @@
 "use client";
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode, useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import CustomPagination from "@/app/utils/CustomPagination";
 import PlayerCard from "./PlayerCard";
@@ -42,51 +42,54 @@ function Page() {
   const leaderboard: Leaderboard[] | undefined = leaderboardData?.leaderboard;
   console.log({ page });
 
-  const getLeaderboard = async (tab: "lastGame" | "allTime") => {
-    try {
-      setLoading(true);
-      const res =
-        tab === "lastGame"
-          ? await LeaderboardAPI.getLastGameLeaderboard()
-              .then((res) => {
-                setLeaderboardData({
-                  leaderboard: res.data.result.gameLeaderboard.rankings.map(
-                    (data: {
-                      position: number;
-                      prize: number;
-                      user: {
-                        avatar: string;
-                        facebook: string;
-                        firstName: string;
-                        instagram: string;
-                        lastName: string;
-                        noOfGamesPlayed: number;
-                        twitter: string;
-                        userId: string;
-                      };
-                    }) => ({
-                      position: data?.position,
-                      prize: data?.prize,
-                      ...data?.user,
-                    })
-                  ),
-                });
-              })
-              .catch(() => setLeaderboardData(undefined))
-          : await LeaderboardAPI.getAllTimeLeaderboard(page)
-              .then((res) => {
-                // setPage(res.data.currentPage ?? 1);
-                setLeaderboardData(res.data.result);
-              })
-              .catch(() => setLeaderboardData(undefined));
-      setLoading(false);
-      console.log(res);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const getLeaderboard = useCallback(
+    async (tab: "lastGame" | "allTime") => {
+      try {
+        setLoading(true);
+        const res =
+          tab === "lastGame"
+            ? await LeaderboardAPI.getLastGameLeaderboard()
+                .then((res) => {
+                  setLeaderboardData({
+                    leaderboard: res.data.result.gameLeaderboard.rankings.map(
+                      (data: {
+                        position: number;
+                        prize: number;
+                        user: {
+                          avatar: string;
+                          facebook: string;
+                          firstName: string;
+                          instagram: string;
+                          lastName: string;
+                          noOfGamesPlayed: number;
+                          twitter: string;
+                          userId: string;
+                        };
+                      }) => ({
+                        position: data?.position,
+                        prize: data?.prize,
+                        ...data?.user,
+                      })
+                    ),
+                  });
+                })
+                .catch(() => setLeaderboardData(undefined))
+            : await LeaderboardAPI.getAllTimeLeaderboard(page)
+                .then((res) => {
+                  // setPage(res.data.currentPage ?? 1);
+                  setLeaderboardData(res.data.result);
+                })
+                .catch(() => setLeaderboardData(undefined));
+        setLoading(false);
+        console.log(res);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [page]
+  );
 
   const handleTabChange = (tab: "lastGame" | "allTime") => {
     setActiveTab(tab);
@@ -102,7 +105,7 @@ function Page() {
     if (activeTab == "allTime") {
       getLeaderboard("allTime");
     }
-  }, [page, activeTab]);
+  }, [page, activeTab, getLeaderboard]);
 
   let content: ReactNode;
   if (loading) {
