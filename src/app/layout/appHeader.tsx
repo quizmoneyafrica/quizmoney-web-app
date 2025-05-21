@@ -41,7 +41,6 @@ function AppHeader() {
   const fetchNotifications = useCallback(async () => {
     try {
       const res = await NotificationApi.fetchNotifications();
-      console.log("NOTIFICATIONS: ", res.data.result.notifications);
       dispatch(setNotifications(res.data.result.notifications));
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
@@ -59,26 +58,23 @@ function AppHeader() {
       const userPointer = {
         __type: "Pointer",
         className: "_User",
-        objectId: user.objectId,
+        objectId: user?.objectId,
       };
 
       const query = new Parse.Query("Notification");
       query.equalTo("user", userPointer);
       subscription = await liveQueryClient.subscribe(query);
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      subscription?.on("create", (object: any) => {
-        console.log("this object was created: ", object.toJSON());
+      subscription?.on("create", (object: Parse.Object) => {
+        console.log("this object was created: ", object);
         fetchNotifications();
       });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      subscription?.on("update", (object: any) => {
-        console.log("this object was updated: ", object.toJSON());
+      subscription?.on("update", (object: Parse.Object) => {
+        console.log("this object was updated: ", object);
         fetchNotifications();
       });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      subscription?.on("delete", (object: any) => {
-        console.log("this object was deleted: ", object.toJSON());
+      subscription?.on("delete", (object: Parse.Object) => {
+        console.log("this object was deleted: ", object);
         fetchNotifications();
       });
     };
@@ -87,7 +83,7 @@ function AppHeader() {
     return () => {
       if (subscription) subscription.unsubscribe();
     };
-  }, [fetchNotifications, user.objectId]);
+  }, [fetchNotifications, user?.objectId]);
   if (excludedPaths.includes(pathname)) return null;
 
   const lastSegment =

@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { ShareBtn } from "./Share";
-import GameApi from "@/app/api/game";
+import GameApi, { decryptGameData } from "@/app/api/game";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import { setNextGameData } from "@/app/store/gameSlice";
 import { Flex, Heading, Skeleton, Text } from "@radix-ui/themes";
@@ -12,9 +12,7 @@ import { toast } from "sonner";
 import JoinGameBtn from "./JoinGameBtn";
 import { differenceInSeconds } from "date-fns";
 import Parse from "parse";
-import {
-  liveQueryClient,
-} from "@/app/api/parse/parseClient";
+import { liveQueryClient } from "@/app/api/parse/parseClient";
 
 function GameCard() {
   const dispatch = useAppDispatch();
@@ -31,11 +29,11 @@ function GameCard() {
       subscription = await liveQueryClient.subscribe(query);
 
       subscription?.on("create", (object: Parse.Object) => {
-        console.log("this object was updated: ", object.toJSON());
+        // console.log("this object was updated: ", object.toJSON());
         dispatch(setNextGameData(object.toJSON()));
       });
       subscription?.on("update", (object: Parse.Object) => {
-        console.log("this object was updated: ", object.toJSON());
+        // console.log("this object was updated: ", object.toJSON());
         dispatch(setNextGameData(object.toJSON()));
       });
     };
@@ -50,8 +48,10 @@ function GameCard() {
     const fetchNextGame = async () => {
       try {
         const res = await GameApi.fetchNextGame();
-        console.log("Game: ", res.data.result.game);
-        dispatch(setNextGameData(res.data.result.game));
+        const encryptedGame = res.data.result.errorData;
+        const game = decryptGameData(encryptedGame);
+
+        dispatch(setNextGameData(game));
         setLoading(false);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
