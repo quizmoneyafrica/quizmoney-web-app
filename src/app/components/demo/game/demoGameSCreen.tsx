@@ -14,7 +14,6 @@ import { decryptData } from "@/app/utils/crypto";
 import DemoResult from "../result/demoResult";
 import { motion } from "framer-motion";
 import LoadingState from "./loadingState";
-import UseBlockBackNavigation from "../blockBackNav";
 
 const formatTime = (ms: number) => {
   const minutes = Math.floor(ms / 60000);
@@ -27,7 +26,6 @@ const formatTime = (ms: number) => {
 };
 
 function DemoGameSCreen() {
-  UseBlockBackNavigation();
   const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
   const user = encrypted ? decryptData(encrypted) : null;
   const demoData = useSelector((state: RootState) => state.demo.data);
@@ -46,17 +44,6 @@ function DemoGameSCreen() {
   //Sounds
   const correctSoundRef = useRef<HTMLAudioElement | null>(null);
   const wrongSoundRef = useRef<HTMLAudioElement | null>(null);
-
-  //   before unload
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
-      e.returnValue = "";
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, []);
 
   useEffect(() => {
     correctSoundRef.current = new Audio("/sounds/correct-answer.mp3");
