@@ -11,73 +11,7 @@ export function FilterBar(): React.ReactElement {
       const response = await WalletApi.searchTransactions({
         query,
       });
-      console.log("================groupedTransactions====================");
-      console.log(JSON.stringify(response?.data?.result));
-      console.log("==============groupedTransactions======================");
-      let hhhh = {
-        message: "Transactions fetched successfully",
-        totalResults: 1,
-        totalPages: 1,
-        currentPage: 1,
-        hasPreviousPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-        totalTransactions: [
-          {
-            amount: 1000,
-            title: "Wallet top-up",
-            description: "Funds added to your wallet.",
-            type: "deposit",
-            status: "completed",
-            user: {
-              __type: "Pointer",
-              className: "_User",
-              objectId: "onTMPRs1WN",
-            },
-            createdAt: "2025-05-17T00:10:12.780Z",
-            updatedAt: "2025-05-17T00:10:12.780Z",
-            objectId: "mDdXmBZECP",
-            __type: "Object",
-            className: "UserWalletTransaction",
-          },
-        ],
-      };
 
-      let dd = {
-        message: "Transactions fetched successfully",
-        groupedTransactions: [
-          {
-            date: "2025-05-17",
-            transactions: [
-              {
-                amount: 1000,
-                title: "Wallet top-up",
-                description: "Funds added to your wallet.",
-                type: "deposit",
-                status: "completed",
-                user: {
-                  __type: "Pointer",
-                  className: "_User",
-                  objectId: "onTMPRs1WN",
-                },
-                createdAt: "2025-05-17T00:10:12.780Z",
-                updatedAt: "2025-05-17T00:10:12.780Z",
-                objectId: "mDdXmBZECP",
-                __type: "Object",
-                className: "UserWalletTransaction",
-              },
-            ],
-          },
-        ],
-        totalTransactions: 1,
-        totalPages: 1,
-        currentPage: 1,
-        hasPreviousPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      };
       if (response?.data?.result?.groupedTransactions) {
         store.dispatch(
           setTransactions(response?.data?.result?.groupedTransactions)

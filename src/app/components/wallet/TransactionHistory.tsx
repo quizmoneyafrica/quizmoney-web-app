@@ -145,8 +145,19 @@ export default function TransactionHistory(): React.JSX.Element {
     title: string,
     transactions: Transaction[]
   ): React.JSX.Element | null => {
-    if (transactions.length === 0) return null;
-
+    if (transactions.length === 0)
+      return (
+        <div className="space-y-2 md:space-y-3 pb-3 md:pb-5 mt-3 md:mt-5">
+          <div className="px-3 md:px-4">
+            <h2 className="text-sm md:text-base font-semibold text-[#3B3B3B]">
+              {title}
+            </h2>
+          </div>
+          <div className="px-3 md:px-4 py-3 md:py-4 flex justify-center items-center">
+            <p className="text-sm text-gray-500">No transactions</p>
+          </div>
+        </div>
+      );
     return (
       <div className="space-y-2 md:space-y-3 pb-3 md:pb-5 mt-3 md:mt-5">
         <div className="px-3 md:px-4">
