@@ -36,7 +36,7 @@ function Page() {
       try {
         dispatch(setTransactionsLoading(true));
         const res = await WalletApi.fetchTransactions();
-        console.log(res?.data);
+
         if (res?.data?.result?.groupedTransactions) {
           dispatch(setTransactions(res?.data?.result?.groupedTransactions));
         }
