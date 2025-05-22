@@ -1,52 +1,43 @@
 "use client";
-import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
-import AppLayout from "@/app/layout/appLayout";
+import { useAppSelector } from "@/app/hooks/useAuth";
 import { decryptData } from "@/app/utils/crypto";
-import CustomButton from "@/app/utils/CustomBtn";
-import { performLogout } from "@/app/utils/logout";
-import { capitalizeFirstLetter } from "@/app/utils/utils";
-import { ExitIcon } from "@radix-ui/react-icons";
-import { Flex } from "@radix-ui/themes";
-import { useRouter } from "next/navigation";
 import React from "react";
 import { motion } from "framer-motion";
-import LaunchCountdown from "@/app/components/countdown2launch/LaunchCountdown";
+import GameCard from "@/app/components/home/GameCard";
+import TopGamers from "@/app/components/home/TopGamers";
+import ReferBox from "@/app/components/home/ReferBox";
+import {  Grid } from "@radix-ui/themes";
+import TransactionHistory from "@/app/components/wallet/TransactionHistory";
 
 function HomeTab() {
-	const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
-	const user = encrypted ? decryptData(encrypted) : null;
-	const dispatch = useAppDispatch();
-	const router = useRouter();
+  const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
+  const user = encrypted ? decryptData(encrypted) : null;
 
-	// console.log("USER: ", user);
+  console.log("USER: ", user);
 
-	const handleLogout = () => {
-		performLogout(dispatch);
-		router.replace("/login");
-	};
-	const countdown = true;
-	return (
-		<>
-			{countdown ? (
-				<LaunchCountdown />
-			) : (
-				<motion.div
-					initial={{ opacity: 0, y: 10 }}
-					animate={{ opacity: 1, y: 0 }}
-					exit={{ opacity: 0, y: -10 }}
-					transition={{ duration: 0.25, ease: "easeInOut" }}>
-					<AppLayout>
-						{capitalizeFirstLetter(user?.firstName)}
-						<CustomButton onClick={handleLogout}>
-							<Flex align="center" gap="2">
-								<ExitIcon /> Logout
-							</Flex>
-						</CustomButton>
-					</AppLayout>
-				</motion.div>
-			)}
-		</>
-	);
+  return (
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.25, ease: "easeInOut" }}
+      >
+        <Grid columns={{ initial: "1", lg: "2" }} gap="4">
+          <div>
+            <Grid gap="4">
+              <GameCard />
+              <TopGamers />
+              <ReferBox refCode={user?.referralCode} />
+            </Grid>
+          </div>
+          <div className="bg-white rounded-[20px] hidden lg:inline-block p-4">
+            <TransactionHistory />
+          </div>
+        </Grid>
+      </motion.div>
+    </>
+  );
 }
 
 export default HomeTab;

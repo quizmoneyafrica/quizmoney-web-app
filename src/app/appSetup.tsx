@@ -5,7 +5,6 @@ import { Provider } from "react-redux";
 import { persistor, store } from "./store/store";
 import { PersistGate } from "redux-persist/integration/react";
 import EnablePushOnIosButton from "./pwa/iosNotificationRequest";
-// import NotificationBanner from "./firebase/NotificationBanner";
 import { Toaster } from "@/app/components/toaster/sonner";
 import { useAppDispatch } from "./hooks/useAuth";
 import { setRehydrated } from "./store/authSlice";
@@ -14,40 +13,40 @@ import { isIosPwaInstalled } from "./utils/utils";
 import PermissionGuide from "./pwa/permissionGuide";
 
 type Props = {
-	children: ReactNode;
+  children: ReactNode;
 };
 
 function RootHydrationWatcher() {
-	const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
-	useEffect(() => {
-		dispatch(setRehydrated(true));
-	}, [dispatch]);
+  useEffect(() => {
+    dispatch(setRehydrated(true));
+  }, [dispatch]);
 
-	return null;
+  return null;
 }
 
 const AppSetup = ({ children }: Props) => {
-	// const [theme, setTheme] = useState<"light" | "dark" | "system">("system");
-	const { token, notificationPermissionStatus } = useFcmToken();
+  // const [theme, setTheme] = useState<"light" | "dark" | "system">("system");
+  const { token, notificationPermissionStatus } = useFcmToken();
 
-	const isVisible =
-		notificationPermissionStatus === "default" ||
-		notificationPermissionStatus === "denied";
+  const isVisible =
+    notificationPermissionStatus === "default" ||
+    notificationPermissionStatus === "denied";
 
-	return (
-		<Theme appearance="light" className="!font-text">
-			<Provider store={store}>
-				<PersistGate loading={null} persistor={persistor}>
-					{isVisible && !token && !isIosPwaInstalled() && <PermissionGuide />}
-					<RootHydrationWatcher />
-					<Toaster appearance="light" />
-					<EnablePushOnIosButton />
-					{children}
-				</PersistGate>
-			</Provider>
-		</Theme>
-	);
+  return (
+    <Theme appearance="light" className="!font-text">
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          {isVisible && !token && !isIosPwaInstalled() && <PermissionGuide />}
+          <RootHydrationWatcher />
+          <Toaster appearance="light" />
+          <EnablePushOnIosButton />
+          {children}
+        </PersistGate>
+      </Provider>
+    </Theme>
+  );
 };
 
 export default AppSetup;
