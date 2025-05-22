@@ -73,7 +73,7 @@ const WalletApi = {
 		);
 	},
 	requestWithdrawal(data:{
-			amount:number;
+			amount:string;
 			pin: string;
 			bankAccount: {
 					accountNumber: string,

@@ -154,7 +154,7 @@ export const WithdrawalPinForm = ({
     }
     try {
       const response = await WalletApi.requestWithdrawal({
-        amount: withdrawalData?.amount,
+        amount: withdrawalData?.amount.toString(),
         pin,
         bankAccount: withdrawalData?.bankAccount,
       });
