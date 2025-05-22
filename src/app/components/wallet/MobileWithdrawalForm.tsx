@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useSelector } from "react-redux";
 import {
   setWithdrawalData,
+  setWithdrawalModal,
   setWithdrawalPinModal,
   useWallet,
 } from "@/app/store/walletSlice";
@@ -101,11 +102,11 @@ export const MobileWithdrawalForm = ({
         accountName: selectedBankData.accountName,
       },
     };
-    store.dispatch(setWithdrawalData(payload));
 
+    store.dispatch(setWithdrawalData(payload));
     reset();
     setSelectedAmount(null);
-    close?.();
+    store.dispatch(setWithdrawalModal(false));
     store.dispatch(setWithdrawalPinModal(true));
   };
 
