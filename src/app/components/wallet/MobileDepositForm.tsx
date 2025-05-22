@@ -25,10 +25,10 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
 
   const amountOptions = [
-    { value: 600, label: "₦600" },
-    { value: 1000, label: "₦1,000" },
-    { value: 2000, label: "₦2,000" },
-    { value: 5000, label: "₦5,000" },
+    { label: "₦1,000", value: 1000 },
+    { label: "₦1,500", value: 1500 },
+    { label: "₦2,000", value: 2000 },
+    { label: "₦5,000", value: 5000 },
   ];
   const [loading, setLoading] = useState(false);
 

@@ -4,6 +4,18 @@ import classNames from "classnames";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import WalletApi from "@/app/api/wallet";
+import { store } from "@/app/store/store";
+import {
+  setWalletLoading,
+  setWallet,
+  setWithdrawalPinModal,
+  setWithdrawalModal,
+  useWallet,
+} from "@/app/store/walletSlice";
+import { toastPosition } from "@/app/utils/utils";
+import { toast } from "sonner";
+import { useSelector } from "react-redux";
 
 // Define schema for PIN validation with Zod
 const pinFormSchema = z.object({
@@ -16,18 +28,18 @@ const pinFormSchema = z.object({
 type PinFormData = z.infer<typeof pinFormSchema>;
 
 export const WithdrawalPinForm = ({
-  onSubmit,
   close,
-  maxAttempts = 3,
 }: {
   onSubmit: (pin: string) => void;
   close?: () => void;
   maxAttempts?: number;
 }) => {
   const [pinValues, setPinValues] = useState(["", "", "", ""]);
-  const [attemptsLeft, setAttemptsLeft] = useState(maxAttempts);
   const [invalidPinError, setInvalidPinError] = useState(false);
+  const [isCreatingPin, setIsCreatingPin] = useState<boolean>(false);
+  const { wallet, withdrawalData } = useSelector(useWallet);
 
+  const [isCreatingRequest, setIsCreatingRequest] = useState<boolean>(false);
   const {
     handleSubmit,
     formState: { errors },
@@ -77,38 +89,19 @@ export const WithdrawalPinForm = ({
     }
   };
 
-  // This simulates PIN verification - in a real app,
-  // you would verify against your backend
   const verifyPin = (pin: string): boolean => {
-    // For demo purposes - replace with actual verification logic
-    // Example: return await api.verifyPin(pin);
-    return pin !== "1358"; // For demo: 1358 is considered invalid
+    return pin.length == 4;
   };
 
   // Handle form submission
   const onFormSubmit = (data: PinFormData) => {
     // Verify PIN
     const isValid = verifyPin(data.pin);
-
     if (isValid) {
-      onSubmit(data.pin);
-
-      // Reset form after successful submission
-      setPinValues(["", "", "", ""]);
-      setValue("pin", "");
-      setAttemptsLeft(maxAttempts);
-      setInvalidPinError(false);
-      close?.();
-    } else {
-      // Handle invalid PIN
-      setInvalidPinError(true);
-      setAttemptsLeft((prevAttempts) => prevAttempts - 1);
-
-      // Handle account lockout if no attempts left
-      if (attemptsLeft <= 1) {
-        // You might want to lock the account or show a different screen
-        alert("Account locked. Please contact support.");
-        close?.();
+      if (wallet?.pin) {
+        handleWithdrawal(data.pin);
+      } else {
+        createPin(data.pin);
       }
     }
   };
@@ -119,6 +112,67 @@ export const WithdrawalPinForm = ({
     if (e.key === "Backspace" && !pinValues[index] && index > 0) {
       const prevInput = document.getElementById(`pin-input-${index - 1}`);
       prevInput?.focus();
+    }
+  };
+  const createPin = async (pin: string) => {
+    setIsCreatingPin(true);
+
+    try {
+      const response = await WalletApi.createWithdrawalPin({
+        pin,
+      });
+      if (response?.data?.data?.result?.updatedWallet) {
+        toast.success(response?.data?.data?.result?.message, {
+          position: toastPosition,
+        });
+        store.dispatch(setWalletLoading(true));
+        const res = await WalletApi.fetchCustomerWallet();
+        if (res.data.result.wallet) {
+          store.dispatch(setWallet(res.data.result.wallet));
+        }
+
+        store.dispatch(setWithdrawalPinModal(false));
+        store.dispatch(setWithdrawalModal(true));
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      toast.error(`${err.response.data.error}`, {
+        position: toastPosition,
+      });
+    } finally {
+      setIsCreatingPin(false);
+      store.dispatch(setWalletLoading(false));
+    }
+  };
+  const handleWithdrawal = async (pin: string) => {
+    console.log("====================================");
+    console.log("Withdrawal pin submitted:", pin, withdrawalData);
+    console.log("====================================");
+    setIsCreatingRequest(true);
+    if (!withdrawalData) {
+      return;
+    }
+    try {
+      const response = await WalletApi.requestWithdrawal({
+        amount: withdrawalData?.amount.toString(),
+        pin,
+        bankAccount: withdrawalData?.bankAccount,
+      });
+      if (response?.data?.result) {
+        toast.success(response?.data?.result.message, {
+          position: toastPosition,
+        });
+        store.dispatch(setWithdrawalPinModal(false));
+        store.dispatch(setWithdrawalModal(false));
+        close?.();
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      toast.error(`${err.response.data.error}`, {
+        position: toastPosition,
+      });
+    } finally {
+      setIsCreatingRequest(false);
     }
   };
 
@@ -132,7 +186,9 @@ export const WithdrawalPinForm = ({
 
       <div className="w-full">
         {!invalidPinError && (
-          <h2 className="text-xl text-center mb-6">Enter 4 digit pin</h2>
+          <h2 className="text-xl text-center mb-6">
+            {wallet?.pin ? "Enter 4 digit pin" : "Create withdrawal pin"}
+          </h2>
         )}
 
         <form onSubmit={handleSubmit(onFormSubmit)}>
@@ -188,22 +244,11 @@ export const WithdrawalPinForm = ({
             </p>
           )}
 
-          {invalidPinError && (
-            <div className="text-center">
-              <p className="text-red-500 text-center">
-                Incorrect pin provided.
-              </p>
-              <p className="text-red-500 text-center">
-                {attemptsLeft} attemps left
-              </p>
-            </div>
-          )}
-
           <div className="mt-16">
             <CustomButton
               type="submit"
               className="bg-primary-900 text-white w-full rounded-full py-4 hover:bg-primary-700"
-              disabled={invalidPinError && attemptsLeft <= 0}
+              disabled={invalidPinError || isCreatingPin || isCreatingRequest}
             >
               Proceed
             </CustomButton>

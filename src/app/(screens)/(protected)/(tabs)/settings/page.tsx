@@ -111,7 +111,7 @@ function Page() {
               <Flex gap={"3"} align={"center"}>
                 <div className="h-12 w-12 bg-primary-50 rounded-full flex justify-center items-center">
                   <Image
-                    src="/icons/security-safe.svg"
+                    src="/icons/user-cirlce-add.svg"
                     alt="terms"
                     width={24}
                     height={24}

@@ -33,13 +33,16 @@ const GameApi = {
       { headers: getSessionTokenHeaders() }
     );
   },
-  checkSessionStatus(gameId: string) {
+  getLoggedinUserGameResults(
+    gameId: string
+  ): Promise<AxiosResponse<ApiResponse>> {
     return axios.post(
-      `${BASE_URL}/checkGameSession`,
+      `${BASE_URL}/getLoggedinUserGameResults`,
       { gameId },
       { headers: getSessionTokenHeaders() }
     );
   },
+
   updateErasers(erasersUsed: number) {
     return axios.post(
       `${BASE_URL}/updateErasers`,

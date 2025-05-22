@@ -158,7 +158,7 @@ const Page = () => {
                   >
                     Change Image
                   </p>
-                  <p className=" font-semibold">
+                  <p className=" font-semibold capitalize">
                     {user?.firstName} {user?.lastName}
                   </p>
                   <p className=" font-light">{user?.email}</p>
