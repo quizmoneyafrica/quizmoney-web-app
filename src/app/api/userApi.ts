@@ -116,6 +116,13 @@ const UserAPI = {
       headers: getSessionTokenHeaders(),
     });
   },
+  topGamersOfToday(): Promise<AxiosResponse<ApiResponse>> {
+    return axios.post(
+      `${BASE_URL}/topGamersOfToday`,
+      {},
+      { headers: appHeaders }
+    );
+  },
 };
 
 export {

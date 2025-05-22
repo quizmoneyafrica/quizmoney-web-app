@@ -252,6 +252,18 @@ body {
   padding: 0;
   box-sizing: border-box;
 }
+body.bg-auth {
+  background-color: #ffffff;
+}
+body.bg-primary-50 {
+  background-color: #e4f1fa;
+}
+body.bg-primary-900 {
+  background-color: #3a93db;
+}
+body.bg-primary-900 {
+  background-color: #17478b;
+}
 h1,
 h2,
 h3,

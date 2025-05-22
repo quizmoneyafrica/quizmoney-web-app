@@ -9,12 +9,13 @@ import { RootState } from "@/app/store/store";
 // import CountdownScreen from "@/app/components/game/countDown";
 import { useEffect } from "react";
 import { differenceInSeconds } from "date-fns";
+import { setIsAllowedInGame } from "@/app/store/gameSlice";
 // import { useRouter } from "next/navigation";
 // import { toast } from "sonner";
 // import { toastPosition } from "@/app/utils/utils";
 // import GameApi, { decryptGameData } from "@/app/api/game";
 // import { setLiveGameData } from "@/app/store/gameSlice";
-// import { useAppDispatch } from "@/app/hooks/useAuth";
+import { useAppDispatch } from "@/app/hooks/useAuth";
 
 export default function ProtectedLayout({
   children,
@@ -29,12 +30,14 @@ export default function ProtectedLayout({
   const diff = differenceInSeconds(new Date(gameData?.startDate), new Date());
   console.log("StartDate:", gameData?.startDate);
   console.log("StartDate Difference:", diff);
-  // const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
+  useEffect(() => {
+    dispatch(setIsAllowedInGame(true)); // Explicitly allow access when page loads fresh
+  }, [dispatch]);
   // useEffect(() => {
   //   const registerUserForGame = async () => {
   //     if (showGameCountdown) {
