@@ -7,14 +7,13 @@ import * as Select from '@radix-ui/react-select';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
 import { cn } from "@/app/utils/utils";
 
-enum FilterType {
+export enum FilterType {
   COMPLETED = "completed",
   PENDING = "pending",
   ALL = "all",
 }
 
-export function FilterBar(): React.ReactElement {
-  const [selectedFilter, setSelectedFilter] = React.useState<FilterType>(FilterType.ALL);
+export function FilterBar({setSelectedFilter, selectedFilter}: {setSelectedFilter: (filter: FilterType) => void, selectedFilter: FilterType}): React.ReactElement {
 
   const handleFilter = async (query: string) => {
     // Implement filter logic here
@@ -53,17 +52,17 @@ export function FilterBar(): React.ReactElement {
         />
       </div>
       
-      <Select.Root value={selectedFilter} onValueChange={(value) => setSelectedFilter(value as FilterType)}>
+      <Select.Root value={selectedFilter} onValueChange={(value: string) => setSelectedFilter(value as FilterType)}>
         <Select.Trigger className="border border-[#E4E3E3] outline-none focus:ring-transparent cursor-pointer bg-white rounded-lg px-4 py-2 text-sm flex items-center gap-2">
-          <CustomImage alt="" src={"/icons/switch-icon.svg"} />
-          <Select.Value placeholder="Filter By" />
-          <Select.Icon>
+          <CustomImage className="" alt="" src={"/icons/switch-icon.svg"} />
+          <Select.Value placeholder="Filter By" className="hidden md:block" />
+          <Select.Icon className="hidden md:block">
             <ChevronDownIcon />
           </Select.Icon>
         </Select.Trigger>
 
         <Select.Portal>
-          <Select.Content className="overflow-hidden bg-white rounded-lg border border-[#E4E3E3] shadow-md">
+          <Select.Content className="overflow-hidden bg-white rounded-lg border border-[#E4E3E3] shadow-md z-50">
             <Select.ScrollUpButton className="flex items-center justify-center h-6 bg-white cursor-default">
               <ChevronDownIcon className="rotate-180" />
             </Select.ScrollUpButton>
