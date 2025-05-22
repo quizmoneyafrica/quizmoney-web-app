@@ -16,6 +16,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL;
 const XParseApplicationId = process.env.NEXT_PUBLIC_XParseApplicationId;
 const XParseRESTAPIKey = process.env.NEXT_PUBLIC_XParseRESTAPIKey;
+const SECRET_KEY = process.env.NEXT_PUBLIC_SECRET_KEY!;
 
 const appHeaders = {
   "X-Parse-Application-Id": XParseApplicationId,
@@ -115,6 +116,13 @@ const UserAPI = {
       headers: getSessionTokenHeaders(),
     });
   },
+  topGamersOfToday(): Promise<AxiosResponse<ApiResponse>> {
+    return axios.post(
+      `${BASE_URL}/topGamersOfToday`,
+      {},
+      { headers: appHeaders }
+    );
+  },
 };
 
 export {
@@ -124,6 +132,7 @@ export {
   SOCKET_URL,
   XParseApplicationId,
   XParseRESTAPIKey,
+  SECRET_KEY,
   getAuthUser,
 };
 export default UserAPI;

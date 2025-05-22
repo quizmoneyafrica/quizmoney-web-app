@@ -9,7 +9,6 @@ import { useSelector } from "react-redux";
 
 function Page() {
   UseBlockBackNavigation();
-  // const dispatch = useDispatch();
   const demoData = useSelector((state: RootState) => state.demo.data);
   const [showGame, setShowGame] = useState(false);
   const router = useRouter();

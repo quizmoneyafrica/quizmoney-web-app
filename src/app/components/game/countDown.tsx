@@ -3,14 +3,19 @@ import React, { useEffect, useRef, useState } from "react";
 import { differenceInSeconds } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
-import { setShowGameCountdown } from "@/app/store/gameSlice";
+import {
+  setIsAllowedInGame,
+  setShowGameCountdown,
+} from "@/app/store/gameSlice";
 import { useRouter } from "next/navigation";
+import GameApi from "@/app/api/game";
 
 type Props = {
   startDate: string;
+  gameId: string;
 };
 
-export default function CountdownScreen({ startDate }: Props) {
+export default function CountdownScreen({ startDate, gameId }: Props) {
   const [secondsLeft, setSecondsLeft] = useState(
     differenceInSeconds(new Date(startDate), new Date())
   );
@@ -72,7 +77,8 @@ export default function CountdownScreen({ startDate }: Props) {
         audioRef.current?.pause();
         audioRef.current = null;
         dispatch(setShowGameCountdown(false));
-        router.push("/game");
+        // router.push("/game");
+        dispatch(setIsAllowedInGame(true));
       }
     };
 
@@ -84,9 +90,21 @@ export default function CountdownScreen({ startDate }: Props) {
     };
   }, [startDate, dispatch, router, showGameCountdown]);
 
+  const leaveGame = async () => {
+    try {
+      await GameApi.removeUserFromGame(gameId);
+      await GameApi.deactivateSession(gameId);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      console.log(err.message);
+    }
+  };
+
   const handleDismiss = () => {
     dispatch(setShowGameCountdown(false));
+    router.replace("/home");
     audioRef.current?.pause();
+    leaveGame();
   };
 
   if (!showGameCountdown || secondsLeft < 0 || secondsLeft > 300) return null;
@@ -101,7 +119,7 @@ export default function CountdownScreen({ startDate }: Props) {
   };
 
   return (
-    <div className="fixed z-[9999] inset-0 bg-primary-900 text-white ">
+    <div className="fixed z-[9999] inset-0 bg-primary-900 hero text-white ">
       <div className="relative flex flex-col items-center justify-center px-10 w-full h-full max-w-sm mx-auto">
         {secondsLeft <= 10 ? (
           <AnimatePresence mode="wait">
