@@ -65,16 +65,16 @@ function AppHeader() {
       query.equalTo("user", userPointer);
       subscription = await liveQueryClient.subscribe(query);
 
-      subscription?.on("create", (object: Parse.Object) => {
-        console.log("this object was created: ", object);
+      subscription?.on("create", () => {
+        // console.log("this object was created: ", object);
         fetchNotifications();
       });
-      subscription?.on("update", (object: Parse.Object) => {
-        console.log("this object was updated: ", object);
+      subscription?.on("update", () => {
+        // console.log("this object was updated: ", object);
         fetchNotifications();
       });
-      subscription?.on("delete", (object: Parse.Object) => {
-        console.log("this object was deleted: ", object);
+      subscription?.on("delete", () => {
+        // console.log("this object was deleted: ", object);
         fetchNotifications();
       });
     };
