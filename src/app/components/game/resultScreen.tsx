@@ -1,3 +1,4 @@
+import GameApi from "@/app/api/game";
 import { useAppSelector } from "@/app/hooks/useAuth";
 import { CorrectCircleIcon, WrongCircleIcon } from "@/app/icons/icons";
 import { setShowAdsScreen, setshowResultScreen } from "@/app/store/gameSlice";
@@ -9,16 +10,57 @@ import {
 } from "@/app/utils/utils";
 import { Grid, Separator } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { toast } from "sonner";
+
+type GameResult = {
+  userId: string;
+  result: {
+    number: string;
+    correctAnswer: string;
+    yourAnswer: string;
+    correct: boolean;
+  }[];
+  totalCorrect: number;
+  totalTime: string; // Format: "MM:SS:MS" (e.g., "00:29:80")
+  timeRank: number;
+};
+const initialGameResult: GameResult = {
+  userId: "",
+  result: Array.from({ length: 10 }, (_, i) => ({
+    number: (i + 1).toString(),
+    correctAnswer: "",
+    yourAnswer: "",
+    correct: false,
+  })),
+  totalCorrect: 0,
+  totalTime: "00:00:00",
+  timeRank: 0,
+};
 
 function ResultScreen() {
   const dispatch = useDispatch();
   const router = useRouter();
   const { liveGameData } = useAppSelector((state) => state.game);
-  const totalTimeUsed = "00:20:00";
-  const totalCorrect = 10;
+  const [resultData, setResultData] = useState<GameResult>(initialGameResult);
 
+  useEffect(() => {
+    const fetchResult = async () => {
+      try {
+        const res = await GameApi.getLoggedinUserGameResults(
+          liveGameData?.objectId
+        );
+        setResultData(res.data.result);
+        // console.log(res);
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err: any) {
+        toast.error(err.response.data.error);
+      }
+    };
+    fetchResult();
+  }, [liveGameData?.objectId]);
   const handleHome = () => {
     dispatch(setShowAdsScreen(false));
     dispatch(setshowResultScreen(false));
@@ -35,7 +77,9 @@ function ResultScreen() {
             <p className="text-center">
               Total Time Used:{" "}
               <span className="font-medium">
-                {readTotalTime(parseTimeStringToMilliseconds(totalTimeUsed))}
+                {readTotalTime(
+                  parseTimeStringToMilliseconds(resultData.totalTime)
+                )}
               </span>
             </p>
             <Grid
@@ -45,14 +89,14 @@ function ResultScreen() {
               className="w-full place-items-center"
             >
               <div className="flex items-center gap-2 font-medium">
-                <span>{totalCorrect} Correct</span>
+                <span>{resultData.totalCorrect} Correct</span>
                 <CorrectCircleIcon className="text-positive-700" />
               </div>
               <Separator orientation="vertical" size="2" />
               <div className="flex items-center justify-end gap-2 font-medium">
                 <span>
                   {Number(liveGameData?.questions.length) -
-                    Number(totalCorrect)}{" "}
+                    Number(resultData.totalCorrect)}{" "}
                   Incorrect
                 </span>
                 <WrongCircleIcon className="text-error-400" />
