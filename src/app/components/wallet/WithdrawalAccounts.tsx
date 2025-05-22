@@ -1,6 +1,5 @@
 import { Trash2, Eye, EyeOff, Plus, Loader } from "lucide-react";
 import { useState, useEffect } from "react";
-import CustomImage from "./CustomImage";
 import * as Dialog from "@radix-ui/react-dialog";
 import AddBankModal from "./AddBankModal";
 import { BottomSheet } from "./BottomSheet";
@@ -177,11 +176,11 @@ export default function WithdrawalAccounts() {
                     {account.accountName}
                   </span>
                   <div className="flex items-center">
-                    <CustomImage
+                    {/* <CustomImage
                       alt="access-logo"
                       className="md:block hidden"
                       src="/icons/access-logo.svg"
-                    />
+                    /> */}
                     <span className="text-gray-700 md:text-sm text-xs">
                       {account.bankName}
                     </span>

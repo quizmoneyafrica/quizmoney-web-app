@@ -21,8 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import NotificationApi from "../api/notification";
 import { setNotifications } from "../store/notificationSlice";
-import Parse from "parse";
-import { liveQueryClient } from "@/app/api/parse/parseClient";
+import Parse, { liveQueryClient } from "@/app/api/parse/parseClient";
 
 function AppHeader() {
   const dispatch = useDispatch();

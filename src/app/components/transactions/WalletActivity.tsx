@@ -1,6 +1,6 @@
 "use client";
 import React, { JSX, useEffect, useState } from "react";
-import FilterBar from "./FilterBar";
+import FilterBar, { FilterType } from "./FilterBar";
 import Pagination from "./Pagination";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -24,15 +24,39 @@ const PAGE_SIZE = 15;
 export default function WalletActivity(): React.ReactElement {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedFilter, setSelectedFilter] = React.useState<FilterType>(FilterType.ALL);
+  const [filteredTransactions, setFilteredTransactions] = useState<UserWalletTransaction[]>([]);
   const dispatch = useDispatch();
   const { transactions, isTransactionsLoading } = useSelector(useWallet);
+
+  useEffect(() => {
+    if (transactions.length === 0) return;
+
+    // For ALL filter type, return all transactions without filtering
+    if (selectedFilter === FilterType.ALL) {
+      setFilteredTransactions([...transactions]);
+      return;
+    }
+
+    // For COMPLETED and PENDING, filter the transactions
+    const filtered = transactions.map((dateGroup: UserWalletTransaction) => ({
+      ...dateGroup,
+      transactions: dateGroup.transactions.filter((transaction) => 
+        selectedFilter === FilterType.COMPLETED 
+          ? transaction.status?.toLowerCase() === 'completed'
+          : transaction.status?.toLowerCase() === 'pending'
+      )
+    })).filter((group) => group.transactions.length > 0);
+
+    setFilteredTransactions(filtered);
+  }, [selectedFilter, transactions]);
 
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
         dispatch(setTransactionsLoading(true));
         const res = await WalletApi.fetchTransactions({
-          page,
+          page, 
           limit: PAGE_SIZE,
         });
 
@@ -68,7 +92,7 @@ export default function WalletActivity(): React.ReactElement {
   };
 
   const flattenedTransactions: Transaction[] = [];
-  transactions.forEach((walletTransaction: UserWalletTransaction) => {
+  filteredTransactions.forEach((walletTransaction: UserWalletTransaction) => {
     walletTransaction.transactions.forEach((transaction: Transaction) => {
       flattenedTransactions.push(transaction);
     });
@@ -90,7 +114,6 @@ export default function WalletActivity(): React.ReactElement {
     transactions: Transaction[]
   ): JSX.Element | null => {
     if (transactions.length === 0) return null;
-
     return (
       <div className="space-y-2 md:space-y-3 py-5  md:bg-white rounded-2xl mt-3 md:mt-5">
         <div className="px-3 md:px-4">
@@ -131,7 +154,7 @@ export default function WalletActivity(): React.ReactElement {
 
   return (
     <div className="py-5">
-      <FilterBar />
+      <FilterBar setSelectedFilter={setSelectedFilter} selectedFilter={selectedFilter} />
       <div className="w-full gap-4 md:gap-8 flex flex-col">
         {isTransactionsLoading ? (
           renderSkeletonLoader()

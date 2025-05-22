@@ -14,6 +14,7 @@ import {
   useWallet,
 } from "@/app/store/walletSlice";
 import { store } from "@/app/store/store";
+import CustomButton from "@/app/utils/CustomBtn";
 
 export type BankAccount = {
   id: number;
@@ -61,7 +62,7 @@ export default function WithdrawalModal({
   const banks =
     wallet?.bankAccounts?.map((item, index) => ({
       ...item,
-      id: index,
+      id: index + 1,
     })) || [];
 
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
@@ -94,7 +95,9 @@ export default function WithdrawalModal({
       return;
     }
 
-    const selectedBankData = banks.find((bank) => bank.id === selectedBank);
+    const selectedBankData = banks.find(
+      (bank) => String(bank.id) === data.bank
+    );
 
     if (!selectedBankData) {
       console.error("Selected bank not found");
@@ -316,13 +319,13 @@ export default function WithdrawalModal({
                     Add New Bank
                   </button>
 
-                  <button
+                  <CustomButton
                     type="submit"
                     className="bg-primary-900 text-white w-full rounded-full py-3 hover:bg-primary-900 mt-8"
                     disabled={isSubmitting || banks.length === 0}
                   >
                     Proceed
-                  </button>
+                  </CustomButton>
                 </form>
               </motion.div>
             </Dialog.Content>
