@@ -1,5 +1,4 @@
 "use client";
-import GameApi from "@/app/api/game";
 import { useAppSelector } from "@/app/hooks/useAuth";
 import { setShowAdsScreen, setshowResultScreen } from "@/app/store/gameSlice";
 import React, { useRef, useEffect } from "react";
@@ -25,8 +24,6 @@ function AdsScreen() {
   const onAdEnded = async () => {
     dispatch(setshowResultScreen(true));
     dispatch(setShowAdsScreen(false));
-    const gameId = liveGameData?.objectId;
-    await GameApi.getGameResults(gameId);
   };
   return (
     <>

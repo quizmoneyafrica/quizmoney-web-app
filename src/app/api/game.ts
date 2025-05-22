@@ -33,13 +33,6 @@ const GameApi = {
       { headers: getSessionTokenHeaders() }
     );
   },
-  getGameResults(gameId: string): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/getGameResults`,
-      { gameId },
-      { headers: appHeaders }
-    );
-  },
   getLoggedinUserGameResults(
     gameId: string
   ): Promise<AxiosResponse<ApiResponse>> {
