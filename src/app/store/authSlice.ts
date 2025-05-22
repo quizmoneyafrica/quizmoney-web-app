@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { decryptData, encryptData } from "../utils/crypto";
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -31,8 +32,13 @@ const authSlice = createSlice({
     setRehydrated(state, action: PayloadAction<boolean>) {
       state.rehydrated = action.payload;
     },
+    updateUser(state, action: PayloadAction<object>) {
+      const currentDecrypted = decryptData(state.userEncryptedData || "");
+      const updated = { ...currentDecrypted, ...action.payload };
+      state.userEncryptedData = encryptData(updated);
+    },
   },
 });
 
-export const { login, logout, setRehydrated } = authSlice.actions;
+export const { login, logout, setRehydrated, updateUser } = authSlice.actions;
 export default authSlice.reducer;

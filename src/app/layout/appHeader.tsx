@@ -124,7 +124,7 @@ function AppHeader() {
             <Flex
               align="center"
               gap="2"
-              className="rounded-full border-2 px-1 border-neutral-400 text-neutral-500 hover:border-primary-500 hover:text-primary-900 cursor-pointer"
+              className="rounded-full border-2 py-1 px-2 border-neutral-400 text-neutral-500 hover:border-primary-500 hover:text-primary-900 cursor-pointer"
             >
               <EraserIcon />
               <span>{user?.erasers}</span>

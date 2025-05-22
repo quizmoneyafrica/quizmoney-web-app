@@ -3,7 +3,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { differenceInSeconds } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
-import { setShowGameCountdown } from "@/app/store/gameSlice";
+import {
+  setIsAllowedInGame,
+  setShowGameCountdown,
+} from "@/app/store/gameSlice";
 import { useRouter } from "next/navigation";
 import GameApi from "@/app/api/game";
 
@@ -75,6 +78,7 @@ export default function CountdownScreen({ startDate, gameId }: Props) {
         audioRef.current = null;
         dispatch(setShowGameCountdown(false));
         // router.push("/game");
+        dispatch(setIsAllowedInGame(true));
       }
     };
 

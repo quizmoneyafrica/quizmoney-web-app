@@ -3,6 +3,8 @@ import { Space_Grotesk, DM_Sans } from "next/font/google";
 import "./globals.css";
 import AppSetup from "./appSetup";
 import "@radix-ui/themes/styles.css";
+import BodyWrapper from "./bodyWrapper";
+import InstallAppButton from "./pwa/install";
 
 const spacegrotesk = Space_Grotesk({
   variable: "--spacegrotesk",
@@ -64,7 +66,10 @@ export default function RootLayout({
       <head>
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/favicon.ico" />
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"></link>
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"
+        ></link>
         <meta name="apple-mobile-web-app-title" content="Quiz Money" />
         <meta
           name="viewport"
@@ -80,8 +85,10 @@ export default function RootLayout({
       <body
         className={`${spacegrotesk.variable} ${dmsans.variable} antialiased`}
       >
-        <AppSetup>{children}</AppSetup>
-        {/* <InstallAppButton /> */}
+        <BodyWrapper>
+          <AppSetup>{children}</AppSetup>
+        </BodyWrapper>
+        <InstallAppButton />
       </body>
     </html>
   );

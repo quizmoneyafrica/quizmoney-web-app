@@ -28,15 +28,39 @@ const GameApi = {
   },
   deactivateSession(gameId: string) {
     return axios.post(
-      `${BASE_URL}/functions/deactivateSession`,
+      `${BASE_URL}/deactivateSession`,
       { gameId },
       { headers: getSessionTokenHeaders() }
     );
   },
   checkSessionStatus(gameId: string) {
     return axios.post(
-      `${BASE_URL}/functions/checkGameSession`,
+      `${BASE_URL}/checkGameSession`,
       { gameId },
+      { headers: getSessionTokenHeaders() }
+    );
+  },
+  updateErasers(erasersUsed: number) {
+    return axios.post(
+      `${BASE_URL}/updateErasers`,
+      { erasersUsed },
+      { headers: getSessionTokenHeaders() }
+    );
+  },
+  recordGameAnswer(
+    gameId: string,
+    questionNumber: string,
+    answer: string,
+    totalTime?: string
+  ) {
+    return axios.post(
+      `${BASE_URL}/recordGameAnswer`,
+      {
+        gameId,
+        questionNumber,
+        answer,
+        ...(totalTime && { totalTime }),
+      },
       { headers: getSessionTokenHeaders() }
     );
   },

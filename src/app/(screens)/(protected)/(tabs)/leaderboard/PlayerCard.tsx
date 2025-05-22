@@ -53,7 +53,7 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
             height={50}
             className="rounded-full"
           />
-          <p>{player?.firstName}</p>
+          <p className="capitalize">{player?.firstName}</p>
         </div>
       </div>
       <p className="text-primary-800 bg-primary-100 rounded-4xl px-2 md:px-4 py-1 md:py-2 text-sm md:text-base">

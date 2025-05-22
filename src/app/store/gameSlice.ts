@@ -6,6 +6,8 @@ interface GameState {
   showGameCountdown: boolean;
   isAllowedInGame: boolean;
   liveGameData: ApiResponse["result"] | null;
+  showAdsScreen: boolean;
+  showResultScreen: boolean;
 }
 
 const initialState: GameState = {
@@ -13,6 +15,8 @@ const initialState: GameState = {
   showGameCountdown: true,
   isAllowedInGame: false,
   liveGameData: null,
+  showAdsScreen: false,
+  showResultScreen: false,
 };
 
 const gameSlice = createSlice({
@@ -31,6 +35,12 @@ const gameSlice = createSlice({
     setLiveGameData(state, action: PayloadAction<ApiResponse["result"]>) {
       state.liveGameData = action.payload;
     },
+    setShowAdsScreen(state, action: PayloadAction<boolean>) {
+      state.showAdsScreen = action.payload;
+    },
+    setshowResultScreen(state, action: PayloadAction<boolean>) {
+      state.showResultScreen = action.payload;
+    },
   },
 });
 
@@ -39,5 +49,7 @@ export const {
   setShowGameCountdown,
   setIsAllowedInGame,
   setLiveGameData,
+  setShowAdsScreen,
+  setshowResultScreen,
 } = gameSlice.actions;
 export default gameSlice.reducer;
