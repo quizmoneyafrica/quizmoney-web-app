@@ -230,11 +230,13 @@ export default function WalletBalance() {
 
       {isMobile ? (
         <BottomSheet
-          isOpen={open}
-          onClose={() => setOpen(false)}
+          isOpen={isSuccessfulDepositOpen}
+          onClose={() => setIsSuccessfulDepositOpen(false)}
           title="Deposit"
         >
-          <MobileSuccessDeposit />
+          <MobileSuccessDeposit
+            title={Boolean(success) ? "Successful !" : "Failed !"}
+          />
         </BottomSheet>
       ) : (
         <Dialog.Root open={open} onOpenChange={setOpen}>
