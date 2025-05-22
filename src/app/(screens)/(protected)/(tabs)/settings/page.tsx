@@ -8,6 +8,7 @@ import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { Flex, Grid } from "@radix-ui/themes";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -51,7 +52,7 @@ function Page() {
           <Grid columns={{ initial: "1", md: "2" }} gap={"18px"}>
             <Flex
               onClick={() => router.push("/settings/how-it-works")}
-              className=" bg-white p-4 md:p-6 rounded-2xl sm:rounded-xl border border-zinc-200"
+              className="cursor-pointer bg-white p-4 md:p-6 rounded-2xl sm:rounded-xl border border-zinc-200"
               align={"center"}
               justify={"between"}
             >
@@ -69,7 +70,7 @@ function Page() {
               <ChevronRightIcon height={25} width={25} />
             </Flex>
             <Flex
-              className=" bg-white p-4 md:p-6 rounded-2xl sm:rounded-xl border border-zinc-200"
+              className="cursor-pointer bg-white p-4 md:p-6 rounded-2xl sm:rounded-xl border border-zinc-200"
               align={"center"}
               justify={"between"}
               onClick={() => router.push("/support")}
@@ -84,7 +85,7 @@ function Page() {
             </Flex>
             <Flex
               onClick={() => router.push("/settings/change-password")}
-              className=" bg-white p-4 md:p-6 rounded-2xl sm:rounded-xl border border-zinc-200"
+              className="cursor-pointer bg-white p-4 md:p-6 rounded-2xl sm:rounded-xl border border-zinc-200"
               align={"center"}
               justify={"between"}
             >
@@ -101,6 +102,25 @@ function Page() {
               </Flex>
               <ChevronRightIcon height={25} width={25} />
             </Flex>
+            <Flex
+              onClick={() => router.push("/settings/invite-&-earn")}
+              className="cursor-pointer bg-white p-4 md:p-6 rounded-2xl sm:rounded-xl border border-zinc-200"
+              align={"center"}
+              justify={"between"}
+            >
+              <Flex gap={"3"} align={"center"}>
+                <div className="h-12 w-12 bg-primary-50 rounded-full flex justify-center items-center">
+                  <Image
+                    src="/icons/security-safe.svg"
+                    alt="terms"
+                    width={24}
+                    height={24}
+                  />{" "}
+                </div>
+                <p className=" text-lg font-semibold ">Invite & Earn</p>
+              </Flex>
+              <ChevronRightIcon height={25} width={25} />
+            </Flex>
           </Grid>
         </Flex>
 
@@ -108,29 +128,34 @@ function Page() {
         <Flex direction={"column"} gap={"15px"}>
           <p className="text-lg  font-semibold">Legal</p>
           <Grid columns={{ initial: "1", md: "2" }} gap={"18px"}>
-            <Flex
-              className=" bg-white p-4 md:p-6 rounded-2xl sm:rounded-xl border border-zinc-200"
-              align={"center"}
-              justify={"between"}
-              onClick={() => router.push("/settings/terms-and-conditions")}
+            <Link
+              href="https://quizmoney.ng/terms-and-conditions"
+              target="_blank"
             >
-              <Flex gap={"3"} align={"center"}>
-                <div className="h-12 w-12 bg-primary-50 rounded-full flex justify-center items-center">
-                  <Image
-                    src="/icons/document-text.svg"
-                    alt="terms"
-                    width={24}
-                    height={24}
-                  />
-                </div>
-                <p className=" text-lg font-semibold ">Terms & Condition</p>
+              <Flex
+                className="cursor-pointer bg-white p-4 md:p-6 rounded-2xl sm:rounded-xl border border-zinc-200"
+                align={"center"}
+                justify={"between"}
+                // onClick={() => router.push("/settings/terms-and-conditions")}
+              >
+                <Flex gap={"3"} align={"center"}>
+                  <div className="h-12 w-12 bg-primary-50 rounded-full flex justify-center items-center">
+                    <Image
+                      src="/icons/document-text.svg"
+                      alt="terms"
+                      width={24}
+                      height={24}
+                    />
+                  </div>
+                  <p className=" text-lg font-semibold ">Terms & Condition</p>
+                </Flex>
+                <ChevronRightIcon height={25} width={25} />
               </Flex>
-              <ChevronRightIcon height={25} width={25} />
-            </Flex>
+            </Link>
 
             <Flex
               onClick={() => setOpenLogout(true)}
-              className=" bg-white p-4 md:p-6 rounded-2xl sm:rounded-xl border border-zinc-200"
+              className="cursor-pointer bg-white p-4 md:p-6 rounded-2xl sm:rounded-xl border border-zinc-200"
               align={"center"}
               justify={"between"}
             >

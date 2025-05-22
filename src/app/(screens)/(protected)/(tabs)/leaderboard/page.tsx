@@ -50,6 +50,7 @@ function Page() {
           tab === "lastGame"
             ? await LeaderboardAPI.getLastGameLeaderboard()
                 .then((res) => {
+                  console.log(res);
                   setLeaderboardData({
                     leaderboard: res.data.result.gameLeaderboard.rankings.map(
                       (data: {
@@ -184,15 +185,17 @@ function Page() {
 
       {content}
 
-      {activeTab == "allTime" && (
-        <CustomPagination
-          currentPage={page ?? 1}
-          totalPages={leaderboardData?.totalPages ?? 1}
-          totalEntries={leaderboardData?.total ?? 1}
-          entriesPerPage={leaderboardData?.limit ?? 10}
-          onPageChange={(value) => setPage(value)}
-        />
-      )}
+      {activeTab == "allTime" &&
+        leaderboard !== undefined &&
+        leaderboard?.length > 9 && (
+          <CustomPagination
+            currentPage={page ?? 1}
+            totalPages={leaderboardData?.totalPages ?? 1}
+            totalEntries={leaderboardData?.total ?? 1}
+            entriesPerPage={leaderboardData?.limit ?? 10}
+            onPageChange={(value) => setPage(value)}
+          />
+        )}
       <div className="h-30" />
     </motion.div>
   );

@@ -24,6 +24,7 @@ function Page() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.25, ease: "easeInOut" }}
+      className="min-h-screen"
     >
       <ResponsiveDialog
         open={openNotification}

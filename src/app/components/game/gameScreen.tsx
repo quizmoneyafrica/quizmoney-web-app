@@ -1,19 +1,25 @@
 "use client";
+import { getAuthUser } from "@/app/api/userApi";
+import { useAppSelector } from "@/app/hooks/useAuth";
+import React, { useEffect, useRef, useState } from "react";
+import LoadingState from "../demo/game/loadingState";
+import { motion } from "framer-motion";
 import {
   CorrectCircleIcon,
+  EraserIcon,
   TimerIcon,
   WrongCircleIcon,
 } from "@/app/icons/icons";
-import { RootState } from "@/app/store/store";
-import { Avatar, Flex } from "@radix-ui/themes";
-import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
-import { useAppSelector } from "@/app/hooks/useAuth";
-import { decryptData } from "@/app/utils/crypto";
-import DemoResult from "../result/demoResult";
-import { motion } from "framer-motion";
-import LoadingState from "./loadingState";
+import { Flex } from "@radix-ui/themes";
+import { toast } from "sonner";
+import { toastPosition } from "@/app/utils/utils";
+import GameApi from "@/app/api/game";
+import { useDispatch } from "react-redux";
+import { updateUser } from "@/app/store/authSlice";
+import AdsScreen from "./adsScreen";
+import { setShowAdsScreen } from "@/app/store/gameSlice";
+import ResultScreen from "./resultScreen";
 
 const formatTime = (ms: number) => {
   const minutes = Math.floor(ms / 60000);
@@ -24,17 +30,23 @@ const formatTime = (ms: number) => {
     "0"
   )}:${milliseconds}0`;
 };
+function shuffleArray<T>(array: T[]): T[] {
+  return [...array].sort(() => Math.random() - 0.5);
+}
 
-function DemoGameSCreen() {
-  const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
-  const user = encrypted ? decryptData(encrypted) : null;
-  const demoData = useSelector((state: RootState) => state.demo.data);
+function GameScreen() {
+  const dispatch = useDispatch();
+  const user = getAuthUser();
+  const { liveGameData, showAdsScreen, showResultScreen } = useAppSelector(
+    (state) => state.game
+  );
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>([]);
   const [locked, setLocked] = useState(false);
-  const currentQuestion = demoData?.[currentIndex];
-  const [score, setScore] = useState(0);
-  const [showResultScreen, setshowResultScreen] = useState(false);
+  const currentQuestion = liveGameData?.questions?.[currentIndex];
+  const [shuffledOptions, setShuffledOptions] = useState<string[]>([]);
+  //   const [score, setScore] = useState(0);
+  const [usedEraser, setUsedEraser] = useState(false);
   //countdown timer
   const [timeLeft, setTimeLeft] = useState(10);
   //game time used
@@ -52,15 +64,16 @@ function DemoGameSCreen() {
 
   const handleNextQuestion = () => {
     setLocked(false);
-    if (currentIndex + 1 < demoData?.length) {
+    if (currentIndex + 1 < liveGameData?.questions?.length) {
       setCurrentIndex(currentIndex + 1);
     } else {
       if (totalTimeInterval.current) {
         clearInterval(totalTimeInterval.current);
       }
-      setshowResultScreen(true);
+      dispatch(setShowAdsScreen(true));
     }
   };
+  //User timer
   useEffect(() => {
     if (!currentQuestion) return;
     totalTimeInterval.current = setInterval(() => {
@@ -71,27 +84,58 @@ function DemoGameSCreen() {
       if (totalTimeInterval.current) clearInterval(totalTimeInterval.current);
     };
   }, [currentIndex, currentQuestion]);
+  useEffect(() => {
+    if (currentQuestion?.options) {
+      setShuffledOptions(shuffleArray(currentQuestion.options));
+    }
+  }, [currentQuestion]);
 
-  const handleOptionClick = (option: string) => {
+  const handleOptionClick = async (option: string) => {
     if (locked) return;
     const isCorrect = option === currentQuestion.correctAnswer;
 
     if (totalTimeInterval.current) {
       clearInterval(totalTimeInterval.current);
     }
+    const newAnswers = [...selectedAnswers];
+    const gameId = liveGameData.objectId;
+    const questionNumber = currentIndex + 1;
+    let toSaveAnswer = option;
+
     if (isCorrect) {
       correctSoundRef.current?.play();
-      setScore((prev) => prev + 1);
+      //   setScore((prev) => prev + 1);
+      newAnswers[currentIndex] = option;
+    } else if (!isCorrect && !usedEraser && user?.erasers > 0) {
+      toSaveAnswer = currentQuestion.correctAnswer;
+      correctSoundRef.current?.play();
+      //   setScore((prev) => prev + 1);
+      newAnswers[currentIndex] = currentQuestion.correctAnswer;
+      setUsedEraser(true);
+      toast.success("Eraser used! Your answer was corrected.", {
+        position: toastPosition,
+      });
+      //reduce eraser
+
+      await GameApi.updateErasers(1);
+      dispatch(updateUser({ erasers: user.erasers - 1 }));
     } else {
       wrongSoundRef.current?.play();
+      newAnswers[currentIndex] = option;
     }
-
-    const newAnswers = [...selectedAnswers];
-    newAnswers[currentIndex] = option;
     setSelectedAnswers(newAnswers);
-
     setLocked(true);
+
+    const isLastQuestion = currentIndex === liveGameData.questions.length - 1;
+    const totalTimeFormatted = formatTime(totalTimeUsed);
+    await GameApi.recordGameAnswer(
+      gameId,
+      questionNumber.toLocaleString(),
+      toSaveAnswer,
+      isLastQuestion ? totalTimeFormatted : undefined
+    );
   };
+  console.log(user);
 
   if (!currentQuestion) {
     return <LoadingState />;
@@ -103,7 +147,7 @@ function DemoGameSCreen() {
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.25, ease: "easeInOut" }}
     >
-      {!showResultScreen ? (
+      {!showAdsScreen && !showResultScreen ? (
         <div className="min-h-screen bg-primary-900 hero flex flex-col items-center  px-4">
           <div className="w-full mx-auto max-w-xl space-y-6">
             {/* Timer, countdown, Avatar  */}
@@ -134,13 +178,15 @@ function DemoGameSCreen() {
                   }}
                 </CountdownCircleTimer>
               </div>
-              <div className="mt-6 text-gray-500 text-sm flex items-center justify-end">
-                <Avatar
-                  src={user?.avatar}
-                  fallback={user?.firstName?.charAt(0).toUpperCase()}
-                  radius="full"
-                  className="bg-primary-50"
-                />
+              <div className="mt-6 text-sm flex items-center justify-end">
+                <Flex
+                  align="center"
+                  gap="2"
+                  className="rounded-full border py-1 px-4 border-neutral-50 text-neutral-50"
+                >
+                  <EraserIcon width={20} height={20} />
+                  <span>{user?.erasers}</span>
+                </Flex>
               </div>
             </div>
             <div className="space-y-6">
@@ -155,14 +201,13 @@ function DemoGameSCreen() {
                 >
                   <h3 className="font-bold text-xl">
                     Question {currentIndex + 1}
-                    {/* / {demoData?.length} */}
                   </h3>
                   <p className="font-medium">{currentQuestion.question}</p>
                 </Flex>
               </div>
               {/* Options  */}
               <div className="w-full grid grid-cols-1 gap-4 md:grid-cols-2">
-                {currentQuestion.options.map((option: string, idx: number) => {
+                {shuffledOptions.map((option: string, idx: number) => {
                   const isSelected = selectedAnswers[currentIndex] === option;
                   const isCorrectSelection =
                     locked &&
@@ -213,15 +258,16 @@ function DemoGameSCreen() {
           </div>
         </div>
       ) : (
-        <DemoResult
-          totalTimeUsed={formatTime(totalTimeUsed)}
-          correctScore={score}
-          totalQuestion={demoData?.length}
-          user={user}
-        />
+        <>
+          {showAdsScreen && !showResultScreen ? (
+            <AdsScreen />
+          ) : (
+            <>{!showAdsScreen && showResultScreen ? <ResultScreen /> : null}</>
+          )}
+        </>
       )}
     </motion.div>
   );
 }
 
-export default DemoGameSCreen;
+export default GameScreen;
