@@ -28,16 +28,13 @@ const pinFormSchema = z.object({
 type PinFormData = z.infer<typeof pinFormSchema>;
 
 export const WithdrawalPinForm = ({
-  onSubmit,
   close,
-  maxAttempts = 3,
 }: {
   onSubmit: (pin: string) => void;
   close?: () => void;
   maxAttempts?: number;
 }) => {
   const [pinValues, setPinValues] = useState(["", "", "", ""]);
-  const [attemptsLeft, setAttemptsLeft] = useState(maxAttempts);
   const [invalidPinError, setInvalidPinError] = useState(false);
   const [isCreatingPin, setIsCreatingPin] = useState<boolean>(false);
   const { wallet, withdrawalData } = useSelector(useWallet);
@@ -247,22 +244,11 @@ export const WithdrawalPinForm = ({
             </p>
           )}
 
-          {invalidPinError && (
-            <div className="text-center">
-              <p className="text-red-500 text-center">
-                Incorrect pin provided.
-              </p>
-              <p className="text-red-500 text-center">
-                {attemptsLeft} attemps left
-              </p>
-            </div>
-          )}
-
           <div className="mt-16">
             <CustomButton
               type="submit"
               className="bg-primary-900 text-white w-full rounded-full py-4 hover:bg-primary-700"
-              disabled={invalidPinError && attemptsLeft <= 0}
+              disabled={invalidPinError || isCreatingPin || isCreatingRequest}
             >
               Proceed
             </CustomButton>

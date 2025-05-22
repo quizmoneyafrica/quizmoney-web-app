@@ -37,7 +37,6 @@ type WithdrawFormData = z.infer<typeof withdrawFormSchema>;
 
 export const MobileWithdrawalForm = ({
   onAddBank,
-  close,
   banks, // Allow override from props or use from wallet
 }: {
   close?: () => void;

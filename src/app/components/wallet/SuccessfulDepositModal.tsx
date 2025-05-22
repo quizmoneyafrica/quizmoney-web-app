@@ -19,8 +19,6 @@ export function SuccessfulDepositModal({
   onOpenChange,
   title = "Successful !",
   message = "You have successfully made a deposit",
-  buttonText = "Proceed",
-  onProceed,
 }: SuccessfulActionModalProps) {
   const { success } = useParams();
   const isSuccess = Boolean(success);

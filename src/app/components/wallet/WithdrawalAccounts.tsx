@@ -1,6 +1,5 @@
 import { Trash2, Eye, EyeOff, Plus, Loader } from "lucide-react";
 import { useState, useEffect } from "react";
-import CustomImage from "./CustomImage";
 import * as Dialog from "@radix-ui/react-dialog";
 import AddBankModal from "./AddBankModal";
 import { BottomSheet } from "./BottomSheet";
