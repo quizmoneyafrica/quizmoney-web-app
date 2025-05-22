@@ -1,15 +1,25 @@
 "use client";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import WalletBalance from "./WalletBalance";
 import CustomImage from "./CustomImage";
 import classNames from "classnames";
 import MobileList from "./MobileList";
 import { useSelector } from "react-redux";
-import { useWallet } from "@/app/store/walletSlice";
+import {
+  setBanks,
+  setTransactions,
+  setWallet,
+  useWallet,
+} from "@/app/store/walletSlice";
 import { format, parseISO, isToday, isYesterday } from "date-fns";
 import Link from "next/link";
 import { renderEmptyState } from "../transactions/WalletActivity";
 import { Skeleton } from "@radix-ui/themes";
+import { useAppDispatch } from "@/app/hooks/useAuth";
+import WalletApi from "@/app/api/wallet";
+import { getAuthUser } from "@/app/api/userApi";
+import Parse from "parse";
+import { liveQueryClient } from "@/app/api/parse/parseClient";
 
 interface Transaction {
   amount: number;
@@ -42,6 +52,101 @@ export interface TransactionGroup {
 
 export default function TransactionHistory(): React.JSX.Element {
   const { transactions, isTransactionsLoading } = useSelector(useWallet);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let subscription: any;
+    const setupWalletLiveQuery = async () => {
+      const user = getAuthUser();
+      if (!user?.objectId) return;
+
+      const Wallet = Parse.Object.extend("Wallet");
+      const query = new Parse.Query(Wallet);
+      query.equalTo("user", {
+        __type: "Pointer",
+        className: "_User",
+        objectId: user.objectId,
+      });
+
+      subscription = await liveQueryClient.subscribe(query);
+
+      subscription.on("update", (walletObj: Parse.Object) => {
+        console.log("Wallet updated in real time:", walletObj.toJSON());
+        // dispatch(setWallet(walletObj.toJSON()));
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      subscription.on("error", (err: any) => {
+        console.error("Wallet LiveQuery error:", err);
+      });
+    };
+
+    setupWalletLiveQuery();
+
+    return () => {
+      if (subscription) subscription.unsubscribe();
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    const fetchWallet = async () => {
+      try {
+        const res = await WalletApi.fetchCustomerWallet();
+        if (res.data.result.wallet) {
+          dispatch(setWallet(res.data.result.wallet));
+        }
+      } catch (error) {
+        console.log(error, "Wallet Error");
+      }
+    };
+    fetchWallet();
+
+    // SET AUTH USER WALLET DATA
+    const fetchTransactions = async () => {
+      try {
+        const res = await WalletApi.fetchTransactions();
+
+        if (res?.data?.result?.groupedTransactions) {
+          dispatch(setTransactions(res?.data?.result?.groupedTransactions));
+        }
+      } catch (error) {
+        console.log(error, "Transaction Error");
+      }
+    };
+    fetchTransactions();
+
+    // SET LIST OF BANKS
+    (async () => {
+      try {
+        const response = await WalletApi.listBanks();
+        if (response.data.result?.data) {
+          dispatch(setBanks(response.data.result?.data));
+        }
+      } catch (error) {
+        console.log(error, "ERROR FETCHING BANKS");
+      }
+    })();
+    (async () => {
+      try {
+        const { email } = getAuthUser();
+        const response = await WalletApi.fetchDedicatedAccount({
+          email,
+        });
+        if (response.data.result?.data) {
+          console.log(
+            "============fetchDedicatedAccount========================"
+          );
+          console.log(JSON.stringify(response.data, null, 2));
+          console.log(
+            "==========fetchDedicatedAccount=========================="
+          );
+        }
+      } catch (error) {
+        console.log(error, "ERROR FETCHING BANKS");
+      }
+    })();
+  }, [dispatch]);
 
   const flattenedTransactions = useMemo(
     () => transactions.flatMap((walletTx) => walletTx.transactions),
