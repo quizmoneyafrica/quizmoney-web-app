@@ -23,9 +23,16 @@ import {
 import { toast } from "sonner";
 import { formatNaira } from "@/app/utils/utils";
 import { EyeIcon, EyeSlash } from "@/app/icons/icons";
+import { MobileSuccessDeposit } from "./MobileSuccessDeposit";
+import { SuccessfulDepositModal } from "./SuccessfulDepositModal";
+import { useParams } from "next/navigation";
 
 export default function WalletBalance() {
   const [open, setOpen] = useState(false);
+  const { success } = useParams();
+  const [isSuccessfulDepositOpen, setIsSuccessfulDepositOpen] = useState(
+    Boolean(success)
+  );
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const { wallet, isWalletLoading, withdrawalModal, withdrawalPinModal } =
@@ -215,6 +222,28 @@ export default function WalletBalance() {
           <WithdrawalSuccessModal
             open={openSuccessModal}
             onOpenChange={setOpenSuccessModal}
+          />
+        </Dialog.Root>
+      )}
+
+      {/* Success modal */}
+
+      {isMobile ? (
+        <BottomSheet
+          isOpen={isSuccessfulDepositOpen}
+          onClose={() => setIsSuccessfulDepositOpen(false)}
+          title="Deposit"
+        >
+          <MobileSuccessDeposit
+            title={Boolean(success) ? "Successful !" : "Failed !"}
+          />
+        </BottomSheet>
+      ) : (
+        <Dialog.Root open={open} onOpenChange={setOpen}>
+          <SuccessfulDepositModal
+            open={isSuccessfulDepositOpen}
+            title={Boolean(success) ? "Successful !" : "Failed !"}
+            onOpenChange={setIsSuccessfulDepositOpen}
           />
         </Dialog.Root>
       )}

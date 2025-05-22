@@ -90,6 +90,8 @@ export default function OtpVerificationModal({
   const [isCreatingRequest, setIsCreatingRequest] = useState<boolean>(false);
 
   const createPin = async (pin: string) => {
+    setIsCreatingPin(true);
+
     try {
       const response = await WalletApi.createWithdrawalPin({
         pin,
@@ -124,7 +126,7 @@ export default function OtpVerificationModal({
     }
     try {
       const response = await WalletApi.requestWithdrawal({
-        amount: withdrawalData?.amount,
+        amount: withdrawalData?.amount.toString(),
         pin,
         bankAccount: withdrawalData?.bankAccount,
       });
@@ -275,6 +277,7 @@ export default function OtpVerificationModal({
                       <CustomButton loader disabled width="full" />
                     ) : (
                       <CustomButton
+                        loader={isCreatingPin || isCreatingRequest}
                         type="button"
                         onClick={handleSubmit}
                         width="full"
@@ -284,7 +287,7 @@ export default function OtpVerificationModal({
                           isCreatingRequest
                         }
                       >
-                        Proceed
+                        {"Proceed"}
                       </CustomButton>
                     ))}
                   {/* <button
