@@ -69,7 +69,7 @@ function Page() {
   if (!isUserInGame) return null;
   console.log("LiveData: ", liveGameData);
   const diff = differenceInSeconds(
-    new Date(liveGameData?.startDate),
+    new Date(liveGameData?.startDate.iso),
     new Date()
   );
   return (

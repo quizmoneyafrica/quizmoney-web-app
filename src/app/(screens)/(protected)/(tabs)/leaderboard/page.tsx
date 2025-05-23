@@ -52,7 +52,7 @@ function Page() {
                 .then((res) => {
                   console.log(res);
                   setLeaderboardData({
-                    leaderboard: res.data.result.gameLeaderboard.rankings.map(
+                    leaderboard: res.data.result.rankings.map(
                       (data: {
                         position: number;
                         prize: number;
