@@ -141,10 +141,6 @@ export default function ResponsiveDialog({
                     {children}
                   </div>
                   {/* Close Button */}
-                  <Dialog.Close className="absolute right-9 top-5 rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none  disabled:pointer-events-none">
-                    <div className="text-2xl ">x</div>
-                    <span className="sr-only">Close</span>
-                  </Dialog.Close>
                 </motion.div>
               </Dialog.Content>
             </Dialog.Portal>
