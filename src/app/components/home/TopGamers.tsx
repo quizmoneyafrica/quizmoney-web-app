@@ -20,8 +20,8 @@ function TopGamers() {
     const fetchTopGamers = async () => {
       try {
         const res = await UserAPI.topGamersOfToday();
-        console.log(res.data.result.todaysLeaderboard);
-        setTopGamers(res.data.result.todaysLeaderboard);
+        console.log(res.data.result.monthlyLeaderboard);
+        setTopGamers(res.data.result.monthlyLeaderboard);
         setLoading(false);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
@@ -34,7 +34,7 @@ function TopGamers() {
   return (
     <div className="bg-white rounded-[20px] w-full  py-6 grid grid-cols-1 gap-3">
       <Text className="text-neutral-800 font-bold text-xl px-6">
-        Top Gamers of the Day
+        Top Gamers of the Month
       </Text>
       <div className="flex scrollbar-hide overflow-x-auto gap-4 scrollbar-hide pl-4">
         {loading ? (

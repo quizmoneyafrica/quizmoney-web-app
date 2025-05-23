@@ -64,16 +64,19 @@ function Layout({ children }: { children: React.ReactNode }) {
     };
   }, [dispatch]);
   useEffect(() => {
-    if (!loading && !gameData?.startDate) return;
-    const diff = differenceInSeconds(new Date(gameData?.startDate), new Date());
+    if (!loading && !gameData?.startDate.iso) return;
+    const diff = differenceInSeconds(
+      new Date(gameData?.startDate.iso),
+      new Date()
+    );
     setShouldShowCountDown(showGameCountDown && diff > 0 && diff <= 300);
-  }, [gameData?.startDate, loading, showGameCountDown]);
+  }, [gameData?.startDate.iso, loading, showGameCountDown]);
 
   return (
     <ProtectedRoute>
       {shouldShowCountDown && (
         <CountdownScreen
-          startDate={gameData?.startDate}
+          startDate={gameData?.startDate.iso}
           gameId={gameData?.objectId}
         />
       )}
