@@ -27,8 +27,11 @@ export default function ProtectedLayout({
   //   (state: RootState) => state.game.showGameCountdown
   // );
   const gameData = useSelector((state: RootState) => state.game.nextGameData);
-  const diff = differenceInSeconds(new Date(gameData?.startDate), new Date());
-  console.log("StartDate:", gameData?.startDate);
+  const diff = differenceInSeconds(
+    new Date(gameData?.startDate.iso),
+    new Date()
+  );
+  console.log("StartDate:", gameData?.startDate.iso);
   console.log("StartDate Difference:", diff);
   const dispatch = useAppDispatch();
 
@@ -64,8 +67,8 @@ export default function ProtectedLayout({
   return (
     <>
       <ProtectedRoute>
-        {/* {gameData?.startDate && (
-          <CountdownScreen startDate={gameData.startDate} />
+        {/* {gameData?.startDate.iso && (
+          <CountdownScreen startDate={gameData.startDate.iso} />
         )} */}
 
         <div

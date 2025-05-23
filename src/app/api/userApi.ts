@@ -118,7 +118,7 @@ const UserAPI = {
   },
   topGamersOfToday(): Promise<AxiosResponse<ApiResponse>> {
     return axios.post(
-      `${BASE_URL}/topGamersOfToday`,
+      `${BASE_URL}/topGamersOfThisMonth`,
       {},
       { headers: appHeaders }
     );

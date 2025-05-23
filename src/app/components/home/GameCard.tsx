@@ -68,7 +68,7 @@ function GameCard() {
   useEffect(() => {
     const checkGameTime = () => {
       const diff = differenceInSeconds(
-        new Date(nextGameData?.startDate),
+        new Date(nextGameData?.startDate.iso),
         new Date()
       );
       if (diff > 0 && diff <= 300) {
@@ -83,7 +83,7 @@ function GameCard() {
     return () => {
       clearInterval(intervalRef.current!);
     };
-  }, [nextGameData?.startDate, setShowJoinBtn]);
+  }, [nextGameData?.startDate.iso, setShowJoinBtn]);
 
   if (!nextGameData || loading)
     return (
@@ -114,7 +114,7 @@ function GameCard() {
             <Flex direction="column" gap="2" align="center" justify="center">
               {/* <p className="text-error-500 font-bold">Game in Session</p> */}
               <Text className="text-neutral-800">
-                Next Game: {formatQuizDate(nextGameData?.startDate)}
+                Next Game: {formatQuizDate(nextGameData?.startDate.iso)}
               </Text>
               <Text className="text-neutral-800 font-medium">
                 Entry Fee: {formatNaira(nextGameData?.entryFee, true)}
@@ -138,7 +138,7 @@ function GameCard() {
             <Flex align="center" justify="between">
               <ShareBtn
                 gamePrize={nextGameData?.gamePrize}
-                startDate={nextGameData?.startDate}
+                startDate={nextGameData?.startDate.iso}
               />
               <PlayDemoBtn />
             </Flex>
