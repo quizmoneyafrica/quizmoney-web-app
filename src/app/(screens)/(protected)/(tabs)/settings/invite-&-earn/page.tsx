@@ -1,4 +1,7 @@
 "use client";
+import { User } from "@/app/api/interface";
+import { useAppSelector } from "@/app/hooks/useAuth";
+import { decryptData } from "@/app/utils/crypto";
 import CustomButton from "@/app/utils/CustomBtn";
 import {
   Check,
@@ -9,11 +12,69 @@ import {
   UsersRoundIcon,
 } from "lucide-react";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import copy from "copy-to-clipboard"; // Import the copy function
+import { toast } from "sonner";
+import UserAPI from "@/app/api/userApi";
 
 const InviteAndEarn = () => {
+  const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
+  const user: User | null = encrypted ? decryptData(encrypted) : null;
+  const [isCopied, setIsCopied] = useState(false);
+  const [referralData, setReferralData] = useState({
+    referralCount: 0,
+    referralEarnings: 0,
+  });
+
+  const handleCopy = () => {
+    // The 'copy' function from the library returns true on success, false on failure
+    const success = copy(user?.referralCode ?? "");
+
+    if (success) {
+      setIsCopied(true);
+      toast.success("Referral Code Copied!", { position: "top-center" });
+
+      // Reset feedback message after a short delay
+      setTimeout(() => {
+        setIsCopied(false);
+      }, 2000);
+    } else {
+      // This 'else' block for copy-to-clipboard is less common,
+      // as it generally handles various browser nuances internally.
+      // It might be triggered if, for example, the document isn't focused.
+      toast.error("Failed to copy!", { position: "top-center" });
+    }
+  };
+
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: `🚀 Join Me on Quiz Money and Win Real Cash! 🧠💸`,
+          text: `Hey! I’ve been playing Quiz Money — a fun trivia app where you answer questions and win cash instantly! 🎉 Use my referral code ${user?.referralCode} when signing up to get 50% bonus on your first deposit! 💰 Don't miss out, test your knowledge, compete daily, and earn real rewards!`,
+          url: `https://quizmoney.ng`,
+        });
+      } else {
+        // alert("Sharing not supported on this device.");
+        handleCopy();
+      }
+    } catch (error) {
+      console.error("Share failed:", error);
+    }
+  };
+
+  useEffect(() => {
+    (async () => {
+      const res = await UserAPI.getReferralStats();
+      console.log(res.data);
+      setReferralData({
+        ...res.data.result,
+      });
+    })();
+  }, []);
+
   const invited = 1;
   return (
     <div className=" md:bg-white rounded-3xl md:p-4 min-h-screen space-y-6">
@@ -36,12 +97,24 @@ const InviteAndEarn = () => {
               friends to join the game.
             </p>
             <div className="flex items-center gap-3">
-              <CustomButton className=" bg-white !py-1 flex items-center gap-2">
-                <p className=" text-primary-800 md:text-2xl text-sm">ANO202</p>
-                <Copy className=" text-primary-800" size={17} />
+              <CustomButton
+                onClick={handleCopy}
+                className=" bg-white !py-1 flex items-center gap-2"
+              >
+                <p className=" text-primary-800 md:text-2xl text-sm">
+                  {user?.referralCode}
+                </p>
+
+                {isCopied ? (
+                  <Check scale={18} className=" text-emerald-400" />
+                ) : (
+                  <Copy className=" text-primary-800" size={17} />
+                )}
               </CustomButton>
 
-              <Share2 size={20} className=" text-white " />
+              <div onClick={handleShare}>
+                <Share2 size={20} className=" text-white " />
+              </div>
             </div>
           </div>
           <div className=" pt-10 h-[285px] relative">
@@ -64,7 +137,7 @@ const InviteAndEarn = () => {
               <p className="font-semibold">Total Referral</p>
             </div>
             <p className=" text-xl md:text-3xl text-primary-800 font-bold">
-              10
+              {referralData.referralCount}
             </p>
           </div>
           <div className="flex flex-col gap-1 md:gap-3 items-center py-3 md:p-6">
@@ -73,7 +146,7 @@ const InviteAndEarn = () => {
               <p className="font-semibold">Refferal Earnings</p>
             </div>
             <p className=" text-xl md:text-3xl text-primary-800 font-bold">
-              ₦10,000{" "}
+              ₦{referralData.referralEarnings}
             </p>
           </div>
         </div>
@@ -160,7 +233,7 @@ const InviteAndEarn = () => {
                 <p className="font-semibold">Total Referral</p>
               </div>
               <p className=" text-xl md:text-3xl text-primary-800 font-bold">
-                10
+                {referralData.referralCount}
               </p>
             </div>
             <div className="flex flex-col gap-3 items-center p-3 md:p-6">
@@ -169,7 +242,7 @@ const InviteAndEarn = () => {
                 <p className="font-semibold">Refferal Earnings</p>
               </div>
               <p className=" text-xl md:text-3xl text-primary-800 font-bold">
-                ₦10,000{" "}
+                ₦{referralData.referralEarnings.toLocaleString()}
               </p>
             </div>
           </div>

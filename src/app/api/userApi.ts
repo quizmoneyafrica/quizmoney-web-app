@@ -41,6 +41,7 @@ const getAuthUser = () => {
   const user = encrypted ? decryptData(encrypted) : null;
   return user;
 };
+
 const UserAPI = {
   login(form: LoginForm): Promise<AxiosResponse<ApiResponse>> {
     return axios.post(`${BASE_URL}/login`, form, {
@@ -116,11 +117,22 @@ const UserAPI = {
       headers: getSessionTokenHeaders(),
     });
   },
+
   topGamersOfToday(): Promise<AxiosResponse<ApiResponse>> {
     return axios.post(
       `${BASE_URL}/topGamersOfThisMonth`,
       {},
       { headers: appHeaders }
+    );
+  },
+
+  getReferralStats(): Promise<AxiosResponse<ApiResponse>> {
+    return axios.post(
+      `${BASE_URL}/referralData`,
+      {},
+      {
+        headers: getSessionTokenHeaders(),
+      }
     );
   },
 };
