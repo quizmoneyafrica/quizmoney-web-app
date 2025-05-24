@@ -75,14 +75,14 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
               className="rounded-full"
             />
           </div>
-          <p className=" text-primary-700 text-xl sm:text-2xl font-semibold">
+          <p className=" text-primary-700 text-xl sm:text-2xl font-semibold uppercase">
             {player?.firstName}
           </p>
 
           <div className="flex flex-col gap-2 w-full md:w-[80%]">
             <p className=" font-semibold">Player Stats</p>
             <div className=" flex justify-evenly bg-primary-50 rounded-xl p-4 w-full">
-              <div>
+              <div className="flex flex-col items-center ">
                 <p>Rank</p>
                 <div className="flex h-10 w-10 items-center text-primary-800 justify-center gap-2 border-2 border-primary-800 rounded-full p-2">
                   {player.activeTab == "allTime"
@@ -90,13 +90,13 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
                     : player?.position}
                 </div>
               </div>
-              <div>
+              <div className="flex flex-col items-center ">
                 <p>Games</p>
                 <div className="flex h-10 w-10 items-center text-primary-800 justify-center gap-2 border-2 border-primary-800 rounded-full p-2">
                   {player?.noOfGamesPlayed}
                 </div>
               </div>
-              <div>
+              <div className="flex flex-col items-center ">
                 <p>Prize</p>
                 <div className="flex h-10 w-10 items-center justify-center font-semibold text-primary-800  p-2">
                   ₦
