@@ -6,8 +6,8 @@ import { useAppSelector } from "@/app/hooks/useAuth";
 import { Grid } from "@radix-ui/themes";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import ResponsiveDialog from "@/app/components/modal/Modal";
 import ViewNotification from "@/app/components/notification/ViewNotification";
+import QmDrawer from "@/app/components/drawer/drawer";
 
 function Page() {
   const notifications = useAppSelector(
@@ -26,28 +26,42 @@ function Page() {
       transition={{ duration: 0.25, ease: "easeInOut" }}
       className="min-h-screen"
     >
-      <ResponsiveDialog
+      {/* <ResponsiveDialog
         open={openNotification}
         onOpenChange={setOpenNotification}
         className="!min-h-[60px] pt-18 pb-10"
       >
         <ViewNotification notification={passedNotification} />
-      </ResponsiveDialog>
-      {notifications.length < 1 ? (
+      </ResponsiveDialog> */}
+
+      {notifications?.length < 1 ? (
         <EmptyState />
       ) : (
-        <Grid columns="1" gap="4">
-          {notifications.map((notification: ApiResponse, index: number) => {
-            return (
-              <NotificationBox
-                key={index}
-                notification={notification}
-                setOpenNotification={setOpenNotification}
-                setPassedNotification={setPassedNotification}
-              />
-            );
-          })}
-        </Grid>
+        <>
+          <QmDrawer
+            open={openNotification}
+            onOpenChange={setOpenNotification}
+            heightClass="h-[60%]"
+            trigger={
+              <Grid columns="1" gap="4">
+                {notifications.map(
+                  (notification: ApiResponse, index: number) => {
+                    return (
+                      <NotificationBox
+                        key={index}
+                        notification={notification}
+                        setOpenNotification={setOpenNotification}
+                        setPassedNotification={setPassedNotification}
+                      />
+                    );
+                  }
+                )}
+              </Grid>
+            }
+          >
+            <ViewNotification notification={passedNotification} />
+          </QmDrawer>
+        </>
       )}
     </motion.div>
   );

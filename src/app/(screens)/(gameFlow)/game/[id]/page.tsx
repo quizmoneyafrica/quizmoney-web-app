@@ -1,5 +1,7 @@
 import ClientPage from "./clientPage";
 
-export default async function Page({ params }: { params: { id: string } }) {
-  return <ClientPage gameId={params.id} />;
+export default function Page({ params }: { params: { id: string } }) {
+  const { id } = params;
+
+  return <ClientPage gameId={`${id}`} />;
 }
