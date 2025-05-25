@@ -5,21 +5,46 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import {
   setIsAllowedInGame,
+  setOpenLeaveGame,
   setShowGameCountdown,
 } from "@/app/store/gameSlice";
 import { useRouter } from "next/navigation";
-import GameApi from "@/app/api/game";
+import { LeaveGameModal } from "./leaveGameModal";
+import { Grid } from "@radix-ui/themes";
+import CustomButton from "@/app/utils/CustomBtn";
 
 type Props = {
   startDate: string;
-  gameId: string;
 };
-
-export default function CountdownScreen({ startDate, gameId }: Props) {
+const rules = [
+  {
+    title: "Stay in the app",
+    description: "Closing or switching apps will disqualify you.",
+  },
+  {
+    title: "Don’t refresh",
+    description: "If you're on a browser, do not reload the page.",
+  },
+  {
+    title: "Answer fast",
+    description: "Your total time affects your rank.",
+  },
+  {
+    title: "Eraser Advantage",
+    description: "It auto corrects your first wrong answer.",
+  },
+  {
+    title: "Get paid",
+    description: "Winnings go to your wallet and can be withdrawn.",
+  },
+];
+export default function CountdownScreen({ startDate }: Props) {
   const [secondsLeft, setSecondsLeft] = useState(
     differenceInSeconds(new Date(startDate), new Date())
   );
-  const { showGameCountdown } = useAppSelector((state) => state.game);
+  const { showGameCountdown, liveGameData } = useAppSelector(
+    (state) => state.game
+  );
   const dispatch = useAppDispatch();
   const router = useRouter();
 
@@ -35,25 +60,16 @@ export default function CountdownScreen({ startDate, gameId }: Props) {
     audioRef.current = new Audio("/sounds/timer.mp3");
     audioRef.current.load();
 
-    const enableAudio = () => {
-      userInteracted.current = true;
-      if (audioRef.current) {
-        audioRef.current.play().then(() => {
-          audioRef.current?.pause();
-        });
-      }
-      window.removeEventListener("click", enableAudio);
-      window.removeEventListener("touchstart", enableAudio);
-    };
-
-    window.addEventListener("click", enableAudio);
-    window.addEventListener("touchstart", enableAudio);
-
+    if (showGameCountdown) {
+      audioRef.current?.play();
+    } else {
+      audioRef.current?.pause();
+    }
     return () => {
-      window.removeEventListener("click", enableAudio);
-      window.removeEventListener("touchstart", enableAudio);
+      audioRef.current?.pause();
+      audioRef.current = null;
     };
-  }, []);
+  }, [showGameCountdown]);
 
   useEffect(() => {
     if (!showGameCountdown) return;
@@ -77,8 +93,8 @@ export default function CountdownScreen({ startDate, gameId }: Props) {
         audioRef.current?.pause();
         audioRef.current = null;
         dispatch(setShowGameCountdown(false));
-        // router.push("/game");
         dispatch(setIsAllowedInGame(true));
+        router.replace(`/game/${liveGameData?.objectId}`);
       }
     };
 
@@ -88,24 +104,7 @@ export default function CountdownScreen({ startDate, gameId }: Props) {
     return () => {
       clearInterval(intervalRef.current!);
     };
-  }, [startDate, dispatch, router, showGameCountdown]);
-
-  const leaveGame = async () => {
-    try {
-      await GameApi.removeUserFromGame(gameId);
-      await GameApi.deactivateSession(gameId);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      console.log(err.message);
-    }
-  };
-
-  const handleDismiss = () => {
-    dispatch(setShowGameCountdown(false));
-    router.replace("/home");
-    audioRef.current?.pause();
-    leaveGame();
-  };
+  }, [startDate, dispatch, router, showGameCountdown, liveGameData?.objectId]);
 
   if (!showGameCountdown || secondsLeft < 0 || secondsLeft > 300) return null;
 
@@ -120,7 +119,7 @@ export default function CountdownScreen({ startDate, gameId }: Props) {
 
   return (
     <div className="fixed z-[9999] inset-0 bg-primary-900 hero text-white ">
-      <div className="relative flex flex-col items-center justify-center px-10 w-full h-full max-w-sm mx-auto">
+      <div className="relative flex flex-col items-center justify-center px-10 w-full h-full max-w-lg mx-auto">
         {secondsLeft <= 10 ? (
           <AnimatePresence mode="wait">
             <motion.div
@@ -137,19 +136,47 @@ export default function CountdownScreen({ startDate, gameId }: Props) {
           </AnimatePresence>
         ) : (
           <>
-            <h1 className="text-3xl font-bold mb-4 text-secondary-300">
-              Game Starting in
-            </h1>
-            <p className="text-4xl font-heading font-bold">{`${
-              minutes !== 0 ? `${minutes}:` : ""
-            }${seconds}`}</p>
+            <div className="w-full h-full mx-auto max-w-lg space-y-6 flex flex-col items-center justify-center ">
+              <Grid gap="3" className="w-full">
+                <div className="bg-primary-50 text-sm border-4 border-primary-500 rounded-[10px] px-4 py-4 space-y-4">
+                  <p className="text-center text-neutral-900 font-bolds">
+                    Game Starts in
+                  </p>
+                  <p className="text-4xl font-heading font-bold text-center text-primary-900">{`${
+                    minutes !== 0 ? `${minutes}:` : ""
+                  }${seconds}`}</p>
+                </div>
+                {/* body  */}
+                <div className=" bg-primary-50 text-center border-4 border-primary-500 rounded-[10px] px-4 py-4 space-y-4">
+                  <h4 className="text-center text-error-900 font-bold">
+                    Game Rules!
+                  </h4>
 
-            <button
-              onClick={handleDismiss}
-              className="mt-6 w-full py-3 rounded-full bg-secondary-500 text-neutral-900 font-medium text-sm hover:bg-gray-200 transition"
-            >
-              Quit Game
-            </button>
+                  <div className="text-neutral-900 text-left space-y-4">
+                    {rules.map((rule, index) => (
+                      <div key={index}>
+                        <span className="font-semibold text-error-900">
+                          {index + 1}. {rule.title}
+                        </span>{" "}
+                        – {rule.description}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {/* body end  */}
+              </Grid>
+              <div className="w-full ">
+                <CustomButton
+                  onClick={() => dispatch(setOpenLeaveGame(true))}
+                  width="full"
+                  className="!bg-secondary-500 !text-neutral-900"
+                >
+                  Quit Game
+                </CustomButton>
+              </div>
+            </div>
+
+            <LeaveGameModal />
           </>
         )}
       </div>

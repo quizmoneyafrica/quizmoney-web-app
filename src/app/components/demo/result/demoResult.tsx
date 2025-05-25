@@ -35,11 +35,16 @@ function DemoResult({
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const handlePlayAgain = () => dispatch(clearDemoData());
+  const handlePlayAgain = () => {
+    dispatch(clearDemoData());
+    sessionStorage.clear();
+    router.replace("/play-demo");
+  };
 
   const handleGoBack = () => {
     dispatch(clearDemoData());
     router.replace("/home");
+    sessionStorage.clear();
   };
   return (
     <motion.div

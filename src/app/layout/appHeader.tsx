@@ -193,8 +193,7 @@ function AppHeader() {
                   </DropdownMenu.Item>
                 </Link>
                 <DropdownMenu.Item
-                  onSelect={(e) => {
-                    e.preventDefault();
+                  onSelect={() => {
                     setOpenLogout(true);
                   }}
                   className="DropdownMenuItem hover:!bg-error-900"

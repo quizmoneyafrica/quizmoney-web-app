@@ -1,24 +1,48 @@
 import { format, isToday, isTomorrow, isPast, parseISO } from "date-fns";
 import { Transaction, UserWalletTransaction } from "../store/walletSlice";
 
+// export function isIosPwaInstalled(): boolean {
+//   if (typeof window === "undefined") return false;
+
+//   const isIos = /iphone|ipad|ipod/.test(
+//     window.navigator.userAgent.toLowerCase()
+//   );
+//   const isStandalone =
+//     ("standalone" in navigator && navigator.standalone === true) ||
+//     window.matchMedia("(display-mode: standalone)").matches;
+
+//   return isIos && isStandalone;
+// }
+
 export function isIosPwaInstalled(): boolean {
   if (typeof window === "undefined") return false;
 
-  const isIos = /iphone|ipad|ipod/.test(
-    window.navigator.userAgent.toLowerCase()
-  );
+  const userAgent = window.navigator.userAgent.toLowerCase();
+  const isIosDevice =
+    /iphone|ipad|ipod/.test(userAgent) ||
+    (userAgent.includes("macintosh") && "ontouchend" in document);
+
   const isStandalone =
     ("standalone" in navigator && navigator.standalone === true) ||
     window.matchMedia("(display-mode: standalone)").matches;
 
-  return isIos && isStandalone;
+  return isIosDevice && isStandalone;
 }
 
+// export const isMobileOrTablet = () => {
+//   if (typeof window === "undefined") return false;
+//   return /iphone|ipad|ipod|android|mobile/i.test(
+//     window.navigator.userAgent.toLowerCase()
+//   );
+// };
 export const isMobileOrTablet = () => {
   if (typeof window === "undefined") return false;
-  return /iphone|ipad|ipod|android|mobile/i.test(
-    window.navigator.userAgent.toLowerCase()
-  );
+
+  const ua = window.navigator.userAgent.toLowerCase();
+
+  const isTouchMac = ua.includes("macintosh") && "ontouchend" in document; // modern iPads
+
+  return /iphone|ipad|ipod|android|mobile/i.test(ua) || isTouchMac;
 };
 
 export function capitalizeFirstLetter(str: string) {
@@ -132,4 +156,16 @@ export function truncateWords(text: string, limit: number = 5): string {
   const words = text.trim().split(/\s+/);
   if (words.length <= limit) return text;
   return words.slice(0, limit).join(" ") + " ...";
+}
+export function formatRank(n: number): string {
+  const suffixes: { [key: number]: string } = { 1: "st", 2: "nd", 3: "rd" };
+  const lastDigit = n % 10;
+  const lastTwoDigits = n % 100;
+
+  const suffix =
+    lastTwoDigits >= 11 && lastTwoDigits <= 13
+      ? "th"
+      : suffixes[lastDigit] || "th";
+
+  return `${n}${suffix}`;
 }

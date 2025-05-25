@@ -2,7 +2,6 @@ import { Flex } from "@radix-ui/themes";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
 import React, { useState } from "react";
 import Image from "next/image";
-import Modal from "@/app/components/modal/Modal";
 import { Product } from "@/app/api/interface";
 import SuccessMessageModal from "@/app/components/modal/store/SuccessMessageModal";
 import StoreAPI from "@/app/api/storeApi";
@@ -12,6 +11,8 @@ import { encryptData } from "@/app/utils/crypto";
 import { useAuth } from "@/app/hooks/useAuth";
 import { Eraser } from "@/app/icons/icons";
 import { toast } from "sonner";
+import QmDrawer from "@/app/components/drawer/drawer";
+import { formatNaira } from "@/app/utils/utils";
 
 const displayColor = [
   {
@@ -138,7 +139,7 @@ const ProductCard = ({
             >
               <div className="flex-row flex  items-center">
                 <p className=" text-2xl  font-semibold">
-                  ₦{product?.productPrice.toLocaleString()}{" "}
+                  {formatNaira(product?.productPrice)}
                 </p>
                 <span className="font-semibold inline-flex pl-1">
                   / {product?.productQuantity} Erasers
@@ -160,22 +161,85 @@ const ProductCard = ({
             />
           </div>
           <div className="px-4">
-            <CustomButton
-              onClick={() => setIsOpen(true)}
-              className={`!px-6 !py-2 md:!py-3 w-full justify-center flex  ${
-                displayColor[index % displayColor.length].button
-              }`}
+            <QmDrawer
+              open={isOpen}
+              onOpenChange={setIsOpen}
+              title="Verify Purchase"
+              trigger={
+                <CustomButton
+                  onClick={() => setIsOpen(true)}
+                  className={`!px-6 !py-2 md:!py-3 w-full justify-center flex  ${
+                    displayColor[index % displayColor.length].button
+                  }`}
+                >
+                  <div
+                    className={`flex items-center gap-2 text-white font-semibold `}
+                  >
+                    Buy Eraser <ArrowRightIcon />
+                  </div>
+                </CustomButton>
+              }
             >
-              <div
-                className={`flex items-center gap-2 text-white font-semibold `}
-              >
-                Buy Eraser <ArrowRightIcon />
-              </div>
-            </CustomButton>
+              <>
+                <Flex
+                  direction={"column"}
+                  gap="2"
+                  justify={"between"}
+                  className=" min-h-[230px] w-full  "
+                >
+                  <Flex
+                    gap="2"
+                    className="w-full border border-primary-500 rounded-2xl p-3 py-6 md:px-6 mt-4"
+                    justify={"between"}
+                    align={"end"}
+                  >
+                    <div className=" space-y-3">
+                      <p className="font-bold ">{product?.productName}</p>
+                      <div className="flex gap-2 items-center">
+                        <Image
+                          src="/icons/eraser.svg"
+                          alt="eraser"
+                          height={100}
+                          width={100}
+                          className="w-6 h-6 scale-150 border"
+                        />
+                        <p className=" text-blue-500">
+                          {product?.productQuantity ?? "0"} Eraser
+                        </p>
+                        {product?.bonus > 0 && (
+                          <p className=" text-[#00B23D] font-semibold">
+                            {" "}
+                            <span className=" font-semibold text-black">
+                              +
+                            </span>{" "}
+                            {product?.bonus} Bonus
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="w-fit h-[33px] px-4 -space-x-5 font-bold  overflow-hidden flex flex-row justify-center items-center gap-2 bg-primary-50 text-black rounded-md">
+                      <p className=" text-sm sm:text-base font-bold pr-2">
+                        {formatNaira(product?.productPrice ?? "0")}
+                      </p>
+                    </div>
+                  </Flex>
+                </Flex>
+                <CustomButton
+                  onClick={handlePurchase}
+                  loader={isLoading}
+                  disabled={isLoading}
+                  className=" w-full"
+                >
+                  Proceed to Pay ₦{product?.productPrice}
+                </CustomButton>
+              </>
+            </QmDrawer>
           </div>
         </div>
       </div>
-      <Modal
+
+      {/* <Modal
         open={isOpen}
         onOpenChange={setIsOpen}
         className=" !w-[1000px]"
@@ -232,13 +296,13 @@ const ProductCard = ({
         >
           Proceed to Pay ₦{product?.productPrice}
         </CustomButton>
-      </Modal>
+      </Modal> */}
       <SuccessMessageModal
         open={isSuccess}
         setOpen={setIsSuccess}
         success={true}
         message="Awesome!"
-        subMessage={`You have successfully purchase ${product?.productQuantity} erasers.`}
+        subMessage={`You have successfully purchased ${product?.productQuantity} erasers.`}
         onClose={() => router.push("/home")}
         actionLabel="Go back Home"
       />
