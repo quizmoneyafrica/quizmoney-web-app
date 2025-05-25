@@ -5,7 +5,7 @@ import { useAppSelector } from "@/app/hooks/useAuth";
 import CustomButton from "@/app/utils/CustomBtn";
 import { useRouter } from "next/navigation";
 
-export default function ClientPage({ gameId }: { gameId: string }) {
+export default function ClientPage() {
   const { gameEnded, liveGameData } = useAppSelector((state) => state.game);
   const router = useRouter();
   useEffect(() => {
@@ -51,7 +51,7 @@ export default function ClientPage({ gameId }: { gameId: string }) {
     };
   }, [gameEnded]);
 
-  if (!gameId) return null;
+  // if (!gameId) return null;
 
   if (!liveGameData)
     return (
