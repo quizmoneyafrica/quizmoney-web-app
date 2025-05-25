@@ -34,6 +34,7 @@ function SidebarNav() {
             width={86}
             height={47.38}
             priority
+            quality={100}
           />
         </div>
         <Flex direction="column" px="2" className="relative">

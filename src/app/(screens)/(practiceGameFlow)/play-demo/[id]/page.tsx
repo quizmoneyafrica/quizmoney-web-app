@@ -1,13 +1,12 @@
 "use client";
 import DemoGameSCreen from "@/app/components/demo/game/demoGameSCreen";
 import React, { useEffect } from "react";
-import { notFound } from "next/navigation";
+// import { notFound } from "next/navigation";
 // import UseBlockBackNavigation from "@/app/components/demo/blockBackNav";
 import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
 
-function Page({ params }: { params: { id: string } }) {
-  const gameId = params.id;
+function Page() {
   // UseBlockBackNavigation();
   useEffect(() => {
     // Replace initial state so back doesn't work
@@ -38,7 +37,7 @@ function Page({ params }: { params: { id: string } }) {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
-  if (!gameId) return notFound();
+  // if (!gameId) return notFound();
   return (
     <>
       <DemoGameSCreen />
