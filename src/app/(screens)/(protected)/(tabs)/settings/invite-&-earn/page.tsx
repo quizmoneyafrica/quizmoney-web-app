@@ -1,4 +1,7 @@
 "use client";
+import { User } from "@/app/api/interface";
+import { useAppSelector } from "@/app/hooks/useAuth";
+import { decryptData } from "@/app/utils/crypto";
 import CustomButton from "@/app/utils/CustomBtn";
 import {
   Check,
@@ -9,12 +12,69 @@ import {
   UsersRoundIcon,
 } from "lucide-react";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import copy from "copy-to-clipboard"; // Import the copy function
+import { toast } from "sonner";
+import UserAPI from "@/app/api/userApi";
 
 const InviteAndEarn = () => {
-  const invited = 1;
+  const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
+  const user: User | null = encrypted ? decryptData(encrypted) : null;
+  const [isCopied, setIsCopied] = useState(false);
+  const [referralData, setReferralData] = useState({
+    referralCount: 0,
+    referralEarnings: 0,
+  });
+
+  const handleCopy = () => {
+    // The 'copy' function from the library returns true on success, false on failure
+    const success = copy(user?.referralCode ?? "");
+
+    if (success) {
+      setIsCopied(true);
+      toast.success("Referral Code Copied!", { position: "top-center" });
+
+      // Reset feedback message after a short delay
+      setTimeout(() => {
+        setIsCopied(false);
+      }, 2000);
+    } else {
+      // This 'else' block for copy-to-clipboard is less common,
+      // as it generally handles various browser nuances internally.
+      // It might be triggered if, for example, the document isn't focused.
+      toast.error("Failed to copy!", { position: "top-center" });
+    }
+  };
+
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: `🚀 Join Me on Quiz Money and Win Real Cash! 🧠💸`,
+          text: `Hey! I’ve been playing Quiz Money — a fun trivia app where you answer questions and win cash instantly! 🎉 Use my referral code ${user?.referralCode} when signing up to get 50% bonus on your first deposit! 💰 Don't miss out, test your knowledge, compete daily, and earn real rewards!`,
+          url: `https://quizmoney.ng`,
+        });
+      } else {
+        // alert("Sharing not supported on this device.");
+        handleCopy();
+      }
+    } catch (error) {
+      console.error("Share failed:", error);
+    }
+  };
+
+  useEffect(() => {
+    (async () => {
+      const res = await UserAPI.getReferralStats();
+      console.log(res.data);
+      setReferralData({
+        ...res.data.result,
+      });
+    })();
+  }, []);
+
   return (
     <div className=" md:bg-white rounded-3xl md:p-4 min-h-screen space-y-6">
       <div className=" min-h-[205px] md:min-h-[285px] w-full relative bg-primary-800 overflow-clip rounded-3xl z-10">
@@ -36,12 +96,24 @@ const InviteAndEarn = () => {
               friends to join the game.
             </p>
             <div className="flex items-center gap-3">
-              <CustomButton className=" bg-white !py-1 flex items-center gap-2">
-                <p className=" text-primary-800 md:text-2xl text-sm">ANO202</p>
-                <Copy className=" text-primary-800" size={17} />
+              <CustomButton
+                onClick={handleCopy}
+                className=" bg-white !py-1 flex items-center gap-2"
+              >
+                <p className=" text-primary-800 md:text-2xl text-sm">
+                  {user?.referralCode}
+                </p>
+
+                {isCopied ? (
+                  <Check scale={18} className=" text-emerald-400" />
+                ) : (
+                  <Copy className=" text-primary-800" size={17} />
+                )}
               </CustomButton>
 
-              <Share2 size={20} className=" text-white " />
+              <div onClick={handleShare}>
+                <Share2 size={20} className=" text-white " />
+              </div>
             </div>
           </div>
           <div className=" pt-10 h-[285px] relative">
@@ -59,21 +131,21 @@ const InviteAndEarn = () => {
       <div className="grid md:grid-cols-2 gap-6">
         <div className="md:hidden grid grid-cols-2 bg-primary-50 border-primary-800 border rounded-2xl">
           <div className="flex flex-col gap-1 md:gap-3 items-center py-3 md:p-6 border-r border-primary-800">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row  items-center gap-2">
               <UserRoundPlusIcon size={18} />
               <p className="font-semibold">Total Referral</p>
             </div>
             <p className=" text-xl md:text-3xl text-primary-800 font-bold">
-              10
+              {referralData.referralCount}
             </p>
           </div>
           <div className="flex flex-col gap-1 md:gap-3 items-center py-3 md:p-6">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row  items-center gap-2">
               <CreditCard size={18} />
               <p className="font-semibold">Refferal Earnings</p>
             </div>
             <p className=" text-xl md:text-3xl text-primary-800 font-bold">
-              ₦10,000{" "}
+              ₦{referralData.referralEarnings}
             </p>
           </div>
         </div>
@@ -83,21 +155,29 @@ const InviteAndEarn = () => {
             Earn Big with Our Tiered Referral program
           </p>
 
-          <div className=" mt-10 space-y-4">
+          <div className=" mt-3 md:mt-10 space-y-4">
             <div className=" bg-white p-4 rounded-xl flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="h-[40px] min-w-[40px] rounded-full justify-center flex items-center bg-primary-50">
+                <div className="sm:h-[40px] h-[30px] min-w-[30px] md:min-w-[40px] rounded-full justify-center flex items-center bg-primary-50">
                   <UserRoundPlusIcon className=" text-primary-700" />
                 </div>
                 <div>
-                  <p>When 1st friend join you earn</p>
+                  <p className=" text-sm md:text-base">
+                    When 1st friend join you earn
+                  </p>
                   <p className="text-lg md:text-xl font-bold text-primary-800">
                     ₦100
                   </p>
                 </div>
               </div>
               <div>
-                <div className=" bg-green-500 rounded-full p-1 text-white w-fit">
+                <div
+                  className={` ${
+                    referralData.referralCount >= 1
+                      ? " opacity-100"
+                      : " opacity-0"
+                  } bg-green-500 rounded-full p-1 text-white w-fit`}
+                >
                   <Check size={15} />
                 </div>
               </div>
@@ -108,9 +188,11 @@ const InviteAndEarn = () => {
                   <UsersRoundIcon className=" text-primary-700" />
                 </div>
                 <div>
-                  <p>When 5 friends join you earn</p>
+                  <p className="text-sm md:text-base">
+                    When 5 friends join you earn
+                  </p>
                   <p className=" text-lg md:text-xl  font-bold text-primary-800">
-                    ₦5000
+                    ₦5,000
                   </p>
                 </div>
               </div>
@@ -118,35 +200,69 @@ const InviteAndEarn = () => {
                 {/* <div className=" bg-green-500 rounded-full p-1 text-white w-fit">
                   <Check size={15} />
                 </div> */}
-                <CircularProgressbar
-                  value={(invited / 5) * 100}
-                  text={`${invited}/5`}
-                  className="h-[50px]"
-                  styles={buildStyles({
-                    textSize: "30px",
-                    pathColor: "#00a63e",
-                    textColor: "#000",
-                    trailColor: "#dcfce7",
-                  })}
-                />
+                {referralData?.referralCount > 0 && (
+                  <>
+                    {referralData?.referralCount > 5 ? (
+                      <div
+                        className={`  bg-green-500 rounded-full p-1 text-white w-fit`}
+                      >
+                        <Check size={15} />
+                      </div>
+                    ) : (
+                      <CircularProgressbar
+                        value={(referralData?.referralCount / 5) * 100}
+                        text={`${referralData?.referralCount}/5`}
+                        className="h-[50px]"
+                        styles={buildStyles({
+                          textSize: "30px",
+                          pathColor: "#00a63e",
+                          textColor: "#000",
+                          trailColor: "#dcfce7",
+                        })}
+                      />
+                    )}
+                  </>
+                )}
               </div>
             </div>
-            <div className=" bg-white p-4 rounded-xl flex items-center justify-between gap-3 opacity-30">
+            <div className=" bg-white p-4 rounded-xl flex items-center justify-between gap-3 ">
               <div className="flex items-center gap-3">
                 <div className="h-[40px] min-w-[40px] rounded-full justify-center flex items-center bg-primary-50">
                   <UsersRoundIcon className=" text-primary-700" />
                 </div>
                 <div>
-                  <p>When 10 friends join you earn</p>
+                  <p className="text-sm md:text-base">
+                    When 10 friends join you earn
+                  </p>
                   <p className=" text-lg md:text-xl font-bold text-primary-800">
-                    ₦10000
+                    ₦10,000
                   </p>
                 </div>
               </div>
               <div>
-                <div className=" bg-zinc-500 rounded-full p-1 text-white w-fit">
-                  <Check size={15} />
-                </div>
+                {referralData?.referralCount > 5 && (
+                  <>
+                    {referralData?.referralCount > 10 ? (
+                      <div
+                        className={`  bg-green-500 rounded-full p-1 text-white w-fit`}
+                      >
+                        <Check size={15} />
+                      </div>
+                    ) : (
+                      <CircularProgressbar
+                        value={(referralData?.referralCount / 10) * 100}
+                        text={`${referralData?.referralCount}/10`}
+                        className="h-[50px]"
+                        styles={buildStyles({
+                          textSize: "30px",
+                          pathColor: "#00a63e",
+                          textColor: "#000",
+                          trailColor: "#dcfce7",
+                        })}
+                      />
+                    )}
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -160,7 +276,7 @@ const InviteAndEarn = () => {
                 <p className="font-semibold">Total Referral</p>
               </div>
               <p className=" text-xl md:text-3xl text-primary-800 font-bold">
-                10
+                {referralData.referralCount}
               </p>
             </div>
             <div className="flex flex-col gap-3 items-center p-3 md:p-6">
@@ -169,7 +285,7 @@ const InviteAndEarn = () => {
                 <p className="font-semibold">Refferal Earnings</p>
               </div>
               <p className=" text-xl md:text-3xl text-primary-800 font-bold">
-                ₦10,000{" "}
+                ₦{referralData.referralEarnings.toLocaleString()}
               </p>
             </div>
           </div>

@@ -57,14 +57,17 @@ function Page() {
               justify={"between"}
             >
               <Flex gap={"3"} align={"center"}>
-                <div className="h-12 w-12 bg-primary-50 rounded-full flex justify-center items-center">
+                <Link
+                  href="https://quizmoney.ng/how-it-works"
+                  className="h-12 w-12 bg-primary-50 rounded-full flex justify-center items-center"
+                >
                   <Image
                     src="/icons/setting.svg"
                     alt="terms"
                     width={24}
                     height={24}
                   />{" "}
-                </div>
+                </Link>
                 <p className=" text-lg font-semibold ">How it Works</p>
               </Flex>
               <ChevronRightIcon height={25} width={25} />

@@ -14,12 +14,14 @@ import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import { Flex } from "@radix-ui/themes";
 import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
-import GameApi from "@/app/api/game";
-import { useDispatch } from "react-redux";
+import GameApi, { decryptGameData } from "@/app/api/game";
+import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from "@/app/store/authSlice";
 import AdsScreen from "./adsScreen";
-import { setShowAdsScreen } from "@/app/store/gameSlice";
+import { setGameEnded, setShowAdsScreen } from "@/app/store/gameSlice";
 import ResultScreen from "./resultScreen";
+import UseGameBlock from "./useGameBlock";
+import { RootState } from "@/app/store/store";
 
 const formatTime = (ms: number) => {
   const minutes = Math.floor(ms / 60000);
@@ -35,12 +37,42 @@ function shuffleArray<T>(array: T[]): T[] {
 }
 
 function GameScreen() {
+  useEffect(() => {
+    // Replace initial state so back doesn't work
+    window.history.replaceState(null, "", window.location.href);
+
+    // Prevent browser back
+    const onPopState = () => {
+      window.history.pushState(null, "", window.location.href);
+      toast.error("You cannot go back during a live game.");
+    };
+    window.history.pushState(null, "", window.location.href);
+    window.addEventListener("popstate", onPopState);
+
+    // Block reload or tab close
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("popstate", onPopState);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+  UseGameBlock();
   const dispatch = useDispatch();
   const user = getAuthUser();
-  const { liveGameData, showAdsScreen, showResultScreen } = useAppSelector(
+  const { isAllowedInGame, showAdsScreen, showResultScreen } = useAppSelector(
     (state) => state.game
   );
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const reduxDemoData = useSelector(
+    (state: RootState) => state.game.liveGameData
+  );
+  const [liveGameData, setliveGameData] = useState(reduxDemoData);
+  const initialCount = Number(sessionStorage.getItem("quizmoney_live_count"));
+  const [currentIndex, setCurrentIndex] = useState(initialCount);
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>([]);
   const [locked, setLocked] = useState(false);
   const currentQuestion = liveGameData?.questions?.[currentIndex];
@@ -56,24 +88,100 @@ function GameScreen() {
   //Sounds
   const correctSoundRef = useRef<HTMLAudioElement | null>(null);
   const wrongSoundRef = useRef<HTMLAudioElement | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  //Background music
+  useEffect(() => {
+    // if (!liveGameData?.music?.url) return;
+    audioRef.current = new Audio(liveGameData?.music?.url);
+    audioRef.current.loop = true;
+    audioRef.current.volume = 0.5;
+    audioRef.current?.play();
+    // if (!audioRef.current) {
+    //   audioRef.current = new Audio(liveGameData?.music?.url);
+    //   audioRef.current.loop = true;
+    //   // audioRef.current?.play().catch(() => {});
+    //   audioRef.current.volume = 0.5;
+    // }
+    // if (isAllowedInGame) {
+    //   audioRef.current?.play();
+    // }
+
+    return () => {
+      audioRef.current?.pause();
+      audioRef.current = null;
+    };
+  }, [isAllowedInGame, liveGameData?.music?.url]);
 
   useEffect(() => {
     correctSoundRef.current = new Audio("/sounds/correct-answer.mp3");
     wrongSoundRef.current = new Audio("/sounds/wrong-answer.mp3");
   }, []);
 
-  const handleNextQuestion = () => {
+  useEffect(() => {
+    const encryptedGame = sessionStorage.getItem("quizmoney_live");
+
+    const reduxIsEmpty =
+      !reduxDemoData ||
+      !reduxDemoData.questions ||
+      reduxDemoData.questions.length === 0;
+
+    const localIsEmpty =
+      !liveGameData ||
+      !liveGameData.questions ||
+      liveGameData.questions.length === 0;
+
+    if (encryptedGame && reduxIsEmpty && localIsEmpty) {
+      try {
+        const stored = decryptGameData(encryptedGame);
+        setliveGameData(stored);
+      } catch (e) {
+        console.warn("Error decrypting game data", e);
+      }
+    }
+  }, [liveGameData, reduxDemoData]);
+
+  //gameEnded useEffect
+  useEffect(() => {
+    const isLastQuestion = currentIndex === liveGameData.questions.length - 1;
+    if (isLastQuestion) {
+      dispatch(setGameEnded(true));
+    }
+  }, [currentIndex, dispatch, liveGameData.questions.length, timeLeft]);
+
+  // --- Next Question on Timer ---
+  const handleNextQuestion = async () => {
     setLocked(false);
-    if (currentIndex + 1 < liveGameData?.questions?.length) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
+
+    const gameId = liveGameData.objectId;
+    const questionNumber = currentIndex + 1;
+    const totalTimeFormatted = formatTime(totalTimeUsed);
+
+    const hasAnswered = selectedAnswers[currentIndex] !== undefined;
+    const isLastQuestion = currentIndex + 1 === liveGameData.questions.length;
+
+    if (!locked && !hasAnswered) {
+      await GameApi.recordGameAnswer(
+        gameId,
+        questionNumber.toString(),
+        "User missed it",
+        isLastQuestion ? totalTimeFormatted : undefined
+      );
+    }
+
+    if (isLastQuestion) {
       if (totalTimeInterval.current) {
         clearInterval(totalTimeInterval.current);
       }
       dispatch(setShowAdsScreen(true));
+      audioRef.current?.pause();
+    } else {
+      setCurrentIndex(currentIndex + 1);
+      sessionStorage.setItem("quizmoney_live_count", `${currentIndex + 1}`);
     }
   };
-  //User timer
+
+  // --- User Timer Logic ---
   useEffect(() => {
     if (!currentQuestion) return;
     totalTimeInterval.current = setInterval(() => {
@@ -84,60 +192,67 @@ function GameScreen() {
       if (totalTimeInterval.current) clearInterval(totalTimeInterval.current);
     };
   }, [currentIndex, currentQuestion]);
+
+  // --- Shuffle Options ---
   useEffect(() => {
     if (currentQuestion?.options) {
       setShuffledOptions(shuffleArray(currentQuestion.options));
     }
   }, [currentQuestion]);
 
+  // --- Option Selection Logic ---
   const handleOptionClick = async (option: string) => {
     if (locked) return;
-    const isCorrect = option === currentQuestion.correctAnswer;
+    setLocked(true);
 
+    //pause timer
     if (totalTimeInterval.current) {
       clearInterval(totalTimeInterval.current);
     }
-    const newAnswers = [...selectedAnswers];
-    const gameId = liveGameData.objectId;
-    const questionNumber = currentIndex + 1;
-    let toSaveAnswer = option;
 
+    const isCorrect = option === currentQuestion.correctAnswer;
+    const gameId = liveGameData.objectId;
+    const questionNumber = (currentIndex + 1).toString();
+    const totalTimeFormatted = formatTime(totalTimeUsed);
+
+    let toSaveAnswer = option;
+    const newAnswers = [...selectedAnswers];
+
+    // --- answer logic ---
     if (isCorrect) {
       correctSoundRef.current?.play();
-      //   setScore((prev) => prev + 1);
       newAnswers[currentIndex] = option;
-    } else if (!isCorrect && !usedEraser && user?.erasers > 0) {
+    } else if (!usedEraser && user?.erasers > 0) {
       toSaveAnswer = currentQuestion.correctAnswer;
       correctSoundRef.current?.play();
-      //   setScore((prev) => prev + 1);
       newAnswers[currentIndex] = currentQuestion.correctAnswer;
-      setUsedEraser(true);
+
       toast.success("Eraser used! Your answer was corrected.", {
         position: toastPosition,
       });
-      //reduce eraser
 
       await GameApi.updateErasers(1);
       dispatch(updateUser({ erasers: user.erasers - 1 }));
+      setUsedEraser(true);
     } else {
       wrongSoundRef.current?.play();
       newAnswers[currentIndex] = option;
     }
-    setSelectedAnswers(newAnswers);
-    setLocked(true);
 
+    // --- update answers state ---
+    setSelectedAnswers(newAnswers);
     const isLastQuestion = currentIndex === liveGameData.questions.length - 1;
-    const totalTimeFormatted = formatTime(totalTimeUsed);
+
+    // --- Save Answer to DB ---
     await GameApi.recordGameAnswer(
       gameId,
-      questionNumber.toLocaleString(),
+      questionNumber,
       toSaveAnswer,
       isLastQuestion ? totalTimeFormatted : undefined
     );
   };
-  console.log(user);
 
-  if (!currentQuestion) {
+  if (!currentQuestion && !isAllowedInGame) {
     return <LoadingState />;
   }
   return (

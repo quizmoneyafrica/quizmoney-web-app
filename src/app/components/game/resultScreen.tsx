@@ -1,7 +1,7 @@
 import GameApi from "@/app/api/game";
 import { useAppSelector } from "@/app/hooks/useAuth";
 import { CorrectCircleIcon, WrongCircleIcon } from "@/app/icons/icons";
-import { setShowAdsScreen, setshowResultScreen } from "@/app/store/gameSlice";
+import { setShowAdsScreen } from "@/app/store/gameSlice";
 import CustomButton from "@/app/utils/CustomBtn";
 import {
   formatNaira,
@@ -69,14 +69,13 @@ function ResultScreen() {
   }, [liveGameData?.objectId]);
   const handleHome = () => {
     dispatch(setShowAdsScreen(false));
-    dispatch(setshowResultScreen(false));
     router.replace("/home");
   };
 
   if (fetching) return <AppLoader />;
   return (
-    <div className="min-h-screen lg:h-screen bg-primary-900 hero flex flex-col items-center justify-center  px-4">
-      <div className="w-full h-full mx-auto max-w-lg space-y-6 grid grid-rows-2 place-items-center">
+    <div className="min-h-screen lg:h-screen bg-primary-900 hero flex flex-col items-center justify-center px-4">
+      <div className="w-full h-full mx-auto max-w-lg space-y-6 grid place-items-center">
         <Grid gap="3" className="w-full">
           <h2 className="text-center text-neutral-50 font-heading font-bold text-lg">
             Result

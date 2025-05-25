@@ -12,18 +12,19 @@ import { setDemoData } from "@/app/store/demoSlice";
 
 type RouterType = ReturnType<typeof useRouter>;
 type Props = {
-  setShowGame: React.Dispatch<React.SetStateAction<boolean>>;
+  demoData: ApiResponse | null;
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   router: RouterType;
 };
 export default function WelcomeScreen({
-  setShowGame,
   loading,
   setLoading,
   router,
+  demoData,
 }: Props) {
   const dispatch = useDispatch();
+  const game = demoData;
 
   const handleFetchDemoData = async () => {
     setLoading(true);
@@ -31,10 +32,14 @@ export default function WelcomeScreen({
     try {
       const res: ApiResponse = await DemoApi.fetchDemoGame();
       const demoData = res.data.result;
+      console.log(res);
+
       dispatch(setDemoData(demoData));
+      sessionStorage.setItem("quizmoney_demoData", JSON.stringify(demoData));
+      sessionStorage.setItem("quizmoney_demoData_d", "0");
       // console.log("Practice Questions: ", demoData);
-      setShowGame(true);
-      setLoading(false);
+      router.replace(`/play-demo/${game?.objectId}`);
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.log(err);
@@ -50,7 +55,10 @@ export default function WelcomeScreen({
     >
       <div className="bg-neutral-50 w-full min-h-screen">
         <div className="w-full max-w-screen-lg mx-auto px-4 pt-6 pb-4">
-          <button onClick={() => router.back()} className="cursor-pointer">
+          <button
+            onClick={() => router.replace("/home")}
+            className="cursor-pointer"
+          >
             <CircleArrowLeft />
           </button>
 

@@ -76,7 +76,7 @@ export default function ProtectedLayout({
          lg:grid-rows-1 grid-areas-mobile lg:grid-areas-desktop"
         >
           <SidebarNav />
-          <main className="grid-in-content bg-[#F7F7F7] lg:h-screen">
+          <main className="grid-in-content bg-[#F7F7F7] min-h-screen lg:h-screen">
             <div className="h-full overflow-y-auto px-6 pt-4 pb-24 lg:pb-6">
               <AppHeader />
               {children}

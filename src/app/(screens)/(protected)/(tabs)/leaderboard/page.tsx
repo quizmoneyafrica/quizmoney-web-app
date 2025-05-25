@@ -40,7 +40,6 @@ function Page() {
   >();
   const [page, setPage] = useState(1);
   const leaderboard: Leaderboard[] | undefined = leaderboardData?.leaderboard;
-  console.log({ page });
 
   const getLeaderboard = useCallback(
     async (tab: "lastGame" | "allTime") => {

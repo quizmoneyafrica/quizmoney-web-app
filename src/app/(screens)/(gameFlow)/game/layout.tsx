@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import Parse from "parse";
 import { liveQueryClient } from "@/app/api/parse/parseClient";
 import { setNextGameData } from "@/app/store/gameSlice";
-import GameApi, { decryptGameData } from "@/app/api/game";
+import GameApi, { decryptGameData, encryptGameData } from "@/app/api/game";
 import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
 
@@ -28,6 +28,8 @@ function Layout({ children }: { children: React.ReactNode }) {
         const game = decryptGameData(encryptedGame);
 
         dispatch(setNextGameData(game));
+        sessionStorage.setItem("quizmoney_live", JSON.stringify(encryptedGame));
+        sessionStorage.setItem("quizmoney_live_count", "0");
         setLoading(false);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
@@ -50,11 +52,15 @@ function Layout({ children }: { children: React.ReactNode }) {
 
       subscription?.on("create", (object: Parse.Object) => {
         // console.log("this object was updated: ", object.toJSON());
+        const encryptedGame = encryptGameData(object.toJSON());
         dispatch(setNextGameData(object.toJSON()));
+        sessionStorage.setItem("quizmoney_live", JSON.stringify(encryptedGame));
       });
       subscription?.on("update", (object: Parse.Object) => {
-        console.log("this object was updated: ", object.toJSON());
+        // console.log("this object was updated: ", object.toJSON());
+        const encryptedGame = encryptGameData(object.toJSON());
         dispatch(setNextGameData(object.toJSON()));
+        sessionStorage.setItem("quizmoney_live", JSON.stringify(encryptedGame));
       });
     };
 
@@ -75,10 +81,7 @@ function Layout({ children }: { children: React.ReactNode }) {
   return (
     <ProtectedRoute>
       {shouldShowCountDown && (
-        <CountdownScreen
-          startDate={gameData?.startDate.iso}
-          gameId={gameData?.objectId}
-        />
+        <CountdownScreen startDate={gameData?.startDate.iso} />
       )}
       {children}
     </ProtectedRoute>

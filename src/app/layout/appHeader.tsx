@@ -101,7 +101,8 @@ function AppHeader() {
           className="capitalize flex items-center flex-wrap overflow-hidden text-ellipsis whitespace-nowrap max-w-[200px] sm:max-w-none"
         >
           <div className=" flex-row flex items-center gap-2">
-            {pathname.split("/").length > 2 && (
+            {(pathname.split("/").length > 2 ||
+              pathname.includes("notification")) && (
               <button
                 onClick={() => router?.back()}
                 className=" cursor-pointer "
@@ -193,8 +194,7 @@ function AppHeader() {
                   </DropdownMenu.Item>
                 </Link>
                 <DropdownMenu.Item
-                  onSelect={(e) => {
-                    e.preventDefault();
+                  onSelect={() => {
                     setOpenLogout(true);
                   }}
                   className="DropdownMenuItem hover:!bg-error-900"
