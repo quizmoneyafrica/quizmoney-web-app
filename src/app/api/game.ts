@@ -76,3 +76,8 @@ export function decryptGameData(encrypted: string) {
   const decrypted = bytes.toString(CryptoJS.enc.Utf8);
   return JSON.parse(decrypted);
 }
+export function encryptGameData(data: object): string {
+  const stringified = JSON.stringify(data);
+  const encrypted = CryptoJS.AES.encrypt(stringified, SECRET_KEY).toString();
+  return encrypted;
+}

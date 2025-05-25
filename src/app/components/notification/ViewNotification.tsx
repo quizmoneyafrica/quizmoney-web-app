@@ -15,13 +15,24 @@ const ViewNotification: React.FunctionComponent<IViewNotificationProps> = ({
     <>
       <div>
         <Grid columns="1" align="center" justify="between">
+          <Flex
+            // direction="column"
+            align="end"
+            gap="2"
+            justify="end"
+            className="text-xs text-neutral-600"
+          >
+            <p>
+              {time} - {fullDate}
+            </p>
+          </Flex>
           <div className="grid grid-cols-[56px_1fr] col-span-2 gap-2 items-center">
             <div className={`h-14 w-14 rounded-full bg-positive-50`}></div>
             <Grid className="text-left w-full">
               <Flex justify="between" align="center">
                 <p className="font-bold">{notification.message}</p>
                 {/* Right  */}
-                <Grid gap="2" align="center" justify="end">
+                {/* <Grid gap="2" align="end" justify="end">
                   <Flex
                     direction="column"
                     align="end"
@@ -29,11 +40,11 @@ const ViewNotification: React.FunctionComponent<IViewNotificationProps> = ({
                     className="text-neutral-600 text-sm"
                   >
                     <span>{time}</span>
-                    <Flex align="center" gap="2">
+                    <Flex align="end" gap="2" justify="end">
                       <span>{fullDate}</span>
                     </Flex>
                   </Flex>
-                </Grid>
+                </Grid> */}
               </Flex>
             </Grid>
           </div>

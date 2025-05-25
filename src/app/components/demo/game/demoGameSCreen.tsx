@@ -28,8 +28,10 @@ const formatTime = (ms: number) => {
 function DemoGameSCreen() {
   const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
   const user = encrypted ? decryptData(encrypted) : null;
-  const demoData = useSelector((state: RootState) => state.demo.data);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const reduxDemoData = useSelector((state: RootState) => state.demo.data);
+  const [demoData, setDemoData] = useState(reduxDemoData);
+  const initialCount = Number(sessionStorage.getItem("quizmoney_demoData_d"));
+  const [currentIndex, setCurrentIndex] = useState(initialCount);
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>([]);
   const [locked, setLocked] = useState(false);
   const currentQuestion = demoData?.[currentIndex];
@@ -50,10 +52,27 @@ function DemoGameSCreen() {
     wrongSoundRef.current = new Audio("/sounds/wrong-answer.mp3");
   }, []);
 
+  useEffect(() => {
+    if (
+      (!reduxDemoData || reduxDemoData.length === 0) &&
+      demoData?.length === 0
+    ) {
+      const stored = sessionStorage.getItem("quizmoney_demoData");
+      if (stored) {
+        try {
+          setDemoData(JSON.parse(stored));
+        } catch (e) {
+          console.warn("Error parsing fallback demoData", e);
+        }
+      }
+    }
+  }, [demoData?.length, reduxDemoData]);
+
   const handleNextQuestion = () => {
     setLocked(false);
     if (currentIndex + 1 < demoData?.length) {
       setCurrentIndex(currentIndex + 1);
+      sessionStorage.setItem("quizmoney_demoData_d", `${currentIndex + 1}`);
     } else {
       if (totalTimeInterval.current) {
         clearInterval(totalTimeInterval.current);

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import React from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 const Support = () => {
   const router = useRouter();
   return (
@@ -38,7 +39,7 @@ const Support = () => {
           </p>
 
           <div className="flex gap-6 md:gap-10 mt-4 flex-col">
-            <div className="flex items-center gap-6 border-b border-zinc-200 pb-4">
+            {/* <div className="flex items-center gap-6 border-b border-zinc-200 pb-4">
               <div className="bg-primary-50 rounded-full h-[48px] w-[48px] p-2 flex items-center justify-center">
                 <Image
                   src="/icons/ticket.svg"
@@ -58,7 +59,7 @@ const Support = () => {
                   View ticket
                 </p>
               </div>
-            </div>
+            </div> */}
 
             <div className="flex items-center border-b border-zinc-200 pb-4 gap-6">
               <div className="bg-primary-50 rounded-full h-[48px] w-[48px] p-2 flex items-center justify-center">
@@ -71,9 +72,12 @@ const Support = () => {
               </div>
               <div>
                 <p className=" font-semibold">Visit Our Help Section</p>
-                <p className="text-sm underline text-primary-700 mt-1">
+                <Link
+                  href="https://quizmoney.ng/faqs"
+                  className="text-sm underline text-primary-700 mt-1"
+                >
                   Faqs & Help{" "}
-                </p>
+                </Link>
               </div>
             </div>
 
@@ -88,9 +92,12 @@ const Support = () => {
               </div>
               <div>
                 <p className=" font-semibold">Contact us via email at</p>
-                <p className="text-sm underline text-primary-700 mt-1">
-                  support@qmtech.org
-                </p>
+                <Link
+                  href="mailto:hi@quizmoney.ng"
+                  className="text-sm underline text-primary-700 mt-1"
+                >
+                  hi@quizmoney.ng
+                </Link>
               </div>
             </div>
           </div>

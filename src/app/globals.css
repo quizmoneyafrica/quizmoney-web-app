@@ -268,6 +268,13 @@ body.bg-primary-900 {
 body.bg-primary-900 {
   background-color: #17478b;
 }
+/*
+html,
+body {
+  overscroll-behavior: none; /* Prevent navigation gestures */
+  /* overflow: hidden; Disable scroll  */
+  /* touch-action: none; Disable gesture actions  */
+/* }*/
 h1,
 h2,
 h3,
