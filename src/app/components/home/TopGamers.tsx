@@ -7,41 +7,30 @@ import QmDrawer from "../drawer/drawer";
 import Image from "next/image";
 import Link from "next/link";
 import { FacebookIcon, InstagramIcon, XIcon } from "@/app/icons/icons";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
+import {
+  initialTopGamers,
+  setTopGamers,
+  TopGamersState,
+} from "@/app/store/gameSlice";
 
-type GamerType = {
-  amountWon: number;
-  avatar: string;
-  facebook: string;
-  firstName: string;
-  instagram: string;
-  noOfGamesPlayed: number;
-  overallRank: number;
-  twitter: string;
-  userId: string;
-};
 const avatarColors = ["#F2F2F2", "#AFF0FF", "#C4FBD2", "#FFCBD2", "#FFF6C5"];
 function TopGamers() {
-  const [loading, setLoading] = useState(true);
-  const [topGamers, setTopGamers] = useState([]);
+  const dispatch = useAppDispatch();
+  const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const [gamerInfo, setGamerInfo] = useState<GamerType>({
-    amountWon: 0,
-    avatar: "",
-    facebook: "",
-    firstName: "",
-    instagram: "",
-    noOfGamesPlayed: 0,
-    overallRank: 0,
-    twitter: "",
-    userId: "",
-  });
+  const [gamerInfo, setGamerInfo] = useState<TopGamersState>(initialTopGamers);
+  const { topGamers } = useAppSelector((state) => state.game);
 
   useEffect(() => {
     const fetchTopGamers = async () => {
+      if (topGamers !== null) return null;
+      setLoading(true);
       try {
         const res = await UserAPI.topGamersOfToday();
         console.log(res.data.result.monthlyLeaderboard);
-        setTopGamers(res.data.result.monthlyLeaderboard);
+        // setTopGamers(res.data.result.monthlyLeaderboard);
+        dispatch(setTopGamers(res.data.result.monthlyLeaderboard));
         setLoading(false);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
@@ -50,9 +39,9 @@ function TopGamers() {
       }
     };
     fetchTopGamers();
-  }, []);
+  }, [dispatch, topGamers]);
 
-  const handleViewGamer = (gamer: GamerType) => {
+  const handleViewGamer = (gamer: TopGamersState) => {
     setGamerInfo(gamer);
     setOpen(true);
     console.log(gamer);
@@ -85,7 +74,7 @@ function TopGamers() {
               </div>
             ))}
           </>
-        ) : topGamers.length > 0 ? (
+        ) : topGamers && topGamers?.length > 0 ? (
           <>
             <QmDrawer
               open={open}
@@ -93,7 +82,7 @@ function TopGamers() {
               title="Player Stats"
               trigger={
                 <div className="flex gap-4 ">
-                  {topGamers.map((gamer: GamerType, index) => (
+                  {topGamers?.map((gamer: TopGamersState, index) => (
                     <Gamers
                       key={index}
                       gamer={gamer}

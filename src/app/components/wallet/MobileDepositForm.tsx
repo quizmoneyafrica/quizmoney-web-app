@@ -119,7 +119,7 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
               key={option.value}
               type="button"
               onClick={() => handleAmountSelect(option.value)}
-              className={`flex-1 text-sm px-4 py-2 rounded-lg ${
+              className={`flex-1 text-sm px-4 py-2 rounded-lg cursor-pointer ${
                 selectedAmount === option.value
                   ? "bg-[#E4F1FA] text-primary-900"
                   : "bg-gray-100 text-gray-800"

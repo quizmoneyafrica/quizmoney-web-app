@@ -87,7 +87,7 @@ export interface Transaction {
 }
 export type UserWalletTransaction = {
   date: string;
-  transactions: Array<Transaction>;
+  transactions: Array<Transaction> | null;
 };
 
 const walletSlice = createSlice({
