@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { LeaveGameModal } from "./leaveGameModal";
 import { Grid } from "@radix-ui/themes";
 import CustomButton from "@/app/utils/CustomBtn";
+import { clearLeaderboards } from "@/app/store/leaderboardSlice";
 
 type Props = {
   startDate: string;
@@ -94,6 +95,7 @@ export default function CountdownScreen({ startDate }: Props) {
         audioRef.current = null;
         dispatch(setShowGameCountdown(false));
         dispatch(setIsAllowedInGame(true));
+        dispatch(clearLeaderboards());
         router.replace(`/game/${liveGameData?.objectId}`);
       }
     };
