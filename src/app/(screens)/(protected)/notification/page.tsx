@@ -4,20 +4,39 @@ import EmptyState from "@/app/components/notification/emptyState";
 import { NotificationBox } from "@/app/components/notification/NotificationBox";
 import { useAppSelector } from "@/app/hooks/useAuth";
 import { Grid } from "@radix-ui/themes";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import ViewNotification from "@/app/components/notification/ViewNotification";
 import QmDrawer from "@/app/components/drawer/drawer";
+import NotificationApi from "@/app/api/notification";
 
 function Page() {
   const notifications = useAppSelector(
     (state) => state.notifications.notifications
   );
   const [openNotification, setOpenNotification] = useState(false);
-  const [passedNotification, setPassedNotification] = useState({});
+  const [passedNotification, setPassedNotification] = useState<ApiResponse>({});
+  const prevOpenRef = useRef<boolean>(false);
 
-  // console.log("Notifications: ", notifications);
+  useEffect(() => {
+    // When the drawer was previously open and now closed
+    if (
+      prevOpenRef.current &&
+      !openNotification &&
+      passedNotification?.objectId &&
+      !passedNotification.read
+    ) {
+      NotificationApi.readNotification(passedNotification.objectId).catch(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (err: any) => {
+          console.error("Failed to mark notification as read", err);
+        }
+      );
+    }
 
+    // update previous value
+    prevOpenRef.current = openNotification;
+  }, [openNotification, passedNotification]);
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -26,14 +45,6 @@ function Page() {
       transition={{ duration: 0.25, ease: "easeInOut" }}
       className="min-h-screen"
     >
-      {/* <ResponsiveDialog
-        open={openNotification}
-        onOpenChange={setOpenNotification}
-        className="!min-h-[60px] pt-18 pb-10"
-      >
-        <ViewNotification notification={passedNotification} />
-      </ResponsiveDialog> */}
-
       {notifications?.length < 1 ? (
         <EmptyState />
       ) : (
@@ -44,7 +55,7 @@ function Page() {
             heightClass="h-[60%]"
             trigger={
               <Grid columns="1" gap="4">
-                {notifications.map(
+                {notifications?.map(
                   (notification: ApiResponse, index: number) => {
                     return (
                       <NotificationBox
