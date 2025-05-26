@@ -20,12 +20,7 @@ import localForage from "localforage";
 
 const persistConfig = {
   key: "root",
-  version: 1,
   storage: localForage,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  migrate: (state: any) => {
-    return Promise.resolve(state);
-  },
 };
 
 const persistedAuthReducer = persistReducer(persistConfig, authReducer);
