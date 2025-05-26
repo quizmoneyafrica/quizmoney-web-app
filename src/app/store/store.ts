@@ -4,6 +4,9 @@ import walletReducer from "./walletSlice";
 import gameReducer from "./gameSlice";
 import demoReducer from "./demoSlice";
 import notificationReducer from "./notificationSlice";
+import leaderboardReducer from "./leaderboardSlice";
+import storeReducer from "./storeSlice";
+
 import { createFilter } from "redux-persist-transform-filter";
 
 import {
@@ -42,6 +45,8 @@ export const store = configureStore({
     game: gameReducer,
     demo: demoReducer,
     notifications: notificationReducer,
+    leaderboard: leaderboardReducer,
+    store: storeReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

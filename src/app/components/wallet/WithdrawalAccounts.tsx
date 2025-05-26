@@ -1,8 +1,8 @@
 import { Trash2, Eye, EyeOff, Plus, Loader } from "lucide-react";
 import { useState, useEffect } from "react";
-import * as Dialog from "@radix-ui/react-dialog";
-import AddBankModal from "./AddBankModal";
-import { BottomSheet } from "./BottomSheet";
+// import * as Dialog from "@radix-ui/react-dialog";
+// import AddBankModal from "./AddBankModal";
+// import { BottomSheet } from "./BottomSheet";
 import { MobileAddBankAccount } from "./MobileAddBankAccount";
 import { useSelector } from "react-redux";
 import {
@@ -18,6 +18,7 @@ import { store } from "@/app/store/store";
 import { toast } from "sonner";
 import WalletApi from "@/app/api/wallet";
 import { toastPosition } from "@/app/utils/utils";
+import QmDrawer from "../drawer/drawer";
 
 export default function WithdrawalAccounts() {
   interface Account extends BankAccount {
@@ -29,7 +30,7 @@ export default function WithdrawalAccounts() {
   const { wallet } = useSelector(useWallet);
 
   const [accounts, setAccounts] = useState<Account[]>([]);
-  const [isMobile, setIsMobile] = useState(false);
+  // const [isMobile, setIsMobile] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
@@ -46,16 +47,16 @@ export default function WithdrawalAccounts() {
     }
   }, [wallet?.bankAccounts]);
 
-  useEffect(() => {
-    const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+  // useEffect(() => {
+  //   const checkIfMobile = () => {
+  //     setIsMobile(window.innerWidth < 768);
+  //   };
 
-    checkIfMobile();
-    window.addEventListener("resize", checkIfMobile);
+  //   checkIfMobile();
+  //   window.addEventListener("resize", checkIfMobile);
 
-    return () => window.removeEventListener("resize", checkIfMobile);
-  }, []);
+  //   return () => window.removeEventListener("resize", checkIfMobile);
+  // }, []);
 
   const toggleVisibility = (id: string): void => {
     setAccounts(
@@ -211,8 +212,19 @@ export default function WithdrawalAccounts() {
           </button>
         </div>
       </div>
-
-      {isMobile ? (
+      {/* Add Bank Account  */}
+      <QmDrawer
+        open={addBankAccountModal}
+        onOpenChange={(val) => store.dispatch(setAddBankModal(val))}
+        title="Add Bank account"
+        titleLeft
+        heightClass="h-[75%] lg:h-auto"
+      >
+        <MobileAddBankAccount
+          close={() => store.dispatch(setAddBankModal(false))}
+        />
+      </QmDrawer>
+      {/* {isMobile ? (
         <BottomSheet
           isOpen={addBankAccountModal}
           onClose={() => store.dispatch(setAddBankModal(false))}
@@ -234,7 +246,7 @@ export default function WithdrawalAccounts() {
             onOpenChange={(g) => store.dispatch(setAddBankModal(g))}
           />
         </Dialog.Root>
-      )}
+      )} */}
     </>
   );
 }

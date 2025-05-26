@@ -17,7 +17,7 @@ import { liveQueryClient } from "@/app/api/parse/parseClient";
 function GameCard() {
   const dispatch = useAppDispatch();
   const nextGameData = useAppSelector((state) => state.game.nextGameData);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [showJoinBtn, setShowJoinBtn] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -46,11 +46,12 @@ function GameCard() {
 
   useEffect(() => {
     const fetchNextGame = async () => {
+      if (nextGameData) return null;
+      setLoading(true);
       try {
         const res = await GameApi.fetchNextGame();
         const encryptedGame = res.data.result.errorData;
         const game = decryptGameData(encryptedGame);
-
         dispatch(setNextGameData(game));
         setLoading(false);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -63,7 +64,7 @@ function GameCard() {
       }
     };
     fetchNextGame();
-  }, [dispatch]);
+  }, [dispatch, nextGameData]);
 
   useEffect(() => {
     const checkGameTime = () => {

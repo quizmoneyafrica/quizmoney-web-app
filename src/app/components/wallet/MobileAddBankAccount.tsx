@@ -209,8 +209,9 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
           {showBankDropdown && (
             <div
               id="bank-dropdown"
-              className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto"
+              className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-[35dvh] overflow-y-auto"
             >
+              <div className="p-2 sticky top-0 bg-white z-10"></div>
               {sortedBanks.map((bank) => (
                 <button
                   key={bank.id} // Use id as key for uniqueness

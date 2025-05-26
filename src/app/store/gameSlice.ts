@@ -1,6 +1,17 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ApiResponse } from "../api/interface";
 
+export interface TopGamersState {
+  amountWon: number;
+  avatar: string;
+  facebook: string;
+  firstName: string;
+  instagram: string;
+  noOfGamesPlayed: number;
+  overallRank: number;
+  twitter: string;
+  userId: string;
+}
 interface GameState {
   nextGameData: ApiResponse["result"] | null;
   showGameCountdown: boolean;
@@ -10,7 +21,20 @@ interface GameState {
   showAdsScreen: boolean;
   showResultScreen: boolean;
   openLeaveGame: boolean;
+  topGamers: TopGamersState[] | null;
 }
+
+export const initialTopGamers = {
+  amountWon: 0,
+  avatar: "",
+  facebook: "",
+  firstName: "",
+  instagram: "",
+  noOfGamesPlayed: 0,
+  overallRank: 0,
+  twitter: "",
+  userId: "",
+};
 
 const initialState: GameState = {
   nextGameData: null,
@@ -21,6 +45,7 @@ const initialState: GameState = {
   showAdsScreen: false,
   showResultScreen: false,
   openLeaveGame: false,
+  topGamers: null,
 };
 
 const gameSlice = createSlice({
@@ -48,8 +73,11 @@ const gameSlice = createSlice({
     setshowResultScreen(state, action: PayloadAction<boolean>) {
       state.showResultScreen = action.payload;
     },
-    setOpenLeaveGame: (state, action: PayloadAction<boolean>) => {
+    setOpenLeaveGame(state, action: PayloadAction<boolean>) {
       state.openLeaveGame = action.payload;
+    },
+    setTopGamers(state, action: PayloadAction<TopGamersState[]>) {
+      state.topGamers = action.payload;
     },
   },
 });
@@ -63,5 +91,6 @@ export const {
   setshowResultScreen,
   setGameEnded,
   setOpenLeaveGame,
+  setTopGamers,
 } = gameSlice.actions;
 export default gameSlice.reducer;
