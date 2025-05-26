@@ -15,11 +15,17 @@ import {
   PURGE,
   REGISTER,
 } from "redux-persist";
-import storage from "redux-persist/lib/storage";
+// import storage from "redux-persist/lib/storage";
+import localForage from "localforage";
 
 const persistConfig = {
   key: "root",
-  storage,
+  version: 1,
+  storage: localForage,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  migrate: (state: any) => {
+    return Promise.resolve(state);
+  },
 };
 
 const persistedAuthReducer = persistReducer(persistConfig, authReducer);

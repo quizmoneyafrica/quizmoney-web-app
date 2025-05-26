@@ -33,7 +33,7 @@ const authSlice = createSlice({
       state.rehydrated = action.payload;
     },
     updateUser(state, action: PayloadAction<object>) {
-      const currentDecrypted = decryptData(state.userEncryptedData || "");
+      const currentDecrypted = decryptData(state.userEncryptedData || "") ?? {};
       const updated = { ...currentDecrypted, ...action.payload };
       state.userEncryptedData = encryptData(updated);
     },

@@ -77,6 +77,7 @@ const LoginForm = ({ loading, setLoading }: Props) => {
 
         // ✅ Dispatch to Redux
         loginUser(encryptedUser);
+        sessionStorage.setItem("user", encryptedUser);
 
         router.replace("/home");
 
