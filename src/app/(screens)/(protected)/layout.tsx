@@ -1,11 +1,8 @@
 "use client";
-
-import { useAuth } from "@/app/hooks/useAuth";
 import AppHeader from "@/app/layout/appHeader";
 import BottomNavigation from "@/app/layout/BottomNavigation";
 import SidebarNav from "@/app/layout/SidebarNav";
 import ProtectedRoute from "@/app/security/protectedRoute";
-import { store } from "@/app/store/store";
 import { useEffect } from "react";
 
 export default function ProtectedLayout({
@@ -13,14 +10,9 @@ export default function ProtectedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { loginUser } = useAuth();
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  const user = sessionStorage.getItem("user");
-  if (user && !store.getState().auth.isAuthenticated) {
-    loginUser(user);
-  }
 
   return (
     <>
