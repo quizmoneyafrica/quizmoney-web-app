@@ -71,13 +71,12 @@ const LoginForm = ({ loading, setLoading }: Props) => {
       if (userData?.emailVerified) {
         // console.log("Email verified");
 
-        // 🔐 Encrypt the user data
+        // Encrypt the user data
         const encryptedUser = encryptData(userData);
         console.log("Encrypted: ", encryptedUser);
 
-        // ✅ Dispatch to Redux
+        // Dispatch to Redux
         loginUser(encryptedUser);
-        sessionStorage.setItem("user", encryptedUser);
 
         router.replace("/home");
 
