@@ -1,5 +1,4 @@
 import { ApiResponse } from "@/app/api/interface";
-import NotificationApi from "@/app/api/notification";
 import { formatDateTime, truncateWords } from "@/app/utils/utils";
 import { Flex, Grid } from "@radix-ui/themes";
 import React from "react";
@@ -20,12 +19,6 @@ export const NotificationBox = ({
   const handleViewNotification = async () => {
     setOpenNotification(true);
     setPassedNotification(notification);
-    try {
-      await NotificationApi.readNotification(notification.objectId);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      console.log(err.message);
-    }
   };
   return (
     <>

@@ -6,6 +6,7 @@ import React, { useState } from "react";
 import { setTransactions, setWallet } from "@/app/store/walletSlice";
 import { persistor } from "@/app/store/store";
 import Modal from "../game/modal/ModalWindow";
+import { performLogout } from "@/app/utils/logout";
 
 type Props = {
   open: boolean;
@@ -23,11 +24,12 @@ const LogoutDialog = ({ open, onOpenChange }: Props) => {
     dispatch(logout());
     dispatch(setWallet(undefined));
     dispatch(setTransactions([]));
+    performLogout(dispatch);
 
     await persistor.purge();
 
-    localStorage.clear();
-    sessionStorage.clear();
+    // localStorage.clear();
+    // sessionStorage.clear();
 
     setLoading(false);
     onOpenChange(false);
