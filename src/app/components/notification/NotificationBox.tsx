@@ -28,9 +28,23 @@ export const NotificationBox = ({
       >
         <Grid columns="3" align="center" justify="between">
           <div className="grid grid-cols-[56px_1fr] col-span-2 gap-2 items-center">
-            <div className={`h-14 w-14 rounded-full bg-positive-50`}></div>
+            <div
+              className={`h-14 w-14 rounded-full bg-primary-50 grid place-items-center`}
+            >
+              <span className="text-3xl">
+                {notification.message.includes("deposit")
+                  ? "💰"
+                  : notification.message.includes("purchased")
+                  ? "🛍"
+                  : notification.message.includes("request")
+                  ? "💸"
+                  : "💳 "}
+              </span>
+            </div>
             <Grid className="text-left">
-              <p className="font-bold">{notification.message}</p>
+              <p className="font-bold text-primary-800">
+                {notification.message}
+              </p>
               <span className="text-xs text-neutral-600">
                 {truncateWords(notification.mainText)}
               </span>
@@ -42,7 +56,7 @@ export const NotificationBox = ({
               direction="column"
               align="end"
               justify="end"
-              className="text-neutral-600 text-sm"
+              className="text-neutral-600 text-xs"
             >
               <span>{time}</span>
               <Flex align="center" gap="1">

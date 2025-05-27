@@ -8,8 +8,8 @@ import { useSelector } from "react-redux";
 import {
   BankAccount,
   setAddBankModal,
-  setWallet,
-  setWalletLoading,
+  // setWallet,
+  // setWalletLoading,
   useWallet,
 } from "@/app/store/walletSlice";
 import { v4 as uuidv4 } from "uuid";
@@ -82,7 +82,7 @@ export default function WithdrawalAccounts() {
       });
 
       if (response?.data?.result) {
-        fetchWallet();
+        // fetchWallet();
         setAccounts(
           accounts.filter((acc) => acc.uniqueId !== account.uniqueId)
         );
@@ -109,19 +109,19 @@ export default function WithdrawalAccounts() {
 
   const { addBankAccountModal } = useSelector(useWallet);
 
-  const fetchWallet = async () => {
-    try {
-      store.dispatch(setWalletLoading(true));
-      const res = await WalletApi.fetchCustomerWallet();
-      if (res.data.result.wallet) {
-        store.dispatch(setWallet(res.data.result.wallet));
-      }
-    } catch (error) {
-      console.log(error, "Wallet Error");
-    } finally {
-      store.dispatch(setWalletLoading(false));
-    }
-  };
+  // const fetchWallet = async () => {
+  //   try {
+  //     store.dispatch(setWalletLoading(true));
+  //     const res = await WalletApi.fetchCustomerWallet();
+  //     if (res.data.result.wallet) {
+  //       store.dispatch(setWallet(res.data.result.wallet));
+  //     }
+  //   } catch (error) {
+  //     console.log(error, "Wallet Error");
+  //   } finally {
+  //     store.dispatch(setWalletLoading(false));
+  //   }
+  // };
 
   return (
     <>
@@ -218,7 +218,7 @@ export default function WithdrawalAccounts() {
         onOpenChange={(val) => store.dispatch(setAddBankModal(val))}
         title="Add Bank account"
         titleLeft
-        heightClass="h-[75%] lg:h-auto"
+        heightClass="h-[75%] md:h-[65%] lg:h-[85%]"
       >
         <MobileAddBankAccount
           close={() => store.dispatch(setAddBankModal(false))}

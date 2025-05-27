@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSelector } from "react-redux";
 import {
-  setWallet,
   setWalletLoading,
   setWithdrawalModal,
   setWithdrawalPinModal,
@@ -100,11 +99,11 @@ export default function OtpVerificationModal({
         toast.success(response?.data?.data?.result?.message, {
           position: toastPosition,
         });
-        store.dispatch(setWalletLoading(true));
-        const res = await WalletApi.fetchCustomerWallet();
-        if (res.data.result.wallet) {
-          store.dispatch(setWallet(res.data.result.wallet));
-        }
+        // store.dispatch(setWalletLoading(true));
+        // const res = await WalletApi.fetchCustomerWallet();
+        // if (res.data.result.wallet) {
+        //   store.dispatch(setWallet(res.data.result.wallet));
+        // }
 
         store.dispatch(setWithdrawalPinModal(false));
         store.dispatch(setWithdrawalModal(true));
