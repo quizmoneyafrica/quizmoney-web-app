@@ -1,6 +1,11 @@
 import QmDrawer from "@/app/components/drawer/drawer";
-import { formatNaira, formatRank } from "@/app/utils/utils";
+import {
+  formatNaira,
+  formatRank,
+  formatTimeToMinutesAndSeconds,
+} from "@/app/utils/utils";
 import { Flex, Grid } from "@radix-ui/themes";
+import { AlarmClockIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -25,9 +30,12 @@ interface PlayerCardProps {
     overallRank: number;
     twitter: string;
     userId: string;
+    totalTime: string;
+    totalCorrect: number;
     activeTab: "lastGame" | "allTime";
   };
 }
+
 const PlayerCard = ({ player }: PlayerCardProps) => {
   const [open, setOpen] = useState(false);
   return (
@@ -39,10 +47,14 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
         trigger={
           <div
             onClick={() => setOpen(true)}
-            className="flex cursor-pointer justify-between items-center text-sm md:text-base text-black font-semibold px-5 md:px-10 bg-white rounded-4xl p-3 md:p-5"
+            className={`grid gap-2 ${
+              player?.activeTab === "lastGame"
+                ? "md:grid-cols-4 grid-cols-3"
+                : "md:grid-cols-3 grid-cols-2"
+            } place-items-start  cursor-pointer  text-sm md:text-base text-black font-semibold px-5 md:px-10 bg-white rounded-4xl p-3 md:p-5`}
           >
             {/* Player Card */}
-            <div className="flex-1 flex gap-[10%] items-center">
+            <div className=" flex md:col-span-2  w-full gap-[10%] items-center">
               <div className="">
                 {/* <p className="text-3xl md:text-5xl">
                   {rank[
@@ -61,21 +73,40 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
                 </Flex>
               </div>
               <div className="flex items-center gap-2">
-                <Image
-                  src={player?.avatar || ""}
-                  alt={player?.firstName || ""}
-                  width={50}
-                  height={50}
-                  className="rounded-full"
-                />
+                <div className=" md:h-[50px] md:w-[50px] h-[40px] w-[40px]">
+                  <Image
+                    src={player?.avatar || ""}
+                    alt={player?.firstName || ""}
+                    width={50}
+                    height={50}
+                    className="rounded-full h-full w-full"
+                  />
+                </div>
                 <p className="capitalize">{player?.firstName}</p>
               </div>
             </div>
-            <p className="text-primary-800 bg-primary-100 rounded-4xl px-2 md:px-4 py-1 md:py-2 text-sm md:text-base">
-              {player?.activeTab === "lastGame"
-                ? formatNaira(Number(player?.prize), true)
-                : formatNaira(Number(player?.amountWon), true)}
-            </p>
+            <div
+              className={` items-center gap-2 h-full  ${
+                player?.activeTab === "lastGame" ? "flex" : "hidden"
+              }`}
+            >
+              <div className="flex md:h-10 md:w-10 w-8 h-8 items-center text-primary-800 justify-center gap-2 border-2 border-primary-800 rounded-full p-2">
+                {player?.totalCorrect}
+              </div>{" "}
+              <div className="flex items-center gap-1 ">
+                <AlarmClockIcon className=" text-primary-800" size={14} />
+                <p className=" text-xs md:text-sm text-primary-800 font-semibold">
+                  {formatTimeToMinutesAndSeconds(player?.totalTime ?? "")}
+                </p>
+              </div>
+            </div>
+            <div className=" flex w-full justify-end  h-full items-center">
+              <p className="text-primary-800 h-fit bg-primary-100 rounded-md px-2 md:px-4 py-1 md:py-2 text-sm md:text-base">
+                {player?.activeTab === "lastGame"
+                  ? formatNaira(player?.prize ?? 0, true)
+                  : formatNaira(player?.amountWon, true)}
+              </p>
+            </div>
           </div>
         }
       >
