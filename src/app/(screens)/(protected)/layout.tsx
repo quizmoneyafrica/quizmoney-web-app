@@ -1,20 +1,14 @@
-"use client";
 import AppLiveQueries from "@/app/api/queries/AppLiveQueries";
 import AppHeader from "@/app/layout/appHeader";
 import BottomNavigation from "@/app/layout/BottomNavigation";
 import SidebarNav from "@/app/layout/SidebarNav";
 import ProtectedRoute from "@/app/security/protectedRoute";
-import { useEffect } from "react";
 
 export default function ProtectedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
   return (
     <>
       <AppLiveQueries />

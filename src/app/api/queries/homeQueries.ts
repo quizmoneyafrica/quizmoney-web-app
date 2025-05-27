@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 import { useAppDispatch } from "@/app/hooks/useAuth";
 import { useCallback, useEffect } from "react";
 import { liveQueryClient } from "@/app/api/parse/parseClient";

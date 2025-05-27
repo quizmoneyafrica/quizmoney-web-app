@@ -185,7 +185,7 @@ function AppHeader() {
                   </span>
                 </DropdownMenu.Item>
 
-                <Link href="https://quizmoney.ng/how-it-works">
+                <Link href="https://quizmoney.ng/how-it-works" target="_blank">
                   <DropdownMenu.Item className="DropdownMenuItem">
                     How It Works{" "}
                     <span className="RightSlot">
