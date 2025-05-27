@@ -178,32 +178,26 @@ export function disableConsoleInProduction() {
 }
 
 export function formatTimeToMinutesAndSeconds(timeString: string): string {
-  // Split the time string by colons
   const parts = timeString.split(":").map(Number); // Convert each part to a number
 
-  let hours = 0;
   let minutes = 0;
   let seconds = 0;
 
-  // Determine if it's HH:MM:SS, MM:SS, or just SS based on the number of parts
   if (parts.length === 3) {
-    [hours, minutes, seconds] = parts;
+    [minutes, seconds] = parts;
   } else if (parts.length === 2) {
     [minutes, seconds] = parts;
   } else if (parts.length === 1) {
-    [seconds] = parts;
+    seconds = parts[0];
   } else {
-    // Handle invalid input format
     console.warn(
-      `Invalid time string format: ${timeString}. Expected HH:MM:SS, MM:SS, or SS.`
+      `Invalid time string format: "${timeString}". Expected MM:SS:MS, MM:SS, or SS.`
     );
-    return ""; // Or throw an error, depending on desired behavior
+    return "";
   }
 
-  // Calculate total seconds from all parts
-  const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+  const totalSeconds = minutes * 60 + seconds;
 
-  // Calculate final minutes and seconds from the total seconds
   const finalMinutes = Math.floor(totalSeconds / 60);
   const finalSeconds = totalSeconds % 60;
 
@@ -213,26 +207,16 @@ export function formatTimeToMinutesAndSeconds(timeString: string): string {
     formattedTime += `${finalMinutes}m`;
   }
 
-  // Only add seconds if there are seconds, or if there are no minutes
-  // and we still need to display the seconds (e.g., "0m 30s" vs "30s")
-  if (
-    finalSeconds > 0 ||
-    (finalMinutes === 0 && finalSeconds === 0 && timeString !== "")
-  ) {
-    // Ensure seconds are displayed, especially if minutes are 0 (e.g., "30s" instead of nothing)
+  if (finalSeconds > 0 || (finalMinutes === 0 && finalSeconds === 0)) {
     if (formattedTime !== "") {
       // Add a space if minutes were already added
       formattedTime += " ";
     }
     formattedTime += `${finalSeconds}s`;
-  } else if (
-    finalMinutes === 0 &&
-    finalSeconds === 0 &&
-    timeString === "00:00"
-  ) {
-    // Special case for '00:00' to show '0s'
+  }
+  if (totalSeconds === 0 && formattedTime === "") {
     formattedTime = "0s";
   }
 
-  return formattedTime.trim(); // Trim any leading/trailing space just in case
+  return formattedTime.trim();
 }

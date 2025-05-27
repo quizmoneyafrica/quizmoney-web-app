@@ -82,15 +82,17 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
                     className="rounded-full h-full w-full"
                   />
                 </div>
-                <p className="capitalize">{player?.firstName}</p>
+                <p className="capitalize md:text-base text-sm">
+                  {player?.firstName}
+                </p>
               </div>
             </div>
             <div
-              className={` items-center gap-2 h-full  ${
+              className={` items-center gap-1 md:gap-2 h-full w-full justify-end sm:justify-start  ${
                 player?.activeTab === "lastGame" ? "flex" : "hidden"
               }`}
             >
-              <div className="flex md:h-10 md:w-10 w-8 h-8 items-center text-primary-800 justify-center gap-2 border-2 border-primary-800 rounded-full p-2">
+              <div className="flex md:h-10 md:w-10 w-6 h-6 items-center text-primary-800 justify-center gap-2 border-2 border-primary-800 rounded-full p-2">
                 {player?.totalCorrect}
               </div>{" "}
               <div className="flex items-center gap-1 ">
@@ -101,7 +103,7 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
               </div>
             </div>
             <div className=" flex w-full justify-end  h-full items-center">
-              <p className="text-primary-800 h-fit bg-primary-100 rounded-md px-2 md:px-4 py-1 md:py-2 text-sm md:text-base">
+              <p className="text-primary-800 h-fit bg-primary-100 rounded-md px-2 md:px-4 py-1 md:py-2 text-xs sm:text-sm md:text-base">
                 {player?.activeTab === "lastGame"
                   ? formatNaira(player?.prize ?? 0, true)
                   : formatNaira(player?.amountWon, true)}

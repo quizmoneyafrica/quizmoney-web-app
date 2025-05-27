@@ -150,7 +150,9 @@ function Page() {
             <p>Rank</p>
             <p>Username</p>
           </div>
-          {activeTab === "lastGame" && <p>Score & Time</p>}
+          {activeTab === "lastGame" && (
+            <p className=" sm:ml-0 ml-10 w-full">Score & Time</p>
+          )}
           <p className=" w-full text-end">Amount</p>
         </div>
 
@@ -174,7 +176,7 @@ function Page() {
       </p>
 
       {/* Tabs */}
-      <div className="w-full bg-primary-100 rounded-4xl p-1 my-5 sm:my-10 flex items-center ">
+      <div className="w-full bg-primary-100 rounded-4xl  my-5 sm:my-10 flex items-center ">
         {["lastGame", "allTime"].map((tab) => (
           <div
             key={tab}
@@ -240,7 +242,7 @@ function Page() {
               </div>
             </div>
             <div
-              className={` items-center gap-2 h-full  ${
+              className={` items-center gap-1 md:gap-2 h-full w-full justify-end md:justify-start ${
                 activeTab === "lastGame" ? "flex" : "hidden"
               }`}
             >
