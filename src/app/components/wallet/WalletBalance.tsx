@@ -56,6 +56,7 @@ export default function WalletBalance() {
   const toggleBalanceVisibility = () => {
     setIsBalanceHidden(!isBalanceHidden);
   };
+  console.log(wallet);
 
   return (
     <>

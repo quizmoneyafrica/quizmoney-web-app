@@ -27,6 +27,8 @@ function HomeTab() {
         try {
           dispatch(setWalletLoading(true));
           const res = await WalletApi.fetchCustomerWallet();
+          console.log("WALLET: ", res);
+
           if (res.data.result.wallet) {
             dispatch(setWallet(res.data.result.wallet));
           }

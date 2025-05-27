@@ -15,6 +15,7 @@ import { format, parseISO, isToday, isYesterday } from "date-fns";
 import Link from "next/link";
 import { renderEmptyState } from "../transactions/WalletActivity";
 import { Skeleton } from "@radix-ui/themes";
+import { formatNaira } from "@/app/utils/utils";
 // import { useAppDispatch } from "@/app/hooks/useAuth";
 // import WalletApi from "@/app/api/wallet";
 // import { getAuthUser } from "@/app/api/userApi";
@@ -228,8 +229,9 @@ export default function TransactionHistory(): React.JSX.Element {
                   : "text-red-600"
               }`}
             >
-              {transaction.type === "deposit" ? "+" : "-"} ₦
-              {transaction.amount.toLocaleString()}
+              {transaction.type === "deposit" ? "+ " : "- "}
+              {/* {transaction.amount.toLocaleString()} */}
+              {formatNaira(Number(transaction.amount ?? 0), true)}
             </p>
             <p className="text-xs md:text-sm text-gray-500">{dateData}</p>
           </div>
@@ -243,19 +245,19 @@ export default function TransactionHistory(): React.JSX.Element {
     title: string,
     transactions: Transaction[]
   ): React.JSX.Element | null => {
-    if (transactions.length === 0)
-      return (
-        <div className="space-y-2 md:space-y-3 pb-3 md:pb-5 mt-3 md:mt-5">
-          <div className="px-3 md:px-4">
-            <h2 className="text-sm md:text-base font-semibold text-[#3B3B3B]">
-              {title}
-            </h2>
-          </div>
-          <div className="px-3 md:px-4 py-3 md:py-4 flex justify-center items-center">
-            <p className="text-sm text-gray-500">No transactions</p>
-          </div>
-        </div>
-      );
+    if (transactions.length === 0) return null;
+    // return (
+    //   <div className="space-y-2 md:space-y-3 pb-3 md:pb-5 mt-3 md:mt-5">
+    //     <div className="px-3 md:px-4">
+    //       <h2 className="text-sm md:text-base font-semibold text-[#3B3B3B]">
+    //         {title}
+    //       </h2>
+    //     </div>
+    //     <div className="px-3 md:px-4 py-3 md:py-4 flex justify-center items-center">
+    //       <p className="text-sm text-gray-500">No transactions</p>
+    //     </div>
+    //   </div>
+    // );
 
     return (
       <div className="space-y-2 md:space-y-3 pb-3 md:pb-5 mt-3 md:mt-5">

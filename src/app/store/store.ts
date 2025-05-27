@@ -30,18 +30,19 @@ const authPersistConfig = {
   transforms: [authTransform],
 };
 
-const persistConfig = {
-  key: "root",
-  storage: localForage,
-};
+// const persistConfig = {
+//   key: "root",
+//   storage: localForage,
+// };
 
 const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
-const persistedWalletReducer = persistReducer(persistConfig, walletReducer);
+// const persistedWalletReducer = persistReducer(persistConfig, walletReducer);
 
 export const store = configureStore({
   reducer: {
     auth: persistedAuthReducer,
-    wallet: persistedWalletReducer,
+    // wallet: persistedWalletReducer,
+    wallet: walletReducer,
     game: gameReducer,
     demo: demoReducer,
     notifications: notificationReducer,
