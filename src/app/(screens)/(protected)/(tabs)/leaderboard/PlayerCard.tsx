@@ -88,7 +88,7 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
               </div>
             </div>
             <div
-              className={` items-center gap-1 md:gap-2 h-full w-full justify-end sm:justify-start  ${
+              className={` items-center gap-[1px] md:gap-2 h-full w-full justify-end sm:justify-start  ${
                 player?.activeTab === "lastGame" ? "flex" : "hidden"
               }`}
             >
