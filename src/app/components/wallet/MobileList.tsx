@@ -3,6 +3,7 @@ import React from "react";
 import CustomImage from "./CustomImage";
 import { format, parseISO } from "date-fns";
 import { Transaction } from "@/app/store/walletSlice";
+import { formatNaira } from "@/app/utils/utils";
 
 type Props = {
   transaction: Transaction;
@@ -59,8 +60,8 @@ export default function MobileList({ transaction, onClick }: Props) {
             transaction.type === "deposit" ? "text-green-600" : "text-red-600"
           }`}
         >
-          {transaction.type === "deposit" ? "+" : "-"} ₦
-          {transaction?.amount?.toLocaleString()}
+          {transaction.type === "deposit" ? "+ " : "- "}
+          {formatNaira(Number(transaction.amount ?? 0), true)}
         </p>
         <p className="text-xs md:text-sm text-gray-500">{dateData}</p>
       </div>

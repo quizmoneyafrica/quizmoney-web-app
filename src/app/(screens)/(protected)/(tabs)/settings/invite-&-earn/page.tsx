@@ -17,6 +17,7 @@ import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import copy from "copy-to-clipboard"; // Import the copy function
 import { toast } from "sonner";
 import UserAPI from "@/app/api/userApi";
+import { formatNaira } from "@/app/utils/utils";
 
 const InviteAndEarn = () => {
   const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
@@ -144,7 +145,7 @@ const InviteAndEarn = () => {
               <p className="font-semibold">Refferal Earnings</p>
             </div>
             <p className=" text-xl md:text-3xl text-primary-800 font-bold">
-              ₦{referralData.referralEarnings}
+              {formatNaira(Number(referralData.referralEarnings), true)}
             </p>
           </div>
         </div>
@@ -284,7 +285,7 @@ const InviteAndEarn = () => {
                 <p className="font-semibold">Refferal Earnings</p>
               </div>
               <p className=" text-xl md:text-3xl text-primary-800 font-bold">
-                ₦{referralData.referralEarnings.toLocaleString()}
+                {formatNaira(Number(referralData.referralEarnings), true)}
               </p>
             </div>
           </div>

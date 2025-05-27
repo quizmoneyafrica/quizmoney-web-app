@@ -1,7 +1,7 @@
 "use client";
 import { genders } from "@/app/(screens)/(preAuthScreen)/signup/formSteps/step2";
 import { User } from "@/app/api/interface";
-import userApi from "@/app/api/userApi";
+import userApi, { getAuthUser } from "@/app/api/userApi";
 import ImagePickerModal from "@/app/components/modal/ImagePickerModal";
 import { useAppSelector, useAuth } from "@/app/hooks/useAuth";
 import {
@@ -14,6 +14,7 @@ import { decryptData, encryptData } from "@/app/utils/crypto";
 import CustomButton from "@/app/utils/CustomBtn";
 import CustomSelect from "@/app/utils/CustomSelect";
 import CustomTextField from "@/app/utils/CustomTextField";
+import { formatDateTime } from "@/app/utils/utils";
 import {
   CalendarIcon,
   GlobeIcon,
@@ -44,11 +45,19 @@ const initialForm = {
 const Page = () => {
   const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
   const user: User | null = encrypted ? decryptData(encrypted) : null;
+  const formattedDOB = new Date(user?.dob?.iso ?? "")
+    .toISOString()
+    .split("T")[0];
   const [formData, setFormData] = useState({
     ...initialForm,
     ...user,
-    dob: user?.dob ? new Date(user.dob.iso).toISOString() : "",
+    dob: formattedDOB,
   });
+  const authUser = getAuthUser();
+  const { fullDate } = formatDateTime(
+    authUser.createdAt ?? new Date().toISOString()
+  );
+  console.log("FormData:", formData);
 
   const [isEditing, setIsEditing] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
@@ -118,7 +127,7 @@ const Page = () => {
       className="pb-20"
     >
       <div className="rounded-lg w-full bg-white overflow-hidden">
-        <div className="w-full h-[120px] md:h-[160px] bg-primary-500 overflow-hidden rounded-br-[60px]">
+        <div className="w-full h-[120px] md:h-[160px] bg-primary-800 overflow-hidden rounded-br-[60px]">
           <Image
             src="/assets/images/background-desktop.png"
             alt="background"
@@ -159,14 +168,11 @@ const Page = () => {
                     Change Image
                   </p>
                   <p className=" font-semibold capitalize">
-                    {user?.firstName} {user?.lastName}
+                    {user?.firstName} {user?.lastName} 🇳🇬
                   </p>
                   <p className=" font-light">{user?.email}</p>
-                  <p className=" font-light text-sm block sm:hidden">
-                    Joined{" "}
-                    {user?.createdAt
-                      ? new Date(user.createdAt).toUTCString()
-                      : "N/A"}
+                  <p className=" font-light text-xs block sm:hidden">
+                    Joined {user?.createdAt ? fullDate : "N/A"}
                   </p>
                 </div>
 
@@ -180,11 +186,8 @@ const Page = () => {
                       <Pencil1Icon className="w-4 h-4" />
                     </div>
                   )}
-                  <p className=" font-light text-sm sm:block hidden">
-                    Joined{" "}
-                    {user?.createdAt
-                      ? new Date(user.createdAt).toUTCString()
-                      : "N/A"}
+                  <p className="font-light text-xs sm:block hidden">
+                    Joined {user?.createdAt ? fullDate : "N/A"}
                   </p>
                 </div>
               </Flex>
@@ -206,6 +209,7 @@ const Page = () => {
                   disabled={!isEditing}
                   icon={<PersonIcon className="text-[#A6ABC4]" />}
                   required
+                  className="capitalize"
                 />
                 <CustomTextField
                   label="Last Name"
@@ -218,6 +222,7 @@ const Page = () => {
                   disabled={!isEditing}
                   icon={<PersonIcon className="text-[#A6ABC4]" />}
                   required
+                  className="capitalize"
                 />
                 <CustomTextField
                   label="Email"
@@ -251,6 +256,7 @@ const Page = () => {
                   disabled={!isEditing}
                   icon={<CalendarIcon className="text-[#A6ABC4] h-6 w-6" />}
                   required
+                  // className="min-0 !w-full"
                 />
 
                 <CustomSelect

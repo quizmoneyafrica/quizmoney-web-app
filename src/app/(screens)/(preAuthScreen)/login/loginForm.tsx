@@ -67,13 +67,9 @@ const LoginForm = ({ loading, setLoading }: Props) => {
       const response = await UserAPI.login(newValues);
       const userData = response.data.result;
 
-      // console.log("Logging in with:", userData);
       if (userData?.emailVerified) {
-        // console.log("Email verified");
-
         // Encrypt the user data
         const encryptedUser = encryptData(userData);
-        console.log("Encrypted: ", encryptedUser);
 
         // Dispatch to Redux
         loginUser(encryptedUser);
@@ -91,7 +87,6 @@ const LoginForm = ({ loading, setLoading }: Props) => {
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      // console.log("ERROR LOGIN", err);
       setLoading(false);
       toast.error(`${err.response.data.error}`, {
         position: toastPosition,

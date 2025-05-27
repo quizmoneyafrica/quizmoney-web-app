@@ -4,10 +4,11 @@ import CustomImage from "../wallet/CustomImage";
 import { format, parseISO } from "date-fns";
 import { Transaction } from "@/app/store/walletSlice";
 import { TransactionDetailsModal } from "./TransactionDetailModal";
+import { formatNaira } from "@/app/utils/utils";
 
 export function formatAmount(amount: number): string {
   const sign = amount > 0 ? "+" : "-";
-  return `${sign} ₦${Math.abs(amount).toLocaleString()}`;
+  return `${sign} ${formatNaira(Number(amount), true)}`;
 }
 
 export const ActivityRow = ({
@@ -74,8 +75,8 @@ export const ActivityRow = ({
               transaction.type === "deposit" ? "text-green-600" : "text-red-600"
             }`}
           >
-            {transaction.type === "deposit" ? "+" : "-"} ₦
-            {transaction.amount.toLocaleString()}
+            {transaction.type === "deposit" ? "+ " : "-"}
+            {formatNaira(Number(transaction.amount ?? 0), true)}
           </p>
           <p className="text-xs md:text-sm text-gray-500">{dateData}</p>
         </div>

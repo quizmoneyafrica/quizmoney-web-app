@@ -52,7 +52,7 @@ function Page() {
           <QmDrawer
             open={openNotification}
             onOpenChange={setOpenNotification}
-            heightClass="h-[60%]"
+            heightClass="h-[60%] lg:h-auto"
             trigger={
               <Grid columns="1" gap="4">
                 {notifications?.map(

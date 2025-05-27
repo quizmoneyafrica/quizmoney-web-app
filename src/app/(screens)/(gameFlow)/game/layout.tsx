@@ -33,10 +33,10 @@ function Layout({ children }: { children: React.ReactNode }) {
         setLoading(false);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
-        console.log(err);
-        toast.error("An error occurred please refresh!", {
-          position: toastPosition,
-        });
+        if (err)
+          toast.error("An error occurred please refresh!", {
+            position: toastPosition,
+          });
         setLoading(false);
       }
     };
@@ -51,13 +51,11 @@ function Layout({ children }: { children: React.ReactNode }) {
       subscription = await liveQueryClient.subscribe(query);
 
       subscription?.on("create", (object: Parse.Object) => {
-        // console.log("this object was updated: ", object.toJSON());
         const encryptedGame = encryptGameData(object.toJSON());
         dispatch(setNextGameData(object.toJSON()));
         sessionStorage.setItem("quizmoney_live", JSON.stringify(encryptedGame));
       });
       subscription?.on("update", (object: Parse.Object) => {
-        // console.log("this object was updated: ", object.toJSON());
         const encryptedGame = encryptGameData(object.toJSON());
         dispatch(setNextGameData(object.toJSON()));
         sessionStorage.setItem("quizmoney_live", JSON.stringify(encryptedGame));
