@@ -20,6 +20,7 @@ function RootHydrationWatcher() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     dispatch(setRehydrated(true));
   }, [dispatch]);
 

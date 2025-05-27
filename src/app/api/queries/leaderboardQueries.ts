@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 import { liveQueryClient } from "@/app/api/parse/parseClient";
 import { useAppDispatch } from "@/app/hooks/useAuth";
 import Parse from "parse";

@@ -8,11 +8,7 @@ import { getAuthUser } from "@/app/api/userApi";
 import WalletApi from "@/app/api/wallet";
 import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
-import {
-  setWallet,
-  setWalletLoading,
-  useWallet,
-} from "@/app/store/walletSlice";
+import { setWallet, useWallet } from "@/app/store/walletSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 // Define bank interface
@@ -128,7 +124,7 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
         },
       });
       if (response?.data?.result?.updatedWallet) {
-        dispatch(setWalletLoading(true));
+        // dispatch(setWalletLoading(true));
         const res = await WalletApi.fetchCustomerWallet();
         dispatch(setWallet(res.data.result.wallet));
         toast.success(response.data?.result?.message, {

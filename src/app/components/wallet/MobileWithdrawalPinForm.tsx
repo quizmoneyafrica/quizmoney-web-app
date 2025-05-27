@@ -16,6 +16,7 @@ import {
 import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
+import Link from "next/link";
 
 // Define schema for PIN validation with Zod
 const pinFormSchema = z.object({
@@ -175,19 +176,25 @@ export const WithdrawalPinForm = ({
       setIsCreatingRequest(false);
     }
   };
+  console.log(wallet);
 
   return (
     <div className="bg-white rounded-3xl h-full flex flex-col items-center">
       {!invalidPinError && (
-        <p className="text-gray-600 mb-8">
-          Withdraw your money directly to your Bank account
+        // <p className="text-gray-600 mb-8">
+        //   Withdraw your money directly to your Bank account
+        // </p>
+        <p className="text-neutral-500 mb-8 -mt-3 text-xs text-left w-full">
+          Input your withdrawal pin
         </p>
       )}
 
       <div className="w-full">
         {!invalidPinError && (
           <h2 className="text-xl text-center mb-6">
-            {wallet?.pin ? "Enter 4 digit pin" : "Create withdrawal pin"}
+            {typeof wallet?.pin === "string"
+              ? "Enter Withdrawal Pin"
+              : "Create withdrawal pin"}
           </h2>
         )}
 
@@ -254,6 +261,19 @@ export const WithdrawalPinForm = ({
             </CustomButton>
           </div>
         </form>
+
+        {wallet?.pin && (
+          <div className="w-full text-center pt-10">
+            <p className="text-neutral-500 text-sm">
+              Can&apos;t remember your pin?
+            </p>
+            <Link href="mailto:hi@quizmoney.ng">
+              <span className="text-primary-900 underline underline-offset-1">
+                Contact Us
+              </span>
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );

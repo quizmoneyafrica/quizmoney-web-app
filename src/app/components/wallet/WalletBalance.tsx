@@ -110,7 +110,7 @@ export default function WalletBalance() {
               onOpenChange={setOpen}
               title="Deposit"
               titleLeft
-              heightClass="h-[75%] lg:h-auto"
+              heightClass="h-[75%] md:h-[45%] lg:h-[65%]"
               trigger={
                 <button
                   onClick={() => setOpen(true)}
@@ -131,7 +131,7 @@ export default function WalletBalance() {
               onOpenChange={(val) => store.dispatch(setWithdrawalModal(val))}
               title="Withdraw"
               titleLeft
-              heightClass="h-[75%] lg:h-auto"
+              heightClass="h-[75%] md:h-[55%] lg:h-[80%]"
               trigger={
                 <button
                   onClick={() => {
@@ -235,7 +235,7 @@ export default function WalletBalance() {
         <QmDrawer
           open={withdrawalPinModal}
           onOpenChange={(val) => store.dispatch(setWithdrawalPinModal(val))}
-          title="Create withdrawal pin"
+          title={`${wallet?.pin ? "Verification" : "Create withdrawal pin"}`}
           titleLeft
           heightClass="h-[75%] lg:h-auto"
         >

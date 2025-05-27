@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 import { useAppDispatch } from "@/app/hooks/useAuth";
 import { useCallback, useEffect } from "react";
 import WalletApi from "../wallet";
@@ -46,7 +47,7 @@ function WalletQueries() {
       query.equalTo("user", {
         __type: "Pointer",
         className: "_User",
-        objectId: user.objectId,
+        objectId: user?.objectId,
       });
       walletSubscription = await liveQueryClient.subscribe(query);
 
@@ -62,7 +63,7 @@ function WalletQueries() {
       query.equalTo("user", {
         __type: "Pointer",
         className: "_User",
-        objectId: user.objectId,
+        objectId: user?.objectId,
       });
       transactionSubscription = await liveQueryClient.subscribe(query);
 
@@ -80,7 +81,7 @@ function WalletQueries() {
       if (walletSubscription) walletSubscription.unsubscribe();
       if (transactionSubscription) transactionSubscription.unsubscribe();
     };
-  }, [dispatch, fetchTransactions, fetchWallet, user.objectId]);
+  }, [dispatch, fetchTransactions, fetchWallet, user?.objectId]);
   return null;
 }
 
