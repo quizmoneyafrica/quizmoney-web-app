@@ -139,7 +139,7 @@ const ProductCard = ({
             >
               <div className="flex-row flex  items-center">
                 <p className=" text-2xl  font-semibold">
-                  {formatNaira(product?.productPrice)}
+                  {formatNaira(Number(product?.productPrice))}
                 </p>
                 <span className="font-semibold inline-flex pl-1">
                   / {product?.productQuantity} Erasers
@@ -200,8 +200,8 @@ const ProductCard = ({
                         <Image
                           src="/icons/eraser.svg"
                           alt="eraser"
-                          height={100}
-                          width={100}
+                          height={24}
+                          width={24}
                           className="w-6 h-6 scale-150 border"
                         />
                         <p className=" text-blue-500">
