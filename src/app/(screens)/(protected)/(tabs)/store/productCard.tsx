@@ -165,6 +165,7 @@ const ProductCard = ({
               open={isOpen}
               onOpenChange={setIsOpen}
               title="Verify Purchase"
+              heightClass="md:h-[75%]"
               trigger={
                 <CustomButton
                   onClick={() => setIsOpen(true)}
@@ -231,7 +232,8 @@ const ProductCard = ({
                   disabled={isLoading}
                   className=" w-full"
                 >
-                  Proceed to Pay ₦{product?.productPrice}
+                  Proceed to Pay{" "}
+                  {formatNaira(Number(product?.productPrice), true)}
                 </CustomButton>
               </>
             </QmDrawer>

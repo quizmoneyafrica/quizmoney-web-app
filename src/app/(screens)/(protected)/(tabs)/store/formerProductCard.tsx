@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import CustomButton from "@/app/utils/CustomBtn";
 import { encryptData } from "@/app/utils/crypto";
 import { useAuth } from "@/app/hooks/useAuth";
+import { formatNaira } from "@/app/utils/utils";
 const FormerProductCard = ({ product }: { product: Product }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -87,7 +88,7 @@ const FormerProductCard = ({ product }: { product: Product }) => {
             />
 
             <p className=" text-sm sm:text-lg font-bold pr-2">
-              ₦{product?.productPrice}
+              {formatNaira(Number(product?.productPrice))}
             </p>
           </div>
         </Flex>
@@ -136,7 +137,7 @@ const FormerProductCard = ({ product }: { product: Product }) => {
               />
 
               <p className=" text-sm sm:text-base font-bold pr-2">
-                ₦{product?.productPrice ?? "100"}
+                {formatNaira(Number(product?.productPrice ?? "100"))}
               </p>
             </div>
           </Flex>
@@ -146,7 +147,7 @@ const FormerProductCard = ({ product }: { product: Product }) => {
             loader={isLoading}
             disabled={isLoading}
           >
-            Proceed to Pay ₦{product?.productPrice}
+            Proceed to Pay {formatNaira(Number(product?.productPrice), true)}
           </CustomButton>
         </Flex>
       </Modal>

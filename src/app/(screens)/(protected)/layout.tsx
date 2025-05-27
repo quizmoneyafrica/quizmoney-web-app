@@ -1,4 +1,5 @@
 "use client";
+import AppLiveQueries from "@/app/api/queries/AppLiveQueries";
 import AppHeader from "@/app/layout/appHeader";
 import BottomNavigation from "@/app/layout/BottomNavigation";
 import SidebarNav from "@/app/layout/SidebarNav";
@@ -16,6 +17,7 @@ export default function ProtectedLayout({
 
   return (
     <>
+      <AppLiveQueries />
       <ProtectedRoute>
         <div
           className="lg:h-screen grid grid-cols-1 lg:grid-cols-[250px_1fr] 
