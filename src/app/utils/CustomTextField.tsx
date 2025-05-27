@@ -56,7 +56,7 @@ export default function CustomTextField({
           autoComplete={autoComplete}
           readOnly={readOnly}
           className={cn(
-            "w-full rounded-[6px] caret-primary-500 border border-neutral-300 px-4 py-3 pr-12 text-base focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 disabled:bg-neutral-100  disabled:cursor-not-allowed",
+            "appearance-none min-w-0 w-full rounded-[6px] caret-primary-500 border border-neutral-300 px-4 py-3 pr-12 text-base focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 disabled:bg-neutral-100  disabled:cursor-not-allowed",
             className
           )}
         />
