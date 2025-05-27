@@ -34,6 +34,9 @@ const swHeaders = [
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const nextConfig: any = {
   reactStrictMode: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
+  },
   images: {
     remotePatterns: [
       {
