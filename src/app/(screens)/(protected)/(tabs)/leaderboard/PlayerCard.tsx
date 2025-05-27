@@ -72,10 +72,9 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
               </div>
             </div>
             <p className="text-primary-800 bg-primary-100 rounded-4xl px-2 md:px-4 py-1 md:py-2 text-sm md:text-base">
-              ₦
               {player?.activeTab === "lastGame"
-                ? player?.prize?.toLocaleString()
-                : player?.amountWon?.toLocaleString()}
+                ? formatNaira(Number(player?.prize), true)
+                : formatNaira(Number(player?.amountWon), true)}
             </p>
           </div>
         }
