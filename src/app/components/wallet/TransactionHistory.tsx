@@ -186,7 +186,7 @@ export default function TransactionHistory(): React.JSX.Element {
     const isLastInGroup = index === array.length - 1;
 
     return (
-      <React.Fragment key={transaction.objectId || index.toString()}>
+      <div key={transaction.objectId || index.toString()}>
         <div
           className={classNames(
             "bg-white px-3 md:px-4 py-3 md:py-4 hidden md:flex justify-between items-center",
@@ -237,7 +237,7 @@ export default function TransactionHistory(): React.JSX.Element {
           </div>
         </div>
         <MobileList transaction={transaction} />
-      </React.Fragment>
+      </div>
     );
   };
 

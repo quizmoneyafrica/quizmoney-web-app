@@ -75,7 +75,7 @@ export const ActivityRow = ({
               transaction.type === "deposit" ? "text-green-600" : "text-red-600"
             }`}
           >
-            {transaction.type === "deposit" ? "+ " : "- "}
+            {transaction.type === "deposit" ? "+ " : "-"}
             {formatNaira(Number(transaction.amount ?? 0), true)}
           </p>
           <p className="text-xs md:text-sm text-gray-500">{dateData}</p>
