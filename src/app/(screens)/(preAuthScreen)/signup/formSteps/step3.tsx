@@ -61,6 +61,7 @@ const StepThree: React.FunctionComponent<IStepThreeProps> = (props) => {
       deviceToken: token || "",
       deviceId: deviceId,
     };
+    sessionStorage.setItem("pass", formData.password);
     try {
       const response = await UserAPI.signUp(newValues);
       const userData = response.data.result;
