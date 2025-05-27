@@ -169,3 +169,10 @@ export function formatRank(n: number): string {
 
   return `${n}${suffix}`;
 }
+export function disableConsoleInProduction() {
+  if (process.env.NODE_ENV === "production") {
+    for (const method of ["log", "warn", "error", "info", "debug"] as const) {
+      console[method] = () => {};
+    }
+  }
+}
