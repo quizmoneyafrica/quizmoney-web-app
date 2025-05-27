@@ -14,7 +14,6 @@ import {
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
-import "react-circular-progressbar/dist/styles.css";
 import copy from "copy-to-clipboard"; // Import the copy function
 import { toast } from "sonner";
 import UserAPI from "@/app/api/userApi";
