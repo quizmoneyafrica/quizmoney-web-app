@@ -9,7 +9,7 @@ import { Toaster } from "@/app/components/toaster/sonner";
 import { useAppDispatch } from "./hooks/useAuth";
 import { setRehydrated } from "./store/authSlice";
 import useFcmToken from "./hooks/useFcmToken";
-import { isIosPwaInstalled } from "./utils/utils";
+import { disableConsoleInProduction, isIosPwaInstalled } from "./utils/utils";
 import PermissionGuide from "./pwa/permissionGuide";
 
 type Props = {
@@ -20,7 +20,6 @@ function RootHydrationWatcher() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    window.scrollTo(0, 0);
     dispatch(setRehydrated(true));
   }, [dispatch]);
 
@@ -34,7 +33,10 @@ const AppSetup = ({ children }: Props) => {
   const isVisible =
     notificationPermissionStatus === "default" ||
     notificationPermissionStatus === "denied";
-
+  useEffect(() => {
+    disableConsoleInProduction();
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <Theme appearance="light" className="!font-text">
       <Provider store={store}>
