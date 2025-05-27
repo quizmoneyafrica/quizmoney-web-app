@@ -60,7 +60,7 @@ export default function MobileList({ transaction, onClick }: Props) {
           }`}
         >
           {transaction.type === "deposit" ? "+" : "-"} ₦
-          {transaction.amount.toLocaleString()}
+          {transaction?.amount?.toLocaleString()}
         </p>
         <p className="text-xs md:text-sm text-gray-500">{dateData}</p>
       </div>

@@ -12,6 +12,16 @@ import {
   setLastGameLeaderboard,
 } from "@/app/store/leaderboardSlice";
 import { useDispatch } from "react-redux";
+import { AlarmClockIcon } from "lucide-react";
+import {
+  formatNaira,
+  formatRank,
+  parseTimeStringToMilliseconds,
+} from "@/app/utils/utils";
+import { Flex } from "@radix-ui/themes";
+import Image from "next/image";
+import { User } from "@/app/api/interface";
+import { decryptData } from "@/app/utils/crypto";
 
 export interface Leaderboard {
   amountWon: number;
@@ -26,6 +36,8 @@ export interface Leaderboard {
   userId: string;
   position: number;
   prize: number;
+  totalCorrect: number;
+  totalTime: string;
 }
 
 export interface LeaderboardData {
@@ -42,6 +54,8 @@ function Page() {
   );
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
+  const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
+  const user: User | null = encrypted ? decryptData(encrypted) : null;
 
   const dispatch = useDispatch();
   const { lastGame, allTime } = useAppSelector((state) => state.leaderboard);
@@ -51,6 +65,10 @@ function Page() {
       ? lastGame?.leaderboard
       : allTime[page]?.leaderboard;
   const leaderboardData = activeTab === "lastGame" ? lastGame : allTime[page];
+
+  const userCurrentResult = leaderboard?.find(
+    (item) => item?.userId === user?.objectId
+  );
 
   const getLeaderboard = useCallback(
     async (tab: "lastGame" | "allTime") => {
@@ -64,8 +82,11 @@ function Page() {
             const rankings = res.data.result.rankings.map((data: any) => ({
               position: data.position,
               prize: data.prize,
+              totalCorrect: data?.totalCorrect,
+              totalTime: data?.totalTime,
               ...data.user,
             }));
+            console.log({ rankings });
             const payload = { leaderboard: rankings };
             dispatch(setLastGameLeaderboard(payload));
           }
@@ -118,12 +139,19 @@ function Page() {
   } else if (leaderboard && leaderboard.length > 0) {
     content = (
       <div className="flex flex-col gap-5">
-        <div className="hidden md:flex justify-between items-center text-sm md:text-base text-black font-semibold px-10">
-          <div className="flex-1 flex gap-[10%]">
+        <div
+          className={` grid ${
+            activeTab === "lastGame"
+              ? "md:grid-cols-4 grid-cols-3"
+              : "md:grid-cols-3 grid-cols-2"
+          }  place-items-start justify-between items-center text-sm md:text-base text-black font-semibold px-2`}
+        >
+          <div className="flex-1 md:col-span-2 w-full flex gap-[10%]">
             <p>Rank</p>
             <p>Username</p>
           </div>
-          <p>Amount</p>
+          {activeTab === "lastGame" && <p>Score & Time</p>}
+          <p className=" w-full text-end">Amount</p>
         </div>
 
         {leaderboard.map((player) => (
@@ -169,6 +197,70 @@ function Page() {
             <CupIcon className="text-primary-500 fill-primary-300 h-[10rem] w-[5rem] md:w-[10rem] top-0 opacity-25 absolute" />
             <CupIcon className="text-primary-500 fill-primary-300 h-[10rem] w-[5rem] md:w-[10rem] top-0 opacity-5 absolute translate-y-2 translate-x-3" />
             <p className="font-semibold opacity-50">Leaderboard is empty</p>
+          </div>
+        </div>
+      )}
+
+      {!loading && !!userCurrentResult && activeTab === "lastGame" && (
+        <div className=" mb-5">
+          <p className=" text-sm font-bold pl-2 mb-2 md:text-start text-center">
+            My Last Game Result
+          </p>
+          <div
+            className={`grid gap-2 md:grid-cols-4 grid-cols-3 place-items-start  cursor-pointer  text-sm md:text-base text-black font-semibold px-5 md:px-10 bg-white rounded-4xl p-3 md:p-5`}
+          >
+            {/* Player Card */}
+            <div className=" flex md:col-span-2  w-full gap-[10%] items-center">
+              <div className="">
+                {/* <p className="text-3xl md:text-5xl">
+                {rank[
+                  player.activeTab === "lastGame"
+                    ? (player?.position as keyof typeof rank)
+                    : (player?.overallRank as keyof typeof rank)
+                ] ?? "🎖️"}
+              </p> */}
+                <Flex direction="column" align="center">
+                  <span>🏆 </span>
+                  <span className="font-bold text-primary-900">
+                    {formatRank(userCurrentResult?.position || 0)}
+                  </span>
+                </Flex>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className=" md:h-[50px] md:w-[50px] h-[40px] w-[40px]">
+                  <Image
+                    src={userCurrentResult?.avatar || ""}
+                    alt={userCurrentResult?.firstName || ""}
+                    width={50}
+                    height={50}
+                    className="rounded-full h-full w-full"
+                  />
+                </div>
+                <p className="capitalize">@{userCurrentResult?.firstName}</p>
+              </div>
+            </div>
+            <div
+              className={` items-center gap-2 h-full  ${
+                activeTab === "lastGame" ? "flex" : "hidden"
+              }`}
+            >
+              <div className="flex md:h-10 md:w-10 w-8 h-8 items-center text-primary-800 justify-center gap-2 border-2 border-primary-800 rounded-full p-2">
+                {userCurrentResult?.totalCorrect}
+              </div>{" "}
+              <div className="flex items-center gap-1 ">
+                <AlarmClockIcon className=" text-primary-800" size={14} />
+                <p className=" text-xs md:text-sm text-primary-800 font-semibold">
+                  {parseTimeStringToMilliseconds(
+                    userCurrentResult?.totalTime ?? "00:00:00"
+                  )}
+                </p>
+              </div>
+            </div>
+            <div className=" flex w-full justify-end  h-full items-center">
+              <p className="text-primary-800 h-fit bg-primary-100 rounded-md px-2 md:px-4 py-1 md:py-2 text-sm md:text-base">
+                {formatNaira(userCurrentResult?.prize ?? 0)}
+              </p>
+            </div>
           </div>
         </div>
       )}

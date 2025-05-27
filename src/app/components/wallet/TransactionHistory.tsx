@@ -229,7 +229,7 @@ export default function TransactionHistory(): React.JSX.Element {
               }`}
             >
               {transaction.type === "deposit" ? "+" : "-"} ₦
-              {transaction.amount.toLocaleString()}
+              {transaction?.amount?.toLocaleString()}
             </p>
             <p className="text-xs md:text-sm text-gray-500">{dateData}</p>
           </div>
