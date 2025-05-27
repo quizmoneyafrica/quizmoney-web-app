@@ -110,7 +110,7 @@ export default function WalletBalance() {
               onOpenChange={setOpen}
               title="Deposit"
               titleLeft
-              heightClass="h-[75%] lg:h-auto"
+              heightClass="h-[75%] md:h-[70%]"
               trigger={
                 <button
                   onClick={() => setOpen(true)}
