@@ -134,3 +134,19 @@ export interface UpdateUserForm {
   twitter?: string;
   whatsapp?: string;
 }
+
+interface QuestionResult {
+  number: string;
+  correctAnswer: string;
+  yourAnswer: string;
+  correct: boolean;
+}
+
+export interface QuizResultData {
+  position: number;
+  prize: number;
+  totalTime: string;
+  totalCorrect: number;
+  result: QuestionResult[];
+  user: User;
+}

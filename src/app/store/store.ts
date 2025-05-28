@@ -6,6 +6,7 @@ import demoReducer from "./demoSlice";
 import notificationReducer from "./notificationSlice";
 import leaderboardReducer from "./leaderboardSlice";
 import storeReducer from "./storeSlice";
+import gameStatsReducer from "./gameStatsSlice";
 
 import { createFilter } from "redux-persist-transform-filter";
 
@@ -48,6 +49,7 @@ export const store = configureStore({
     notifications: notificationReducer,
     leaderboard: leaderboardReducer,
     store: storeReducer,
+    stats: gameStatsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
