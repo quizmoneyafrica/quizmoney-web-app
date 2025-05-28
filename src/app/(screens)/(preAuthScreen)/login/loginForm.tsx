@@ -83,6 +83,7 @@ const LoginForm = ({ loading, setLoading }: Props) => {
           }
         );
       } else {
+        sessionStorage.setItem("pass", password);
         verifyEmail(userData?.email, userData?.firstName);
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
