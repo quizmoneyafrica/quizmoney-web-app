@@ -18,31 +18,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 import { useDispatch } from "react-redux";
 
-const dummyQuestion = [
-  {
-    question: "Who was the First President of the United States ?",
-    options: [
-      "George Washington",
-      "Nelson Mandela",
-      "John F. Kennedy",
-      "George Bush",
-    ],
-    correctAnswer: "George Washington",
-    answer: "George Washington",
-  },
-  {
-    question: "Who was the First President of Nigeria?",
-    options: [
-      "Nelson Mandela",
-      "GoodLuck jonahtan",
-      "Bola Ahmed Tinubu",
-      "Seyi makinde",
-    ],
-    correctAnswer: "Bola Ahmed Tinubu",
-    answer: "Nelson Mandela",
-  },
-];
-
 const Result = () => {
   const { stats } = useAppSelector((state) => state.stats);
   const dispatch = useDispatch();
@@ -191,7 +166,7 @@ const Result = () => {
         pt={"4"}
         className=" md:w-[80%] w-full gap-10"
       >
-        {dummyQuestion.map((currentQuestion, index) => (
+        {stats?.result.map((currentQuestion, index) => (
           <div
             key={index}
             className=" w-full bg-neutral-50 rounded-lg border border-neutral-300 p-3"
@@ -201,7 +176,7 @@ const Result = () => {
 
             <div className="mt-3 space-y-3">
               {currentQuestion.options.map((option: string, idx: number) => {
-                const isSelected = currentQuestion.answer === option;
+                const isSelected = currentQuestion.yourAnswer === option;
                 const isCorrectSelection =
                   isSelected && option === currentQuestion.correctAnswer;
                 const isWrongSelection =

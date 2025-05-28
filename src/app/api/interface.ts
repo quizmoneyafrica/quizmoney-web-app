@@ -140,6 +140,8 @@ interface QuestionResult {
   correctAnswer: string;
   yourAnswer: string;
   correct: boolean;
+  options: string[];
+  question: string;
 }
 
 export interface QuizResultData {
