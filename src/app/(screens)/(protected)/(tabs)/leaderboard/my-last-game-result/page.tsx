@@ -166,21 +166,21 @@ const Result = () => {
         pt={"4"}
         className=" md:w-[80%] w-full gap-10"
       >
-        {stats?.result.map((currentQuestion, index) => (
+        {stats?.result?.map((currentQuestion, index) => (
           <div
             key={index}
             className=" w-full bg-neutral-50 rounded-lg border border-neutral-300 p-3"
           >
             <p className="font-semibold text-lg">Question {index + 1}</p>
-            <p className=" font-medium">{currentQuestion.question}</p>
+            <p className=" font-medium">{currentQuestion?.question}</p>
 
             <div className="mt-3 space-y-3">
-              {currentQuestion.options.map((option: string, idx: number) => {
-                const isSelected = currentQuestion.yourAnswer === option;
+              {currentQuestion?.options?.map((option: string, idx: number) => {
+                const isSelected = currentQuestion?.yourAnswer === option;
                 const isCorrectSelection =
-                  isSelected && option === currentQuestion.correctAnswer;
+                  isSelected && option === currentQuestion?.correctAnswer;
                 const isWrongSelection =
-                  isSelected && option !== currentQuestion.correctAnswer;
+                  isSelected && option !== currentQuestion?.correctAnswer;
 
                 return (
                   <div
@@ -190,7 +190,7 @@ const Result = () => {
                     className={`w-full py-3 px-6  rounded-full text-left border-4 font-medium transition 
                     ${
                       isCorrectSelection ||
-                      option === currentQuestion.correctAnswer
+                      option === currentQuestion?.correctAnswer
                         ? "bg-positive-900 border-positive-500 text-white"
                         : isWrongSelection
                         ? "bg-error-900 border-error-200 text-white"
@@ -202,13 +202,13 @@ const Result = () => {
                     <Flex gap="4" align="center" justify="between">
                       <Flex gap="4" align="center">
                         <span className="col-span-1">
-                          {String.fromCharCode(65 + idx)}.
+                          {String?.fromCharCode(65 + idx)}.
                         </span>
                         <span className="col-span-3">{option}</span>
                       </Flex>
                       <span className="text-xl">
                         {(isCorrectSelection ||
-                          option === currentQuestion.correctAnswer) && (
+                          option === currentQuestion?.correctAnswer) && (
                           <CorrectCircleIcon className="text-positive-300" />
                         )}
                         {isWrongSelection && (
