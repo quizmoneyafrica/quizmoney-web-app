@@ -214,7 +214,19 @@ export const WithdrawalPinForm = ({
                   className={classNames(
                     "w-12 h-12 text-center text-xl focus:outline-none focus:ring-2 focus:ring-primary-900 focus:rounded-xl",
                     invalidPinError ? "text-red-500 font-bold" : "",
-                    index === 0 || index === 1 || index === 2
+                    index == 0
+                      ? `border-r ${
+                          invalidPinError || errors.pin
+                            ? "border-r-red-500"
+                            : "border-r-gray-300"
+                        }`
+                      : index == 1
+                      ? `border-r ${
+                          invalidPinError || errors.pin
+                            ? "border-r-red-500"
+                            : "border-r-gray-300"
+                        }`
+                      : index == 2
                       ? `border-r ${
                           invalidPinError || errors.pin
                             ? "border-r-red-500"
