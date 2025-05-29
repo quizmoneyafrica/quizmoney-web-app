@@ -18,7 +18,7 @@ import {
   formatRank,
   formatTimeToMinutesAndSeconds,
 } from "@/app/utils/utils";
-import { Flex } from "@radix-ui/themes";
+import { Flex, Table } from "@radix-ui/themes";
 import Image from "next/image";
 import { User } from "@/app/api/interface";
 import { decryptData } from "@/app/utils/crypto";
@@ -139,26 +139,81 @@ function Page() {
   } else if (leaderboard && leaderboard.length > 0) {
     content = (
       <div className="flex flex-col gap-5">
-        <div
-          className={` grid ${
-            activeTab === "lastGame"
-              ? "md:grid-cols-4 grid-cols-3"
-              : "md:grid-cols-3 grid-cols-2"
-          }  place-items-start justify-between items-center text-sm md:text-base text-black font-semibold px-2`}
-        >
-          <div className="flex-1 md:col-span-2 w-full flex gap-[10%]">
-            <p>Rank</p>
-            <p>Username</p>
-          </div>
-          {activeTab === "lastGame" && (
-            <p className=" sm:ml-0 ml-10 w-full">Score & Time</p>
-          )}
-          <p className=" w-full text-end">Amount</p>
-        </div>
+        <Flex direction="column" gap="4">
+          <Table.Root variant="ghost">
+            <Table.Header className="!border-none ">
+              <Table.Row className="rounded-xl bg-primary-50">
+                <Table.ColumnHeaderCell className="rounded-ss-xl">
+                  Rank
+                </Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell colSpan={2}>
+                  Player
+                </Table.ColumnHeaderCell>
 
-        {leaderboard.map((player) => (
+                {activeTab === "lastGame" && (
+                  <Table.ColumnHeaderCell>Score</Table.ColumnHeaderCell>
+                )}
+                {activeTab === "lastGame" && (
+                  <Table.ColumnHeaderCell>Time</Table.ColumnHeaderCell>
+                )}
+
+                <Table.ColumnHeaderCell className="rounded-se-xl">
+                  Prize
+                </Table.ColumnHeaderCell>
+              </Table.Row>
+            </Table.Header>
+
+            <Table.Body className="!border-none !bg-transparent">
+              {leaderboard.map((player) => (
+                <PlayerCard
+                  player={{ ...player, activeTab }}
+                  key={player.userId}
+                />
+              ))}
+            </Table.Body>
+          </Table.Root>
+
+          <Flex justify="end" gap="2">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-2 py-1 border rounded"
+            >
+              Prev
+            </button>
+            {/* {Array.from({ length: 10 }, (_, i) => (
+              <button
+                key={i}
+                onClick={() => setPage(i + 1)}
+                className={`px-2 py-1 border rounded ${
+                  page === i + 1 ? "bg-primary-800 text-white" : ""
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))} */}
+
+            <div
+              className={`h border rounded-full ${
+                page === 1 ? "bg-primary-800 text-white" : ""
+              }`}
+            >
+              <span className="">{page}</span>{" "}
+              <span>of {leaderboardData?.totalPages}</span>
+            </div>
+            <button
+              onClick={() => setPage((p) => Math.min(10, p + 1))}
+              disabled={page === 10}
+              className="px-2 py-1 border rounded"
+            >
+              Next
+            </button>
+          </Flex>
+        </Flex>
+
+        {/* {leaderboard.map((player) => (
           <PlayerCard player={{ ...player, activeTab }} key={player.userId} />
-        ))}
+        ))} */}
       </div>
     );
   }

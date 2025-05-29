@@ -90,10 +90,16 @@ function GameCard() {
               {nextGameData &&
                 !nextGameData.completed &&
                 new Date(nextGameData.startDate.iso) <= new Date() && (
-                  <p className="text-error-500 font-bold">
-                    You missed! Game Already in Session
-                  </p>
+                  <div className="flex items-center gap-1">
+                    <div className="relative h-3 w-3 bg-error-500 rounded-full">
+                      <div className="h-3 w-3 bg-error-500 rounded-full animate-ping absolute left-0 top-0" />
+                    </div>
+                    <p className="text-error-500 font-bold animate-pulse">
+                      Live Game in Session
+                    </p>
+                  </div>
                 )}
+
               <Text className="text-neutral-800">
                 Next Game: {formatQuizDate(nextGameData?.startDate.iso)}
               </Text>
