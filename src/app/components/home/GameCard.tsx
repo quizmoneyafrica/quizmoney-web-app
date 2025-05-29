@@ -18,7 +18,6 @@ function GameCard() {
   const [loading, setLoading] = useState(false);
   const [showJoinBtn, setShowJoinBtn] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
   useEffect(() => {
     const fetchNextGame = async () => {
       if (nextGameData) return null;
@@ -88,7 +87,13 @@ function GameCard() {
               {formatNaira(nextGameData?.gamePrize)}
             </Heading>
             <Flex direction="column" gap="2" align="center" justify="center">
-              {/* <p className="text-error-500 font-bold">Game in Session</p> */}
+              {nextGameData &&
+                !nextGameData.completed &&
+                new Date(nextGameData.startDate.iso) <= new Date() && (
+                  <p className="text-error-500 font-bold">
+                    You missed! Game Already in Session
+                  </p>
+                )}
               <Text className="text-neutral-800">
                 Next Game: {formatQuizDate(nextGameData?.startDate.iso)}
               </Text>

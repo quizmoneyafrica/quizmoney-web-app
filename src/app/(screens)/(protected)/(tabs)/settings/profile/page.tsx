@@ -140,7 +140,10 @@ const Page = () => {
           <div className="  relative min-h-[80vh] w-full ">
             <div className=" -translate-y-12 w-full border-b border-gray-200 h-fit pb-10">
               {/* profile pic */}
-              <div className="sm:w-[100px] sm:h-[100px] w-[80px] h-[80px] rounded-full  border-2 border-primary-400  z-10 bg-white/50 backdrop-blur-sm">
+              <div
+                onClick={() => setIsImageModalOpen(true)}
+                className="cursor-pointer sm:w-[100px] sm:h-[100px] w-[80px] h-[80px] rounded-full  border-2 border-primary-400  z-10 bg-white/50 backdrop-blur-sm"
+              >
                 <div className="w-full h-full flex items-center justify-center relative">
                   <Image
                     src={user?.avatar ?? "/assets/images/profile.png"}

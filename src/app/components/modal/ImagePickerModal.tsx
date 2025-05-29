@@ -10,6 +10,7 @@ import { useAppSelector, useAuth } from "@/app/hooks/useAuth";
 import { decryptData, encryptData } from "@/app/utils/crypto";
 import { User } from "@/app/api/interface";
 import { AxiosError } from "axios";
+import QmDrawer from "../drawer/drawer";
 // give me 12 images
 
 interface IAvatar {
@@ -79,6 +80,7 @@ const ImagePickerModal = ({
     })
       .then((res) => {
         if (res.status === 200) {
+          setOpen(false);
           toast.success("Profile updated successfully", {
             position: "top-center",
           });
@@ -105,77 +107,145 @@ const ImagePickerModal = ({
   };
 
   return (
-    <Modal
-      open={open}
-      onOpenChange={setOpen}
-      title="Choose a display picture"
-      description="customize your profile "
-    >
-      {!showAvatar ? (
-        <div className="mt-5 flex flex-col gap-4">
-          <div
-            onClick={() => setShowAvatar(true)}
-            className="flex items-center justify-center h-[80px] md:h-[100px] w-full border border-primary-300 rounded-3xl cursor-pointer"
-          >
-            Select from our variety of images
+    <>
+      <QmDrawer open={open} onOpenChange={setOpen}>
+        {!showAvatar ? (
+          <div className="mt-5 md:pt-10 flex flex-col gap-4">
+            <div
+              onClick={() => setShowAvatar(true)}
+              className="flex items-center justify-center h-[80px] md:h-[100px] w-full border border-primary-300 rounded-3xl cursor-pointer"
+            >
+              Select from our variety of images
+            </div>
+            {/* <div className="flex items-center justify-center gap-2">
+              <div className=" min-w-[130px] h-[1px] bg-zinc-200" />
+              Or
+              <div className=" min-w-[130px] h-[1px] bg-zinc-200" />
+            </div>
+            <div
+              onClick={handleSelectImage}
+              className="flex items-center justify-center h-[80px] md:h-[100px] w-full border border-primary-300 rounded-3xl cursor-pointer"
+            >
+              Upload from your gallery
+            </div> */}
           </div>
-          <div className="flex items-center justify-center gap-2">
-            <div className=" min-w-[130px] h-[1px] bg-zinc-200" />
-            Or
-            <div className=" min-w-[130px] h-[1px] bg-zinc-200" />
-          </div>
-          <div
-            onClick={handleSelectImage}
-            className="flex items-center justify-center h-[80px] md:h-[100px] w-full border border-primary-300 rounded-3xl cursor-pointer"
-          >
-            Upload from your gallery
-          </div>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-2 mt-4">
-          <p className="text-base md:text-lg font-medium">Pick an Avatar</p>
-          <div className=" bg-zinc-800 rounded-3xl w-full h-full p-4 md:p-10">
-            <div className="grid grid-cols-4 place-items-center gap-4">
-              {avatars.map((image: IAvatar) => (
-                <div
-                  key={image.name}
-                  onClick={() => handleSelectAvatar(image)}
-                  className={`w-[60px] h-[60px] md:w-20 md:h-20 bg-zinc-700 rounded-full relative ${
-                    selectedImage?.name === image.name
-                      ? "border-2 border-primary-500"
-                      : ""
-                  }`}
-                >
-                  <Image
-                    src={image.url}
-                    alt="avatar"
-                    width={100}
-                    height={100}
-                    className="w-full h-full object-cover rounded-full"
-                  />
+        ) : (
+          <div className="flex flex-col gap-2 mt-4">
+            <p className="text-base md:text-lg font-medium">Pick an Avatar</p>
+            <div className=" bg-zinc-800 rounded-3xl w-full h-full p-4 md:p-10">
+              <div className="grid grid-cols-4 place-items-center gap-4">
+                {avatars.map((image: IAvatar) => (
+                  <div
+                    key={image.name}
+                    onClick={() => handleSelectAvatar(image)}
+                    className={`cursor-pointer w-[60px] h-[60px] md:w-20 md:h-20 bg-zinc-700 rounded-full relative ${
+                      selectedImage?.name === image.name
+                        ? "border-2 border-primary-500"
+                        : ""
+                    }`}
+                  >
+                    <Image
+                      src={image.url}
+                      alt="avatar"
+                      width={100}
+                      height={100}
+                      className="w-full h-full object-cover rounded-full"
+                    />
 
-                  {selectedImage?.name === image.name && (
-                    <div className="absolute bottom-0 right-1 md:right-4 bg-primary-400 rounded-full flex items-center justify-center">
-                      <div className="text-white text-2xl font-bold">
-                        <CheckIcon className="w-4 h-4" />
+                    {selectedImage?.name === image.name && (
+                      <div className="absolute bottom-0 right-1 md:right-4 bg-primary-400 rounded-full flex items-center justify-center">
+                        <div className="text-white text-2xl font-bold">
+                          <CheckIcon className="w-4 h-4" />
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </div>
-              ))}
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <CustomButton
+              loader={isUpdating}
+              disabled={selectedImage === null || selectedImage === undefined}
+              className="w-fit"
+              onClick={updateUser}
+            >
+              Select Avatar
+            </CustomButton>
+          </div>
+        )}
+      </QmDrawer>
+      {/* <Modal
+        open={open}
+        onOpenChange={setOpen}
+        title="Choose a display picture"
+        description="customize your profile "
+      >
+        {!showAvatar ? (
+          <div className="mt-5 flex flex-col gap-4">
+            <div
+              onClick={() => setShowAvatar(true)}
+              className="flex items-center justify-center h-[80px] md:h-[100px] w-full border border-primary-300 rounded-3xl cursor-pointer"
+            >
+              Select from our variety of images
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <div className=" min-w-[130px] h-[1px] bg-zinc-200" />
+              Or
+              <div className=" min-w-[130px] h-[1px] bg-zinc-200" />
+            </div>
+            <div
+              onClick={handleSelectImage}
+              className="flex items-center justify-center h-[80px] md:h-[100px] w-full border border-primary-300 rounded-3xl cursor-pointer"
+            >
+              Upload from your gallery
             </div>
           </div>
-          <CustomButton
-            loader={isUpdating}
-            disabled={selectedImage === null || selectedImage === undefined}
-            className="w-fit"
-            onClick={updateUser}
-          >
-            Select Avatar
-          </CustomButton>
-        </div>
-      )}
-    </Modal>
+        ) : (
+          <div className="flex flex-col gap-2 mt-4">
+            <p className="text-base md:text-lg font-medium">Pick an Avatar</p>
+            <div className=" bg-zinc-800 rounded-3xl w-full h-full p-4 md:p-10">
+              <div className="grid grid-cols-4 place-items-center gap-4">
+                {avatars.map((image: IAvatar) => (
+                  <div
+                    key={image.name}
+                    onClick={() => handleSelectAvatar(image)}
+                    className={`w-[60px] h-[60px] md:w-20 md:h-20 bg-zinc-700 rounded-full relative ${
+                      selectedImage?.name === image.name
+                        ? "border-2 border-primary-500"
+                        : ""
+                    }`}
+                  >
+                    <Image
+                      src={image.url}
+                      alt="avatar"
+                      width={100}
+                      height={100}
+                      className="w-full h-full object-cover rounded-full"
+                    />
+
+                    {selectedImage?.name === image.name && (
+                      <div className="absolute bottom-0 right-1 md:right-4 bg-primary-400 rounded-full flex items-center justify-center">
+                        <div className="text-white text-2xl font-bold">
+                          <CheckIcon className="w-4 h-4" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <CustomButton
+              loader={isUpdating}
+              disabled={selectedImage === null || selectedImage === undefined}
+              className="w-fit"
+              onClick={updateUser}
+            >
+              Select Avatar
+            </CustomButton>
+          </div>
+        )}
+      </Modal> */}
+    </>
   );
 };
 
