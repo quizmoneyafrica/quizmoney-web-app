@@ -139,6 +139,7 @@ export const WithdrawalPinForm = ({
         store.dispatch(setWithdrawalPinModal(false));
         store.dispatch(setWithdrawalModal(true));
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(`${err.response.data.error}`, {
         position: toastPosition,
@@ -168,6 +169,7 @@ export const WithdrawalPinForm = ({
         store.dispatch(setWithdrawalModal(false));
         close?.();
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(`${err.response.data.error}`, {
         position: toastPosition,

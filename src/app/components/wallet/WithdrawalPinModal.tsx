@@ -107,6 +107,7 @@ export default function OtpVerificationModal({
         store.dispatch(setWithdrawalPinModal(false));
         store.dispatch(setWithdrawalModal(true));
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(`${err.response.data.error}`, {
         position: toastPosition,
@@ -135,6 +136,7 @@ export default function OtpVerificationModal({
         store.dispatch(setWithdrawalPinModal(false));
         store.dispatch(setWithdrawalModal(false));
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(`${err.response.data.error}`, {
         position: toastPosition,
