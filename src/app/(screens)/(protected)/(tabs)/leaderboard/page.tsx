@@ -172,43 +172,6 @@ function Page() {
               ))}
             </Table.Body>
           </Table.Root>
-
-          <Flex justify="end" gap="2">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="px-2 py-1 border rounded"
-            >
-              Prev
-            </button>
-            {/* {Array.from({ length: 10 }, (_, i) => (
-              <button
-                key={i}
-                onClick={() => setPage(i + 1)}
-                className={`px-2 py-1 border rounded ${
-                  page === i + 1 ? "bg-primary-800 text-white" : ""
-                }`}
-              >
-                {i + 1}
-              </button>
-            ))} */}
-
-            <div
-              className={`h border rounded-full ${
-                page === 1 ? "bg-primary-800 text-white" : ""
-              }`}
-            >
-              <span className="">{page}</span>{" "}
-              <span>of {leaderboardData?.totalPages}</span>
-            </div>
-            <button
-              onClick={() => setPage((p) => Math.min(10, p + 1))}
-              disabled={page === 10}
-              className="px-2 py-1 border rounded"
-            >
-              Next
-            </button>
-          </Flex>
         </Flex>
 
         {/* {leaderboard.map((player) => (
