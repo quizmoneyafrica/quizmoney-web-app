@@ -8,6 +8,7 @@ import {
   setWithdrawalModal,
   setWithdrawalPinModal,
   useWallet,
+  setWallet,
 } from "@/app/store/walletSlice";
 import WalletApi from "@/app/api/wallet";
 import { toastPosition } from "@/app/utils/utils";
@@ -34,6 +35,8 @@ export default function OtpVerificationModal({
   const [otpValues, setOtpValues] = useState<string[]>(["", "", "", ""]);
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const { wallet, withdrawalData } = useSelector(useWallet);
+  const hasPin = Boolean(wallet?.pin);
+
   useEffect(() => {
     if (open) {
       setOtpValues(["", "", "", ""]);
@@ -99,11 +102,13 @@ export default function OtpVerificationModal({
         toast.success(response?.data?.data?.result?.message, {
           position: toastPosition,
         });
-        // store.dispatch(setWalletLoading(true));
-        // const res = await WalletApi.fetchCustomerWallet();
-        // if (res.data.result.wallet) {
-        //   store.dispatch(setWallet(res.data.result.wallet));
-        // }
+        
+        // Fetch and update wallet data
+        store.dispatch(setWalletLoading(true));
+        const res = await WalletApi.fetchCustomerWallet();
+        if (res.data.result.wallet) {
+          store.dispatch(setWallet(res.data.result.wallet));
+        }
 
         store.dispatch(setWithdrawalPinModal(false));
         store.dispatch(setWithdrawalModal(true));
@@ -221,9 +226,7 @@ export default function OtpVerificationModal({
               >
                 <div className="flex justify-between items-center mb-2">
                   <Dialog.Title className="text-2xl font-semibold">
-                    {wallet?.pin
-                      ? "Enter withdrawal pin"
-                      : "Create withdrawal pin"}
+                    {hasPin ? "Enter withdrawal pin" : "Create withdrawal pin"}
                   </Dialog.Title>
                   <Dialog.Close className="rounded-full p-1 hover:bg-gray-100">
                     <Cross2Icon className="w-6 h-6" />
