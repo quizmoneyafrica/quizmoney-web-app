@@ -2,9 +2,10 @@ import QmDrawer from "@/app/components/drawer/drawer";
 import {
   formatNaira,
   formatRank,
-  formatTimeToMinutesAndSeconds,
+  parseTimeStringToMilliseconds,
+  readLeaderboardTotalTime,
 } from "@/app/utils/utils";
-import { Flex, Grid } from "@radix-ui/themes";
+import { Flex, Grid, Table } from "@radix-ui/themes";
 import { AlarmClockIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -45,35 +46,30 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
         onOpenChange={setOpen}
         title="Player Stats"
         trigger={
-          <div
+          <Table.Row
+            className={`cursor-pointer text-black  font-semibold !bg-white  !my-4 !overflow-hidden !rounded-full `}
             onClick={() => setOpen(true)}
-            className={`grid gap-2 ${
-              player?.activeTab === "lastGame"
-                ? "md:grid-cols-4 grid-cols-3"
-                : "md:grid-cols-3 grid-cols-2"
-            } place-items-start  cursor-pointer  text-sm md:text-base text-black font-semibold px-5 md:px-10 bg-white rounded-4xl p-3 md:p-5`}
+            key={player.userId}
           >
-            {/* Player Card */}
-            <div className=" flex md:col-span-2  w-full gap-[10%] items-center">
-              <div className="">
-                {/* <p className="text-3xl md:text-5xl">
-                  {rank[
-                    player.activeTab === "lastGame"
-                      ? (player?.position as keyof typeof rank)
-                      : (player?.overallRank as keyof typeof rank)
-                  ] ?? "🎖️"}
-                </p> */}
-                <Flex direction="column" align="center">
-                  <span>🏆 </span>
-                  <span className="font-bold text-primary-900">
-                    {player.activeTab === "lastGame"
-                      ? formatRank(player?.position || 0)
-                      : formatRank(player?.overallRank)}
-                  </span>
-                </Flex>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className=" md:h-[50px] md:w-[50px] h-[40px] w-[40px]">
+            <Table.Cell className="">
+              <Flex
+                direction="column"
+                // align="center"
+                justify="center"
+                className="h-full md:pl-2"
+              >
+                <span>🏆 </span>
+                <span className="font-bold text-primary-900">
+                  {player.activeTab === "lastGame"
+                    ? formatRank(player?.position || 0)
+                    : formatRank(player?.overallRank)}
+                </span>
+              </Flex>
+            </Table.Cell>
+
+            <Table.Cell colSpan={2} className="">
+              <div className="flex items-center justify-start gap-2 capitalize">
+                <div className=" md:h-[50px] md:w-[50px] h-[40px] w-[40px] p-1 rounded-full bg-primary-50">
                   <Image
                     src={player?.avatar || ""}
                     alt={player?.firstName || ""}
@@ -82,34 +78,43 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
                     className="rounded-full h-full w-full"
                   />
                 </div>
-                <p className="capitalize md:text-base text-sm">
-                  {player?.firstName}
+                <span>{player.firstName}</span>
+              </div>
+            </Table.Cell>
+
+            {player.activeTab === "lastGame" && (
+              <Table.Cell>
+                <div className="flex items-center h-full justify-start">
+                  <p className="flex md:h-10 md:w-10 w-6 h-6 items-center text-primary-800 justify-center gap-2 border-2 border-primary-800 rounded-full p-2">
+                    {player?.totalCorrect}
+                  </p>
+                </div>
+              </Table.Cell>
+            )}
+
+            {player.activeTab === "lastGame" && (
+              <Table.Cell>
+                <div className="flex items-center h-full gap-1 text-nowrap">
+                  <AlarmClockIcon className=" text-primary-800" size={14} />
+                  <p className="text-sm text-primary-800 font-semibold">
+                    {readLeaderboardTotalTime(
+                      parseTimeStringToMilliseconds(player?.totalTime ?? "")
+                    )}
+                  </p>
+                </div>
+              </Table.Cell>
+            )}
+
+            <Table.Cell className="">
+              <div className="flex items-center h-full gap-1 text-nowrap">
+                <p className="inline-block text-primary-800 h-fit bg-primary-100 rounded-md px-2 md:px-4 py-1 md:py-2 text-sm md:text-base">
+                  {player?.activeTab === "lastGame"
+                    ? formatNaira(player?.prize ?? 0, true)
+                    : formatNaira(player?.amountWon, true)}
                 </p>
               </div>
-            </div>
-            <div
-              className={` items-center gap-[1px] md:gap-2 h-full w-full justify-end sm:justify-start  ${
-                player?.activeTab === "lastGame" ? "flex" : "hidden"
-              }`}
-            >
-              <div className="flex md:h-10 md:w-10 w-6 h-6 items-center text-primary-800 justify-center gap-2 border-2 border-primary-800 rounded-full p-2">
-                {player?.totalCorrect}
-              </div>{" "}
-              <div className="flex items-center gap-1 ">
-                <AlarmClockIcon className=" text-primary-800" size={14} />
-                <p className=" text-xs md:text-sm text-primary-800 font-semibold">
-                  {formatTimeToMinutesAndSeconds(player?.totalTime ?? "")}
-                </p>
-              </div>
-            </div>
-            <div className=" flex w-full justify-end  h-full items-center">
-              <p className="text-primary-800 h-fit bg-primary-100 rounded-md px-2 md:px-4 py-1 md:py-2 text-xs sm:text-sm md:text-base">
-                {player?.activeTab === "lastGame"
-                  ? formatNaira(player?.prize ?? 0, true)
-                  : formatNaira(player?.amountWon, true)}
-              </p>
-            </div>
-          </div>
+            </Table.Cell>
+          </Table.Row>
         }
       >
         {/* Drawer content */}
@@ -195,105 +200,70 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
           </div>
         </div>
       </QmDrawer>
-      {/* <div
-        onClick={() => setOpen(true)}
-        key={player.userId}
-        className="flex justify-between items-center text-sm md:text-base text-black font-semibold px-5 md:px-10 bg-white rounded-4xl p-3 md:p-5"
-      >
-        <div className="flex-1 flex gap-[10%] items-center">
-          <div className="">
-            <p className="text-3xl md:text-5xl">
-              {rank[
-                player.activeTab === "lastGame"
-                  ? (player?.position as keyof typeof rank)
-                  : (player?.overallRank as keyof typeof rank)
-              ] ?? "🎖️"}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Image
-              src={player?.avatar || ""}
-              alt={player?.firstName || ""}
-              width={50}
-              height={50}
-              className="rounded-full"
-            />
-            <p className="capitalize">{player?.firstName}</p>
-          </div>
-        </div>
-        <p className="text-primary-800 bg-primary-100 rounded-4xl px-2 md:px-4 py-1 md:py-2 text-sm md:text-base">
-          ₦
-          {player?.activeTab === "lastGame"
-            ? player?.prize?.toLocaleString()
-            : player?.amountWon?.toLocaleString()}
-        </p>
 
-        <Modal open={open} onOpenChange={setOpen}>
-          <div className="flex flex-col justify-center h-full items-center gap-2 my-5 space-y-3">
-            <p className=" text-xl sm:text-2xl font-semibold">Users Stats</p>
-            <div className=" bg-primary-100 rounded-full p-2">
-              <Image
-                src={player?.avatar || ""}
-                alt={player?.firstName || ""}
-                width={50}
-                height={50}
-                className="rounded-full"
-              />
-            </div>
-            <p className=" text-primary-700 text-xl sm:text-2xl font-semibold">
-              {player?.firstName}
-            </p>
+      {/*   */}
+      {/* <div className="overflow-x-auto">
+              <div
+                onClick={() => setOpen(true)}
+                className={`grid gap-2 w-full ${
+                  player?.activeTab === "lastGame"
+                    ? "md:grid-cols-4 grid-cols-6"
+                    : "md:grid-cols-3 grid-cols-2"
+                } place-items-start  cursor-pointer  text-sm md:text-base text-black font-semibold px-5 md:px-10 bg-white rounded-4xl p-3 md:p-5`}
+              >
+                <div className="">
+                  <Flex direction="column" align="center">
+                    <span>🏆 </span>
+                    <span className="font-bold text-primary-900">
+                      {player.activeTab === "lastGame"
+                        ? formatRank(player?.position || 0)
+                        : formatRank(player?.overallRank)}
+                    </span>
+                  </Flex>
+                </div>
 
-            <div className="flex flex-col gap-2 w-full md:w-[80%]">
-              <p className=" font-semibold">Player Stats</p>
-              <div className=" flex justify-evenly bg-primary-50 rounded-xl p-4 w-full">
-                <div>
-                  <p>Rank</p>
-                  <div className="flex h-10 w-10 items-center text-primary-800 justify-center gap-2 border-2 border-primary-800 rounded-full p-2">
-                    {player.activeTab == "allTime"
-                      ? player?.overallRank
-                      : player?.position}
+                <div className="flex col-span-2 items-center gap-2">
+                  <div className=" md:h-[50px] md:w-[50px] h-[40px] w-[40px]">
+                    <Image
+                      src={player?.avatar || ""}
+                      alt={player?.firstName || ""}
+                      width={50}
+                      height={50}
+                      className="rounded-full h-full w-full"
+                    />
+                  </div>
+                  <p className="capitalize md:text-base text-sm">
+                    {player?.firstName}
+                  </p>
+                </div>
+
+                <div
+                  className={` items-center gap-[1px] md:gap-2 h-full w-full justify-end sm:justify-start  ${
+                    player?.activeTab === "lastGame" ? "flex" : "hidden"
+                  }`}
+                >
+                  <div className="flex md:h-10 md:w-10 w-6 h-6 items-center text-primary-800 justify-center gap-2 border-2 border-primary-800 rounded-full p-2">
+                    {player?.totalCorrect}
+                  </div>{" "}
+                  <div className="flex items-center gap-1 ">
+                    <AlarmClockIcon className=" text-primary-800" size={14} />
+                    <p className=" text-xs md:text-sm text-primary-800 font-semibold">
+                      {readLeaderboardTotalTime(
+                        parseTimeStringToMilliseconds(player?.totalTime ?? "")
+                      )}
+                    </p>
                   </div>
                 </div>
-                <div>
-                  <p>Games</p>
-                  <div className="flex h-10 w-10 items-center text-primary-800 justify-center gap-2 border-2 border-primary-800 rounded-full p-2">
-                    {player?.noOfGamesPlayed}
-                  </div>
-                </div>
-                <div>
-                  <p>Prize</p>
-                  <div className="flex h-10 w-10 items-center justify-center font-semibold text-primary-800  p-2">
-                    ₦
+                <div className=" flex w-full justify-end  h-full items-center">
+                  <p className="text-primary-800 h-fit bg-primary-100 rounded-md px-2 md:px-4 py-1 md:py-2 text-xs sm:text-sm md:text-base">
                     {player?.activeTab === "lastGame"
-                      ? player?.prize?.toLocaleString()
-                      : player?.amountWon?.toLocaleString()}{" "}
-                  </div>
+                      ? formatNaira(player?.prize ?? 0, true)
+                      : formatNaira(player?.amountWon, true)}
+                  </p>
                 </div>
               </div>
-            </div>
-
-            <p className=" text-lg sm:text-xl font-semibold">Social Links</p>
-            <div className="flex gap-2">
-              {player?.facebook && (
-                <div className="h-[30px] w-[30px] rounded-full bg-primary-50 flex justify-center items-center">
-                  <FacebookIcon />
-                </div>
-              )}
-              {player?.instagram && (
-                <div className="h-[30px] w-[30px] rounded-full bg-primary-50 flex justify-center items-center">
-                  <InstagramLogoIcon />
-                </div>
-              )}
-              {player?.twitter && (
-                <div className="h-[30px] w-[30px] rounded-full bg-primary-50 flex justify-center items-center">
-                  <TwitterLogoIcon />
-                </div>
-              )}
-            </div>
-          </div>
-        </Modal>
-      </div> */}
+            </div> */}
+      {/*   */}
     </>
   );
 };

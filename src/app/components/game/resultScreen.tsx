@@ -67,14 +67,15 @@ function ResultScreen() {
     };
     fetchResult();
   }, [liveGameData?.objectId]);
-  const handleHome = () => {
+
+  const handleLeaderboard = () => {
     dispatch(setShowAdsScreen(false));
-    router.replace("/home");
+    router.replace("/leaderboard");
   };
 
   if (fetching) return <AppLoader />;
   return (
-    <div className="min-h-screen lg:h-screen bg-primary-900 hero flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen lg:h-screen bg-primary-900 hero flex flex-col items-center justify-start pt-10 px-4">
       <div className="w-full h-full mx-auto max-w-lg space-y-6 grid place-items-center">
         <Grid gap="3" className="w-full">
           <h2 className="text-center text-neutral-50 font-heading font-bold text-lg">
@@ -102,8 +103,11 @@ function ResultScreen() {
               <Separator orientation="vertical" size="2" />
               <div className="flex items-center justify-end gap-2 font-medium">
                 <span>
-                  {Number(liveGameData?.questions.length) -
-                    Number(resultData?.totalCorrect)}{" "}
+                  {Math.max(
+                    (liveGameData?.questions?.length ?? 0) -
+                      (resultData?.totalCorrect ?? 0),
+                    0
+                  )}{" "}
                   Incorrect
                 </span>
                 <WrongCircleIcon className="text-error-400" />
@@ -114,30 +118,22 @@ function ResultScreen() {
           <div className="bg-primary-50 text-center border-4 border-primary-500 rounded-[10px] px-4 py-4 space-y-4">
             {resultData?.prize !== 0 ? (
               <div className="space-y-2">
-                <span className="text-7xl">🏆</span>
+                <p className="text-7xl">🏆</p>
                 <p className="text-sm">Yaaaaaayyy!!!</p>
-                <p className="text-sm">
-                  You are number{" "}
-                  <span className="text-bold">{resultData?.timeRank}</span> on
-                  the leaderboard
-                </p>
-                <p className="font-medium">Congratulations You Won! 🎉 </p>
+                <p className="font-medium">Congratulations, you won! </p>
                 <h3 className="font-bold text-2xl text-primary-900">
-                  {formatNaira(resultData?.prize)}
+                  {formatNaira(resultData?.prize, true)}
                 </h3>
               </div>
             ) : (
               <>
                 {/* Not win  */}
-                <div className="space-y-3">
-                  <span className="text-7xl">😢</span>
+                <div className="space-y-4">
+                  <p className="text-7xl">😢</p>
                   {/* <p className="text-sm">Better luck next time</p> */}
-                  <p className="text-sm">
-                    You are number{" "}
-                    <span className="text-bold">{resultData?.timeRank}</span> on
-                    the leaderboard
+                  <p className="font-medium">
+                    Sorry, you didn&apos;t win this time
                   </p>
-                  <p className="font-medium">Better luck next time 🥺 </p>
                 </div>
               </>
             )}
@@ -145,11 +141,11 @@ function ResultScreen() {
         </Grid>
         <div className="w-full ">
           <CustomButton
-            onClick={handleHome}
+            onClick={handleLeaderboard}
             width="full"
             className="!bg-secondary-500 !text-neutral-900"
           >
-            Go back to Home
+            View Leaderboard
           </CustomButton>
         </div>
       </div>
