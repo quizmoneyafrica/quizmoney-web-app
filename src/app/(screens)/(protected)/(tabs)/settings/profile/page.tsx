@@ -124,9 +124,8 @@ const Page = () => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.25, ease: "easeInOut" }}
-      className="pb-20"
     >
-      <div className="rounded-lg w-full bg-white overflow-hidden">
+      <div className="rounded-lg w-full bg-white overflow-hidden pb-12">
         <div className="w-full h-[120px] md:h-[160px] bg-primary-800 overflow-hidden rounded-br-[60px]">
           <Image
             src="/assets/images/background-desktop.png"

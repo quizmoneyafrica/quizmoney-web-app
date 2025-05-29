@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import Modal from "./Modal";
+// import Modal from "./Modal";
 import { toast } from "sonner";
-import { toastPosition } from "@/app/utils/utils";
+// import { toastPosition } from "@/app/utils/utils";
 import Image from "next/image";
 import { CheckIcon } from "@radix-ui/react-icons";
 import UserAPI from "@/app/api/userApi";
@@ -29,11 +29,11 @@ const ImagePickerModal = ({
   const [showAvatar, setShowAvatar] = useState(false);
   const [avatars, setAvatars] = useState([]);
   const [selectedImage, setSelectedImage] = useState<IAvatar>();
-  const handleSelectImage = () => {
-    toast.info("Gallery Access Coming soon", {
-      position: toastPosition,
-    });
-  };
+  // const handleSelectImage = () => {
+  //   toast.info("Gallery Access Coming soon", {
+  //     position: toastPosition,
+  //   });
+  // };
   const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
   const user: User | null = encrypted ? decryptData(encrypted) : null;
   const [isUpdating, setIsUpdating] = useState(false);
