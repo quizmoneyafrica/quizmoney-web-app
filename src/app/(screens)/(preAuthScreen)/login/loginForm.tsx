@@ -3,12 +3,12 @@ import UserAPI from "@/app/api/userApi";
 import { useAuth } from "@/app/hooks/useAuth";
 import useFcmToken from "@/app/hooks/useFcmToken";
 import {
-  AppleIcon,
   EyeIcon,
   EyeSlash,
   FacebookIcon,
-  GoogleIcon,
+  InstagramIcon,
   MailIcon,
+  XIcon,
 } from "@/app/icons/icons";
 import getDeviceId from "@/app/pwa/deviceId";
 import { encryptData } from "@/app/utils/crypto";
@@ -94,24 +94,24 @@ const LoginForm = ({ loading, setLoading }: Props) => {
       });
     }
   };
-  const handleGoogleAuth = () => {
-    toast.info("Google Sign in Coming soon", {
-      position: toastPosition,
-      icon: <GoogleIcon />,
-    });
-  };
-  const handleFacebookAuth = () => {
-    toast.info("Facebook Sign in Coming soon", {
-      position: toastPosition,
-      icon: <FacebookIcon />,
-    });
-  };
-  const handleAppleAuth = () => {
-    toast.info("Apple Sign in Coming soon", {
-      position: toastPosition,
-      icon: <AppleIcon />,
-    });
-  };
+  // const handleGoogleAuth = () => {
+  //   toast.info("Google Sign in Coming soon", {
+  //     position: toastPosition,
+  //     icon: <GoogleIcon />,
+  //   });
+  // };
+  // const handleFacebookAuth = () => {
+  //   toast.info("Facebook Sign in Coming soon", {
+  //     position: toastPosition,
+  //     icon: <FacebookIcon />,
+  //   });
+  // };
+  // const handleAppleAuth = () => {
+  //   toast.info("Apple Sign in Coming soon", {
+  //     position: toastPosition,
+  //     icon: <AppleIcon />,
+  //   });
+  // };
 
   const verifyEmail = async (email: string, firstName: string) => {
     try {
@@ -195,17 +195,28 @@ const LoginForm = ({ loading, setLoading }: Props) => {
             )}
           </div>
           <div className="pt-4 space-y-6">
-            <p className="text-center text-[#6E7286]">Or sign in with</p>
+            <p className="text-center text-[#6E7286]">Follow us on</p>
             <Flex align="center" justify="center" gap="6">
-              <IconButton onClick={handleGoogleAuth}>
-                <GoogleIcon />
-              </IconButton>
-              <IconButton onClick={handleFacebookAuth}>
-                <FacebookIcon />
-              </IconButton>
-              <IconButton onClick={handleAppleAuth}>
-                <AppleIcon />
-              </IconButton>
+              <Link href="https://facebook/">
+                <IconButton>
+                  <FacebookIcon />
+                </IconButton>
+              </Link>
+              <Link href="https://instagram.com/quizmoneyng">
+                <IconButton>
+                  <InstagramIcon />
+                </IconButton>
+              </Link>
+              <Link href="https://x.com/quizmoney_ng">
+                <IconButton>
+                  <XIcon />
+                </IconButton>
+              </Link>
+              {/* <Link href="https://tiktok/quizmoneyng">
+                <IconButton>
+                  <i className="bi bi-tiktok text-primary-900 text-2xl"></i>
+                </IconButton>
+              </Link> */}
             </Flex>
             <p className="text-center">
               Don&apos;t have an account yet?{" "}

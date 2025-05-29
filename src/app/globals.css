@@ -272,8 +272,8 @@ body.bg-primary-900 {
 html,
 body {
   overscroll-behavior: none; /* Prevent navigation gestures */
-  /* overflow: hidden; Disable scroll  */
-  /* touch-action: none; Disable gesture actions  */
+/* overflow: hidden; Disable scroll  */
+/* touch-action: none; Disable gesture actions  */
 /* }*/
 h1,
 h2,
@@ -309,6 +309,20 @@ h6,
   z-index: 1;
 }
 
+.rt-TableHeader .rt-TableRow .rt-TableCell {
+  border: none !important;
+  box-shadow: none !important;
+}
+.rt-TableBody .rt-TableRow:nth-last-child(1) .rt-TableCell {
+  box-shadow: none !important;
+  margin-bottom: 1rem;
+}
+.rt-TableBody .rt-TableRow:nth-last-child(1) .rt-TableCell:nth-child(1) {
+  border-bottom-left-radius: 0.75rem;
+}
+.rt-TableBody .rt-TableRow:nth-last-child(1) .rt-TableCell:nth-last-child(1) {
+  border-bottom-right-radius: 0.75rem;
+}
 .hero {
   background-image: url("/assets/images/background-desktop.png");
   background-size: cover;
