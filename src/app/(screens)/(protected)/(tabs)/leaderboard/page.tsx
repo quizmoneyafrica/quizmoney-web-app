@@ -16,7 +16,8 @@ import { AlarmClockIcon } from "lucide-react";
 import {
   formatNaira,
   formatRank,
-  formatTimeToMinutesAndSeconds,
+  parseTimeStringToMilliseconds,
+  readLeaderboardTotalTime,
 } from "@/app/utils/utils";
 import { Flex, Table } from "@radix-ui/themes";
 import Image from "next/image";
@@ -270,8 +271,10 @@ function Page() {
               <div className="flex items-center gap-1 ">
                 <AlarmClockIcon className=" text-primary-800" size={14} />
                 <p className=" text-xs md:text-sm text-primary-800 font-semibold">
-                  {formatTimeToMinutesAndSeconds(
-                    userCurrentResult?.totalTime ?? ""
+                  {readLeaderboardTotalTime(
+                    parseTimeStringToMilliseconds(
+                      userCurrentResult?.totalTime ?? ""
+                    )
                   )}
                 </p>
               </div>

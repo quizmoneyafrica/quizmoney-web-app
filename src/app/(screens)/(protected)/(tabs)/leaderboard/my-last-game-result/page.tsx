@@ -4,7 +4,11 @@ import AppLoader from "@/app/components/loader/loader";
 import { useAppSelector } from "@/app/hooks/useAuth";
 import { CorrectCircleIcon, WrongCircleIcon } from "@/app/icons/icons";
 import { setStats } from "@/app/store/gameStatsSlice";
-import { formatNaira, formatTimeToMinutesAndSeconds } from "@/app/utils/utils";
+import {
+  formatNaira,
+  parseTimeStringToMilliseconds,
+  readLeaderboardTotalTime,
+} from "@/app/utils/utils";
 import { Flex, Grid } from "@radix-ui/themes";
 import {
   AlarmClockIcon,
@@ -88,7 +92,10 @@ const Result = () => {
             <AlarmClockIcon size={20} className=" text-primary-700" />
           </div>
           <p className=" font-semibold text-base md:text-lg text-primary-700 ">
-            {formatTimeToMinutesAndSeconds(stats?.totalTime ?? "")}
+            {readLeaderboardTotalTime(
+              parseTimeStringToMilliseconds(stats?.totalTime ?? "")
+            )}
+            {/* {formatTimeToMinutesAndSeconds(stats?.totalTime ?? "")} */}
           </p>
           <p className=" md:text-base text-sm">Play Time</p>
         </div>
