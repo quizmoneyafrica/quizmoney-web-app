@@ -142,7 +142,7 @@ const InviteAndEarn = () => {
           <div className="flex flex-col gap-1 md:gap-3 items-center py-3 md:p-6">
             <div className="flex flex-col sm:flex-row  items-center gap-2">
               <CreditCard size={18} />
-              <p className="font-semibold">Refferal Earnings</p>
+              <p className="font-semibold">Referral Earnings</p>
             </div>
             <p className=" text-xl md:text-3xl text-primary-800 font-bold">
               {formatNaira(Number(referralData.referralEarnings), true)}
@@ -156,21 +156,21 @@ const InviteAndEarn = () => {
           </p>
 
           <div className=" mt-3 md:mt-10 space-y-4">
-            <div className=" bg-white p-4 rounded-xl flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
+            {/* 1 invite  */}
+            <div className="grid grid-cols-3 bg-white p-4 rounded-xl gap-3">
+              <div className="flex items-center gap-3 col-span-2">
                 <div className="sm:h-[40px] h-[30px] min-w-[30px] md:min-w-[40px] rounded-full justify-center flex items-center bg-primary-50">
                   <UserRoundPlusIcon className=" text-primary-700" />
                 </div>
-                <div>
-                  <p className=" text-sm md:text-base">
-                    When 1st friend join you earn
-                  </p>
+                <div className="">
+                  <p className=" text-sm md:text-base">Invite 1, you earn</p>
                   <p className="text-lg md:text-xl font-bold text-primary-800">
                     ₦100
                   </p>
                 </div>
               </div>
-              <div>
+
+              {/* <div className="flex items-center justify-end">
                 <div
                   className={` ${
                     referralData.referralCount >= 1
@@ -180,86 +180,120 @@ const InviteAndEarn = () => {
                 >
                   <Check size={15} />
                 </div>
+              </div> */}
+              <div className="relative flex items-center !justify-end">
+                {referralData?.referralCount >= 1 ? (
+                  <div
+                    className={`bg-green-500 rounded-full p-1 text-white w-fit`}
+                  >
+                    <Check size={15} />
+                  </div>
+                ) : (
+                  <div className="absolute right-0 inline-block h-[50px] w-[50px]">
+                    <CircularProgressbar
+                      value={(referralData?.referralCount / 1) * 100}
+                      text={`${referralData?.referralCount}/1`}
+                      className="h-[50px] w-[50px] "
+                      styles={buildStyles({
+                        textSize: "30px",
+                        pathColor: "#00a63e",
+                        textColor: "#000",
+                        trailColor: "#dcfce7",
+                      })}
+                    />
+                  </div>
+                )}
               </div>
             </div>
-            <div className=" bg-white p-4 rounded-xl flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <div className="h-[40px] min-w-[40px] rounded-full justify-center flex items-center bg-primary-50">
+
+            {/* 5 people  */}
+            <div
+              className={`grid grid-cols-3 bg-white p-4 rounded-xl gap-3 ${
+                referralData?.referralCount >= 1 ? "opacity-100" : "opacity-60"
+              }`}
+            >
+              <div className="flex items-center gap-3 col-span-2">
+                <div className="sm:h-[40px] h-[30px] min-w-[30px] md:min-w-[40px] rounded-full justify-center flex items-center bg-primary-50">
                   <UsersRoundIcon className=" text-primary-700" />
                 </div>
-                <div>
-                  <p className="text-sm md:text-base">
-                    When 5 friends join you earn
-                  </p>
-                  <p className=" text-lg md:text-xl  font-bold text-primary-800">
+                <div className="">
+                  <p className=" text-sm md:text-base">Invite 5, you earn</p>
+                  <p className="text-lg md:text-xl font-bold text-primary-800">
                     ₦5,000
                   </p>
                 </div>
               </div>
-              <div>
-                {/* <div className=" bg-green-500 rounded-full p-1 text-white w-fit">
-                  <Check size={15} />
-                </div> */}
-                {referralData?.referralCount > 0 && (
+
+              <div className="relative flex items-center !justify-end">
+                {referralData?.referralCount >= 1 && (
                   <>
-                    {referralData?.referralCount > 5 ? (
+                    {referralData?.referralCount >= 6 ? (
                       <div
-                        className={`  bg-green-500 rounded-full p-1 text-white w-fit`}
+                        className={`bg-green-500 rounded-full p-1 text-white w-fit`}
                       >
                         <Check size={15} />
                       </div>
                     ) : (
-                      <CircularProgressbar
-                        value={(referralData?.referralCount / 5) * 100}
-                        text={`${referralData?.referralCount}/5`}
-                        className="h-[50px]"
-                        styles={buildStyles({
-                          textSize: "30px",
-                          pathColor: "#00a63e",
-                          textColor: "#000",
-                          trailColor: "#dcfce7",
-                        })}
-                      />
+                      <div className="absolute right-0 inline-block h-[50px] w-[50px]">
+                        <CircularProgressbar
+                          value={((referralData?.referralCount - 1) / 5) * 100}
+                          text={`${referralData?.referralCount - 1}/5`}
+                          className="h-[50px] w-[50px] "
+                          styles={buildStyles({
+                            textSize: "30px",
+                            pathColor: "#00a63e",
+                            textColor: "#000",
+                            trailColor: "#dcfce7",
+                          })}
+                        />
+                      </div>
                     )}
                   </>
                 )}
               </div>
             </div>
-            <div className=" bg-white p-4 rounded-xl flex items-center justify-between gap-3 ">
-              <div className="flex items-center gap-3">
-                <div className="h-[40px] min-w-[40px] rounded-full justify-center flex items-center bg-primary-50">
+
+            {/* 10 people  */}
+            <div
+              className={`grid grid-cols-3 bg-white p-4 rounded-xl gap-3 ${
+                referralData?.referralCount >= 16 ? "opacity-100" : "opacity-60"
+              }`}
+            >
+              <div className="flex items-center gap-3 col-span-2">
+                <div className="sm:h-[40px] h-[30px] min-w-[30px] md:min-w-[40px] rounded-full justify-center flex items-center bg-primary-50">
                   <UsersRoundIcon className=" text-primary-700" />
                 </div>
-                <div>
-                  <p className="text-sm md:text-base">
-                    When 10 friends join you earn
-                  </p>
-                  <p className=" text-lg md:text-xl font-bold text-primary-800">
+                <div className="">
+                  <p className=" text-sm md:text-base">Invite 10, you earn</p>
+                  <p className="text-lg md:text-xl font-bold text-primary-800">
                     ₦10,000
                   </p>
                 </div>
               </div>
-              <div>
-                {referralData?.referralCount > 5 && (
+
+              <div className="relative flex items-center !justify-end">
+                {referralData?.referralCount >= 6 && (
                   <>
-                    {referralData?.referralCount > 10 ? (
+                    {referralData?.referralCount >= 16 ? (
                       <div
-                        className={`  bg-green-500 rounded-full p-1 text-white w-fit`}
+                        className={`bg-green-500 rounded-full p-1 text-white w-fit`}
                       >
                         <Check size={15} />
                       </div>
                     ) : (
-                      <CircularProgressbar
-                        value={(referralData?.referralCount / 10) * 100}
-                        text={`${referralData?.referralCount}/10`}
-                        className="h-[50px]"
-                        styles={buildStyles({
-                          textSize: "30px",
-                          pathColor: "#00a63e",
-                          textColor: "#000",
-                          trailColor: "#dcfce7",
-                        })}
-                      />
+                      <div className="absolute right-0 inline-block h-[50px] w-[50px]">
+                        <CircularProgressbar
+                          value={((referralData?.referralCount - 6) / 5) * 100}
+                          text={`${referralData?.referralCount - 6}/5`}
+                          className="h-[50px] w-[50px] "
+                          styles={buildStyles({
+                            textSize: "30px",
+                            pathColor: "#00a63e",
+                            textColor: "#000",
+                            trailColor: "#dcfce7",
+                          })}
+                        />
+                      </div>
                     )}
                   </>
                 )}
@@ -282,7 +316,7 @@ const InviteAndEarn = () => {
             <div className="flex flex-col gap-3 items-center p-3 md:p-6">
               <div className="flex items-center gap-2">
                 <CreditCard size={18} />
-                <p className="font-semibold">Refferal Earnings</p>
+                <p className="font-semibold">Referral Earnings</p>
               </div>
               <p className=" text-xl md:text-3xl text-primary-800 font-bold">
                 {formatNaira(Number(referralData.referralEarnings), true)}
@@ -303,14 +337,14 @@ const InviteAndEarn = () => {
             </div>
             <div className=" w-full absolute h-full flex flex-col justify-center  p-5 space-y-[2%] z-30">
               <p className=" font-bold md:text-xl text-lg text-white">
-                Join the weekly Jackpot
+                Join the weekly referral challenge
               </p>
               <p className=" font-bold md:text-3xl text-xl text-white">
                 ₦50,000
               </p>
               <p className=" text-white md:w-[80%]">
-                Cash and exclusive QuizMoney Merchandise for users with the
-                highest number of successful Referrals
+                Win cash and exclusive Quiz Money merch when you have the
+                highest number of successful referrals
               </p>
             </div>
           </div>

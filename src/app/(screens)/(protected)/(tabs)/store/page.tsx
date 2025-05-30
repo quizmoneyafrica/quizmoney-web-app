@@ -77,7 +77,9 @@ function Page() {
       transition={{ duration: 0.25, ease: "easeInOut" }}
     >
       <div className="sm:p-4 space-y-6 min-h-[100dvh] pb-40">
-        <p>Get more erasers to stay in the game</p>
+        <p className="text-sm text-neutral-600">
+          Erasers are single use per game. Stock up to get more chances.
+        </p>
 
         <Grid columns={{ initial: "1", md: "2", lg: "3" }} gap={"20px"}>
           {products?.map((product, index) => (

@@ -39,6 +39,7 @@ export const WithdrawalPinForm = ({
   const [invalidPinError, setInvalidPinError] = useState(false);
   const [isCreatingPin, setIsCreatingPin] = useState<boolean>(false);
   const { wallet, withdrawalData } = useSelector(useWallet);
+  const hasPin = Boolean(wallet?.pin);
 
   const [isCreatingRequest, setIsCreatingRequest] = useState<boolean>(false);
   const {
@@ -91,7 +92,7 @@ export const WithdrawalPinForm = ({
   };
 
   const verifyPin = (pin: string): boolean => {
-    return pin.length == 4;
+    return pin.length === 4;
   };
 
   // Handle form submission
@@ -99,7 +100,7 @@ export const WithdrawalPinForm = ({
     // Verify PIN
     const isValid = verifyPin(data.pin);
     if (isValid) {
-      if (wallet?.pin) {
+      if (hasPin) {
         handleWithdrawal(data.pin);
       } else {
         createPin(data.pin);
@@ -115,8 +116,10 @@ export const WithdrawalPinForm = ({
       prevInput?.focus();
     }
   };
+
   const createPin = async (pin: string) => {
     setIsCreatingPin(true);
+    store.dispatch(setWalletLoading(true));
 
     try {
       const response = await WalletApi.createWithdrawalPin({
@@ -126,7 +129,8 @@ export const WithdrawalPinForm = ({
         toast.success(response?.data?.data?.result?.message, {
           position: toastPosition,
         });
-        store.dispatch(setWalletLoading(true));
+        
+        // Fetch updated wallet data
         const res = await WalletApi.fetchCustomerWallet();
         if (res.data.result.wallet) {
           store.dispatch(setWallet(res.data.result.wallet));
@@ -145,10 +149,8 @@ export const WithdrawalPinForm = ({
       store.dispatch(setWalletLoading(false));
     }
   };
+
   const handleWithdrawal = async (pin: string) => {
-    console.log("====================================");
-    console.log("Withdrawal pin submitted:", pin, withdrawalData);
-    console.log("====================================");
     setIsCreatingRequest(true);
     if (!withdrawalData) {
       return;
@@ -176,14 +178,10 @@ export const WithdrawalPinForm = ({
       setIsCreatingRequest(false);
     }
   };
-  console.log(wallet);
 
   return (
     <div className="bg-white rounded-3xl h-full flex flex-col items-center">
       {!invalidPinError && (
-        // <p className="text-gray-600 mb-8">
-        //   Withdraw your money directly to your Bank account
-        // </p>
         <p className="text-neutral-500 mb-8 -mt-3 text-xs text-left w-full">
           Input your withdrawal pin
         </p>
@@ -192,9 +190,7 @@ export const WithdrawalPinForm = ({
       <div className="w-full">
         {!invalidPinError && (
           <h2 className="text-xl text-center mb-6">
-            {typeof wallet?.pin === "string"
-              ? "Enter Withdrawal Pin"
-              : "Create withdrawal pin"}
+            {hasPin ? "Enter Withdrawal Pin" : "Create withdrawal pin"}
           </h2>
         )}
 
@@ -256,13 +252,14 @@ export const WithdrawalPinForm = ({
               type="submit"
               className="bg-primary-900 text-white w-full rounded-full py-4 hover:bg-primary-700"
               disabled={invalidPinError || isCreatingPin || isCreatingRequest}
+              loader={isCreatingPin || isCreatingRequest}
             >
               Proceed
             </CustomButton>
           </div>
         </form>
 
-        {wallet?.pin && (
+        {hasPin && (
           <div className="w-full text-center pt-10">
             <p className="text-neutral-500 text-sm">
               Can&apos;t remember your pin?
