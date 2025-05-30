@@ -241,14 +241,13 @@ function GameScreen() {
 
     // --- update answers state ---
     setSelectedAnswers(newAnswers);
-    const isLastQuestion = currentIndex === liveGameData.questions.length - 1;
 
     // --- Save Answer to DB ---
     await GameApi.recordGameAnswer(
       gameId,
       questionNumber,
       toSaveAnswer,
-      isLastQuestion ? totalTimeFormatted : undefined
+      totalTimeFormatted
     );
   };
 
