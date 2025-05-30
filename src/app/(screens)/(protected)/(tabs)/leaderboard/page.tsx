@@ -16,7 +16,8 @@ import { AlarmClockIcon } from "lucide-react";
 import {
   formatNaira,
   formatRank,
-  formatTimeToMinutesAndSeconds,
+  parseTimeStringToMilliseconds,
+  readLeaderboardTotalTime,
 } from "@/app/utils/utils";
 import { Flex, Table } from "@radix-ui/themes";
 import Image from "next/image";
@@ -264,20 +265,22 @@ function Page() {
                 activeTab === "lastGame" ? "flex" : "hidden"
               }`}
             >
-              <div className="flex md:h-10 md:w-10 w-8 h-8 items-center text-primary-800 justify-center gap-2 border-2 border-primary-800 rounded-full p-2">
+              <div className="flex md:h-10 md:w-10 w-6 h-6 items-center text-primary-800 justify-center gap-2 border-2 border-primary-800 rounded-full p-2">
                 {userCurrentResult?.totalCorrect}
               </div>{" "}
               <div className="flex items-center gap-1 ">
                 <AlarmClockIcon className=" text-primary-800" size={14} />
                 <p className=" text-xs md:text-sm text-primary-800 font-semibold">
-                  {formatTimeToMinutesAndSeconds(
-                    userCurrentResult?.totalTime ?? ""
+                  {readLeaderboardTotalTime(
+                    parseTimeStringToMilliseconds(
+                      userCurrentResult?.totalTime ?? ""
+                    )
                   )}
                 </p>
               </div>
             </div>
             <div className=" flex w-full justify-end  h-full items-center">
-              <p className="text-primary-800 h-fit bg-primary-100 rounded-md px-2 md:px-4 py-1 md:py-2 text-sm md:text-base">
+              <p className="text-primary-800 h-fit bg-primary-100 rounded-md px-2 md:px-4 py-1 md:py-2 text-xs md:text-base">
                 {formatNaira(userCurrentResult?.prize ?? 0, true)}
               </p>
             </div>

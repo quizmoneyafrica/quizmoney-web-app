@@ -24,6 +24,15 @@ const LeaderboardAPI = {
       }
     );
   },
+  getSingleUserLastGameStats(): Promise<AxiosResponse<ApiResponse>> {
+    return axios.post(
+      `${BASE_URL}/getSingleUserLastGameStats`,
+      {},
+      {
+        headers: getSessionTokenHeaders(),
+      }
+    );
+  },
 };
 
 export default LeaderboardAPI;

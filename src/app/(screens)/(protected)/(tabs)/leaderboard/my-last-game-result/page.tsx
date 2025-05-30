@@ -1,9 +1,14 @@
 "use client";
-import { User } from "@/app/api/interface";
+import LeaderboardAPI from "@/app/api/leaderboardApi";
+import AppLoader from "@/app/components/loader/loader";
 import { useAppSelector } from "@/app/hooks/useAuth";
 import { CorrectCircleIcon, WrongCircleIcon } from "@/app/icons/icons";
-import { decryptData } from "@/app/utils/crypto";
-import { formatNaira, formatTimeToMinutesAndSeconds } from "@/app/utils/utils";
+import { setStats } from "@/app/store/gameStatsSlice";
+import {
+  formatNaira,
+  parseTimeStringToMilliseconds,
+  readLeaderboardTotalTime,
+} from "@/app/utils/utils";
 import { Flex, Grid } from "@radix-ui/themes";
 import {
   AlarmClockIcon,
@@ -13,45 +18,50 @@ import {
   X,
 } from "lucide-react";
 import Image from "next/image";
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
-
-const dummyQuestion = [
-  {
-    question: "Who was the First President of the United States ?",
-    options: [
-      "George Washington",
-      "Nelson Mandela",
-      "John F. Kennedy",
-      "George Bush",
-    ],
-    correctAnswer: "George Washington",
-    answer: "George Washington",
-  },
-  {
-    question: "Who was the First President of Nigeria?",
-    options: [
-      "Nelson Mandela",
-      "GoodLuck jonahtan",
-      "Bola Ahmed Tinubu",
-      "Seyi makinde",
-    ],
-    correctAnswer: "Bola Ahmed Tinubu",
-    answer: "Nelson Mandela",
-  },
-];
+import { useDispatch } from "react-redux";
 
 const Result = () => {
-  const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
-  const user: User | null = encrypted ? decryptData(encrypted) : null;
+  const { stats } = useAppSelector((state) => state.stats);
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  console.log(stats);
+
+  const correctAnswer = stats?.result.filter((result) => {
+    if (result.correct) {
+      return result;
+    }
+  });
+  const inCorrectAnswer = stats?.result.filter((result) => {
+    if (!result.correct) {
+      return result;
+    }
+  });
+
+  const getUserStats = useCallback(async () => {
+    setLoading(true);
+    const res = await LeaderboardAPI.getSingleUserLastGameStats();
+    setLoading(false);
+    const statsData = res.data.result;
+    dispatch(setStats(statsData));
+  }, [dispatch]);
+
+  useEffect(() => {
+    getUserStats();
+  }, []);
+
+  if (loading) {
+    return <AppLoader />;
+  }
 
   return (
     <div className=" md:bg-white p-3 md:p-10 w-full rounded-2xl space-y-6">
       <div className="flex items-center gap-2">
         <div className=" md:h-[70px] md:w-[70px] h-[50px] w-[50px] bg-primary-100 rounded-full flex justify-center items-center">
           <Image
-            src={user?.avatar || ""}
-            alt={user?.firstName || ""}
+            src={stats?.user?.avatar || ""}
+            alt={stats?.user?.firstName || ""}
             width={50}
             height={50}
             className="rounded-full h-full w-full"
@@ -59,10 +69,10 @@ const Result = () => {
         </div>
         <div>
           <p className="capitalize text-xl md:text-2xl font-bold text-primary-700 ">
-            {user?.firstName} {user?.lastName}
+            {stats?.user?.firstName} {stats?.user?.lastName}
           </p>
           <p className="capitalize text-sm md:text-base text-primary-700">
-            @{user?.firstName}
+            @{stats?.user?.firstName}
           </p>
         </div>
       </div>
@@ -73,7 +83,7 @@ const Result = () => {
             <ChartNoAxesColumnIcon size={20} className=" text-primary-700" />
           </div>
           <p className=" font-semibold text-base md:text-lg text-primary-700 ">
-            8/10
+            {stats?.totalCorrect}/10
           </p>
           <p className=" md:text-base text-sm">Game Score</p>
         </div>
@@ -82,7 +92,10 @@ const Result = () => {
             <AlarmClockIcon size={20} className=" text-primary-700" />
           </div>
           <p className=" font-semibold text-base md:text-lg text-primary-700 ">
-            {formatTimeToMinutesAndSeconds("00:2:20")}
+            {readLeaderboardTotalTime(
+              parseTimeStringToMilliseconds(stats?.totalTime ?? "")
+            )}
+            {/* {formatTimeToMinutesAndSeconds(stats?.totalTime ?? "")} */}
           </p>
           <p className=" md:text-base text-sm">Play Time</p>
         </div>
@@ -91,7 +104,7 @@ const Result = () => {
             <Wallet size={20} className=" text-primary-700" />
           </div>
           <p className=" font-semibold text-base md:text-lg text-primary-700 ">
-            {formatNaira(0)}
+            {formatNaira(stats?.prize ?? 0)}
           </p>
           <p className=" md:text-base text-sm">Total Earned</p>
         </div>
@@ -102,8 +115,8 @@ const Result = () => {
           <p className=" font-bold md:text-xl text-lg">Last game performance</p>
           <div>
             <CircularProgressbar
-              value={(8 / 10) * 100}
-              text={`${8}/10`}
+              value={(stats?.totalCorrect ?? 0 / 10) * 100}
+              text={`${stats?.totalCorrect ?? 0}/10`}
               className="h-[50px]"
               styles={buildStyles({
                 textSize: "30px",
@@ -124,12 +137,12 @@ const Result = () => {
           </div>
 
           <div className="flex items-center gap-3 md:gap-6">
-            {[1, 2, 4, 5, 6, 2, 10].map((value, index) => (
+            {correctAnswer?.map((value, index) => (
               <div
                 className="h-10 w-10 md:w-16 md:h-16 rounded-full border border-green-600 bg-green-100 text-green-700 flex justify-center items-center"
                 key={index}
               >
-                <p className=" text-lg md:text-2xl font-bold">{value}</p>
+                <p className=" text-lg md:text-2xl font-bold">{value.number}</p>
               </div>
             ))}
           </div>
@@ -143,12 +156,12 @@ const Result = () => {
             <p className=" font-semibold">Missed Questions</p>
           </div>
           <div className="flex items-center gap-3 md:gap-6">
-            {[3, 7, 8, 9].map((value, index) => (
+            {inCorrectAnswer?.map((value, index) => (
               <div
                 className="h-10 w-10 md:w-16 md:h-16 rounded-full border border-red-600 bg-red-100 text-red-700 flex justify-center items-center"
                 key={index}
               >
-                <p className=" text-lg md:text-2xl font-bold">{value}</p>
+                <p className=" text-lg md:text-2xl font-bold">{value.number}</p>
               </div>
             ))}
           </div>
@@ -160,21 +173,21 @@ const Result = () => {
         pt={"4"}
         className=" md:w-[80%] w-full gap-10"
       >
-        {dummyQuestion.map((currentQuestion, index) => (
+        {stats?.result?.map((currentQuestion, index) => (
           <div
             key={index}
             className=" w-full bg-neutral-50 rounded-lg border border-neutral-300 p-3"
           >
             <p className="font-semibold text-lg">Question {index + 1}</p>
-            <p className=" font-medium">{currentQuestion.question}</p>
+            <p className=" font-medium">{currentQuestion?.question}</p>
 
             <div className="mt-3 space-y-3">
-              {currentQuestion.options.map((option: string, idx: number) => {
-                const isSelected = currentQuestion.answer === option;
+              {currentQuestion?.options?.map((option: string, idx: number) => {
+                const isSelected = currentQuestion?.yourAnswer === option;
                 const isCorrectSelection =
-                  isSelected && option === currentQuestion.correctAnswer;
+                  isSelected && option === currentQuestion?.correctAnswer;
                 const isWrongSelection =
-                  isSelected && option !== currentQuestion.correctAnswer;
+                  isSelected && option !== currentQuestion?.correctAnswer;
 
                 return (
                   <div
@@ -184,7 +197,7 @@ const Result = () => {
                     className={`w-full py-3 px-6  rounded-full text-left border-4 font-medium transition 
                     ${
                       isCorrectSelection ||
-                      option === currentQuestion.correctAnswer
+                      option === currentQuestion?.correctAnswer
                         ? "bg-positive-900 border-positive-500 text-white"
                         : isWrongSelection
                         ? "bg-error-900 border-error-200 text-white"
@@ -196,13 +209,13 @@ const Result = () => {
                     <Flex gap="4" align="center" justify="between">
                       <Flex gap="4" align="center">
                         <span className="col-span-1">
-                          {String.fromCharCode(65 + idx)}.
+                          {String?.fromCharCode(65 + idx)}.
                         </span>
                         <span className="col-span-3">{option}</span>
                       </Flex>
                       <span className="text-xl">
                         {(isCorrectSelection ||
-                          option === currentQuestion.correctAnswer) && (
+                          option === currentQuestion?.correctAnswer) && (
                           <CorrectCircleIcon className="text-positive-300" />
                         )}
                         {isWrongSelection && (
