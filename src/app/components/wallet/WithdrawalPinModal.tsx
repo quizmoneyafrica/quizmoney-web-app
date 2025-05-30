@@ -8,12 +8,12 @@ import {
   setWithdrawalModal,
   setWithdrawalPinModal,
   useWallet,
+  setWallet,
 } from "@/app/store/walletSlice";
 import WalletApi from "@/app/api/wallet";
 import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
 import { store } from "@/app/store/store";
-// import classNames from "classnames";
 import CustomButton from "@/app/utils/CustomBtn";
 
 interface OtpVerificationModalProps {
@@ -34,6 +34,8 @@ export default function OtpVerificationModal({
   const [otpValues, setOtpValues] = useState<string[]>(["", "", "", ""]);
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const { wallet, withdrawalData } = useSelector(useWallet);
+  const hasPin = Boolean(wallet?.pin);
+
   useEffect(() => {
     if (open) {
       setOtpValues(["", "", "", ""]);
@@ -44,13 +46,9 @@ export default function OtpVerificationModal({
       }, 100);
     }
   }, [open]);
-  // console.log("========wallet data============================");
-  // console.log(JSON.stringify(wallet, null, 2));
-  // console.log("==========wallet data==========================");
-  // Clear error state when user starts typing again
+
   useEffect(() => {
     if (isError && otpValues.some((val) => val !== "")) {
-      // You can add a callback here to clear the error state
     }
   }, [otpValues, isError]);
 
@@ -99,11 +97,12 @@ export default function OtpVerificationModal({
         toast.success(response?.data?.data?.result?.message, {
           position: toastPosition,
         });
-        // store.dispatch(setWalletLoading(true));
-        // const res = await WalletApi.fetchCustomerWallet();
-        // if (res.data.result.wallet) {
-        //   store.dispatch(setWallet(res.data.result.wallet));
-        // }
+        
+        store.dispatch(setWalletLoading(true));
+        const res = await WalletApi.fetchCustomerWallet();
+        if (res.data.result.wallet) {
+          store.dispatch(setWallet(res.data.result.wallet));
+        }
 
         store.dispatch(setWithdrawalPinModal(false));
         store.dispatch(setWithdrawalModal(true));
@@ -118,6 +117,7 @@ export default function OtpVerificationModal({
       store.dispatch(setWalletLoading(false));
     }
   };
+
   const handleWithdrawal = async (pin: string) => {
     setIsCreatingRequest(true);
     if (!withdrawalData) {
@@ -129,13 +129,13 @@ export default function OtpVerificationModal({
         pin,
         bankAccount: withdrawalData?.bankAccount,
       });
-      console.log(
-        "==========createWithdrawal Request=========================="
-      );
-      console.log(JSON.stringify(response.data, null, 2));
-      console.log(
-        "==========createWithdrawal Request=========================="
-      );
+      if (response?.data?.result) {
+        toast.success(response?.data?.result.message, {
+          position: toastPosition,
+        });
+        store.dispatch(setWithdrawalPinModal(false));
+        store.dispatch(setWithdrawalModal(false));
+      }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(`${err.response.data.error}`, {
@@ -149,7 +149,7 @@ export default function OtpVerificationModal({
   const handleSubmit = () => {
     const pin = otpValues.join("");
     if (pin.length === 4) {
-      if (wallet?.pin) {
+      if (hasPin) {
         handleWithdrawal(pin);
       } else {
         createPin(pin);
@@ -221,9 +221,7 @@ export default function OtpVerificationModal({
               >
                 <div className="flex justify-between items-center mb-2">
                   <Dialog.Title className="text-2xl font-semibold">
-                    {wallet?.pin
-                      ? "Enter withdrawal pin"
-                      : "Create withdrawal pin"}
+                    {hasPin ? "Enter withdrawal pin" : "Create withdrawal pin"}
                   </Dialog.Title>
                   <Dialog.Close className="rounded-full p-1 hover:bg-gray-100">
                     <Cross2Icon className="w-6 h-6" />
@@ -255,7 +253,7 @@ export default function OtpVerificationModal({
                               handleInputChange(index, e.target.value)
                             }
                             onKeyDown={(e) => handleKeyDown(index, e)}
-                            className={` size-14 text-center text-4xl border ${
+                            className={`size-14 text-center text-4xl border ${
                               isError ? "border-red-500" : "border-gray-300"
                             } rounded-lg focus:outline-none focus:${
                               isError ? "border-red-500" : "border-primary-900"
@@ -271,47 +269,23 @@ export default function OtpVerificationModal({
                       </div>
                     )}
                   </div>
-                  {isCreatingPin ||
-                    (isCreatingRequest ? (
-                      <CustomButton loader disabled width="full" />
-                    ) : (
-                      <CustomButton
-                        loader={isCreatingPin || isCreatingRequest}
-                        type="button"
-                        onClick={handleSubmit}
-                        width="full"
-                        disabled={
-                          otpValues.some((val) => !val) ||
-                          isCreatingPin ||
-                          isCreatingRequest
-                        }
-                      >
-                        {"Proceed"}
-                      </CustomButton>
-                    ))}
-                  {/* <button
-                    type="button"
-                    onClick={handleSubmit}
-                    className={classNames(
-                      " text-white w-full rounded-full py-3 hover:bg-primary-500",
-                      otpValues.some((val) => !val) ||
+                  {isCreatingPin || isCreatingRequest ? (
+                    <CustomButton loader disabled width="full" />
+                  ) : (
+                    <CustomButton
+                      loader={isCreatingPin || isCreatingRequest}
+                      type="button"
+                      onClick={handleSubmit}
+                      width="full"
+                      disabled={
+                        otpValues.some((val) => !val) ||
                         isCreatingPin ||
                         isCreatingRequest
-                        ? " bg-primary-900/30"
-                        : "bg-[#2364AA]"
-                    )}
-                    disabled={
-                      otpValues.some((val) => !val) ||
-                      isCreatingPin ||
-                      isCreatingRequest
-                    }
-                  >
-                    {isCreatingPin || isCreatingRequest ? (
-                      <div className=" border-b border-b-white animate-spin size-5" />
-                    ) : (
-                      "Proceed"
-                    )}
-                  </button> */}
+                      }
+                    >
+                      {"Proceed"}
+                    </CustomButton>
+                  )}
                 </div>
               </motion.div>
             </Dialog.Content>
