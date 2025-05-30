@@ -62,9 +62,7 @@ export default function WalletBalance() {
     <>
       <div className="bg-[#17478B] text-white py-12 px-8 rounded-3xl relative overflow-hidden w-full shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm bg-opacity-95 bg-[url('/assets/images/bg.svg')] bg-cover bg-center bg-no-repeat">
         <div className="space-y-4 relative z-10">
-          <p className="text-sm opacity-90 text-center">
-            Available Wallet Balance
-          </p>
+          <p className="text-sm opacity-90 text-center">My Wallet Balance</p>
 
           {isWalletLoading ? (
             <Loader className=" animate-spin size-3 text-white" />
@@ -116,7 +114,7 @@ export default function WalletBalance() {
                   onClick={() => setOpen(true)}
                   className="bg-[#3386CE]  cursor-pointer hover:bg-primary-700 px-6 py-3 rounded-full flex items-center gap-2 font-medium"
                 >
-                  Deposit{" "}
+                  Deposit
                   <span className="font-bold">
                     <PlusIcon className=" text-white" />
                   </span>

@@ -112,7 +112,7 @@ function AppHeader() {
             )}
             <span className=" lg:flex">
               {lastSegment === "Home"
-                ? `Hello ${user?.firstName} 👋`
+                ? `Welcome, ${user?.firstName} 👋`
                 : lastSegment}
             </span>
           </div>
@@ -214,7 +214,9 @@ function AppHeader() {
           {/* <Heading size={{ initial: "4", lg: "5" }} className="lg:hidden">
 						Hello <span className="capitalize">{user?.firstName}</span> 👋
 					</Heading> */}
-          <Text className="text-sm lg:text-base">Let&apos;s play and earn</Text>
+          <Text className="text-sm lg:text-base">
+            Let&apos;s see what you&apos;ve got
+          </Text>
         </>
       )}
       <LogoutDialog open={openLogout} onOpenChange={setOpenLogout} />
