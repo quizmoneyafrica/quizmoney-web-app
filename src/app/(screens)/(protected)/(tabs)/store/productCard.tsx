@@ -146,12 +146,12 @@ const ProductCard = ({
                 </span>
               </div>
 
-              <p className=" bg-[#C4FBD2] text-[#009028] text-xs px-2 rounded-full">
+              {/* <p className=" bg-[#C4FBD2] text-[#009028] text-xs px-2 rounded-full">
                 <span className=" font-semibold">
                   {product?.bonus > 0 ? product?.bonus : "No"}{" "}
                 </span>
                 Bonus Eraser
-              </p>
+              </p> */}
             </div>
 
             <div

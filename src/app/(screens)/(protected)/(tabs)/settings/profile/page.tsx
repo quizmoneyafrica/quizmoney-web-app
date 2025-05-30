@@ -124,9 +124,8 @@ const Page = () => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.25, ease: "easeInOut" }}
-      className="pb-20"
     >
-      <div className="rounded-lg w-full bg-white overflow-hidden">
+      <div className="rounded-lg w-full bg-white overflow-hidden pb-12">
         <div className="w-full h-[120px] md:h-[160px] bg-primary-800 overflow-hidden rounded-br-[60px]">
           <Image
             src="/assets/images/background-desktop.png"
@@ -140,7 +139,10 @@ const Page = () => {
           <div className="  relative min-h-[80vh] w-full ">
             <div className=" -translate-y-12 w-full border-b border-gray-200 h-fit pb-10">
               {/* profile pic */}
-              <div className="sm:w-[100px] sm:h-[100px] w-[80px] h-[80px] rounded-full  border-2 border-primary-400  z-10 bg-white/50 backdrop-blur-sm">
+              <div
+                onClick={() => setIsImageModalOpen(true)}
+                className="cursor-pointer sm:w-[100px] sm:h-[100px] w-[80px] h-[80px] rounded-full  border-2 border-primary-400  z-10 bg-white/50 backdrop-blur-sm"
+              >
                 <div className="w-full h-full flex items-center justify-center relative">
                   <Image
                     src={user?.avatar ?? "/assets/images/profile.png"}
