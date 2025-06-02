@@ -1,13 +1,13 @@
 "use client";
 import { Flex } from "@radix-ui/themes";
 import React, { useState } from "react";
-import { IconButton } from "../login/loginForm";
-import { FacebookIcon, InstagramIcon, XIcon } from "@/app/icons/icons";
-import Link from "next/link";
 import { motion } from "framer-motion";
 import StepOne from "./formSteps/step1";
 import StepTwo from "./formSteps/step2";
 import StepThree from "./formSteps/step3";
+import SocialFollow from "@/app/components/follow/socialFollow";
+import Link from "next/link";
+import NLRC from "@/app/components/follow/nlrc";
 
 type Props = {
   step: number;
@@ -48,32 +48,6 @@ const SignupForm = ({ step, nextStep }: Props) => {
       [field]: !prev[field],
     }));
   };
-
-  //   const handleInstagram = () => {
-  //     // toast.info("Google Sign up Coming soon", {
-  //     //   position: toastPosition,
-  //     //   icon: <GoogleIcon />,
-  //     // });
-  //   };
-  //   const handleFacebook = () => {
-  //     toast.info("Facebook Sign up Coming soon", {
-  //       position: toastPosition,
-  //       icon: <FacebookIcon />,
-  //     });
-  //   };
-  //   const handleTwitter = () => {
-  //     toast.info("Apple Sign up Coming soon", {
-  //       position: toastPosition,
-  //       icon: <AppleIcon />,
-  //     });
-  //   };
-  //   const handleTikTok = () => {
-  //     toast.info("Apple Sign up Coming soon", {
-  //       position: toastPosition,
-  //       icon: <AppleIcon />,
-  //     });
-  //   };
-
   return (
     <>
       <Flex direction="column" gap="4">
@@ -116,30 +90,8 @@ const SignupForm = ({ step, nextStep }: Props) => {
             </motion.div>
           </Flex>
         </div>
-        <div className="pt-4 space-y-6">
-          <p className="text-center text-[#6E7286]">Follow us on</p>
-          <Flex align="center" justify="center" gap="6">
-            <Link href="https://facebook/">
-              <IconButton>
-                <FacebookIcon />
-              </IconButton>
-            </Link>
-            <Link href="https://instagram.com/quizmoneyng">
-              <IconButton>
-                <InstagramIcon />
-              </IconButton>
-            </Link>
-            <Link href="https://x.com/quizmoney_ng">
-              <IconButton>
-                <XIcon />
-              </IconButton>
-            </Link>
-            {/* <Link href="https://tiktok/quizmoneyng">
-              <IconButton>
-                <i className="bi bi-tiktok text-primary-900 text-2xl"></i>
-              </IconButton>
-            </Link> */}
-          </Flex>
+        <div className="py-4 space-y-6">
+          <SocialFollow />
           <p className="text-center">
             Already have an Account?{" "}
             <Link
@@ -149,6 +101,7 @@ const SignupForm = ({ step, nextStep }: Props) => {
               Sign in
             </Link>
           </p>
+          <NLRC/>
         </div>
       </Flex>
     </>
