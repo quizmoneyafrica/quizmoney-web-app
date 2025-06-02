@@ -1,15 +1,10 @@
 "use client";
 import UserAPI from "@/app/api/userApi";
+import NLRC from "@/app/components/follow/nlrc";
+import SocialFollow from "@/app/components/follow/socialFollow";
 import { useAuth } from "@/app/hooks/useAuth";
 import useFcmToken from "@/app/hooks/useFcmToken";
-import {
-  EyeIcon,
-  EyeSlash,
-  FacebookIcon,
-  InstagramIcon,
-  MailIcon,
-  XIcon,
-} from "@/app/icons/icons";
+import { EyeIcon, EyeSlash, MailIcon } from "@/app/icons/icons";
 import getDeviceId from "@/app/pwa/deviceId";
 import { encryptData } from "@/app/utils/crypto";
 import CustomButton from "@/app/utils/CustomBtn";
@@ -194,30 +189,8 @@ const LoginForm = ({ loading, setLoading }: Props) => {
               <CustomButton type="button" width="full" loader disabled />
             )}
           </div>
-          <div className="pt-4 space-y-6">
-            <p className="text-center text-[#6E7286]">Follow us on</p>
-            <Flex align="center" justify="center" gap="6">
-              <Link href="https://facebook/">
-                <IconButton>
-                  <FacebookIcon />
-                </IconButton>
-              </Link>
-              <Link href="https://instagram.com/quizmoneyng">
-                <IconButton>
-                  <InstagramIcon />
-                </IconButton>
-              </Link>
-              <Link href="https://x.com/quizmoney_ng">
-                <IconButton>
-                  <XIcon />
-                </IconButton>
-              </Link>
-              {/* <Link href="https://tiktok/quizmoneyng">
-                <IconButton>
-                  <i className="bi bi-tiktok text-primary-900 text-2xl"></i>
-                </IconButton>
-              </Link> */}
-            </Flex>
+          <div className="py-4 space-y-6">
+            <SocialFollow />
             <p className="text-center">
               Don&apos;t have an account yet?{" "}
               <Link
@@ -227,6 +200,7 @@ const LoginForm = ({ loading, setLoading }: Props) => {
                 Sign up
               </Link>
             </p>
+            <NLRC/>
           </div>
         </Flex>
       </form>

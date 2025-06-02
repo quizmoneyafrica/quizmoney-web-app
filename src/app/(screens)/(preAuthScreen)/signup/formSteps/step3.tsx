@@ -12,6 +12,7 @@ import UserAPI from "@/app/api/userApi";
 import { PasswordChip } from "@/app/utils/passwordChip";
 import getDeviceId from "@/app/pwa/deviceId";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface IStepThreeProps {
   formData: SignUpFormType;
@@ -195,6 +196,32 @@ const StepThree: React.FunctionComponent<IStepThreeProps> = (props) => {
               </Flex>
             )}
           </Container>
+          <div className="text-sm grid grid-cols-[1.6rem_1fr] items-center py-2">
+            <input
+              type="checkbox"
+              name="agree"
+              id="agree"
+              className="h-5 w-5"
+              required
+            />
+            <label htmlFor="agree" className="text-neutral-700">
+              By clicking <span>&quot;Create Account&quot;</span>, you confirm
+              that you have read and agreed to our
+              <Link
+                href="https://www.quizmoney.ng/terms-of-use"
+                className="text-primary-900 ml-1"
+              >
+                terms & conditions
+              </Link>{" "}
+              <span className="mx-0.5">and</span>{" "}
+              <Link
+                href="https://www.quizmoney.ng/privacy-policy"
+                className="text-primary-900"
+              >
+                privacy policy
+              </Link>
+            </label>
+          </div>
           <div className="pt-4">
             {!loading ? (
               <CustomButton type="submit" width="full" disabled={!isFormValid}>
