@@ -69,7 +69,7 @@ const StepOne: React.FunctionComponent<IStepOneProps> = (props) => {
             name="referredBy"
             value={formData.referredBy}
             type="text"
-            placeholder="TOOE26"
+            placeholder="TOOE26 (optional)"
             onChange={onChange}
             icon={<PersonIcon className="text-[#A6ABC4]" />}
           />
