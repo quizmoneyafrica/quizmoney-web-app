@@ -38,7 +38,7 @@ export const NotificationBox = ({
                   ? "🛍"
                   : notification.message.includes("request")
                   ? "💸"
-                  : "💳 "}
+                  : "🔔 "}
               </span>
             </div>
             <Grid className="text-left">
