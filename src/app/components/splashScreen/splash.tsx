@@ -39,7 +39,7 @@ export default function Splash() {
         height={38}
         priority
       />
-      <div className="absolute bottom-8 w-full flex items-center justify-center">
+      <div className="absolute bottom-8 w-full flex items-center justify-center !text-neutral-50">
         <NLRC />
       </div>
     </main>

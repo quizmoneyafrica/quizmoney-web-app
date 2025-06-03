@@ -15,7 +15,7 @@ import {
   setWalletLoading,
 } from "@/app/store/walletSlice";
 import WalletApi from "@/app/api/wallet";
-import NLRC from "@/app/components/follow/nlrc";
+
 
 function HomeTab() {
   const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
@@ -82,9 +82,6 @@ function HomeTab() {
             <TransactionHistory />
           </div>
         </Grid>
-        <footer className="py-6">
-          <NLRC />
-        </footer>
       </motion.div>
     </>
   );
