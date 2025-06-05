@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { NlrcIcon } from "@/app/icons/icons";
+import { Text } from "@radix-ui/themes";
 
 export default function Splash() {
   const router = useRouter();
