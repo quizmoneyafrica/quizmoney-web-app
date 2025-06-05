@@ -30,7 +30,7 @@ function AdsScreen() {
     const timeout = setTimeout(() => {
       dispatch(setshowResultScreen(true));
       dispatch(setShowAdsScreen(false));
-    }, 30000); // 20 seconds
+    }, 45000);
 
     return () => clearTimeout(timeout);
   }, [dispatch]);

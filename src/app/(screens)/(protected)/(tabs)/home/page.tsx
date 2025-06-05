@@ -16,6 +16,7 @@ import {
 } from "@/app/store/walletSlice";
 import WalletApi from "@/app/api/wallet";
 
+
 function HomeTab() {
   const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
   const user = encrypted ? decryptData(encrypted) : null;

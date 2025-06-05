@@ -30,13 +30,15 @@ const Support = () => {
           className=" md:bg-white sm:p-5 lg:p-10 rounded-3xl"
         >
           <div>
-            <p className="text-xl md:text-2xl font-bold">Support</p>
+            <p className="text-xl md:text-2xl text-primary-700 font-bold">
+              We are available 24 hours 7 days a week
+            </p>
 
-            <p className="text-xs md:text-sm">Get answers to your questions </p>
+            <p className="text-xs md:text-sm">
+              Got questions or need help? Our support team is here for you
+              anytime, day or night.
+            </p>
           </div>
-          <p className="text-lg md:text-xl text-primary-700 font-bold">
-            No Answer To Your Question? Ask Our User Support Team
-          </p>
 
           <div className="flex gap-6 md:gap-10 mt-4 flex-col">
             {/* <div className="flex items-center gap-6 border-b border-zinc-200 pb-4">

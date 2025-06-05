@@ -27,7 +27,17 @@ const ViewNotification: React.FunctionComponent<IViewNotificationProps> = ({
             </p>
           </Flex>
           <div className="grid grid-cols-[56px_1fr] col-span-2 gap-2 items-center">
-            <div className={`h-14 w-14 rounded-full bg-positive-50`}></div>
+            <div className={`h-14 w-14 rounded-full bg-positive-50`}>
+              <span className="text-3xl">
+                {notification.message.includes("deposit")
+                  ? "💰"
+                  : notification.message.includes("purchased")
+                  ? "🛍"
+                  : notification.message.includes("request")
+                  ? "💸"
+                  : "🔔 "}
+              </span>
+            </div>
             <Grid className="text-left w-full">
               <Flex justify="between" align="center">
                 <p className="font-bold">{notification.message}</p>

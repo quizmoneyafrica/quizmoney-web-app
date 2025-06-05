@@ -18,6 +18,8 @@ function LeaderboardQueries() {
     const rankings = res.data.result.rankings.map((data: any) => ({
       position: data.position,
       prize: data.prize,
+      totalCorrect: data?.totalCorrect,
+      totalTime: data?.totalTime,
       ...data.user,
     }));
     const payload = { leaderboard: rankings };

@@ -131,7 +131,7 @@ function Page() {
           <p className="text-lg  font-semibold">Legal</p>
           <Grid columns={{ initial: "1", md: "2" }} gap={"18px"}>
             <Link
-              href="https://quizmoney.ng/terms-and-conditions"
+              href="https://quizmoney.ng/terms-of-use"
               target="_blank"
             >
               <Flex
