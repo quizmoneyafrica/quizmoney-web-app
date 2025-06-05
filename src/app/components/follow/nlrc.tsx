@@ -7,7 +7,7 @@ function NLRC() {
     <div className="flex items-center justify-center !font-text gap-3">
       <NlrcIcon />
       <div className="grid">
-        <Text className="text-black font-bold">Approved by</Text>
+        <Text className="text-black font-bold">Licensed by</Text>
         <Text className="text-black/50 font-medium">
           National Lottery <br /> Regulatory Commission
         </Text>
