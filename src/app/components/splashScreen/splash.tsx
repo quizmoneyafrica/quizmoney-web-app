@@ -4,7 +4,7 @@ import { isMobileOrTablet } from "@/app/utils/utils";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
-import { NlrcIcon } from "@/app/icons";
+import { NlrcIcon } from "@/app/icons/icons";
 
 export default function Splash() {
   const router = useRouter();
