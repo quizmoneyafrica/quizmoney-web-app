@@ -4,7 +4,8 @@ import { isMobileOrTablet } from "@/app/utils/utils";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
-import NLRC from "../follow/nlrc";
+import { NlrcIcon } from "@/app/icons/icons";
+import { Text } from "@radix-ui/themes";
 
 export default function Splash() {
   const router = useRouter();
@@ -39,8 +40,16 @@ export default function Splash() {
         height={38}
         priority
       />
-      <div className="absolute bottom-8 w-full flex items-center justify-center !text-neutral-50">
-        <NLRC />
+      <div className="absolute bottom-8 w-full flex items-center justify-center">
+        <div className="flex items-center justify-center !font-text gap-3">
+      <NlrcIcon />
+      <div className="grid">
+        <Text className="!text-white font-bold">Licensed by</Text>
+        <Text className="!text-neutral-100 font-medium">
+          National Lottery <br /> Regulatory Commission
+        </Text>
+      </div>
+    </div>
       </div>
     </main>
   );
