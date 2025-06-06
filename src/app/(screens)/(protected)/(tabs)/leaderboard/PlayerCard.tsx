@@ -97,8 +97,8 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
                 </div>
               </Table.Cell>
             )}
-
-            {player.activeTab === "lastGame" && (
+{/* Timer Gamer  */}
+{/*             {player.activeTab === "lastGame" && (
               <Table.Cell>
                 <div className="flex items-center h-full gap-1 text-nowrap">
                   <AlarmClockIcon className=" text-primary-800" size={14} />
@@ -109,7 +109,7 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
                   </p>
                 </div>
               </Table.Cell>
-            )}
+            )} */}
 
             <Table.Cell className="">
               <div className="flex items-center h-full gap-1 text-nowrap">
