@@ -8,7 +8,7 @@ import {
   readLeaderboardTotalTime,
 } from "@/app/utils/utils";
 import { Flex, Grid, Table } from "@radix-ui/themes";
-import { AlarmClockIcon } from "lucide-react";
+// import { AlarmClockIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
