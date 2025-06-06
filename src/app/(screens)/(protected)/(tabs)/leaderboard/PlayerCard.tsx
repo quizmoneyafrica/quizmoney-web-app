@@ -43,6 +43,9 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
   const [open, setOpen] = useState(false);
 
   console.log(player);
+  console.log(readLeaderboardTotalTime(
+                      parseTimeStringToMilliseconds(player?.totalTime ?? "")
+                    ));
 
   return (
     <>
