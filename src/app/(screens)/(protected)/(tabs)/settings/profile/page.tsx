@@ -45,9 +45,11 @@ const initialForm = {
 const Page = () => {
   const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
   const user: User | null = encrypted ? decryptData(encrypted) : null;
-  const formattedDOB = new Date(user?.dob?.iso ?? "")
-    .toISOString()
-    .split("T")[0];
+  const rawDob = user?.dob?.iso;
+  const formattedDOB =
+    rawDob && !isNaN(new Date(rawDob).getTime())
+      ? new Date(rawDob).toISOString().split("T")[0]
+      : "";
   const [formData, setFormData] = useState({
     ...initialForm,
     ...user,

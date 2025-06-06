@@ -13,6 +13,7 @@ import {
   setTopGamers,
   TopGamersState,
 } from "@/app/store/gameSlice";
+import { cleanValue } from "../updateAccount/socialLinksDrawer";
 
 const avatarColors = ["#F2F2F2", "#AFF0FF", "#C4FBD2", "#FFCBD2", "#FFF6C5"];
 function TopGamers() {
@@ -135,15 +136,15 @@ function TopGamers() {
                 </div>
 
                 <div className="grid place-items-center gap-3 items-center">
-                  {(gamerInfo.facebook ||
-                    gamerInfo.instagram ||
-                    gamerInfo.twitter) && (
+                  {(cleanValue(gamerInfo.facebook) ||
+                    cleanValue(gamerInfo.instagram) ||
+                    cleanValue(gamerInfo.twitter)) && (
                     <p className="text-lg sm:text-xl font-semibold">
                       Social Links
                     </p>
                   )}
                   <div className="flex gap-2 text-primary-900">
-                    {gamerInfo.facebook && (
+                    {cleanValue(gamerInfo.facebook) && (
                       <Link
                         href={`https://facebook.com/${gamerInfo.facebook}`}
                         target="_blank"
@@ -155,7 +156,7 @@ function TopGamers() {
                         </div>
                       </Link>
                     )}
-                    {gamerInfo.instagram && (
+                    {cleanValue(gamerInfo.instagram) && (
                       <Link
                         href={`https://instagram.com/${gamerInfo.instagram}`}
                         target="_blank"
@@ -165,7 +166,7 @@ function TopGamers() {
                         </div>
                       </Link>
                     )}
-                    {gamerInfo.twitter && (
+                    {cleanValue(gamerInfo.twitter) && (
                       <Link
                         href={`https://x.com/${gamerInfo.twitter}`}
                         target="_blank"
