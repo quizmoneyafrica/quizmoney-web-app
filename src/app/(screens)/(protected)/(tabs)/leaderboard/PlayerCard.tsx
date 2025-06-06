@@ -1,4 +1,6 @@
 import QmDrawer from "@/app/components/drawer/drawer";
+import { cleanValue } from "@/app/components/updateAccount/socialLinksDrawer";
+import { FacebookIcon, InstagramIcon, XIcon } from "@/app/icons/icons";
 import {
   formatNaira,
   formatRank,
@@ -39,6 +41,9 @@ interface PlayerCardProps {
 
 const PlayerCard = ({ player }: PlayerCardProps) => {
   const [open, setOpen] = useState(false);
+
+  console.log(player);
+
   return (
     <>
       <QmDrawer
@@ -48,7 +53,8 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
         trigger={
           <Table.Row
             className={`cursor-pointer text-black  font-semibold !bg-white  !my-4 !overflow-hidden !rounded-full `}
-            onClick={() => setOpen(true)}
+            // onClick={() => setOpen(!open)}
+            // onClick={(e) => e.stopPropagation()}
             key={player.userId}
           >
             <Table.Cell className="">
@@ -162,37 +168,47 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
           </div>
 
           <div className="grid place-items-center gap-3 items-center">
-            {(player?.facebook || player?.instagram || player?.twitter) && (
+            {(cleanValue(player?.facebook) ||
+              cleanValue(player?.instagram) ||
+              cleanValue(player?.twitter)) && (
               <p className="text-lg sm:text-xl font-semibold">Social Links</p>
             )}
             <div className="flex gap-2 text-primary-900">
-              {player?.facebook && (
+              {cleanValue(player?.facebook) && (
                 <Link
                   href={`https://facebook.com/${player?.facebook}`}
                   target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
                 >
                   <div className="h-[40px] w-[40px]  rounded-full bg-primary-50 flex justify-center items-center">
-                    {/* <FacebookIcon /> */}
-                    <i className="bi bi-facebook text-lg"></i>
+                    <FacebookIcon />
                   </div>
                 </Link>
               )}
-              {player?.instagram && (
+              {cleanValue(player?.instagram) && (
                 <Link
                   href={`https://instagram.com/${player?.instagram}`}
                   target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
                 >
                   <div className="h-[40px] w-[40px] rounded-full bg-primary-50 flex justify-center items-center">
-                    {/* <InstagramLogoIcon /> */}
-                    <i className="bi bi-instagram text-lg"></i>
+                    <InstagramIcon />
                   </div>
                 </Link>
               )}
-              {player?.twitter && (
-                <Link href={`https://x.com/${player?.twitter}`} target="_blank">
+              {cleanValue(player?.twitter) && (
+                <Link
+                  href={`https://x.com/${player?.twitter}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <div className="h-[40px] w-[40px] rounded-full bg-primary-50 flex justify-center items-center">
-                    {/* <TwitterLogoIcon /> */}
-                    <i className="bi bi-twitter text-lg"></i>
+                    <XIcon />
                   </div>
                 </Link>
               )}

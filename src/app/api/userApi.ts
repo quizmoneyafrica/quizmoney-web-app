@@ -70,6 +70,32 @@ const UserAPI = {
       }
     );
   },
+  sendFeedback(
+    rating: string,
+    message: string
+  ): Promise<AxiosResponse<ApiResponse>> {
+    return axios.post(
+      `${BASE_URL}/sendFeedback`,
+      { rating, message },
+      {
+        headers: getSessionTokenHeaders(),
+      }
+    );
+  },
+  updateSocialHandles(
+    facebook: string,
+    twitter: string,
+    whatsapp: string,
+    instagram: string
+  ): Promise<AxiosResponse<ApiResponse>> {
+    return axios.post(
+      `${BASE_URL}/updateSocialHandles`,
+      { facebook, twitter, whatsapp, instagram },
+      {
+        headers: getSessionTokenHeaders(),
+      }
+    );
+  },
 
   forgotPassword(email: string): Promise<AxiosResponse<ApiResponse>> {
     return axios.post(
