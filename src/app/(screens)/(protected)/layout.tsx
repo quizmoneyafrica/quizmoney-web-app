@@ -4,7 +4,7 @@ import AppHeader from "@/app/layout/appHeader";
 import BottomNavigation from "@/app/layout/BottomNavigation";
 import SidebarNav from "@/app/layout/SidebarNav";
 import ProtectedRoute from "@/app/security/protectedRoute";
-import "react-circular-progressbar/dist/styles.css";
+import "react-circular-progressbar/dist/styles.css"; 
 
 export default function ProtectedLayout({
   children,
