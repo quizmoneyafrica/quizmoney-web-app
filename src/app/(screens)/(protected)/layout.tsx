@@ -28,6 +28,7 @@ export default function ProtectedLayout({
             </div>
           </main>
         </div>
+
         <BottomNavigation />
       </ProtectedRoute>
     </>
