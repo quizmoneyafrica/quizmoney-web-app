@@ -46,7 +46,7 @@ function GameCard() {
         new Date(nextGameData?.startDate.iso),
         new Date()
       );
-      if (diff > 0 && diff <= 300) {
+      if (diff > 0 && diff <= 1800) {
         setShowJoinBtn(true);
       } else {
         setShowJoinBtn(false);

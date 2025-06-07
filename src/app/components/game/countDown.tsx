@@ -80,7 +80,7 @@ export default function CountdownScreen({ startDate }: Props) {
       const diff = differenceInSeconds(new Date(startDate), new Date());
       setSecondsLeft(diff);
 
-      if (diff > 0 && diff <= 300) {
+      if (diff > 0 && diff <= 1800) {
         if (audioRef.current && userInteracted.current) {
           audioRef.current.play().catch(() => {});
         }

@@ -8,7 +8,7 @@ import {
   readLeaderboardTotalTime,
 } from "@/app/utils/utils";
 import { Flex, Grid, Table } from "@radix-ui/themes";
-// import { AlarmClockIcon } from "lucide-react";
+import { AlarmClockIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -18,7 +18,9 @@ import React, { useState } from "react";
 //   2: "🥈",
 //   3: "🥉",
 // };
-
+export function removeAtSymbol(name: string): string {
+  return name.startsWith("@") ? name.slice(1) : name;
+}
 interface PlayerCardProps {
   player: {
     prize?: number;
@@ -43,9 +45,11 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
   const [open, setOpen] = useState(false);
 
   console.log(player);
-  console.log(readLeaderboardTotalTime(
-                      parseTimeStringToMilliseconds(player?.totalTime ?? "")
-                    ));
+  console.log(
+    readLeaderboardTotalTime(
+      parseTimeStringToMilliseconds(player?.totalTime ?? "")
+    )
+  );
 
   return (
     <>
@@ -100,8 +104,8 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
                 </div>
               </Table.Cell>
             )}
-{/* Timer Gamer  */}
-{/*             {player.activeTab === "lastGame" && (
+            {/* Timer Gamer  */}
+            {player.activeTab === "lastGame" && (
               <Table.Cell>
                 <div className="flex items-center h-full gap-1 text-nowrap">
                   <AlarmClockIcon className=" text-primary-800" size={14} />
@@ -112,7 +116,7 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
                   </p>
                 </div>
               </Table.Cell>
-            )} */}
+            )}
 
             <Table.Cell className="">
               <div className="flex items-center h-full gap-1 text-nowrap">
@@ -179,7 +183,9 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
             <div className="flex gap-2 text-primary-900">
               {cleanValue(player?.facebook) && (
                 <Link
-                  href={`https://facebook.com/${player?.facebook}`}
+                  href={`https://facebook.com/${removeAtSymbol(
+                    player?.facebook
+                  )}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
@@ -191,7 +197,9 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
               )}
               {cleanValue(player?.instagram) && (
                 <Link
-                  href={`https://instagram.com/${player?.instagram}`}
+                  href={`https://instagram.com/${removeAtSymbol(
+                    player?.instagram
+                  )}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => {
@@ -205,7 +213,7 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
               )}
               {cleanValue(player?.twitter) && (
                 <Link
-                  href={`https://x.com/${player?.twitter}`}
+                  href={`https://x.com/${removeAtSymbol(player?.twitter)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
