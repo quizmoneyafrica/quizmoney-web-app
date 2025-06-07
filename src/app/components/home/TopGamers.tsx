@@ -14,6 +14,7 @@ import {
   TopGamersState,
 } from "@/app/store/gameSlice";
 import { cleanValue } from "../updateAccount/socialLinksDrawer";
+import { removeAtSymbol } from "@/app/(screens)/(protected)/(tabs)/leaderboard/PlayerCard";
 
 const avatarColors = ["#F2F2F2", "#AFF0FF", "#C4FBD2", "#FFCBD2", "#FFF6C5"];
 function TopGamers() {
@@ -146,7 +147,9 @@ function TopGamers() {
                   <div className="flex gap-2 text-primary-900">
                     {cleanValue(gamerInfo.facebook) && (
                       <Link
-                        href={`https://facebook.com/${gamerInfo.facebook}`}
+                        href={`https://facebook.com/${removeAtSymbol(
+                          gamerInfo.facebook
+                        )}`}
                         target="_blank"
                       >
                         <div className="h-[40px] w-[40px] rounded-full bg-primary-50 flex justify-center items-center">
@@ -158,7 +161,9 @@ function TopGamers() {
                     )}
                     {cleanValue(gamerInfo.instagram) && (
                       <Link
-                        href={`https://instagram.com/${gamerInfo.instagram}`}
+                        href={`https://instagram.com/${removeAtSymbol(
+                          gamerInfo.instagram
+                        )}`}
                         target="_blank"
                       >
                         <div className="h-[40px] w-[40px] rounded-full bg-primary-50 flex justify-center items-center">
@@ -168,7 +173,9 @@ function TopGamers() {
                     )}
                     {cleanValue(gamerInfo.twitter) && (
                       <Link
-                        href={`https://x.com/${gamerInfo.twitter}`}
+                        href={`https://x.com/${removeAtSymbol(
+                          gamerInfo.twitter
+                        )}`}
                         target="_blank"
                       >
                         {" "}
