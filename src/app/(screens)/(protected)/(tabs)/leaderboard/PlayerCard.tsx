@@ -109,11 +109,19 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
               <Table.Cell>
                 <div className="flex items-center h-full gap-1 text-nowrap">
                   <AlarmClockIcon className=" text-primary-800" size={14} />
-                  <p className="text-sm text-primary-800 font-semibold">
-                    {readLeaderboardTotalTime(
-                      parseTimeStringToMilliseconds(player?.totalTime ?? "")
-                    )}
-                  </p>
+                  {player?.totalTime ? (
+                    <p className="text-sm text-primary-800 font-semibold">
+                      {readLeaderboardTotalTime(
+                        parseTimeStringToMilliseconds(
+                          player?.totalTime ? player?.totalTime : "00:00:00"
+                        )
+                      )}
+                    </p>
+                  ) : (
+                    <p className="text-sm text-primary-800 font-semibold">
+                      -s, -ms
+                    </p>
+                  )}
                 </div>
               </Table.Cell>
             )}
