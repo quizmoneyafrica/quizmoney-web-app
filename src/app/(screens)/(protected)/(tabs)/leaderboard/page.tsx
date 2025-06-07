@@ -154,9 +154,9 @@ function Page() {
                 {activeTab === "lastGame" && (
                   <Table.ColumnHeaderCell>Score</Table.ColumnHeaderCell>
                 )}
-                {activeTab === "lastGame" && (
+{/*                 {activeTab === "lastGame" && (
                   <Table.ColumnHeaderCell>Time</Table.ColumnHeaderCell>
-                )}
+                )} */}
 
                 <Table.ColumnHeaderCell className="rounded-se-xl">
                   Prize

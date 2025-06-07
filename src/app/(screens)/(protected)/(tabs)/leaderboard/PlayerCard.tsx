@@ -8,7 +8,7 @@ import {
   readLeaderboardTotalTime,
 } from "@/app/utils/utils";
 import { Flex, Grid, Table } from "@radix-ui/themes";
-import { AlarmClockIcon } from "lucide-react";
+// import { AlarmClockIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -43,6 +43,9 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
   const [open, setOpen] = useState(false);
 
   console.log(player);
+  console.log(readLeaderboardTotalTime(
+                      parseTimeStringToMilliseconds(player?.totalTime ?? "")
+                    ));
 
   return (
     <>
@@ -97,8 +100,8 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
                 </div>
               </Table.Cell>
             )}
-
-            {player.activeTab === "lastGame" && (
+{/* Timer Gamer  */}
+{/*             {player.activeTab === "lastGame" && (
               <Table.Cell>
                 <div className="flex items-center h-full gap-1 text-nowrap">
                   <AlarmClockIcon className=" text-primary-800" size={14} />
@@ -109,7 +112,7 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
                   </p>
                 </div>
               </Table.Cell>
-            )}
+            )} */}
 
             <Table.Cell className="">
               <div className="flex items-center h-full gap-1 text-nowrap">
