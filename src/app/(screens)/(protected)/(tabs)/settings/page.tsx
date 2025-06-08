@@ -7,6 +7,7 @@ import { decryptData } from "@/app/utils/crypto";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { Flex, Grid } from "@radix-ui/themes";
 import { motion } from "framer-motion";
+import { Smartphone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -50,6 +51,31 @@ function Page() {
         <Flex direction={"column"} gap={"15px"}>
           <p className="text-lg  font-semibold">General</p>
           <Grid columns={{ initial: "1", md: "2" }} gap={"18px"}>
+            <Link
+              href="https://www.quizmoney.ng/how-to-install-app"
+              target="_blank"
+            >
+              <Flex
+                // onClick={() => router.push("/settings/how-it-works")}
+                className="cursor-pointer bg-white p-4 md:p-6 rounded-2xl sm:rounded-xl border border-zinc-200"
+                align={"center"}
+                justify={"between"}
+              >
+                <Flex gap={"3"} align={"center"}>
+                  <div className="h-12 w-12 bg-primary-50 rounded-full flex justify-center items-center">
+                    {/* <Image
+                      src="/icons/setting.svg"
+                      alt="terms"
+                      width={24}
+                      height={24}
+                    />{" "} */}
+                    <Smartphone width={20} className="text-primary-800" />
+                  </div>
+                  <p className=" text-lg font-semibold ">How to install</p>
+                </Flex>
+                <ChevronRightIcon height={25} width={25} />
+              </Flex>
+            </Link>
             <Link href="https://quizmoney.ng/how-it-works" target="_blank">
               <Flex
                 // onClick={() => router.push("/settings/how-it-works")}
@@ -64,7 +90,7 @@ function Page() {
                       alt="terms"
                       width={24}
                       height={24}
-                    />{" "}
+                    />
                   </div>
                   <p className=" text-lg font-semibold ">How it Works</p>
                 </Flex>
@@ -130,10 +156,7 @@ function Page() {
         <Flex direction={"column"} gap={"15px"}>
           <p className="text-lg  font-semibold">Legal</p>
           <Grid columns={{ initial: "1", md: "2" }} gap={"18px"}>
-            <Link
-              href="https://quizmoney.ng/terms-of-use"
-              target="_blank"
-            >
+            <Link href="https://quizmoney.ng/terms-of-use" target="_blank">
               <Flex
                 className="cursor-pointer bg-white p-4 md:p-6 rounded-2xl sm:rounded-xl border border-zinc-200"
                 align={"center"}

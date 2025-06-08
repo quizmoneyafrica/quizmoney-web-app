@@ -72,7 +72,13 @@ function Page() {
             dispatch(
               setAllTimeLeaderboard({
                 page,
-                data: res.data.result,
+                data: {
+                  currentPage: res.data.result.currentPage,
+                  leaderboard: res.data.result.leaderboard,
+                  limit: res.data.result.limit,
+                  total: res.data.result.total,
+                  totalPages: res.data.result.totalPages,
+                },
               })
             );
           }
