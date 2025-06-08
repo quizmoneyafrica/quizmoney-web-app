@@ -1,6 +1,6 @@
 import Parse from "parse";
 
-// Your Back4App keys
+// Your Back4App keys 
 Parse.initialize(
   process.env.NEXT_PUBLIC_XParseApplicationId!,
   process.env.NEXT_PUBLIC_XParseJSAPIKey!
