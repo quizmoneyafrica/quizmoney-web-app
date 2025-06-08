@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { appHeaders, BASE_URL } from "./userApi";
-import { ApiResponse } from "./interface";
+import { ApiResponse } from "./interface"; 
  
 const DemoApi = {
   fetchDemoGame(): Promise<AxiosResponse<ApiResponse>> {
