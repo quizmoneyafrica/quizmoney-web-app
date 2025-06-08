@@ -62,18 +62,7 @@ function Page() {
           if (!lastGame) {
             const res = await LeaderboardAPI.getLastGameLeaderboard();
             console.log("LEADERBOARD USER", res.data.result);
-            dispatch(
-              setLastGameLeaderboard({
-                createdAt: res.data.result.createdAt,
-                gameId: res.data.result.gameId,
-                msg: res.data.result.msg,
-                objectId: res.data.result.objectId,
-                rankings: res.data.result.rankings,
-                updatedAt: res.data.result.updatedAt,
-                userLastGameStats: res.data.result.userLastGameStats,
-                users: res.data.result.users,
-              })
-            );
+            dispatch(setLastGameLeaderboard(res.data.result));
           }
         } else {
           if (!allTime[page]) {
