@@ -1,6 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import QmDrawer from "@/app/components/drawer/drawer";
 import { cleanValue } from "@/app/components/updateAccount/socialLinksDrawer";
 import { FacebookIcon, InstagramIcon, XIcon } from "@/app/icons/icons";
+import {
+  AllTimeLeaderboardUser,
+  LeaderboardRanking,
+} from "@/app/store/leaderboardSlice";
 import {
   formatNaira,
   formatRank,
@@ -10,47 +15,40 @@ import {
 import { Flex, Grid, Table } from "@radix-ui/themes";
 import { AlarmClockIcon } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import React, { useState } from "react";
 
-// const rank = {
-//   1: "🥇",
-//   2: "🥈",
-//   3: "🥉",
-// };
 export function removeAtSymbol(name: string): string {
-  return name.startsWith("@") ? name.slice(1) : name;
+  const cleaned = name.startsWith("@") ? name.slice(1) : name;
+  return cleaned.replace(/%20|\s+/g, "");
 }
 interface PlayerCardProps {
-  player: {
-    prize?: number;
-    position?: number;
-    amountWon: number;
-    avatar: string;
-    facebook: string;
-    firstName: string;
-    instagram: string;
-    lastName: string;
-    noOfGamesPlayed: number;
-    overallRank: number;
-    twitter: string;
-    userId: string;
-    totalTime: string;
-    totalCorrect: number;
-    activeTab: "lastGame" | "allTime";
-  };
+  player: LeaderboardRanking | AllTimeLeaderboardUser;
+  activeTab: "lastGame" | "allTime";
 }
 
-const PlayerCard = ({ player }: PlayerCardProps) => {
+const PlayerCard = ({ player, activeTab }: PlayerCardProps) => {
   const [open, setOpen] = useState(false);
 
-  console.log(player);
-  console.log(
-    readLeaderboardTotalTime(
-      parseTimeStringToMilliseconds(player?.totalTime ?? "")
-    )
-  );
+  const isLastGamePlayer = (player: any): player is LeaderboardRanking => {
+    return "user" in player;
+  };
 
+  const lastGamePlayer = isLastGamePlayer(player) ? player : null;
+  const allTimePlayer = !isLastGamePlayer(player) ? player : null;
+
+  const facebook = isLastGamePlayer(player)
+    ? cleanValue(lastGamePlayer?.user?.facebook || "")
+    : cleanValue(allTimePlayer?.facebook || "");
+
+  const instagram = isLastGamePlayer(player)
+    ? cleanValue(lastGamePlayer?.user?.instagram || "")
+    : cleanValue(allTimePlayer?.instagram || "");
+
+  const twitter = isLastGamePlayer(player)
+    ? cleanValue(lastGamePlayer?.user?.twitter || "")
+    : cleanValue(allTimePlayer?.twitter || "");
+
+  const hasAnySocial = facebook || instagram || twitter;
   return (
     <>
       <QmDrawer
@@ -61,8 +59,12 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
           <Table.Row
             className={`cursor-pointer text-black  font-semibold !bg-white  !my-4 !overflow-hidden !rounded-full `}
             // onClick={() => setOpen(!open)}
-            // onClick={(e) => e.stopPropagation()}
-            key={player.userId}
+            onClick={(e) => e.stopPropagation()}
+            key={
+              isLastGamePlayer(player)
+                ? lastGamePlayer?.user?.userId
+                : allTimePlayer?.userId
+            }
           >
             <Table.Cell className="">
               <Flex
@@ -73,9 +75,9 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
               >
                 <span>🏆 </span>
                 <span className="font-bold text-primary-900">
-                  {player.activeTab === "lastGame"
-                    ? formatRank(player?.position || 0)
-                    : formatRank(player?.overallRank)}
+                  {activeTab === "lastGame"
+                    ? formatRank(lastGamePlayer?.position || 0)
+                    : formatRank(allTimePlayer?.overallRank || 0)}
                 </span>
               </Flex>
             </Table.Cell>
@@ -84,36 +86,50 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
               <div className="flex items-center justify-start gap-2 capitalize">
                 <div className=" md:h-[50px] md:w-[50px] h-[40px] w-[40px] p-1 rounded-full bg-primary-50">
                   <Image
-                    src={player?.avatar || ""}
-                    alt={player?.firstName || ""}
+                    src={
+                      isLastGamePlayer(player)
+                        ? lastGamePlayer?.user?.avatar || ""
+                        : allTimePlayer?.avatar || ""
+                    }
+                    alt={
+                      isLastGamePlayer(player)
+                        ? lastGamePlayer?.user?.firstName || ""
+                        : allTimePlayer?.firstName || ""
+                    }
                     width={50}
                     height={50}
                     className="rounded-full h-full w-full"
                   />
                 </div>
-                <span>{player.firstName}</span>
+                <span>
+                  {isLastGamePlayer(player)
+                    ? lastGamePlayer?.user?.firstName || ""
+                    : allTimePlayer?.firstName || ""}
+                </span>
               </div>
             </Table.Cell>
 
-            {player.activeTab === "lastGame" && (
+            {activeTab === "lastGame" && (
               <Table.Cell>
                 <div className="flex items-center h-full justify-start">
                   <p className="flex md:h-10 md:w-10 w-6 h-6 items-center text-primary-800 justify-center gap-2 border-2 border-primary-800 rounded-full p-2">
-                    {player?.totalCorrect}
+                    {lastGamePlayer?.totalCorrect}
                   </p>
                 </div>
               </Table.Cell>
             )}
             {/* Timer Gamer  */}
-            {player.activeTab === "lastGame" && (
+            {activeTab === "lastGame" && (
               <Table.Cell>
                 <div className="flex items-center h-full gap-1 text-nowrap">
                   <AlarmClockIcon className=" text-primary-800" size={14} />
-                  {player?.totalTime ? (
+                  {lastGamePlayer?.totalTime ? (
                     <p className="text-sm text-primary-800 font-semibold">
                       {readLeaderboardTotalTime(
                         parseTimeStringToMilliseconds(
-                          player?.totalTime ? player?.totalTime : "00:00:00"
+                          lastGamePlayer?.totalTime
+                            ? lastGamePlayer?.totalTime
+                            : "00:00:00"
                         )
                       )}
                     </p>
@@ -129,9 +145,9 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
             <Table.Cell className="">
               <div className="flex items-center h-full gap-1 text-nowrap">
                 <p className="inline-block text-primary-800 h-fit bg-primary-100 rounded-md px-2 md:px-4 py-1 md:py-2 text-sm md:text-base">
-                  {player?.activeTab === "lastGame"
-                    ? formatNaira(player?.prize ?? 0, true)
-                    : formatNaira(player?.amountWon, true)}
+                  {activeTab === "lastGame"
+                    ? formatNaira(lastGamePlayer?.prize ?? 0, true)
+                    : formatNaira(allTimePlayer?.amountWon ?? 0, true)}
                 </p>
               </div>
             </Table.Cell>
@@ -139,19 +155,34 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
         }
       >
         {/* Drawer content */}
-        <div className="grid place-items-center gap-3 max-w-lg mx-auto">
+        <div
+          className="grid place-items-center gap-3 max-w-lg mx-auto"
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
           {/* <p className=" text-xl sm:text-2xl font-semibold">Users Stats</p> */}
           <div className="flex items-center justify-center bg-primary-100 h-[90px] w-[90px] rounded-full overflow-clip">
             <Image
-              src={player?.avatar || ""}
-              alt={player?.firstName || ""}
+              src={
+                isLastGamePlayer(player)
+                  ? lastGamePlayer?.user?.avatar || ""
+                  : allTimePlayer?.avatar || ""
+              }
+              alt={
+                isLastGamePlayer(player)
+                  ? lastGamePlayer?.user?.firstName || ""
+                  : allTimePlayer?.firstName || ""
+              }
               width={70}
               height={70}
               className="rounded-full"
             />
           </div>
           <p className="text-center capitalize text-primary-700 text-xl sm:text-2xl font-semibold">
-            {player?.firstName}
+            {isLastGamePlayer(player)
+              ? lastGamePlayer?.user?.firstName || ""
+              : allTimePlayer?.firstName || ""}
           </p>
 
           <div className="flex flex-col gap-2 w-full md:w-[80%]">
@@ -160,79 +191,76 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
               <Flex direction="column" align="center" justify="center">
                 <p>Rank</p>
                 <div className="flex h-10 w-10 items-center text-primary-800 justify-center gap-2 border-2 border-primary-800 rounded-full p-2">
-                  {player.activeTab == "allTime"
-                    ? formatRank(player?.overallRank)
-                    : formatRank(player?.position || 1)}
+                  {activeTab == "allTime"
+                    ? formatRank(allTimePlayer?.overallRank || 0)
+                    : formatRank(lastGamePlayer?.position || 1)}
                 </div>
               </Flex>
               <Flex direction="column" align="center" justify="center">
                 <p>Games</p>
                 <div className="flex h-10 w-10 items-center text-primary-800 justify-center gap-2 border-2 border-primary-800 rounded-full p-2">
-                  {player?.noOfGamesPlayed}
+                  {isLastGamePlayer(player)
+                    ? lastGamePlayer?.user?.noOfGamesPlayed
+                    : allTimePlayer?.noOfGamesPlayed}
                 </div>
               </Flex>
               <Flex direction="column" align="center" justify="center">
                 <p>Prize</p>
                 <div className="flex h-10 w-10 items-center justify-center font-semibold text-primary-800  p-2">
-                  {player?.activeTab === "lastGame"
-                    ? formatNaira(Number(player?.prize))
-                    : formatNaira(Number(player?.amountWon))}
+                  {activeTab === "lastGame"
+                    ? formatNaira(Number(lastGamePlayer?.prize))
+                    : formatNaira(Number(allTimePlayer?.amountWon))}
                 </div>
               </Flex>
             </Grid>
           </div>
 
-          <div className="grid place-items-center gap-3 items-center">
-            {(cleanValue(player?.facebook) ||
-              cleanValue(player?.instagram) ||
-              cleanValue(player?.twitter)) && (
+          {hasAnySocial && (
+            <div
+              className="grid place-items-center gap-3"
+              onClick={(e) => e.stopPropagation()}
+            >
               <p className="text-lg sm:text-xl font-semibold">Social Links</p>
-            )}
-            <div className="flex gap-2 text-primary-900">
-              {cleanValue(player?.facebook) && (
-                <Link
-                  href={`https://facebook.com/${removeAtSymbol(
-                    player?.facebook
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="h-[40px] w-[40px]  rounded-full bg-primary-50 flex justify-center items-center">
-                    <FacebookIcon />
-                  </div>
-                </Link>
-              )}
-              {cleanValue(player?.instagram) && (
-                <Link
-                  href={`https://instagram.com/${removeAtSymbol(
-                    player?.instagram
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                >
-                  <div className="h-[40px] w-[40px] rounded-full bg-primary-50 flex justify-center items-center">
-                    <InstagramIcon />
-                  </div>
-                </Link>
-              )}
-              {cleanValue(player?.twitter) && (
-                <Link
-                  href={`https://x.com/${removeAtSymbol(player?.twitter)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="h-[40px] w-[40px] rounded-full bg-primary-50 flex justify-center items-center">
-                    <XIcon />
-                  </div>
-                </Link>
-              )}
+
+              <div className="flex gap-2 text-primary-900">
+                {facebook && (
+                  <a
+                    href={`https://facebook.com/${removeAtSymbol(facebook)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <div className="h-[40px] w-[40px] rounded-full bg-primary-50 flex justify-center items-center">
+                      <FacebookIcon />
+                    </div>
+                  </a>
+                )}
+
+                {instagram && (
+                  <a
+                    href={`https://instagram.com/${removeAtSymbol(instagram)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <div className="h-[40px] w-[40px] rounded-full bg-primary-50 flex justify-center items-center">
+                      <InstagramIcon />
+                    </div>
+                  </a>
+                )}
+
+                {twitter && (
+                  <a
+                    href={`https://x.com/${removeAtSymbol(twitter)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <div className="h-[40px] w-[40px] rounded-full bg-primary-50 flex justify-center items-center">
+                      <XIcon />
+                    </div>
+                  </a>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </QmDrawer>
 
