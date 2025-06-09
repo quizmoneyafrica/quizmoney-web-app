@@ -13,11 +13,13 @@ import { useRouter } from "next/navigation";
 import { Flex, Grid, Separator } from "@radix-ui/themes";
 import CustomButton from "@/app/utils/CustomBtn";
 import {
+  formatNaira,
   parseTimeStringToMilliseconds,
   readTotalTime,
 } from "@/app/utils/utils";
 import { ApiResponse } from "@/app/api/interface";
 import UseBlockBackNavigation from "../blockBackNav";
+import { useAppSelector } from "@/app/hooks/useAuth";
 
 type Props = {
   totalTimeUsed: string;
@@ -34,6 +36,7 @@ function DemoResult({
   UseBlockBackNavigation();
   const dispatch = useDispatch();
   const router = useRouter();
+  const { nextGameData } = useAppSelector((state) => state.game);
 
   const handlePlayAgain = () => {
     dispatch(clearDemoData());
@@ -100,26 +103,23 @@ function DemoResult({
             <div className="text-center space-y-2">
               <span className="text-7xl">🏆</span>
               <h2 className="font-bold text-2xl text-primary-900">
-                Well Played! {user?.firstName?.toUpperCase()}
+                Good Job, {user?.firstName?.toUpperCase()}!
                 <br />
-                Now It&apos;s Time to Win Real Cash
+                Ready to challenge other players?
               </h2>
+
               <p>
-                You&apos;ve just crushed the demo, now imagine getting paid for
-                your knowledge. 💰
-              </p>
-              <p>
-                Join the live game and compete with real players to win real
-                cash prizes. No gimmicks. Just 10 questions. 10 seconds each.
-                Big rewards.
+                Join the next game and compete for your share of{" "}
+                {formatNaira(Number(nextGameData?.gamePrize), true)}. Just 10
+                questions, 10 seconds each.
               </p>
             </div>
 
             {/* button  */}
-            <p className="text-center">
+            {/* <p className="text-center">
               🚀 Don&apos;t just play for fun! play to earn with Quiz Money! Tap
               the button 👇{" "}
-            </p>
+            </p> */}
             <CustomButton onClick={handleGoBack} width="full">
               Join Next Game
             </CustomButton>

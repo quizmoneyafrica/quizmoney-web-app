@@ -1,3 +1,4 @@
+import { formatNaira } from "@/app/utils/utils";
 import { Text } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -30,18 +31,17 @@ function ReferBox({ refCode }: Props) {
   };
   return (
     <div className="bg-primary-800 rounded-[20px] w-full px-6 py-6 grid grid-cols-1 gap-2">
-      <Text className="text-neutral-50 font-bold text-xl">
-        Refer & Earn with your Friends
-      </Text>
+      <Text className="text-neutral-50 font-bold text-xl">Refer & Earn</Text>
       <Text className="text-neutral-100">
-        Share with your friends and loved ones to come play
+        Earn up to {formatNaira(10000)} and qualify for a weekly referral prize
+        anytime you refer your friends and family.
       </Text>
       <div className="pt-3">
         <button
           onClick={handleShare}
           className="bg-transparent border border-white rounded-full px-4 py-2 text-white font-medium cursor-pointer"
         >
-          Invite Friends
+          Invite Now
         </button>
       </div>
     </div>

@@ -1,15 +1,10 @@
 "use client";
 import UserAPI from "@/app/api/userApi";
+import NLRC from "@/app/components/follow/nlrc";
+import SocialFollow from "@/app/components/follow/socialFollow";
 import { useAuth } from "@/app/hooks/useAuth";
 import useFcmToken from "@/app/hooks/useFcmToken";
-import {
-  AppleIcon,
-  EyeIcon,
-  EyeSlash,
-  FacebookIcon,
-  GoogleIcon,
-  MailIcon,
-} from "@/app/icons/icons";
+import { EyeIcon, EyeSlash, MailIcon } from "@/app/icons/icons";
 import getDeviceId from "@/app/pwa/deviceId";
 import { encryptData } from "@/app/utils/crypto";
 import CustomButton from "@/app/utils/CustomBtn";
@@ -67,25 +62,25 @@ const LoginForm = ({ loading, setLoading }: Props) => {
       const response = await UserAPI.login(newValues);
       const userData = response.data.result;
 
-      if (userData?.emailVerified) {
-        // Encrypt the user data
-        const encryptedUser = encryptData(userData);
+      // if (userData?.emailVerified) {
+      // Encrypt the user data
+      const encryptedUser = encryptData(userData);
 
-        // Dispatch to Redux
-        loginUser(encryptedUser);
+      // Dispatch to Redux
+      loginUser(encryptedUser);
 
-        router.replace("/home");
+      router.replace("/home");
 
-        toast.success(
-          `Welcome Back ${capitalizeFirstLetter(userData?.firstName)}`,
-          {
-            position: "top-center",
-          }
-        );
-      } else {
-        sessionStorage.setItem("pass", password);
-        verifyEmail(userData?.email, userData?.firstName);
-      }
+      toast.success(
+        `Welcome Back ${capitalizeFirstLetter(userData?.firstName)}`,
+        {
+          position: "top-center",
+        }
+      );
+      // } else {
+      //   sessionStorage.setItem("pass", password);
+      //   verifyEmail(userData?.email, userData?.firstName);
+      // }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setLoading(false);
@@ -94,46 +89,46 @@ const LoginForm = ({ loading, setLoading }: Props) => {
       });
     }
   };
-  const handleGoogleAuth = () => {
-    toast.info("Google Sign in Coming soon", {
-      position: toastPosition,
-      icon: <GoogleIcon />,
-    });
-  };
-  const handleFacebookAuth = () => {
-    toast.info("Facebook Sign in Coming soon", {
-      position: toastPosition,
-      icon: <FacebookIcon />,
-    });
-  };
-  const handleAppleAuth = () => {
-    toast.info("Apple Sign in Coming soon", {
-      position: toastPosition,
-      icon: <AppleIcon />,
-    });
-  };
+  // const handleGoogleAuth = () => {
+  //   toast.info("Google Sign in Coming soon", {
+  //     position: toastPosition,
+  //     icon: <GoogleIcon />,
+  //   });
+  // };
+  // const handleFacebookAuth = () => {
+  //   toast.info("Facebook Sign in Coming soon", {
+  //     position: toastPosition,
+  //     icon: <FacebookIcon />,
+  //   });
+  // };
+  // const handleAppleAuth = () => {
+  //   toast.info("Apple Sign in Coming soon", {
+  //     position: toastPosition,
+  //     icon: <AppleIcon />,
+  //   });
+  // };
 
-  const verifyEmail = async (email: string, firstName: string) => {
-    try {
-      const response = await UserAPI.resendSignupOtp(email);
-      if (response.status === 200) {
-        router.push(`/verify-email?email=${encodeURIComponent(email)}`);
-        toast.error(
-          `${capitalizeFirstLetter(firstName)} please verify your email.`,
-          {
-            position: "top-center",
-          }
-        );
-      }
+  // const verifyEmail = async (email: string, firstName: string) => {
+  //   try {
+  //     const response = await UserAPI.resendSignupOtp(email);
+  //     if (response.status === 200) {
+  //       router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+  //       toast.error(
+  //         `${capitalizeFirstLetter(firstName)} please verify your email.`,
+  //         {
+  //           position: "top-center",
+  //         }
+  //       );
+  //     }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      console.log("ERROR Forgot Password", err);
-      toast.error(`${err.response.data.error}`, {
-        position: toastPosition,
-      });
-    }
-  };
+  //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //   } catch (err: any) {
+  //     console.log("ERROR Forgot Password", err);
+  //     toast.error(`${err.response.data.error}`, {
+  //       position: toastPosition,
+  //     });
+  //   }
+  // };
   return (
     <>
       <form onSubmit={handleLogin}>
@@ -194,19 +189,8 @@ const LoginForm = ({ loading, setLoading }: Props) => {
               <CustomButton type="button" width="full" loader disabled />
             )}
           </div>
-          <div className="pt-4 space-y-6">
-            <p className="text-center text-[#6E7286]">Or sign in with</p>
-            <Flex align="center" justify="center" gap="6">
-              <IconButton onClick={handleGoogleAuth}>
-                <GoogleIcon />
-              </IconButton>
-              <IconButton onClick={handleFacebookAuth}>
-                <FacebookIcon />
-              </IconButton>
-              <IconButton onClick={handleAppleAuth}>
-                <AppleIcon />
-              </IconButton>
-            </Flex>
+          <div className="py-4 space-y-6">
+            <SocialFollow />
             <p className="text-center">
               Don&apos;t have an account yet?{" "}
               <Link
@@ -216,6 +200,7 @@ const LoginForm = ({ loading, setLoading }: Props) => {
                 Sign up
               </Link>
             </p>
+            <NLRC />
           </div>
         </Flex>
       </form>

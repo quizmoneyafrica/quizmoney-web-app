@@ -4,8 +4,10 @@ import { ArrowDownIcon, CalendarIcon } from "@/app/icons/icons";
 import CustomButton from "@/app/utils/CustomBtn";
 import CustomSelect from "@/app/utils/CustomSelect";
 import CustomTextField from "@/app/utils/CustomTextField";
+import { toastPosition } from "@/app/utils/utils";
 import { Flex } from "@radix-ui/themes";
 import * as React from "react";
+import { toast } from "sonner";
 
 interface IStepTwoProps {
   formData: SignUpFormType;
@@ -19,6 +21,21 @@ const StepTwo: React.FunctionComponent<IStepTwoProps> = (props) => {
   const { formData, onChange, nextStep } = props;
   const handleNextForm = (e: React.FormEvent) => {
     e.preventDefault();
+    const dob = new Date(formData.dob);
+    const today = new Date();
+    const age = today.getFullYear() - dob.getFullYear();
+    const m = today.getMonth() - dob.getMonth();
+    const isBirthdayPassed =
+      m > 0 || (m === 0 && today.getDate() >= dob.getDate());
+
+    const actualAge = isBirthdayPassed ? age : age - 1;
+
+    if (isNaN(dob.getTime()) || actualAge < 18) {
+      toast.error("You must be 18 years or older to proceed.", {
+        position: toastPosition,
+      });
+      return;
+    }
 
     nextStep();
   };

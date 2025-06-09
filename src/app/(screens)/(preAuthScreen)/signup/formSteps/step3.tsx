@@ -3,15 +3,18 @@ import { SignUpFormType } from "@/app/api/interface";
 import useFcmToken from "@/app/hooks/useFcmToken";
 import { EyeIcon, EyeSlash } from "@/app/icons/icons";
 import CustomTextField from "@/app/utils/CustomTextField";
-import { toastPosition } from "@/app/utils/utils";
+import { capitalizeFirstLetter, toastPosition } from "@/app/utils/utils";
 import { Container, Flex } from "@radix-ui/themes";
 import * as React from "react";
 import { toast } from "sonner";
 import CustomButton from "@/app/utils/CustomBtn";
-import { useRouter } from "next/navigation";
 import UserAPI from "@/app/api/userApi";
 import { PasswordChip } from "@/app/utils/passwordChip";
 import getDeviceId from "@/app/pwa/deviceId";
+// import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { encryptData } from "@/app/utils/crypto";
+import { useAuth } from "@/app/hooks/useAuth";
 
 interface IStepThreeProps {
   formData: SignUpFormType;
@@ -22,9 +25,11 @@ interface IStepThreeProps {
 }
 
 const StepThree: React.FunctionComponent<IStepThreeProps> = (props) => {
+  // const router = useRouter();
   const { token, notificationPermissionStatus } = useFcmToken();
   const { formData, onChange, toggleResetFieldVisibility } = props;
-  const router = useRouter();
+  const { loginUser } = useAuth();
+
   const [loading, setLoading] = React.useState(false);
 
   const isPasswordValid =
@@ -64,10 +69,13 @@ const StepThree: React.FunctionComponent<IStepThreeProps> = (props) => {
     sessionStorage.setItem("pass", formData.password);
     try {
       const response = await UserAPI.signUp(newValues);
-      const userData = response.data.result;
-
+      const userData = response.data.result.newUser;
+      const encryptedUser = encryptData(userData);
+      loginUser(encryptedUser);
       console.log("Signup with:", userData);
-
+      toast.success(`Welcome ${capitalizeFirstLetter(userData?.firstName)}`, {
+        position: "top-center",
+      });
       // 🔐 Encrypt the user data
       // const encryptedUser = encryptData(userData);
       // console.log("Encrypted: ", encryptedUser);
@@ -75,8 +83,8 @@ const StepThree: React.FunctionComponent<IStepThreeProps> = (props) => {
       // ✅ Dispatch to Redux
       // loginUser(encryptedUser);
 
-      // router.replace("/home");
-      router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`);
+      // router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`);
+      // router.replace("/account-created");
 
       // toast.success(
       // 	`Welcome Back ${capitalizeFirstLetter(userData?.firstName)}`,
@@ -94,6 +102,8 @@ const StepThree: React.FunctionComponent<IStepThreeProps> = (props) => {
       setLoading(false);
     }
   };
+  console.log("DATA: ", formData);
+
   return (
     <>
       <form onSubmit={handleSignUp}>
@@ -189,6 +199,32 @@ const StepThree: React.FunctionComponent<IStepThreeProps> = (props) => {
               </Flex>
             )}
           </Container>
+          <div className="text-sm grid grid-cols-[1.6rem_1fr] items-center py-2">
+            <input
+              type="checkbox"
+              name="agree"
+              id="agree"
+              className="h-5 w-5"
+              required
+            />
+            <label htmlFor="agree" className="text-neutral-700">
+              By clicking <span>&quot;Create Account&quot;</span>, you confirm
+              that you have read and agreed to our
+              <Link
+                href="https://www.quizmoney.ng/terms-of-use"
+                className="text-primary-900 ml-1"
+              >
+                terms & conditions
+              </Link>{" "}
+              <span className="mx-0.5">and</span>{" "}
+              <Link
+                href="https://www.quizmoney.ng/privacy-policy"
+                className="text-primary-900"
+              >
+                privacy policy
+              </Link>
+            </label>
+          </div>
           <div className="pt-4">
             {!loading ? (
               <CustomButton type="submit" width="full" disabled={!isFormValid}>

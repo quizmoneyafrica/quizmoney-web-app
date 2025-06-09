@@ -66,7 +66,6 @@ function VerifyEmailPage() {
         sessionStorage.removeItem("pass");
       }
 
-      // router.replace("/home");
       router.replace("/account-created");
 
       // toast.success(

@@ -19,9 +19,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from "@/app/store/authSlice";
 import AdsScreen from "./adsScreen";
 import { setGameEnded, setShowAdsScreen } from "@/app/store/gameSlice";
-import ResultScreen from "./resultScreen";
 import UseGameBlock from "./useGameBlock";
 import { RootState } from "@/app/store/store";
+import ResultScreen from "./resultScreen";
 
 const formatTime = (ms: number) => {
   const minutes = Math.floor(ms / 60000);
@@ -89,14 +89,23 @@ function GameScreen() {
   const correctSoundRef = useRef<HTMLAudioElement | null>(null);
   const wrongSoundRef = useRef<HTMLAudioElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const userInteracted = useRef(false);
 
   //Background music
   useEffect(() => {
     // if (!liveGameData?.music?.url) return;
-    audioRef.current = new Audio(liveGameData?.music?.url);
+    audioRef.current = new Audio("/sounds/game-sound.mp3");
+    // audioRef.current = new Audio(liveGameData?.music?.url);
     audioRef.current.loop = true;
-    audioRef.current.volume = 0.5;
-    audioRef.current?.play();
+    audioRef.current.volume = 0.2;
+    // audioRef.current?.play();
+    window.addEventListener("click", () => {
+      audioRef.current?.play();
+    });
+
+    if (audioRef.current && userInteracted.current) {
+      audioRef.current.play().catch(() => {});
+    }
     // if (!audioRef.current) {
     //   audioRef.current = new Audio(liveGameData?.music?.url);
     //   audioRef.current.loop = true;
@@ -165,7 +174,7 @@ function GameScreen() {
         gameId,
         questionNumber.toString(),
         "User missed it",
-        isLastQuestion ? totalTimeFormatted : undefined
+        totalTimeFormatted
       );
     }
 
@@ -241,14 +250,13 @@ function GameScreen() {
 
     // --- update answers state ---
     setSelectedAnswers(newAnswers);
-    const isLastQuestion = currentIndex === liveGameData.questions.length - 1;
 
     // --- Save Answer to DB ---
     await GameApi.recordGameAnswer(
       gameId,
       questionNumber,
       toSaveAnswer,
-      isLastQuestion ? totalTimeFormatted : undefined
+      totalTimeFormatted
     );
   };
 

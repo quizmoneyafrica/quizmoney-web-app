@@ -15,20 +15,21 @@ function LeaderboardQueries() {
 
   const getLastGameLeaderboard = useCallback(async () => {
     const res = await LeaderboardAPI.getLastGameLeaderboard();
-    const rankings = res.data.result.rankings.map((data: any) => ({
-      position: data.position,
-      prize: data.prize,
-      ...data.user,
-    }));
-    const payload = { leaderboard: rankings };
-    dispatch(setLastGameLeaderboard(payload));
+    console.log("LEADERBOARD USER", res.data.result);
+    dispatch(setLastGameLeaderboard(res.data.result));
   }, [dispatch]);
   const getAllTimeLeaderboard = useCallback(async () => {
     const res = await LeaderboardAPI.getAllTimeLeaderboard(1);
     dispatch(
       setAllTimeLeaderboard({
         page: 1,
-        data: res.data.result,
+        data: {
+          currentPage: res.data.result.currentPage,
+          leaderboard: res.data.result.leaderboard,
+          limit: res.data.result.limit,
+          total: res.data.result.total,
+          totalPages: res.data.result.totalPages,
+        },
       })
     );
   }, [dispatch]);

@@ -83,8 +83,8 @@ export default function WelcomeScreen({
                 Let&apos;s play a Demo 👋{" "}
               </Heading>
               <Text className="font-medium lg:text-center">
-                You are about to enter Quiz Money demo playground. Let&apos;s
-                Goooooo! 😃{" "}
+                You&apos;re about to play a solo warm up round.
+                <br /> This is just for fun. No pressure.
               </Text>
             </Grid>
             <div className="pt-10">

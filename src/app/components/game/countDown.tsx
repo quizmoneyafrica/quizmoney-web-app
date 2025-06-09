@@ -58,7 +58,8 @@ export default function CountdownScreen({ startDate }: Props) {
   const userInteracted = useRef(false);
 
   useEffect(() => {
-    audioRef.current = new Audio("/sounds/timer.mp3");
+    audioRef.current = new Audio("/sounds/count-sound.mp3");
+    audioRef.current.volume = 0.2;
     audioRef.current.load();
 
     if (showGameCountdown) {
@@ -79,7 +80,7 @@ export default function CountdownScreen({ startDate }: Props) {
       const diff = differenceInSeconds(new Date(startDate), new Date());
       setSecondsLeft(diff);
 
-      if (diff > 0 && diff <= 300) {
+      if (diff > 0 && diff <= 1800) {
         if (audioRef.current && userInteracted.current) {
           audioRef.current.play().catch(() => {});
         }

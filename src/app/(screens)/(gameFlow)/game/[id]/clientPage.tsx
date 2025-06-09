@@ -64,15 +64,15 @@ export default function ClientPage() {
                 You probably refreshed this page
               </p>
               <p>
-                Go to home to see next game details
-                <br /> Tap the button 👇
+                Tap the button below to see next game details
+                <br /> 👇
               </p>
 
               <CustomButton
                 width="medium"
                 onClick={() => router.replace("/home")}
               >
-                Go Home
+                Go Back
               </CustomButton>
             </div>
           </div>
