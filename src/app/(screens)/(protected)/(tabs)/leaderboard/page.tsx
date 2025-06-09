@@ -88,13 +88,7 @@ function Page() {
   useEffect(() => {
     getLeaderboard("lastGame");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  console.log(
-    "============USER=============",
-    JSON.stringify(lastGame, null, 2),
-    "==============USER============"
-  );
+  }, [lastGame]);
 
   useEffect(() => {
     if (activeTab === "allTime") {

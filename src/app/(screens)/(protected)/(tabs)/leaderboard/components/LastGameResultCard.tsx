@@ -21,8 +21,8 @@ const LastGameResultCard = ({ userLastGameStats }: LastGameResultCardProps) => {
   return (
     <Link href={"/leaderboard/my-last-game-result"} className="w-full ">
       <motion.div
-        whileHover={{ scale: 1.02 }}
-        transition={{ duration: 0.2 }}
+        // whileHover={{ scale: 1.02 }}
+        // transition={{ duration: 0.2 }}
         className="bg-white rounded-xl border-2 border-[#51A2E0]"
       >
         <div className="p-6">
