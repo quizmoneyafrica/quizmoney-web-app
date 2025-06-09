@@ -14,18 +14,9 @@ import {
   setLastGameLeaderboard,
 } from "@/app/store/leaderboardSlice";
 import { useDispatch } from "react-redux";
-import { AlarmClockIcon } from "lucide-react";
-import {
-  formatNaira,
-  formatRank,
-  parseTimeStringToMilliseconds,
-  readLeaderboardTotalTime,
-} from "@/app/utils/utils";
+
 import { Flex, Table } from "@radix-ui/themes";
-import Image from "next/image";
 import LastGameResultCard from "./components/LastGameResultCard";
-import GameResultTable from "./components/LastGameResultCard";
-import { getAuthUser } from "@/app/api/userApi";
 
 function Page() {
   const [activeTab, setActiveTab] = useState<"lastGame" | "allTime">(
