@@ -23,6 +23,9 @@ import {
 } from "@/app/utils/utils";
 import { Flex, Table } from "@radix-ui/themes";
 import Image from "next/image";
+import LastGameResultCard from "./components/LastGameResultCard";
+import GameResultTable from "./components/LastGameResultCard";
+import { getAuthUser } from "@/app/api/userApi";
 
 function Page() {
   const [activeTab, setActiveTab] = useState<"lastGame" | "allTime">(
@@ -95,6 +98,12 @@ function Page() {
     getLeaderboard("lastGame");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  console.log(
+    "============USER=============",
+    JSON.stringify(lastGame, null, 2),
+    "==============USER============"
+  );
 
   useEffect(() => {
     if (activeTab === "allTime") {
@@ -203,99 +212,10 @@ function Page() {
         </div>
       )}
 
-      {/* My last Game  */}
-      {activeTab === "lastGame" && !loading && userLastGameStats && (
-        <Flex direction="column" gap="4" mb="6">
-          <Table.Root variant="ghost">
-            <Table.Header className="!border-none ">
-              <Table.Row className="rounded-xl bg-primary-50">
-                <Table.ColumnHeaderCell className="rounded-ss-xl">
-                  Rank
-                </Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell colSpan={2}>
-                  Player
-                </Table.ColumnHeaderCell>
-
-                {activeTab === "lastGame" && (
-                  <Table.ColumnHeaderCell>Score</Table.ColumnHeaderCell>
-                )}
-                {activeTab === "lastGame" && (
-                  <Table.ColumnHeaderCell>Time</Table.ColumnHeaderCell>
-                )}
-
-                <Table.ColumnHeaderCell className="rounded-se-xl">
-                  Prize
-                </Table.ColumnHeaderCell>
-              </Table.Row>
-            </Table.Header>
-
-            {/* Body  */}
-            <Table.Body className="!border-none !bg-transparent">
-              <Table.Row
-                className={`cursor-pointer text-black  font-semibold !bg-white  !my-4 !overflow-hidden !rounded-full `}
-                // onClick={() => setOpen(true)}
-              >
-                <Table.Cell>
-                  <Flex
-                    direction="column"
-                    justify="center"
-                    className="h-full md:pl-2"
-                  >
-                    <span>🏆 </span>
-                    <span className="font-bold text-primary-900">
-                      {userLastGameStats?.position
-                        ? formatRank(userLastGameStats?.position)
-                        : "-"}
-                    </span>
-                  </Flex>
-                </Table.Cell>
-
-                <Table.Cell colSpan={2} className="">
-                  <div className="flex items-center justify-start gap-2 capitalize">
-                    <div className=" md:h-[50px] md:w-[50px] h-[40px] w-[40px] p-1 rounded-full bg-primary-50">
-                      <Image
-                        src={userLastGameStats?.user?.avatar || ""}
-                        alt={userLastGameStats?.user?.firstName || ""}
-                        width={50}
-                        height={50}
-                        className="rounded-full h-full w-full"
-                      />
-                    </div>
-                    <span>{userLastGameStats?.user?.firstName || null}</span>
-                  </div>
-                </Table.Cell>
-
-                <Table.Cell>
-                  <div className="flex items-center h-full justify-start">
-                    <p className="flex md:h-10 md:w-10 w-6 h-6 items-center text-primary-800 justify-center gap-2 border-2 border-primary-800 rounded-full p-2">
-                      {userLastGameStats?.totalCorrect}
-                    </p>
-                  </div>
-                </Table.Cell>
-                <Table.Cell>
-                  <div className="flex items-center h-full gap-1 text-nowrap">
-                    <AlarmClockIcon className=" text-primary-800" size={14} />
-                    <p className="text-sm text-primary-800 font-semibold">
-                      {readLeaderboardTotalTime(
-                        parseTimeStringToMilliseconds(
-                          userLastGameStats?.totalTime ?? ""
-                        )
-                      )}
-                    </p>
-                  </div>
-                </Table.Cell>
-
-                <Table.Cell className="">
-                  <div className="flex items-center h-full gap-1 text-nowrap">
-                    <p className="inline-block text-primary-800 h-fit bg-primary-100 rounded-md px-2 md:px-4 py-1 md:py-2 text-sm md:text-base">
-                      {formatNaira(userLastGameStats?.prize ?? 0, true)}
-                    </p>
-                  </div>
-                </Table.Cell>
-              </Table.Row>
-            </Table.Body>
-          </Table.Root>
-        </Flex>
+      {activeTab === "lastGame" && userLastGameStats && (
+        <div className=" my-5 w-full">
+          <LastGameResultCard userLastGameStats={userLastGameStats} />
+        </div>
       )}
 
       {content}
