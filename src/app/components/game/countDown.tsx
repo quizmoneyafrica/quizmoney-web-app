@@ -109,7 +109,7 @@ export default function CountdownScreen({ startDate }: Props) {
     };
   }, [startDate, dispatch, router, showGameCountdown, liveGameData?.objectId]);
 
-  if (!showGameCountdown || secondsLeft < 0 || secondsLeft > 300) return null;
+  if (!showGameCountdown || secondsLeft < 0 || secondsLeft > 1800) return null;
 
   const minutes = Math.floor(secondsLeft / 60);
   const seconds = secondsLeft % 60;
