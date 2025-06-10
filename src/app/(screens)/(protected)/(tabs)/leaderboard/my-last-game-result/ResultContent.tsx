@@ -5,7 +5,11 @@ import { useAppSelector } from "@/app/hooks/useAuth";
 import { CorrectCircleIcon, WrongCircleIcon } from "@/app/icons/icons";
 import { RootState } from "@/app/store/store";
 import { decryptData } from "@/app/utils/crypto";
-import { formatNaira, formatTimeToMinutesAndSeconds } from "@/app/utils/utils";
+import {
+  formatNaira,
+  parseTimeStringToMilliseconds,
+  readLeaderboardTotalTime,
+} from "@/app/utils/utils";
 import { Flex, Grid } from "@radix-ui/themes";
 import {
   AlarmClockIcon,
@@ -115,12 +119,14 @@ const ResultContent = () => {
           },
           {
             icon: <AlarmClockIcon size={16} className="text-primary-700" />,
-            value: formatTimeToMinutesAndSeconds(totalTime),
+            value: readLeaderboardTotalTime(
+              parseTimeStringToMilliseconds(totalTime)
+            ),
             label: "Play Time",
           },
           {
             icon: <Wallet size={16} className="text-primary-700" />,
-            value: formatNaira(prize),
+            value: formatNaira(Number(prize), true),
             label: "Total Earned",
           },
         ].map((stat, index) => (
@@ -154,31 +160,30 @@ const ResultContent = () => {
         aria-label="Performance Analysis"
         className="space-y-4 md:space-y-6"
       >
-        <motion.div
-          variants={itemVariants}
-          className="flex items-center justify-between pr-2 md:pr-5"
-        >
+        <motion.div variants={itemVariants} className="grid grid-cols-2">
           <h2 className="font-bold text-base md:text-xl">
             Last game performance
           </h2>
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="h-[40px] md:h-[50px]"
-          >
-            <CircularProgressbar
-              value={(totalCorrect / 10) * 100}
-              text={`${totalCorrect}/10`}
-              className="h-full"
-              styles={buildStyles({
-                textSize: "24px",
-                pathColor: "#00a63e",
-                textColor: "#000",
-                trailColor: "#dcfce7",
-              })}
-            />
-          </motion.div>
+          <div className="flex items-center !justify-end">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="h-[40px] md:h-[50px] w-[40px]"
+            >
+              <CircularProgressbar
+                value={(totalCorrect / 10) * 100}
+                text={`${totalCorrect}/10`}
+                className="h-full"
+                styles={buildStyles({
+                  textSize: "24px",
+                  pathColor: "#00a63e",
+                  textColor: "#000",
+                  trailColor: "#dcfce7",
+                })}
+              />
+            </motion.div>
+          </div>
         </motion.div>
 
         <motion.div variants={itemVariants} className="space-y-2 md:space-y-3">
@@ -206,9 +211,9 @@ const ResultContent = () => {
                   key={index}
                   variants={itemVariants}
                   whileHover={{ scale: 1.1 }}
-                  className="h-8 w-8 md:h-16 md:w-16 rounded-full border border-green-600 bg-green-100 text-green-700 flex justify-center items-center"
+                  className="h-8 w-8 md:h-10 md:w-10 rounded-full border border-green-600 bg-green-100 text-green-700 flex justify-center items-center"
                 >
-                  <p className="text-base md:text-2xl font-bold">{index + 1}</p>
+                  <p className="text-base md:text-lg font-bold">{index + 1}</p>
                 </motion.div>
               ))}
           </motion.div>
@@ -238,9 +243,9 @@ const ResultContent = () => {
                   key={index}
                   variants={itemVariants}
                   whileHover={{ scale: 1.1 }}
-                  className="h-8 w-8 md:h-16 md:w-16 rounded-full border border-red-600 bg-red-100 text-red-700 flex justify-center items-center"
+                  className="h-8 w-8 md:h-10 md:w-10 rounded-full border border-red-600 bg-red-100 text-red-700 flex justify-center items-center"
                 >
-                  <p className="text-base md:text-2xl font-bold">{index + 1}</p>
+                  <p className="text-base md:text-lg font-bold">{index + 1}</p>
                 </motion.div>
               ))}
           </motion.div>
