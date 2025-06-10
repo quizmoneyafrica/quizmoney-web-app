@@ -30,13 +30,7 @@ const authPersistConfig = {
   transforms: [authTransform],
 };
 
-const leaderboardPersistConfig = {
-  key: "leaderboard",
-  storage: localForage,
-};
-
 const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
-const persistedLeaderboardReducer = persistReducer(leaderboardPersistConfig, leaderboardReducer);
 
 // const persistConfig = {
 //   key: "root",
@@ -53,7 +47,7 @@ export const store = configureStore({
     game: gameReducer,
     demo: demoReducer,
     notifications: notificationReducer,
-    leaderboard: persistedLeaderboardReducer,
+    leaderboard: leaderboardReducer,
     store: storeReducer,
   },
   middleware: (getDefaultMiddleware) =>
