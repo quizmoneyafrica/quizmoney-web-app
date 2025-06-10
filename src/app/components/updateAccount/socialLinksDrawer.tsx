@@ -36,6 +36,7 @@ function SocialLinksDrawer() {
     ];
 
     const filledCount = handles.filter((handle) => handle.trim() !== "").length;
+    console.log(user);
 
     if (filledCount < 2) {
       const timer = setTimeout(() => {

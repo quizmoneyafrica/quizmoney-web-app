@@ -91,8 +91,7 @@ const SignupForm = ({ step, nextStep }: Props) => {
           </Flex>
         </div>
         <div className="py-4 space-y-6">
-          <SocialFollow />
-          <p className="text-center">
+          <p className="text-center pb-3">
             Already have an Account?{" "}
             <Link
               href="/login"
@@ -101,7 +100,8 @@ const SignupForm = ({ step, nextStep }: Props) => {
               Sign in
             </Link>
           </p>
-          <NLRC/>
+          <SocialFollow />
+          <NLRC />
         </div>
       </Flex>
     </>
