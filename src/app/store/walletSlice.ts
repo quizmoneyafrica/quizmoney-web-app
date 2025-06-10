@@ -103,6 +103,11 @@ const walletSlice = createSlice({
     setWalletLoading(state, action: PayloadAction<boolean>) {
       state.isWalletLoading = action.payload;
     },
+    setWalletBalance(state, action: PayloadAction<string>) {
+      if (state.wallet) {
+        state.wallet.balance = action.payload;
+      }
+    },
     setTransactions(
       state,
       action: PayloadAction<UserWalletTransaction[] | []>
@@ -137,6 +142,7 @@ export const {
   setWithdrawalModal,
   setWithdrawalPinModal,
   setWithdrawalData,
+  setWalletBalance,
 } = walletSlice.actions;
 export default walletSlice.reducer;
 export const useWallet = (state: RootState) => state?.wallet;

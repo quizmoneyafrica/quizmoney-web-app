@@ -190,8 +190,7 @@ const LoginForm = ({ loading, setLoading }: Props) => {
             )}
           </div>
           <div className="py-4 space-y-6">
-            <SocialFollow />
-            <p className="text-center">
+            <p className="text-center pb-3">
               Don&apos;t have an account yet?{" "}
               <Link
                 href="/signup"
@@ -200,6 +199,7 @@ const LoginForm = ({ loading, setLoading }: Props) => {
                 Sign up
               </Link>
             </p>
+            <SocialFollow />
             <NLRC />
           </div>
         </Flex>
