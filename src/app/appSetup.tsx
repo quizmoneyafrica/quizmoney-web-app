@@ -10,7 +10,7 @@ import { useAppDispatch } from "./hooks/useAuth";
 import { setRehydrated } from "./store/authSlice";
 import useFcmToken from "./hooks/useFcmToken";
 import { disableConsoleInProduction, isIosPwaInstalled } from "./utils/utils";
-import PermissionGuide from "./pwa/permissionGuide";
+import PermissionGuide from "./pwa/permissionGuide"; 
 
 type Props = {
   children: ReactNode;
