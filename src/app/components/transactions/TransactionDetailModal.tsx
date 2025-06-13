@@ -127,10 +127,24 @@ export function TransactionDetailsModal({
                       <span className="text-primary-900  font-medium">
                         Transaction Status:
                       </span>
-                      <span className="text-right text-green-600 ">
+                      <span
+                        className={`text-right ${
+                          transaction.status === "successful"
+                            ? "text-green-600"
+                            : transaction.status === "pending"
+                            ? "text-amber-500"
+                            : transaction.status === "failed"
+                            ? "text-red-600"
+                            : "text-green-600"
+                        }`}
+                      >
                         {transaction.status === "successful"
                           ? "Successful"
-                          : transaction.status || "Successful"}
+                          : transaction.status === "pending"
+                          ? "Pending"
+                          : transaction.status === "failed"
+                          ? "Failed"
+                          : "Successful"}
                       </span>
                     </div>
                     <div className="border-b border-dashed border-[#17478B] mt-4"></div>
@@ -140,17 +154,7 @@ export function TransactionDetailsModal({
                     initial={{ y: 10, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.35 }}
-                  >
-                    <div>
-                      <label className="text-primary-900  text-sm font-normal">
-                        Comments:{" "}
-                        <label className="text-gray-800 mt-2">
-                          Transaction has been Approved payment has been sent
-                          your bank Account
-                        </label>
-                      </label>
-                    </div>
-                  </motion.div>
+                  ></motion.div>
                 </motion.div>
               </motion.div>
             </Dialog.Content>
