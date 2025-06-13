@@ -75,6 +75,7 @@ function Layout({ children }: { children: React.ReactNode }) {
     );
     setShouldShowCountDown(showGameCountDown && diff > 0 && diff <= 1800);
   }, [gameData?.startDate.iso, loading, showGameCountDown]);
+  console.log(gameData);
 
   return (
     <ProtectedRoute>
