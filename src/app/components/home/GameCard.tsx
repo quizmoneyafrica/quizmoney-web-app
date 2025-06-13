@@ -117,6 +117,7 @@ function GameCard() {
           <div className="absolute -right-10 -top-8 z-[1] opacity-40 h-[150px] w-[150px] rounded-full bg-transparent border-8 border-primary-100" />
         </div>
         <div className="relative z-[2] bg-primary-800 w-full px-4 py-5 rounded-b-[20px]">
+          <Flex align="center" justify="center"></Flex>
           {showJoinBtn ? (
             <Flex align="center" justify="center">
               <JoinGameBtn />

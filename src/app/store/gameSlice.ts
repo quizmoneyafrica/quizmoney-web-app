@@ -1,6 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ApiResponse } from "../api/interface";
 
+export type GamePhase =
+  | "loading"
+  | "lobby"
+  | "playing"
+  | "completed"
+  | "result"
+  | "cancelled";
+
 export interface TopGamersState {
   amountWon: number;
   avatar: string;
@@ -22,6 +30,8 @@ interface GameState {
   showResultScreen: boolean;
   openLeaveGame: boolean;
   topGamers: TopGamersState[] | null;
+  phase: GamePhase;
+  audioShouldPlay: boolean;
 }
 
 export const initialTopGamers = {
@@ -46,12 +56,17 @@ const initialState: GameState = {
   showResultScreen: false,
   openLeaveGame: false,
   topGamers: null,
+  phase: "loading",
+  audioShouldPlay: false,
 };
 
 const gameSlice = createSlice({
   name: "game",
   initialState,
   reducers: {
+    setPhase: (state, action: PayloadAction<GamePhase>) => {
+      state.phase = action.payload;
+    },
     setNextGameData(state, action: PayloadAction<ApiResponse["result"]>) {
       state.nextGameData = action.payload;
     },
@@ -79,6 +94,12 @@ const gameSlice = createSlice({
     setTopGamers(state, action: PayloadAction<TopGamersState[]>) {
       state.topGamers = action.payload;
     },
+    playAudio: (state) => {
+      state.audioShouldPlay = true;
+    },
+    stopAudio: (state) => {
+      state.audioShouldPlay = false;
+    },
   },
 });
 
@@ -92,5 +113,8 @@ export const {
   setGameEnded,
   setOpenLeaveGame,
   setTopGamers,
+  setPhase,
+  playAudio,
+  stopAudio,
 } = gameSlice.actions;
 export default gameSlice.reducer;

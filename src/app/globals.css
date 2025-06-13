@@ -272,6 +272,13 @@ body.bg-primary-900 {
 body.hideTawkTo .widget-visible {
   display: none !important;
 }
+.text-count {
+  color: var(--QM-Neutral-Colors-White, #fff);
+  text-align: center;
+  -webkit-text-stroke-width: 2px;
+  -webkit-text-stroke-color: var(--QM-Warning-Color-800, #f4a235);
+  font-style: normal;
+}
 /*
 html,
 body {

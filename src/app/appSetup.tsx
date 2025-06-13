@@ -3,14 +3,15 @@ import React, { ReactNode, useEffect } from "react";
 import { Theme } from "@radix-ui/themes";
 import { Provider } from "react-redux";
 import { persistor, store } from "./store/store";
-import { PersistGate } from "redux-persist/integration/react"; 
-import EnablePushOnIosButton from "./pwa/iosNotificationRequest"; 
+import { PersistGate } from "redux-persist/integration/react";
+import EnablePushOnIosButton from "./pwa/iosNotificationRequest";
 import { Toaster } from "@/app/components/toaster/sonner";
 import { useAppDispatch } from "./hooks/useAuth";
 import { setRehydrated } from "./store/authSlice";
 import useFcmToken from "./hooks/useFcmToken";
 import { disableConsoleInProduction, isIosPwaInstalled } from "./utils/utils";
 import PermissionGuide from "./pwa/permissionGuide";
+import AudioManager from "./(screens)/(liveGame)/live-game/cmp/GameAudioManager";
 
 type Props = {
   children: ReactNode;
@@ -45,6 +46,7 @@ const AppSetup = ({ children }: Props) => {
           <RootHydrationWatcher />
           <Toaster appearance="light" />
           <EnablePushOnIosButton />
+          <AudioManager />
           {children}
         </PersistGate>
       </Provider>
