@@ -54,46 +54,6 @@ function JoinGameBtn() {
       }
     }
   };
-  // const handleJoinBtn = async () => {
-  //   dispatch(setShowAdsScreen(false));
-  //   dispatch(setshowResultScreen(false));
-  //   dispatch(setIsAllowedInGame(false));
-  //   const userId = user?.objectId;
-  //   const isInGame =
-  //     Array.isArray(gameData?.users) && gameData?.users.includes(userId);
-  //   const diff = differenceInSeconds(
-  //     new Date(gameData?.startDate.iso),
-  //     new Date()
-  //   );
-  //   dispatch(setGameEnded(false));
-
-  //   if (isInGame && diff > 0) {
-  //     dispatch(setLiveGameData(gameData));
-  //     dispatch(setPhase("lobby"));
-  //     dispatch(setShowGameCountdown(true));
-  //     router.push("/game");
-  //     setLoading(false);
-  //   } else {
-  //     setLoading(true);
-  //     try {
-  //       const res = await GameApi.registerForGame(gameData?.objectId);
-  //       const game = res.data.result.userData;
-
-  //       dispatch(setLiveGameData(decryptGameData(game)));
-  //       dispatch(setPhase("lobby"));
-  //       dispatch(setShowGameCountdown(true));
-  //       router.push("/game");
-  //       setLoading(false);
-  //       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //     } catch (err: any) {
-  //       console.log(err.response.data.error);
-  //       toast.error(err.response.data.error, {
-  //         position: toastPosition,
-  //       });
-  //       setLoading(false);
-  //     }
-  //   }
-  // };
 
   return (
     <>

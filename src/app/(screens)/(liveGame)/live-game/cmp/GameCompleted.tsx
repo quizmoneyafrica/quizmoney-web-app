@@ -1,63 +1,33 @@
-import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
+import { useAppDispatch } from "@/app/hooks/useAuth";
 import { setPhase } from "@/app/store/gameSlice";
-import CustomButton from "@/app/utils/CustomBtn";
-import React, { useRef, useState } from "react";
+import { Grid } from "@radix-ui/themes";
+import React, { useEffect } from "react";
 
 function GameCompleted() {
   const dispatch = useAppDispatch();
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const { liveGameData } = useAppSelector((state) => state.game);
-  const [isPlaying, setIsPlaying] = useState(false);
 
-  const handlePlay = () => {
-    const video = videoRef.current;
-    if (video) {
-      video.muted = false;
-      video
-        .play()
-        .then(() => {
-          setIsPlaying(true);
-        })
-        .catch((error) => {
-          console.error("Autoplay blocked or failed:", error);
-        });
-    }
-  };
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      dispatch(setPhase("result"));
+    }, 45000);
 
-  //   useEffect(() => {
-  //     const timeout = setTimeout(() => {
-  //       dispatch(setPhase("result"));
-  //     }, 45000);
-
-  //     return () => clearTimeout(timeout);
-  //   }, [dispatch]);
+    return () => clearTimeout(timeout);
+  }, [dispatch]);
   return (
     <>
-      <div className="relative w-screen h-screen bg-black overflow-hidden">
-        <video
-          ref={videoRef}
-          src={liveGameData?.videoAds?.url}
-          className="absolute top-0 left-0 w-full h-full object-cover"
-          controls={false}
-          playsInline
-          preload="auto"
-          onEnded={() => {
-            dispatch(setPhase("result"));
-          }}
-        />
-
-        {!isPlaying && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/70 z-10">
-            <CustomButton
-              onClick={handlePlay}
-              type="button"
-              size="md"
-              className="transition"
-            >
-              ▶ Play Video
-            </CustomButton>
-          </div>
-        )}
+      <div className="min-h-[100dvh] lg:h-screen bg-primary-900 hero flex flex-col items-center justify-center  px-4">
+        <div className="w-full h-full mx-auto max-w-lg space-y-6 grid grid-rows-2 place-items-center">
+          <Grid gap="3" className="w-full">
+            {/* body  */}
+            <div className="bg-primary-50 text-center border-4 border-primary-500 rounded-[10px] px-4 py-4 space-y-4">
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-900 border-t-transparent mx-auto" />
+              <p className="text-lg font-medium">Collating results...</p>
+              <p className="text-sm italic">
+                please don&apos;t leave this page
+              </p>
+            </div>
+          </Grid>
+        </div>
       </div>
     </>
   );
