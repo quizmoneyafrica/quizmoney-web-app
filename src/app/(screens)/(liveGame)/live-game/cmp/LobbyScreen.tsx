@@ -13,7 +13,7 @@ function LobbyScreen() {
   const dispatch = useAppDispatch();
   const { liveGameData, phase } = useAppSelector((state) => state.game);
   const startDate = liveGameData?.startDate.iso;
-  // const startDate = "2025-06-13T07:29:00.000Z";
+  // const startDate = "2025-06-14T13:05:00.000Z";
   const [secondsLeft, setSecondsLeft] = useState(
     differenceInSeconds(new Date(startDate), new Date())
   );
