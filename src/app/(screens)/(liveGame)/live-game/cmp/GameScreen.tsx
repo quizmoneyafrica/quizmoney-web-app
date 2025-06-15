@@ -10,7 +10,7 @@ import {
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import { Flex } from "@radix-ui/themes";
 import GameApi from "@/app/api/game";
-import { setPhase } from "@/app/store/gameSlice";
+import { playAudio, setPhase } from "@/app/store/gameSlice";
 import { getAuthUser } from "@/app/api/userApi";
 import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
@@ -32,7 +32,9 @@ function shuffleArray<T>(array: T[]): T[] {
 function GameScreen() {
   const dispatch = useAppDispatch();
   const user = getAuthUser();
-  const { liveGameData } = useAppSelector((state) => state.game);
+  const { liveGameData, audioShouldPlay } = useAppSelector(
+    (state) => state.game
+  );
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>([]);
   const [locked, setLocked] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -120,6 +122,7 @@ function GameScreen() {
   const handleOptionClick = async (option: string) => {
     if (locked) return;
     setLocked(true);
+    if (!audioShouldPlay) dispatch(playAudio());
 
     //pause timer
     if (totalTimeInterval.current) {
