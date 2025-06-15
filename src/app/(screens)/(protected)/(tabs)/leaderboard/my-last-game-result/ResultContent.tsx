@@ -2,7 +2,6 @@
 
 import { User } from "@/app/api/interface";
 import { useAppSelector } from "@/app/hooks/useAuth";
-import { CorrectCircleIcon, WrongCircleIcon } from "@/app/icons/icons";
 import { RootState } from "@/app/store/store";
 import { decryptData } from "@/app/utils/crypto";
 import {
@@ -10,7 +9,7 @@ import {
   parseTimeStringToMilliseconds,
   readLeaderboardTotalTime,
 } from "@/app/utils/utils";
-import { Flex, Grid } from "@radix-ui/themes";
+import { Grid } from "@radix-ui/themes";
 import {
   AlarmClockIcon,
   ChartNoAxesColumnIcon,
@@ -267,22 +266,58 @@ const ResultContent = () => {
               key={index}
               variants={itemVariants}
               whileHover={{ scale: 1.02 }}
-              className="w-full bg-neutral-50 rounded-lg border border-neutral-300 p-2 md:p-3"
+              className="w-full bg-primary-50 rounded-lg border border-neutral-300 p-2 md:p-3"
             >
               <motion.p
                 variants={itemVariants}
-                className="font-semibold text-base md:text-lg"
+                className="font-semibold text-base md:text-lg flex items-center gap-2"
               >
-                Question {index + 1}
+                <span>Question {currentQuestion.number}</span>
+                {currentQuestion.correct ? (
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    className="h-5 w-5 md:h-6 md:w-6 rounded-full bg-green-600 flex items-center justify-center text-white"
+                  >
+                    <Check size={12} className="md:hidden" />
+                    <Check size={14} className="hidden md:block" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    className="h-5 w-5 md:h-6 md:w-6 rounded-full bg-red-600 flex items-center justify-center text-white"
+                  >
+                    <X size={12} className="md:hidden" />
+                    <X size={14} className="hidden md:block" />
+                  </motion.div>
+                )}
               </motion.p>
               <motion.p
                 variants={itemVariants}
-                className="font-medium text-sm md:text-base"
+                className="font-bold text-sm md:text-base"
               >
                 {currentQuestion.question}
               </motion.p>
 
               <motion.div
+                variants={containerVariants}
+                className="mt-2 md:mt-3 space-y-2 md:space-y-3"
+              >
+                {currentQuestion.correct ? (
+                  <p className="text-positive-900">
+                    Correct Answer: {currentQuestion.correctAnswer}
+                  </p>
+                ) : (
+                  <div>
+                    <p className="text-error-900">
+                      Your Answer: {currentQuestion.yourAnswer}
+                    </p>{" "}
+                    <p className="text-positive-900">
+                      Correct Answer: {currentQuestion.correctAnswer}
+                    </p>
+                  </div>
+                )}
+              </motion.div>
+              {/* <motion.div
                 variants={containerVariants}
                 className="mt-2 md:mt-3 space-y-2 md:space-y-3"
               >
@@ -338,7 +373,7 @@ const ResultContent = () => {
                     </motion.div>
                   );
                 })}
-              </motion.div>
+              </motion.div> */}
             </motion.div>
           ))}
         </Grid>
