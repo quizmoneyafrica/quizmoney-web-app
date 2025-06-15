@@ -308,9 +308,15 @@ const ResultContent = () => {
                   </p>
                 ) : (
                   <div>
-                    <p className="text-error-900">
-                      Your Answer: {currentQuestion.yourAnswer}
-                    </p>{" "}
+                    {currentQuestion.yourAnswer === "User missed it" ? (
+                      <p className="text-error-900">
+                        You didn&apos;t select an option
+                      </p>
+                    ) : (
+                      <p className="text-error-900">
+                        Your Answer: {currentQuestion.yourAnswer}
+                      </p>
+                    )}
                     <p className="text-positive-900">
                       Correct Answer: {currentQuestion.correctAnswer}
                     </p>
