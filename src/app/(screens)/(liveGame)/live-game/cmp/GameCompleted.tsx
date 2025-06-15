@@ -9,7 +9,7 @@ function GameCompleted() {
   useEffect(() => {
     const timeout = setTimeout(() => {
       dispatch(setPhase("result"));
-    }, 45000);
+    }, 60000);
 
     return () => clearTimeout(timeout);
   }, [dispatch]);

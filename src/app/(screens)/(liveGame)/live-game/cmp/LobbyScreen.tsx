@@ -6,7 +6,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { gameRules } from "./gameRules";
 import CustomButton from "@/app/utils/CustomBtn";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
-import { setOpenLeaveGame, setPhase } from "@/app/store/gameSlice";
+import { setOpenLeaveGame, setPhase, stopAudio } from "@/app/store/gameSlice";
 import { LeaveGameModal } from "@/app/components/game/leaveGameModal";
 
 function LobbyScreen() {
@@ -34,6 +34,7 @@ function LobbyScreen() {
 
       if (diff === -1) {
         clearInterval(intervalRef.current!);
+        dispatch(stopAudio());
         dispatch(setPhase("playing"));
       }
     };
