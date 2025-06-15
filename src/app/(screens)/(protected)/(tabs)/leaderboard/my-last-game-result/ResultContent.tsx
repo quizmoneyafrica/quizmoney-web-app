@@ -206,14 +206,14 @@ const ResultContent = () => {
           >
             {result
               .filter((q) => q.correct)
-              .map((_, index) => (
+              .map((r, index) => (
                 <motion.div
                   key={index}
                   variants={itemVariants}
                   whileHover={{ scale: 1.1 }}
                   className="h-8 w-8 md:h-10 md:w-10 rounded-full border border-green-600 bg-green-100 text-green-700 flex justify-center items-center"
                 >
-                  <p className="text-base md:text-lg font-bold">{index + 1}</p>
+                  <p className="text-base md:text-lg font-bold">{r.number}</p>
                 </motion.div>
               ))}
           </motion.div>
@@ -238,14 +238,14 @@ const ResultContent = () => {
           >
             {result
               .filter((q) => !q.correct)
-              .map((_, index) => (
+              .map((r, index) => (
                 <motion.div
                   key={index}
                   variants={itemVariants}
                   whileHover={{ scale: 1.1 }}
                   className="h-8 w-8 md:h-10 md:w-10 rounded-full border border-red-600 bg-red-100 text-red-700 flex justify-center items-center"
                 >
-                  <p className="text-base md:text-lg font-bold">{index + 1}</p>
+                  <p className="text-base md:text-lg font-bold">{r.number}</p>
                 </motion.div>
               ))}
           </motion.div>
