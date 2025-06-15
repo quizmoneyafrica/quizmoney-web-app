@@ -24,13 +24,7 @@ export default function AudioManager() {
 
     const audio = audioRef.current;
     const newSrc =
-      phase === "playing"
-        ? "/sounds/melodiza.wav"
-        : phase === "completed"
-        ? ""
-        : phase === "result"
-        ? ""
-        : "/sounds/count-sound.mp3";
+      phase === "lobby" ? "/sounds/count-sound.mp3" : "/sounds/melodiza.wav";
 
     // Only update if the src is different to avoid reload flicker
     if (audio.src !== new URL(newSrc, window.location.origin).href) {
