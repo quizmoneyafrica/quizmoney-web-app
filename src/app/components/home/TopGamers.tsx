@@ -52,7 +52,7 @@ function TopGamers() {
   return (
     <div className="bg-white rounded-[20px] w-full  py-6 grid grid-cols-1 gap-3">
       <Text className="text-neutral-800 font-bold text-xl px-6">
-        Top Gamers of the Month
+        Top Gamers of the Week
       </Text>
       <div className="flex scrollbar-hide overflow-x-auto gap-4 scrollbar-hide pl-4">
         {loading ? (
