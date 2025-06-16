@@ -7,7 +7,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import EnablePushOnIosButton from "./pwa/iosNotificationRequest";
 import { Toaster } from "@/app/components/toaster/sonner";
 import { useAppDispatch } from "./hooks/useAuth";
-import { setRehydrated } from "./store/authSlice";
+import { setRehydrated } from "./store/authSlice"; 
 import useFcmToken from "./hooks/useFcmToken";
 import { disableConsoleInProduction, isIosPwaInstalled } from "./utils/utils"; 
 import PermissionGuide from "./pwa/permissionGuide";
