@@ -30,9 +30,9 @@ function TopGamers() {
       setLoading(true);
       try {
         const res = await UserAPI.topGamersOfToday();
-        console.log(res.data.result.monthlyLeaderboard);
+        console.log(res.data.result.weekendLeaderboard);
         // setTopGamers(res.data.result.monthlyLeaderboard);
-        dispatch(setTopGamers(res.data.result.monthlyLeaderboard));
+        dispatch(setTopGamers(res.data.result.weekendLeaderboard));
         setLoading(false);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
