@@ -3,7 +3,7 @@ import { SignUpFormType } from "@/app/api/interface";
 import useFcmToken from "@/app/hooks/useFcmToken";
 import { EyeIcon, EyeSlash } from "@/app/icons/icons";
 import CustomTextField from "@/app/utils/CustomTextField";
-import { capitalizeFirstLetter, toastPosition } from "@/app/utils/utils";
+import { toastPosition } from "@/app/utils/utils";
 import { Container, Flex } from "@radix-ui/themes";
 import * as React from "react";
 import { toast } from "sonner";
@@ -11,10 +11,8 @@ import CustomButton from "@/app/utils/CustomBtn";
 import UserAPI from "@/app/api/userApi";
 import { PasswordChip } from "@/app/utils/passwordChip";
 import getDeviceId from "@/app/pwa/deviceId";
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { encryptData } from "@/app/utils/crypto";
-import { useAuth } from "@/app/hooks/useAuth";
 
 interface IStepThreeProps {
   formData: SignUpFormType;
@@ -25,10 +23,9 @@ interface IStepThreeProps {
 }
 
 const StepThree: React.FunctionComponent<IStepThreeProps> = (props) => {
-  // const router = useRouter();
+  const router = useRouter();
   const { token, notificationPermissionStatus } = useFcmToken();
   const { formData, onChange, toggleResetFieldVisibility } = props;
-  const { loginUser } = useAuth();
 
   const [loading, setLoading] = React.useState(false);
 
@@ -70,12 +67,12 @@ const StepThree: React.FunctionComponent<IStepThreeProps> = (props) => {
     try {
       const response = await UserAPI.signUp(newValues);
       const userData = response.data.result.newUser;
-      const encryptedUser = encryptData(userData);
-      loginUser(encryptedUser);
+      // const encryptedUser = encryptData(userData);
+      // loginUser(encryptedUser);
       console.log("Signup with:", userData);
-      toast.success(`Welcome ${capitalizeFirstLetter(userData?.firstName)}`, {
-        position: "top-center",
-      });
+      // toast.success(`Welcome ${capitalizeFirstLetter(userData?.firstName)}`, {
+      //   position: "top-center",
+      // });
       // 🔐 Encrypt the user data
       // const encryptedUser = encryptData(userData);
       // console.log("Encrypted: ", encryptedUser);
@@ -83,7 +80,7 @@ const StepThree: React.FunctionComponent<IStepThreeProps> = (props) => {
       // ✅ Dispatch to Redux
       // loginUser(encryptedUser);
 
-      // router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`);
+      router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`);
       // router.replace("/account-created");
 
       // toast.success(
