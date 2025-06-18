@@ -12,7 +12,7 @@ This is the frontend codebase for the QuizMoney trivia platform where users comp
 - 🧠 Live quiz experience (integrated via WebSocket)
 - 🔔 Push notifications with Firebase Cloud Messaging (FCM)
 - 🌙 Theme support and responsive UI
-- 📊 Leaderboard, earnings, and user profile dashboard
+- 📊 Leaderboard, earnings, and user profile dashboard 
 - 🎯 Smooth onboarding with Swiper.js
 
 ---
