@@ -111,15 +111,10 @@ function Page() {
               </Flex>
               <div>
                 <Text className="text-neutral-600 ">
-                  We&apos;ve sent a One-Time Password (OTP) to{" "}
+                  Check your <b>inbox</b> or <b>spam</b> folder. OTP sent to{" "}
                   <span className="text-secondary-900 underline underline-offset-2">
-                    {email}
+                    {email}.
                   </span>
-                </Text>
-                <Text as="p" className="text-neutral-600 ">
-                  Please check your inbox - and don&apos;t forget to check your
-                  spam or junk folder if you don&apos;t see it within a few
-                  minutes.
                 </Text>
               </div>
               <div>
