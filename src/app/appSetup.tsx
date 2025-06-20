@@ -3,7 +3,7 @@ import React, { ReactNode, useEffect } from "react";
 import { Theme } from "@radix-ui/themes";
 import { Provider } from "react-redux";
 import { persistor, store } from "./store/store";
-import { PersistGate } from "redux-persist/integration/react";
+import { PersistGate } from "redux-persist/integration/react"; 
 import EnablePushOnIosButton from "./pwa/iosNotificationRequest";
 import { Toaster } from "@/app/components/toaster/sonner";
 import { useAppDispatch } from "./hooks/useAuth";

@@ -27,7 +27,7 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
     "bankTransfer" | "card" | ""
-  >("");
+  >("card");
   const [showVirtual, setShowVirtual] = useState(false);
 
   const amountOptions = [
@@ -198,10 +198,10 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
                     onChange={() => setSelectedPaymentMethod("card")}
                     className="accent-blue-600"
                   />
-                  Pay with Card{" "}
-                  <span className="text-neutral-500 italic">
+                  Pay with PayStack{" "}
+                  {/* <span className="text-neutral-500 italic">
                     (Debit or Credit)
-                  </span>
+                  </span> */}
                 </label>
               </div>
             </div>
