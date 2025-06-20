@@ -15,7 +15,7 @@ import {
   setWalletLoading,
 } from "@/app/store/walletSlice";
 import WalletApi from "@/app/api/wallet";
-
+import AdBanner from "@/app/components/advert/adBanner";
 
 function HomeTab() {
   const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
@@ -75,6 +75,7 @@ function HomeTab() {
             <Grid gap="4">
               <GameCard />
               <TopGamers />
+              <AdBanner />
               <ReferBox refCode={user?.referralCode} />
             </Grid>
           </div>

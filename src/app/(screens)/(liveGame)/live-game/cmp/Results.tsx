@@ -1,3 +1,4 @@
+import AdBanner from "@/app/components/advert/adBanner";
 import { setShowAdsScreen, stopAudio } from "@/app/store/gameSlice";
 import CustomButton from "@/app/utils/CustomBtn";
 import { Grid } from "@radix-ui/themes";
@@ -17,7 +18,7 @@ function Results() {
 
   return (
     <div className="min-h-[100dvh] lg:h-screen bg-primary-900 hero flex flex-col items-center justify-start pt-10 px-4">
-      <div className="w-full h-full mx-auto max-w-lg space-y-6 grid place-items-center">
+      <div className="w-full h-full mx-auto max-w-lg space-y-6 grid gap-3 place-items-center">
         <Grid gap="3" className="w-full">
           <div>
             <button></button>
@@ -52,6 +53,7 @@ function Results() {
             </div>
           </div>
         </Grid>
+        <AdBanner />
       </div>
     </div>
   );

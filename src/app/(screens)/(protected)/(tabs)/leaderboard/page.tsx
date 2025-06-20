@@ -17,6 +17,7 @@ import { useDispatch } from "react-redux";
 
 import { Flex, Table } from "@radix-ui/themes";
 import LastGameResultCard from "./components/LastGameResultCard";
+import AdBanner from "@/app/components/advert/adBanner";
 
 function Page() {
   const [activeTab, setActiveTab] = useState<"lastGame" | "allTime">(
@@ -176,9 +177,10 @@ function Page() {
       transition={{ duration: 0.25, ease: "easeInOut" }}
       className="min-h-screen"
     >
-      <p className=" text-lg md:text-xl">
+      {/* <p className=" text-lg md:text-xl">
         See who is topping the leaderboard charts
-      </p>
+      </p> */}
+      <AdBanner />
 
       {/* Tabs */}
       <div className="w-full bg-primary-100 rounded-4xl  my-5 sm:my-10 flex items-center ">
