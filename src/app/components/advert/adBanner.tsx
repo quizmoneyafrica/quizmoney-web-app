@@ -11,6 +11,7 @@ function AdBanner() {
         height={154}
         priority
         className="w-full h-full object-contain rounded-xl"
+        quality={100}
       />
     </div>
   );
