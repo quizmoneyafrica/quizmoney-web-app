@@ -117,7 +117,7 @@ function SocialLinksDrawer() {
         (p) => !selected.includes(p as Platform)
       );
       if (remaining.length === 0) {
-        toast.warning("All social platforms are already added.");
+        toast.warning("All social platforms are already added. ");
         return;
       }
       setSocialInputs((prev) => [...prev, { platform: "", username: "" }]);
