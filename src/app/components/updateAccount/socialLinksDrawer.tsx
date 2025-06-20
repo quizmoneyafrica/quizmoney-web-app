@@ -10,7 +10,12 @@ import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
 import { Select } from "radix-ui";
 import { ChevronDownIcon } from "lucide-react";
-import { FacebookIcon, InstagramIcon, XIcon } from "@/app/icons/icons";
+import {
+  FacebookIcon,
+  InstagramIcon,
+  TikTokIcon,
+  XIcon,
+} from "@/app/icons/icons";
 
 export const cleanValue = (val?: string) =>
   typeof val === "string" && val.toLowerCase() !== "undefined" ? val : "";
@@ -28,10 +33,10 @@ const socialPlatforms = {
     urlPrefix: "https://twitter.com/",
     icon: <XIcon />,
   },
-  // WhatsApp: {
-  //   urlPrefix: "https://wa.me/",
-  //   icon: "💬",
-  // },
+  WhatsApp: {
+    urlPrefix: "https://tiktok.com/",
+    icon: <TikTokIcon />,
+  },
 } as const;
 
 type Platform = keyof typeof socialPlatforms;
@@ -106,7 +111,7 @@ function SocialLinksDrawer() {
   };
 
   const addNewLink = () => {
-    if (socialInputs.length < 3) {
+    if (socialInputs.length < 4) {
       const selected = socialInputs.map((s) => s.platform);
       const remaining = Object.keys(socialPlatforms).filter(
         (p) => !selected.includes(p as Platform)
