@@ -61,18 +61,18 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
     setSelectedAmount(null);
   };
 
-  const calculatePaystackFee = (amount: number): number => {
-    let fee = amount * 0.015;
-    if (amount >= 2500) {
-      fee += 100;
-    }
+  // const calculatePaystackFee = (amount: number): number => {
+  //   let fee = amount * 0.015;
+  //   if (amount >= 2500) {
+  //     fee += 100;
+  //   }
 
-    if (fee > 2000) {
-      fee = 2000;
-    }
+  //   if (fee > 2000) {
+  //     fee = 2000;
+  //   }
 
-    return fee;
-  };
+  //   return fee;
+  // };
 
   const onFormSubmit = async (data: DepositFormData) => {
     if (!selectedAmount && !data.amount) {
@@ -86,8 +86,8 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
 
     const baseAmount =
       selectedAmount || Number(data.amount.replace(/[₦,]/g, ""));
-    const paystackFee = calculatePaystackFee(baseAmount);
-    const totalAmount = baseAmount + paystackFee;
+    // const paystackFee = calculatePaystackFee(baseAmount);
+    const totalAmount = baseAmount;
 
     if (selectedPaymentMethod === "bankTransfer") {
       setShowVirtual(true);
