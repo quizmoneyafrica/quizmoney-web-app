@@ -248,7 +248,7 @@ const Page = () => {
                   onChange={onChange}
                   disabledOption="Select your gender"
                   icon={<ArrowDownIcon className="text-[#A6ABC4]" />}
-                  disabled={!isEditing}
+                  disabled
                 />
                 <CustomTextField
                   label="Date of Birth"
@@ -257,7 +257,7 @@ const Page = () => {
                   type="date"
                   autoComplete="bday"
                   // onChange={onChange}
-                  disabled={!isEditing}
+                  disabled
                   icon={<CalendarIcon className="text-[#A6ABC4] h-6 w-6" />}
                   required
                   // className="min-0 !w-full"
