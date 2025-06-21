@@ -210,7 +210,7 @@ const Page = () => {
                   autoComplete="first-name"
                   placeholder="Enter your first name"
                   onChange={onChange}
-                  disabled={!isEditing}
+                  disabled
                   icon={<PersonIcon className="text-[#A6ABC4]" />}
                   required
                   className="capitalize"
@@ -223,7 +223,7 @@ const Page = () => {
                   autoComplete="family-name"
                   placeholder="Enter your last name"
                   onChange={onChange}
-                  disabled={!isEditing}
+                  disabled
                   icon={<PersonIcon className="text-[#A6ABC4]" />}
                   required
                   className="capitalize"
