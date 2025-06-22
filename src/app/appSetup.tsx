@@ -54,7 +54,7 @@ const AppSetup = ({ children }: Props) => {
     setInterval(() => {
       check();
       if (devtoolsOpen) {
-        // window.location.href = "/blocked";
+        window.location.href = "/blocked";
       }
     }, 1000);
   }, []);
