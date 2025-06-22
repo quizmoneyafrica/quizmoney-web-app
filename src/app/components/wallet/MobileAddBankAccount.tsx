@@ -162,7 +162,6 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
 
   // Get selected bank details
   const selectedBank = banks.find((bank) => bank.code === selectedBankCode);
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <p className="text-gray-600">Add your bank account for withdrawal</p>

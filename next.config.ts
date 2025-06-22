@@ -1,6 +1,5 @@
 // import type { NextConfig } from "next";
 import withPWA from "next-pwa";
-import type { Configuration } from "webpack";
 
 const securityHeaders = [
   {
@@ -36,38 +35,7 @@ const swHeaders = [
 const nextConfig: any = {
   reactStrictMode: true,
   productionBrowserSourceMaps: false,
-  webpack: async (
-    config: Configuration,
-    context: { isServer: boolean; dev: boolean }
-  ) => {
-    if (!context.isServer && !context.dev) {
-      const JavaScriptObfuscator = (await import("webpack-obfuscator")).default;
 
-      config.plugins!.push(
-        new JavaScriptObfuscator(
-          {
-            compact: true,
-            controlFlowFlattening: true,
-            controlFlowFlatteningThreshold: 1,
-            deadCodeInjection: true,
-            deadCodeInjectionThreshold: 1,
-            debugProtection: true,
-            debugProtectionInterval: true,
-            disableConsoleOutput: true,
-            selfDefending: true,
-            stringArray: true,
-            stringArrayEncoding: ["rc4"],
-            stringArrayThreshold: 1,
-            transformObjectKeys: true,
-            unicodeEscapeSequence: true,
-          },
-          ["excluded.js"]
-        )
-      );
-    }
-
-    return config;
-  },
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
