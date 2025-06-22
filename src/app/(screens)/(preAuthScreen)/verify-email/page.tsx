@@ -52,9 +52,8 @@ function VerifyEmailPage() {
     };
     try {
       const response = await UserAPI.verifyEmail(newValues);
-      const userData = response.data.result.verifiedUser;
-
-      console.log("Verify Signup:", userData);
+      console.log("Verify Signup:", response);
+      const userData = response.verifiedUser;
 
       // 🔐 Encrypt the user data
       const encryptedUser = encryptData(userData);
@@ -77,7 +76,7 @@ function VerifyEmailPage() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setLoading(false);
-      toast.error(`${err.response.data.error}`, {
+      toast.error(`${err.message}`, {
         position: toastPosition,
       });
     }

@@ -129,7 +129,7 @@ export const WithdrawalPinForm = ({
         toast.success(response?.data?.data?.result?.message, {
           position: toastPosition,
         });
-        
+
         // Fetch updated wallet data
         const res = await WalletApi.fetchCustomerWallet();
         if (res.data.result.wallet) {
@@ -141,7 +141,7 @@ export const WithdrawalPinForm = ({
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      toast.error(`${err.response.data.error}`, {
+      toast.error(`${err.message}`, {
         position: toastPosition,
       });
     } finally {
@@ -171,7 +171,7 @@ export const WithdrawalPinForm = ({
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      toast.error(`${err.response.data.error}`, {
+      toast.error(`${err.message}`, {
         position: toastPosition,
       });
     } finally {

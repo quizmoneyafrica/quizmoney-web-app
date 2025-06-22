@@ -24,8 +24,12 @@ const PAGE_SIZE = 15;
 export default function WalletActivity(): React.ReactElement {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [selectedFilter, setSelectedFilter] = React.useState<FilterType>(FilterType.ALL);
-  const [filteredTransactions, setFilteredTransactions] = useState<UserWalletTransaction[]>([]);
+  const [selectedFilter, setSelectedFilter] = React.useState<FilterType>(
+    FilterType.ALL
+  );
+  const [filteredTransactions, setFilteredTransactions] = useState<
+    UserWalletTransaction[]
+  >([]);
   const dispatch = useDispatch();
   const { transactions, isTransactionsLoading } = useSelector(useWallet);
 
@@ -39,14 +43,16 @@ export default function WalletActivity(): React.ReactElement {
     }
 
     // For COMPLETED and PENDING, filter the transactions
-    const filtered = transactions.map((dateGroup: UserWalletTransaction) => ({
-      ...dateGroup,
-      transactions: dateGroup.transactions.filter((transaction) => 
-        selectedFilter === FilterType.COMPLETED 
-          ? transaction.status?.toLowerCase() === 'completed'
-          : transaction.status?.toLowerCase() === 'pending'
-      )
-    })).filter((group) => group.transactions.length > 0);
+    const filtered = transactions
+      .map((dateGroup: UserWalletTransaction) => ({
+        ...dateGroup,
+        transactions: dateGroup.transactions.filter((transaction) =>
+          selectedFilter === FilterType.COMPLETED
+            ? transaction.status?.toLowerCase() === "completed"
+            : transaction.status?.toLowerCase() === "pending"
+        ),
+      }))
+      .filter((group) => group.transactions.length > 0);
 
     setFilteredTransactions(filtered);
   }, [selectedFilter, transactions]);
@@ -56,7 +62,7 @@ export default function WalletActivity(): React.ReactElement {
       try {
         dispatch(setTransactionsLoading(true));
         const res = await WalletApi.fetchTransactions({
-          page, 
+          page,
           limit: PAGE_SIZE,
         });
 
@@ -154,7 +160,10 @@ export default function WalletActivity(): React.ReactElement {
 
   return (
     <div className="py-5">
-      <FilterBar setSelectedFilter={setSelectedFilter} selectedFilter={selectedFilter} />
+      <FilterBar
+        setSelectedFilter={setSelectedFilter}
+        selectedFilter={selectedFilter}
+      />
       <div className="w-full gap-4 md:gap-8 flex flex-col">
         {isTransactionsLoading ? (
           renderSkeletonLoader()

@@ -18,20 +18,22 @@ function GameCard() {
   const [loading, setLoading] = useState(false);
   const [showJoinBtn, setShowJoinBtn] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
     const fetchNextGame = async () => {
       if (nextGameData) return null;
       setLoading(true);
       try {
         const res = await GameApi.fetchNextGame();
-        const encryptedGame = res.data.result.errorData;
-        const game = decryptGameData(encryptedGame);
+        console.log("GAME", res);
+        const encryptedGame = res.errorData;
+        const game = await decryptGameData(encryptedGame);
         dispatch(setNextGameData(game));
         setLoading(false);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         console.log(err);
-        toast.error("An error occurred please refresh!", {
+        toast.error(err.message, {
           position: toastPosition,
         });
         setLoading(false);
@@ -46,7 +48,7 @@ function GameCard() {
         new Date(nextGameData?.startDate.iso),
         new Date()
       );
-      if (diff > 0 && diff <= 1800) {
+      if (diff > 0 && diff <= 600) {
         setShowJoinBtn(true);
       } else {
         setShowJoinBtn(false);

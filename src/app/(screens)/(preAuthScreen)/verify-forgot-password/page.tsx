@@ -47,14 +47,14 @@ function Page() {
       otp: otpCode,
     };
     try {
-      const response = await UserAPI.verifyForgotPasswordOtp(newValues);
-      if (response.status === 200) {
-        router.push(`/reset-password?email=${encodeURIComponent(email || "")}`);
-      }
+      await UserAPI.verifyForgotPasswordOtp(newValues);
+
+      router.push(`/reset-password?email=${encodeURIComponent(email || "")}`);
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setLoading(false);
-      toast.error(`${err.response.data.error}`, {
+      toast.error(`${err.message}`, {
         position: toastPosition,
       });
     }
@@ -71,8 +71,7 @@ function Page() {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      console.log("ERROR Forgot Password", err);
-      toast.error(`${err.response.data.error}`, {
+      toast.error(`${err.message}`, {
         position: toastPosition,
       });
     }

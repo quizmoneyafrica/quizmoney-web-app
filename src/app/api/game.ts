@@ -1,17 +1,19 @@
 import axios, { AxiosResponse } from "axios";
-import {
-  appHeaders,
-  BASE_URL,
-  getSessionTokenHeaders,
-  SECRET_KEY,
-} from "./userApi";
+import { BASE_URL, getSessionTokenHeaders } from "./userApi";
 import { ApiResponse } from "./interface";
 import CryptoJS from "crypto-js";
+import { callParseEndpoint } from "./parse/callParseEndpoint";
 
 const GameApi = {
-  fetchNextGame(): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(`${BASE_URL}/errorLoad`, {}, { headers: appHeaders });
+  fetchNextGame(): Promise<ApiResponse> {
+    return callParseEndpoint<ApiResponse>("errorLoad");
   },
+  // fetchNextGame(): Promise<AxiosResponse<ApiResponse>> {
+  //   return axios.post(`${BASE_URL}/errorLoad`, {}, { headers: appHeaders });
+  // },
+  // registerForGame(): Promise<ApiResponse> {
+  //   return callParseEndpoint<ApiResponse>("registerForGame");
+  // },
   registerForGame(gameId: string): Promise<AxiosResponse<ApiResponse>> {
     return axios.post(
       `${BASE_URL}/registerForGame`,
@@ -72,12 +74,18 @@ const GameApi = {
 export default GameApi;
 
 export function decryptGameData(encrypted: string) {
-  const bytes = CryptoJS.AES.decrypt(encrypted, SECRET_KEY);
+  const bytes = CryptoJS.AES.decrypt(
+    encrypted,
+    process.env.NEXT_PUBLIC_SECRET_KEY!
+  );
   const decrypted = bytes.toString(CryptoJS.enc.Utf8);
   return JSON.parse(decrypted);
 }
 export function encryptGameData(data: object): string {
   const stringified = JSON.stringify(data);
-  const encrypted = CryptoJS.AES.encrypt(stringified, SECRET_KEY).toString();
+  const encrypted = CryptoJS.AES.encrypt(
+    stringified,
+    process.env.NEXT_PUBLIC_SECRET_KEY!
+  ).toString();
   return encrypted;
 }

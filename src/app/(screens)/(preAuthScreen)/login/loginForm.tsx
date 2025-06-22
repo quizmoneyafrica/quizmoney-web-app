@@ -60,8 +60,8 @@ const LoginForm = ({ loading, setLoading }: Props) => {
     };
     try {
       const response = await UserAPI.login(newValues);
-      const userData = response.data.result;
-
+      const userData = response;
+      console.log(response);
       if (userData?.emailVerified) {
         // Encrypt the user data
         const encryptedUser = encryptData(userData);
@@ -83,32 +83,33 @@ const LoginForm = ({ loading, setLoading }: Props) => {
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      setLoading(false);
-      toast.error(`${err.response.data.error}`, {
+      console.log("invalid", err);
+
+      toast.error(`${err.message}`, {
         position: toastPosition,
       });
+      setLoading(false);
     }
   };
 
   const verifyEmail = async (email: string, firstName: string) => {
     try {
-      const response = await UserAPI.resendSignupOtp(email);
-      if (response.status === 200) {
-        router.push(`/verify-email?email=${encodeURIComponent(email)}`);
-        toast.error(
-          `${capitalizeFirstLetter(firstName)} please verify your email.`,
-          {
-            position: "top-center",
-          }
-        );
-      }
+      await UserAPI.resendSignupOtp(email);
+      router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+      toast.error(
+        `${capitalizeFirstLetter(firstName)} please verify your email.`,
+        {
+          position: "top-center",
+        }
+      );
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.log("ERROR Forgot Password", err);
-      toast.error(`${err.response.data.error}`, {
+      toast.error(`${err.message}`, {
         position: toastPosition,
       });
+      setLoading(false);
     }
   };
   return (
