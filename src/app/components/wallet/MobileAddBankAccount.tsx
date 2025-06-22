@@ -244,7 +244,7 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
 
       <CustomTextField
         type="text"
-        label="Enter your bank verification Number (BVN)"
+        label="Enter your bank verification Number (BVN) "
         value={bvn}
         onChange={(e) => setBvn(e.target.value)}
         required
