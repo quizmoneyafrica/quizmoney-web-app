@@ -64,12 +64,5 @@
     "tailwindcss": "^4.1.5",
     "typescript": "^5",
     "webpack-obfuscator": "^3.5.1"
-  },
-  "pnpm": {
-    "overrides": {
-      "webpack-obfuscator": {
-        "webpack": "^5.99.0"
-      }
-    }
   }
 }
