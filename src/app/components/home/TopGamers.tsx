@@ -30,13 +30,14 @@ function TopGamers() {
       setLoading(true);
       try {
         const res = await UserAPI.topGamersOfToday();
-        console.log(res.data.result.weekendLeaderboard);
+        // console.log(res.data.result.weekendLeaderboard);
+        console.log(res);
         // setTopGamers(res.data.result.monthlyLeaderboard);
-        dispatch(setTopGamers(res.data.result.weekendLeaderboard));
+        dispatch(setTopGamers(res.weekendLeaderboard));
         setLoading(false);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
-        toast.error(err.response.data.error, { position: toastPosition });
+        toast.error(err.message, { position: toastPosition });
         setLoading(false);
       }
     };

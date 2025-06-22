@@ -97,7 +97,7 @@ export default function OtpVerificationModal({
         toast.success(response?.data?.data?.result?.message, {
           position: toastPosition,
         });
-        
+
         store.dispatch(setWalletLoading(true));
         const res = await WalletApi.fetchCustomerWallet();
         if (res.data.result.wallet) {
@@ -109,7 +109,7 @@ export default function OtpVerificationModal({
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      toast.error(`${err.response.data.error}`, {
+      toast.error(`${err.message}`, {
         position: toastPosition,
       });
     } finally {
@@ -138,7 +138,7 @@ export default function OtpVerificationModal({
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      toast.error(`${err.response.data.error}`, {
+      toast.error(`${err.message}`, {
         position: toastPosition,
       });
     } finally {

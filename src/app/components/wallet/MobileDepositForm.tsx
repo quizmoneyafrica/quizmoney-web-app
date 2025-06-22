@@ -112,7 +112,7 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
-        toast.error(`${err.response.data.error}`, {
+        toast.error(`${err.message}`, {
           position: toastPosition,
         });
       } finally {

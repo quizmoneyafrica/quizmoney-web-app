@@ -68,7 +68,7 @@ const InviteAndEarn = () => {
   useEffect(() => {
     (async () => {
       const res = await UserAPI.getReferralStats();
-      console.log(res.data);
+      console.log(res);
       setReferralData({
         ...res.data.result,
       });

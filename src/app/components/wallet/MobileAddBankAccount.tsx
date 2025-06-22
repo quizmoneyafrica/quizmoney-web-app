@@ -10,6 +10,7 @@ import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
 import { setWallet, useWallet } from "@/app/store/walletSlice";
 import { useDispatch, useSelector } from "react-redux";
+import CustomTextField from "@/app/utils/CustomTextField";
 
 // Define bank interface
 export interface Bank {
@@ -37,6 +38,10 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
   const [showBankDropdown, setShowBankDropdown] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const user = getAuthUser();
+  const [bvn, setBvn] = useState("");
+  const [firstName, setFirstName] = useState(user.firstName);
+  const [lastName, setLastName] = useState(user.lastName);
 
   const {
     register,
@@ -79,20 +84,31 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
         accountNumber: data?.accountNumber,
         bankCode: `${data?.bankCode}`.trim(),
       };
-      console.log("==============payload======================");
-      console.log(JSON.stringify(payload, null, 2));
-      console.log("====================================");
-      const response = await WalletApi.verifyAccount(payload);
-      if (response?.data?.result?.status === "success") {
-        const { account_name, account_number } = response?.data?.result?.data;
-        const bankName =
-          banks.find((item) => item?.code === data?.bankCode)?.name ?? "";
-        addVerifiedAccount({
-          accountNumber: account_number,
-          bankName,
-          accountName: account_name,
-        });
-      }
+      // console.log("==============payload======================");
+      // console.log(JSON.stringify(payload, null, 2));
+      // console.log("====================================");
+      // const response = await WalletApi.verifyAccount(payload);
+      const response = await WalletApi.verifyBVN(
+        payload.accountNumber,
+        bvn,
+        firstName,
+        lastName,
+        payload.bankCode
+      );
+      console.log(response);
+
+      // if (response?.data?.result?.status === "success") {
+      //   const { account_name, account_number } = response?.data?.result?.data;
+      //   const bankName =
+      //     banks.find((item) => item?.code === data?.bankCode)?.name ?? "";
+      //   addVerifiedAccount({
+      //     accountNumber: account_number,
+      //     bankName,
+      //     accountName: account_name,
+      //   });
+      // }
+      console.log(response);
+
       if (response?.data?.result?.status === "error") {
         toast.error(`${response?.data?.result?.message}`, {
           position: toastPosition,
@@ -101,7 +117,7 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.log("WalletApi.verifyAccount", err);
-      toast.error(`${err.response.data.error}`, {
+      toast.error(`${err.message}`, {
         position: toastPosition,
       });
     } finally {
@@ -135,17 +151,17 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      toast.error(`${err.response.data.error}`, {
+      toast.error(`${err.message}`, {
         position: toastPosition,
       });
     } finally {
       setIsLoading(false);
     }
   };
+  console.log(addVerifiedAccount);
 
   // Get selected bank details
   const selectedBank = banks.find((bank) => bank.code === selectedBankCode);
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <p className="text-gray-600">Add your bank account for withdrawal</p>
@@ -225,6 +241,31 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
           )}
         </div>
       </div>
+
+      <CustomTextField
+        type="text"
+        label="Enter your bank verification Number (BVN) "
+        value={bvn}
+        onChange={(e) => setBvn(e.target.value)}
+        required
+      />
+
+      <CustomTextField
+        type="text"
+        label="First Name (confirm)"
+        value={firstName}
+        onChange={(e) => setFirstName(e.target.value)}
+        required
+        className="capitalize"
+      />
+      <CustomTextField
+        type="text"
+        label="Last Name (confirm)"
+        value={lastName}
+        onChange={(e) => setLastName(e.target.value)}
+        required
+        className="capitalize"
+      />
 
       <CustomButton
         type="submit"

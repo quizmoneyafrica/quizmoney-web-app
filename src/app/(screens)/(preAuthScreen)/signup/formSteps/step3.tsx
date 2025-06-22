@@ -66,7 +66,7 @@ const StepThree: React.FunctionComponent<IStepThreeProps> = (props) => {
     sessionStorage.setItem("pass", formData.password);
     try {
       const response = await UserAPI.signUp(newValues);
-      const userData = response.data.result.newUser;
+      const userData = response.result.newUser;
       // const encryptedUser = encryptData(userData);
       // loginUser(encryptedUser);
       console.log("Signup with:", userData);
@@ -92,7 +92,7 @@ const StepThree: React.FunctionComponent<IStepThreeProps> = (props) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.log("ERROR SIGNUP", err);
-      toast.error(`${err.response.data.error}`, {
+      toast.error(`${err.message}`, {
         position: toastPosition,
       });
     } finally {

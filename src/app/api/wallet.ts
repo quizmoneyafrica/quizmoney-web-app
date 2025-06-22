@@ -3,6 +3,19 @@ import { BASE_URL, getSessionTokenHeaders } from "./userApi";
 import { ApiResponse } from "./interface";
 
 const WalletApi = {
+  verifyBVN(
+    accountNumber: string,
+    bvn: string,
+    firstName: string,
+    lastName: string,
+    bankCode: string
+  ): Promise<AxiosResponse<ApiResponse>> {
+    return axios.post(
+      `${BASE_URL}/verifyBVN`,
+      { accountNumber, bvn, firstName, lastName, bankCode },
+      { headers: getSessionTokenHeaders() }
+    );
+  },
   fetchCustomerWallet(): Promise<AxiosResponse<ApiResponse>> {
     return axios.post(
       `${BASE_URL}/fetchCustomerWallet`,

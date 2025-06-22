@@ -29,17 +29,28 @@ function shuffleArray<T>(array: T[]): T[] {
   return [...array].sort(() => Math.random() - 0.5);
 }
 
+type Question = {
+  number: string;
+  question: string;
+  options: string[];
+  correctAnswer: string;
+  originalIndex: number;
+};
+
 function GameScreen() {
   const dispatch = useAppDispatch();
   const user = getAuthUser();
   const { liveGameData, audioShouldPlay } = useAppSelector(
     (state) => state.game
   );
+  const [shuffledQuestions, setShuffledQuestions] = useState<Question[]>([]);
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>([]);
   const [locked, setLocked] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const currentQuestion = liveGameData?.questions?.[currentIndex];
+  // const currentQuestion = liveGameData?.questions?.[currentIndex];
+  const currentQuestion = shuffledQuestions[currentIndex];
   const [shuffledOptions, setShuffledOptions] = useState<string[]>([]);
+
   const [usedEraser, setUsedEraser] = useState(false);
   //countdown timer
   //game time used
@@ -49,6 +60,18 @@ function GameScreen() {
   //Sounds
   const correctSoundRef = useRef<HTMLAudioElement | null>(null);
   const wrongSoundRef = useRef<HTMLAudioElement | null>(null);
+  useEffect(() => {
+    if (liveGameData?.questions?.length) {
+      const questionsWithIndex = (liveGameData.questions as Question[]).map(
+        (q, index) => ({
+          ...q,
+          originalIndex: index,
+        })
+      );
+      const shuffled = shuffleArray(questionsWithIndex);
+      setShuffledQuestions(shuffled);
+    }
+  }, [liveGameData?.questions]);
 
   useEffect(() => {
     correctSoundRef.current = new Audio("/sounds/correct-answer.mp3");
@@ -78,14 +101,17 @@ function GameScreen() {
   const handleNextQuestion = async () => {
     setLocked(false);
     const gameId = liveGameData.objectId;
-    const questionNumber = (currentIndex + 1).toString();
+    // const questionNumber = (currentIndex + 1).toString();
+    const questionNumber = currentQuestion.number;
     const totalTimeFormatted = formatTime(totalTimeUsed);
     const hasAnswered = selectedAnswers[currentIndex] !== undefined;
     console.log(selectedAnswers, questionNumber);
     console.log(hasAnswered);
     console.log(totalTimeFormatted);
 
-    const isLastQuestion = currentIndex + 1 === liveGameData.questions.length;
+    // const isLastQuestion = currentIndex + 1 === liveGameData.questions.length;
+    const isLastQuestion = currentIndex + 1 === shuffledQuestions.length;
+
     if (!isLastQuestion) setCurrentIndex((prev) => prev + 1);
 
     if (isLastQuestion) {
@@ -131,7 +157,8 @@ function GameScreen() {
 
     const isCorrect = option === currentQuestion.correctAnswer;
     const gameId = liveGameData.objectId;
-    const questionNumber = (currentIndex + 1).toString();
+    // const questionNumber = (currentIndex + 1).toString();
+    const questionNumber = currentQuestion.number;
     const totalTimeFormatted = formatTime(totalTimeUsed);
 
     let toSaveAnswer = option;
@@ -171,8 +198,30 @@ function GameScreen() {
       );
     } catch (error) {
       console.log(error);
+      try {
+        await GameApi.recordGameAnswer(
+          gameId,
+          questionNumber,
+          toSaveAnswer,
+          totalTimeFormatted
+        );
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
+
+  if (!currentQuestion)
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.25, ease: "easeInOut" }}
+      >
+        <div className="min-h-[100dvh] bg-primary-900 hero flex flex-col items-center  px-4"></div>
+      </motion.div>
+    );
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -190,7 +239,7 @@ function GameScreen() {
             <div className="mt-6 text-gray-500 text-sm flex items-center justify-center">
               <CountdownCircleTimer
                 isPlaying
-                duration={10}
+                duration={8}
                 key={currentIndex}
                 colors={["#00B87B", "#A30000", "#A30000"]}
                 colorsTime={[10, 5, 0]}
@@ -207,9 +256,9 @@ function GameScreen() {
                   setTimeout(() => setTimeLeft(remainingTime), 0);
                   return <span className="text-white">{timeLeft}</span>;
                 }} */}
-                {({ remainingTime }) => (
+                {/* {({ remainingTime }) => (
                   <span className="text-white">{remainingTime}</span>
-                )}
+                )} */}
               </CountdownCircleTimer>
             </div>
             <div className="mt-6 text-sm flex items-center justify-end">

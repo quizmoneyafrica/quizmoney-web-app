@@ -88,8 +88,8 @@ const ProductCard = ({
         setIsOpen(false);
         const error =
           "Customer's balance is less than the amount you are about to deduct";
-        if (err.response.data.error != error) {
-          return toast.error(err.response.data.error, {
+        if (err.message != error) {
+          return toast.error(err.message, {
             position: "top-center",
           });
         }
