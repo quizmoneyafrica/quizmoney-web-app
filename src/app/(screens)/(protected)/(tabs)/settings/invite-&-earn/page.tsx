@@ -68,7 +68,7 @@ const InviteAndEarn = () => {
   useEffect(() => {
     (async () => {
       const res = await UserAPI.getReferralStats();
-      console.log(res.data);
+      console.log(res);
       setReferralData({
         ...res.data.result,
       });
@@ -226,7 +226,7 @@ const InviteAndEarn = () => {
 
               <div className="relative flex items-center !justify-end">
                 {referralData?.referralCount >= 1 && (
-                  <>
+                  <div>
                     {referralData?.referralCount >= 6 ? (
                       <div
                         className={`bg-green-500 rounded-full p-1 text-white w-fit`}
@@ -248,7 +248,7 @@ const InviteAndEarn = () => {
                         />
                       </div>
                     )}
-                  </>
+                  </div>
                 )}
               </div>
             </div>

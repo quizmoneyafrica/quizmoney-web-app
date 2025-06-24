@@ -11,8 +11,9 @@ const LeaderboardAPI = {
         page: page ?? 1,
       },
       {
-        headers: getSessionTokenHeaders(),
-      }
+        headers: getSessionTokenHeaders(),timeout: 600000
+      },
+			
     );
   },
   getLastGameLeaderboard(): Promise<AxiosResponse<ApiResponse>> {
@@ -20,7 +21,7 @@ const LeaderboardAPI = {
       `${BASE_URL}/getLastGameLeaderboard`,
       { userId: user?.objectId },
       {
-        headers: getSessionTokenHeaders(),
+        headers: getSessionTokenHeaders(),timeout: 600000
       }
     );
   },

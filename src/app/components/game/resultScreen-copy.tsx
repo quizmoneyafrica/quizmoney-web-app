@@ -61,7 +61,7 @@ function ResultScreen() {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
-        toast.error(err.response.data.error);
+        toast.error(err.message);
         setFetching(false);
       }
     };
@@ -126,7 +126,7 @@ function ResultScreen() {
                 </h3>
               </div>
             ) : (
-              <>
+              <div>
                 {/* Not win  */}
                 <div className="space-y-4">
                   <p className="text-7xl">😢</p>
@@ -135,7 +135,7 @@ function ResultScreen() {
                     Sorry, you didn&apos;t win this time
                   </p>
                 </div>
-              </>
+              </div>
             )}
           </div>
         </Grid>

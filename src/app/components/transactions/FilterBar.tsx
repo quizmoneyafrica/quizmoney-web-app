@@ -3,8 +3,8 @@ import CustomImage from "../wallet/CustomImage";
 import WalletApi from "@/app/api/wallet";
 import { setTransactions } from "@/app/store/walletSlice";
 import { store } from "@/app/store/store";
-import * as Select from '@radix-ui/react-select';
-import { ChevronDownIcon } from '@radix-ui/react-icons';
+import * as Select from "@radix-ui/react-select";
+import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { cn } from "@/app/utils/utils";
 
 export enum FilterType {
@@ -13,8 +13,13 @@ export enum FilterType {
   ALL = "all",
 }
 
-export function FilterBar({setSelectedFilter, selectedFilter}: {setSelectedFilter: (filter: FilterType) => void, selectedFilter: FilterType}): React.ReactElement {
-
+export function FilterBar({
+  setSelectedFilter,
+  selectedFilter,
+}: {
+  setSelectedFilter: (filter: FilterType) => void;
+  selectedFilter: FilterType;
+}): React.ReactElement {
   const handleFilter = async (query: string) => {
     // Implement filter logic here
     try {
@@ -51,8 +56,13 @@ export function FilterBar({setSelectedFilter, selectedFilter}: {setSelectedFilte
           className="focus:ring-transparent flex-1 placeholder:text-[#E4E3E3] px-3 py-2 w-full text-sm focus:outline-none"
         />
       </div>
-      
-      <Select.Root value={selectedFilter} onValueChange={(value: string) => setSelectedFilter(value as FilterType)}>
+
+      <Select.Root
+        value={selectedFilter}
+        onValueChange={(value: string) =>
+          setSelectedFilter(value as FilterType)
+        }
+      >
         <Select.Trigger className="border border-[#E4E3E3] outline-none focus:ring-transparent cursor-pointer bg-white rounded-lg px-4 py-2 text-sm flex items-center gap-2">
           <CustomImage className="" alt="" src={"/icons/switch-icon.svg"} />
           <Select.Value placeholder="Filter By" className="hidden md:block" />
@@ -66,7 +76,7 @@ export function FilterBar({setSelectedFilter, selectedFilter}: {setSelectedFilte
             <Select.ScrollUpButton className="flex items-center justify-center h-6 bg-white cursor-default">
               <ChevronDownIcon className="rotate-180" />
             </Select.ScrollUpButton>
-            
+
             <Select.Viewport className="p-2">
               {Object.values(FilterType).map((type) => (
                 <Select.Item
@@ -77,7 +87,9 @@ export function FilterBar({setSelectedFilter, selectedFilter}: {setSelectedFilte
                     "data-[highlighted]:outline-none data-[highlighted]:bg-gray-100"
                   )}
                 >
-                  <Select.ItemText>{type.charAt(0).toUpperCase() + type.slice(1)}</Select.ItemText>
+                  <Select.ItemText>
+                    {type.charAt(0).toUpperCase() + type.slice(1)}
+                  </Select.ItemText>
                 </Select.Item>
               ))}
             </Select.Viewport>

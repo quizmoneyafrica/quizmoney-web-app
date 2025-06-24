@@ -49,62 +49,60 @@ const SignupForm = ({ step, nextStep }: Props) => {
     }));
   };
   return (
-    <>
-      <Flex direction="column" gap="4">
-        <div className="pt-4 w-full">
-          <Flex direction="column" gap="4">
-            <Flex gapX="4">
-              <StepIndicator complete={step >= 1} />
-              <StepIndicator complete={step >= 2} />
-              <StepIndicator complete={step === 3} />
-            </Flex>
-
-            <motion.div
-              key={step}
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -50 }}
-              transition={{ duration: 0.3 }}
-            >
-              {step === 1 && (
-                <StepOne
-                  nextStep={nextStep}
-                  formData={formData}
-                  onChange={handleChange}
-                />
-              )}
-              {step === 2 && (
-                <StepTwo
-                  nextStep={nextStep}
-                  formData={formData}
-                  onChange={handleChange}
-                />
-              )}
-              {step === 3 && (
-                <StepThree
-                  formData={formData}
-                  toggleResetFieldVisibility={toggleResetFieldVisibility}
-                  onChange={handleChange}
-                />
-              )}
-            </motion.div>
+    <Flex direction="column" gap="4">
+      <div className="pt-4 w-full">
+        <Flex direction="column" gap="4">
+          <Flex gapX="4">
+            <StepIndicator complete={step >= 1} />
+            <StepIndicator complete={step >= 2} />
+            <StepIndicator complete={step === 3} />
           </Flex>
-        </div>
-        <div className="py-4 space-y-6">
-          <p className="text-center pb-3">
-            Already have an Account?{" "}
-            <Link
-              href="/login"
-              className="text-primary-900 font-medium underline underline-offset-2"
-            >
-              Sign in
-            </Link>
-          </p>
-          <SocialFollow />
-          <NLRC />
-        </div>
-      </Flex>
-    </>
+
+          <motion.div
+            key={step}
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
+            transition={{ duration: 0.3 }}
+          >
+            {step === 1 && (
+              <StepOne
+                nextStep={nextStep}
+                formData={formData}
+                onChange={handleChange}
+              />
+            )}
+            {step === 2 && (
+              <StepTwo
+                nextStep={nextStep}
+                formData={formData}
+                onChange={handleChange}
+              />
+            )}
+            {step === 3 && (
+              <StepThree
+                formData={formData}
+                toggleResetFieldVisibility={toggleResetFieldVisibility}
+                onChange={handleChange}
+              />
+            )}
+          </motion.div>
+        </Flex>
+      </div>
+      <div className="py-4 space-y-6">
+        <p className="text-center pb-3">
+          Already have an Account?{" "}
+          <Link
+            href="/login"
+            className="text-primary-900 font-medium underline underline-offset-2"
+          >
+            Sign in
+          </Link>
+        </p>
+        <SocialFollow />
+        <NLRC />
+      </div>
+    </Flex>
   );
 };
 export default SignupForm;
@@ -117,25 +115,20 @@ const StepIndicator: React.FunctionComponent<IStepIndicatorProps> = ({
   complete,
 }) => {
   return (
-    <>
-      <motion.div
-        initial={false}
-        animate={{
-          backgroundColor: complete
-            ? "var(--color-primary-700)"
-            : "var(--color-primary-50)",
-          scale: complete ? 1.05 : 1,
-          opacity: complete ? 1 : 0.5,
-        }}
-        transition={{
-          duration: 0.3,
-          ease: "easeInOut",
-        }}
-        // className={`${
-        // 	complete ? "bg-primary-700" : "bg-primary-50"
-        // } h-[8px] w-full rounded-full`}
-        className={`h-[8px] w-full rounded-full`}
-      />
-    </>
+    <motion.div
+      initial={false}
+      animate={{
+        backgroundColor: complete
+          ? "var(--color-primary-700)"
+          : "var(--color-primary-50)",
+        scale: complete ? 1.05 : 1,
+        opacity: complete ? 1 : 0.5,
+      }}
+      transition={{
+        duration: 0.3,
+        ease: "easeInOut",
+      }}
+      className={`h-[8px] w-full rounded-full`}
+    />
   );
 };

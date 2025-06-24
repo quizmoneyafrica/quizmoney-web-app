@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 import { XIcon } from "lucide-react";
 import * as React from "react";
 import { Drawer } from "vaul";
@@ -29,9 +29,6 @@ export default function QmDrawer({
         <Drawer.Overlay className="fixed inset-0 bg-black/40" />
         <Drawer.Content
           aria-describedby="Drawer Content"
-          // className={`bg-white md:bg-transparent flex flex-col md: rounded-t-[10px] mt-24 fixed bottom-0 left-0 right-0 outline-none ${heightClass} max-h-[90dvh] md:max-h-screen md:top-1/2 md:bottom-auto md:translate-y-[-70%] md:rounded-[10px] md:max-w-xl md:mx-auto ${
-          //   !open ? "md:translate-y-[100%]" : ""
-          // }`}
           className={`bg-white md:bg-transparent flex flex-col rounded-t-[10px] fixed bottom-0 left-0 right-0 outline-none ${heightClass} max-h-[90dvh] md:max-h-screen 
           md:top-1/2 md:left-1/2 md:translate-x-[-50%] md:translate-y-[-50%] 
           md:rounded-[10px] md:max-w-xl 

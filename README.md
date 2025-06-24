@@ -1,18 +1,18 @@
 # 🎮 QuizMoney – Progressive Web App (PWA)
 
-Welcome to the **QuizMoney** PWA!  
+Welcome to the **QuizMoney** PWA!   
 This is the frontend codebase for the QuizMoney trivia platform where users compete in real-time quizzes for cash prizes. This version is optimized for mobile web and can be installed like a native app (PWA).
 
----
-
-## 🚀 Features
+--- 
+  
+## 🚀 Features 
 
 - 📱 **PWA support** – installable on Android, iOS (via Safari), and desktop
 - 🔐 User authentication (login, signup, forgot password)
 - 🧠 Live quiz experience (integrated via WebSocket)
-- 🔔 Push notifications with Firebase Cloud Messaging (FCM)
-- 🌙 Theme support and responsive UI
-- 📊 Leaderboard, earnings, and user profile dashboard
+- 🔔 Push notifications with Firebase Cloud Messaging (FCM) 
+- 🌙 Theme support and responsive UI 
+- 📊 Leaderboard, earnings, and user profile dashboard 
 - 🎯 Smooth onboarding with Swiper.js
 
 ---

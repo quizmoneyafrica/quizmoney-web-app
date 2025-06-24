@@ -1,19 +1,6 @@
 import { format, isToday, isTomorrow, isPast, parseISO } from "date-fns";
 import { Transaction, UserWalletTransaction } from "../store/walletSlice";
 
-// export function isIosPwaInstalled(): boolean {
-//   if (typeof window === "undefined") return false;
-
-//   const isIos = /iphone|ipad|ipod/.test(
-//     window.navigator.userAgent.toLowerCase()
-//   );
-//   const isStandalone =
-//     ("standalone" in navigator && navigator.standalone === true) ||
-//     window.matchMedia("(display-mode: standalone)").matches;
-
-//   return isIos && isStandalone;
-// }
-
 export function isIosPwaInstalled(): boolean {
   if (typeof window === "undefined") return false;
 
@@ -29,12 +16,6 @@ export function isIosPwaInstalled(): boolean {
   return isIosDevice && isStandalone;
 }
 
-// export const isMobileOrTablet = () => {
-//   if (typeof window === "undefined") return false;
-//   return /iphone|ipad|ipod|android|mobile/i.test(
-//     window.navigator.userAgent.toLowerCase()
-//   );
-// };
 export const isMobileOrTablet = () => {
   if (typeof window === "undefined") return false;
 
@@ -102,8 +83,10 @@ export function formatNaira(
 
 //Date
 export function formatQuizDate(input: string): string {
+  if (!input) return "";
   const date = parseISO(input);
 
+  if (isNaN(date.getTime())) return "Invalid date";
   const time = format(date, "h:mm a");
 
   if (isToday(date)) {

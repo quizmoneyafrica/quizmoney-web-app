@@ -76,6 +76,11 @@ export interface AllTimeLeaderboardData {
 interface LeaderboardState {
   lastGame?: LeaderboardData;
   allTime: { [page: number]: AllTimeLeaderboardData };
+  selectedPlayer?: {
+    data: LeaderboardRanking | AllTimeLeaderboardUser;
+    showSelected: boolean;
+    activeTab: "lastGame" | "allTime";
+  };
 }
 
 const initialState: LeaderboardState = {
@@ -101,6 +106,16 @@ const leaderboardSlice = createSlice({
       state.lastGame = undefined;
       state.allTime = {};
     },
+    setSelectedPlayer: (
+      state,
+      action: PayloadAction<{
+        data: LeaderboardRanking | AllTimeLeaderboardUser;
+        showSelected: boolean;
+        activeTab: "lastGame" | "allTime";
+      }>
+    ) => {
+      state.selectedPlayer = action.payload;
+    },
   },
 });
 
@@ -108,6 +123,7 @@ export const {
   setLastGameLeaderboard,
   setAllTimeLeaderboard,
   clearLeaderboards,
+  setSelectedPlayer,
 } = leaderboardSlice.actions;
 
 export default leaderboardSlice.reducer;

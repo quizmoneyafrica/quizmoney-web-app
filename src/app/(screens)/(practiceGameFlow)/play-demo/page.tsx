@@ -10,17 +10,6 @@ function Page() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  //   dispatch(clearDemoData());
-  //   before unload
-  // useEffect(() => {
-  //   const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-  //     e.preventDefault();
-  //     e.returnValue = "";
-  //   };
-
-  //   window.addEventListener("beforeunload", handleBeforeUnload);
-  //   return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  // }, []);
   return (
     <div>
       <WelcomeScreen
@@ -29,18 +18,6 @@ function Page() {
         setLoading={setLoading}
         router={router}
       />
-      {/* {showGame && demoData ? (
-        <>
-          <DemoGameSCreen />
-        </>
-      ) : (
-        <WelcomeScreen
-          setShowGame={setShowGame}
-          loading={loading}
-          setLoading={setLoading}
-          router={router}
-        />
-      )} */}
     </div>
   );
 }

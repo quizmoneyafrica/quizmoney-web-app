@@ -241,11 +241,11 @@
     --color-info-900: #55068a;
   }
 }
-* {
+/* * {
   user-select: none;
   -webkit-user-select: none;
   -ms-user-select: none;
-}
+} */
 body {
   background: #f7f7f7;
   color: var(--foreground);
@@ -271,6 +271,13 @@ body.bg-primary-900 {
 
 body.hideTawkTo .widget-visible {
   display: none !important;
+}
+.text-count {
+  color: var(--QM-Neutral-Colors-White, #fff);
+  text-align: center;
+  -webkit-text-stroke-width: 2px;
+  -webkit-text-stroke-color: var(--QM-Warning-Color-800, #f4a235);
+  font-style: normal;
 }
 /*
 html,

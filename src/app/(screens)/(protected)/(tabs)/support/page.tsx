@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { Flex } from "@radix-ui/themes";
@@ -12,6 +13,7 @@ import CustomButton from "@/app/utils/CustomBtn";
 import UserAPI, { getAuthUser } from "@/app/api/userApi";
 import { SuccessIcon } from "@/app/utils/successIcon";
 import useTawkHidden from "@/app/components/tawk/useTawkHidden";
+import { toast } from "sonner";
 const Support = () => {
   useTawkHidden();
   const router = useRouter();
@@ -30,14 +32,15 @@ const Support = () => {
       console.log(res);
       setSubmittingForm(false);
       setIsSuccess(true);
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       setSubmittingForm(false);
+      toast.error(error.message);
     }
   };
 
   return (
-    <>
+    <div>
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -329,7 +332,7 @@ const Support = () => {
           `,
         }}
       /> */}
-    </>
+    </div>
   );
 };
 

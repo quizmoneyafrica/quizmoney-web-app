@@ -10,7 +10,9 @@ import {
   VerifyForgotPasswordOtpForm,
 } from "./interface";
 import { store } from "@/app/store/store";
+import { callParseEndpoint } from "./parse/callParseEndpoint";
 import { decryptData } from "../utils/crypto";
+import { callWithSessionToken } from "./parse/callWithSessionToken";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL;
@@ -43,33 +45,26 @@ const getAuthUser = () => {
 };
 
 const UserAPI = {
-  login(form: LoginForm): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(`${BASE_URL}/login`, form, {
-      headers: appHeaders,
-    });
+  login(form: LoginForm): Promise<ApiResponse> {
+    return callParseEndpoint<ApiResponse>("login", form);
   },
-  signUp(form: SignUpForm): Promise<AxiosResponse<ApiResponse>> {
-    console.log("Form: ", form);
-    return axios.post(`${BASE_URL}/signup`, form, {
-      headers: appHeaders,
-    });
+
+  signUp(form: SignUpForm): Promise<ApiResponse> {
+    return callParseEndpoint<ApiResponse>("signup", form);
   },
-  verifyEmail(form: VerifyEmailForm): Promise<AxiosResponse<ApiResponse>> {
-    console.log("Form: ", form);
-    return axios.post(`${BASE_URL}/verifyMail`, form, {
-      headers: appHeaders,
-    });
+  verifyEmail(form: VerifyEmailForm): Promise<ApiResponse> {
+    return callParseEndpoint<ApiResponse>("verifyMail", form);
   },
-  resendSignupOtp(email: string): Promise<AxiosResponse<ApiResponse>> {
-    console.log("Form: ", email);
-    return axios.post(
-      `${BASE_URL}/resendSignupOtp`,
-      { email },
-      {
-        headers: appHeaders,
-      }
-    );
+  resendSignupOtp(email: string): Promise<ApiResponse> {
+    return callParseEndpoint<ApiResponse>("resendSignupOtp", { email });
   },
+
+  // sendFeedback(rating: string, message: string): Promise<ApiResponse> {
+  //   return callWithSessionToken<ApiResponse>("sendFeedback", {
+  //     rating,
+  //     message,
+  //   });
+  // },
   sendFeedback(
     rating: string,
     message: string
@@ -96,30 +91,37 @@ const UserAPI = {
       }
     );
   },
+  // updateSocialHandles(
+  //   facebook: string,
+  //   twitter: string,
+  //   whatsapp: string,
+  //   instagram: string
+  // ): Promise<ApiResponse> {
+  //   return callWithSessionToken<ApiResponse>("updateSocialHandles", {
+  //     facebook,
+  //     twitter,
+  //     whatsapp,
+  //     instagram,
+  //   });
+  // },
 
-  forgotPassword(email: string): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/forgotPassword`,
-      { email },
-      {
-        headers: appHeaders,
-      }
-    );
+  forgotPassword(email: string): Promise<ApiResponse> {
+    return callParseEndpoint<ApiResponse>("forgotPassword", {
+      email,
+    });
   },
   verifyForgotPasswordOtp(
     form: VerifyForgotPasswordOtpForm
-  ): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(`${BASE_URL}/verifyForgotPasswordOtp`, form, {
-      headers: appHeaders,
-    });
+  ): Promise<ApiResponse> {
+    return callParseEndpoint<ApiResponse>("forgotPassword", form);
   },
-  resetPasswordAuth(
-    form: ResetPasswordForm
-  ): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(`${BASE_URL}/changePassword`, form, {
-      headers: appHeaders,
-    });
+  resetPasswordAuth(form: ResetPasswordForm): Promise<ApiResponse> {
+    return callParseEndpoint<ApiResponse>("changePassword", form);
   },
+
+  // inAppChangePassword(form: InAppChangePasswordForm): Promise<ApiResponse> {
+  //   return callWithSessionToken<ApiResponse>("inAppChangePassword", form);
+  // },
   inAppChangePassword(
     form: InAppChangePasswordForm
   ): Promise<AxiosResponse<ApiResponse>> {
@@ -128,15 +130,20 @@ const UserAPI = {
     });
   },
 
-  updateUser(form: UpdateUserForm): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/updateProfile?firstName=${form.firstName}&lastName=${form.lastName}&dob=${form.dob}&gender=${form.gender}&country=${form.country}&facebook=${form.facebook}&instagram=${form.instagram}&twitter=${form.twitter}&whatsapp=${form.whatsapp}&avatar=${form.avatar}`,
-      {},
-      {
-        headers: getSessionTokenHeaders(),
-      }
+  updateUser(form: UpdateUserForm): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      `updateProfile?firstName=${form.firstName}&lastName=${form.lastName}&dob=${form.dob}&gender=${form.gender}&country=${form.country}&facebook=${form.facebook}&instagram=${form.instagram}&twitter=${form.twitter}&whatsapp=${form.whatsapp}&avatar=${form.avatar}`
     );
   },
+  // updateUser(form: UpdateUserForm): Promise<AxiosResponse<ApiResponse>> {
+  //   return axios.post(
+  //     `${BASE_URL}/updateProfile?firstName=${form.firstName}&lastName=${form.lastName}&dob=${form.dob}&gender=${form.gender}&country=${form.country}&facebook=${form.facebook}&instagram=${form.instagram}&twitter=${form.twitter}&whatsapp=${form.whatsapp}&avatar=${form.avatar}`,
+  //     {},
+  //     {
+  //       headers: getSessionTokenHeaders(),
+  //     }
+  //   );
+  // },
 
   getAvatars(): Promise<AxiosResponse<ApiResponse>> {
     return axios.get(`https://quizmoney.b4a.io/classes/Avatars`, {
@@ -144,14 +151,19 @@ const UserAPI = {
     });
   },
 
-  topGamersOfToday(): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/topGamersOfThisMonth`,
-      {},
-      { headers: appHeaders }
-    );
+  // topGamersOfToday(): Promise<ApiResponse> {
+  //   return callParseEndpoint<ApiResponse>(
+  //     "topGamersOfTheWeekend",
+  //     "",
+  //     getAuthUser()?.sessionToken
+  //   );
+  // },
+  topGamersOfToday(): Promise<ApiResponse> {
+    return callParseEndpoint<ApiResponse>("topGamersOfTheWeekend");
   },
-
+  // getReferralStats(): Promise<ApiResponse> {
+  //   return callWithSessionToken<ApiResponse>("referralData", {});
+  // },
   getReferralStats(): Promise<AxiosResponse<ApiResponse>> {
     return axios.post(
       `${BASE_URL}/referralData`,

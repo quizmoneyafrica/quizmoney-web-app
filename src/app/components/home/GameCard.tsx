@@ -18,20 +18,23 @@ function GameCard() {
   const [loading, setLoading] = useState(false);
   const [showJoinBtn, setShowJoinBtn] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
     const fetchNextGame = async () => {
       if (nextGameData) return null;
       setLoading(true);
       try {
         const res = await GameApi.fetchNextGame();
-        const encryptedGame = res.data.result.errorData;
+        console.log("GAME", res);
+        const encryptedGame = res.errorData;
         const game = decryptGameData(encryptedGame);
+        console.log("decryptGameData: ", game);
         dispatch(setNextGameData(game));
         setLoading(false);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         console.log(err);
-        toast.error("An error occurred please refresh!", {
+        toast.error(err.message, {
           position: toastPosition,
         });
         setLoading(false);
@@ -43,10 +46,10 @@ function GameCard() {
   useEffect(() => {
     const checkGameTime = () => {
       const diff = differenceInSeconds(
-        new Date(nextGameData?.startDate.iso),
+        new Date(nextGameData?.startDate?.iso),
         new Date()
       );
-      if (diff > 0 && diff <= 1800) {
+      if (diff > 0 && diff <= 600) {
         setShowJoinBtn(true);
       } else {
         setShowJoinBtn(false);
@@ -58,7 +61,7 @@ function GameCard() {
     return () => {
       clearInterval(intervalRef.current!);
     };
-  }, [nextGameData?.startDate.iso, setShowJoinBtn]);
+  }, [nextGameData?.startDate?.iso, setShowJoinBtn]);
 
   if (!nextGameData || loading)
     return (
@@ -89,7 +92,7 @@ function GameCard() {
             <Flex direction="column" gap="2" align="center" justify="center">
               {nextGameData &&
                 !nextGameData.completed &&
-                new Date(nextGameData.startDate.iso) <= new Date() && (
+                new Date(nextGameData.startDate?.iso) <= new Date() && (
                   <div className="flex items-center gap-1">
                     <div className="relative h-3 w-3 bg-error-500 rounded-full">
                       <div className="h-3 w-3 bg-error-500 rounded-full animate-ping absolute left-0 top-0" />
@@ -101,7 +104,7 @@ function GameCard() {
                 )}
 
               <Text className="text-neutral-800">
-                Next Game: {formatQuizDate(nextGameData?.startDate.iso)}
+                Next Game: {formatQuizDate(nextGameData?.startDate?.iso || "")}
               </Text>
               <Text className="text-neutral-800 font-medium">
                 Entry Fee: {formatNaira(nextGameData?.entryFee, true)}
@@ -117,6 +120,7 @@ function GameCard() {
           <div className="absolute -right-10 -top-8 z-[1] opacity-40 h-[150px] w-[150px] rounded-full bg-transparent border-8 border-primary-100" />
         </div>
         <div className="relative z-[2] bg-primary-800 w-full px-4 py-5 rounded-b-[20px]">
+          <Flex align="center" justify="center"></Flex>
           {showJoinBtn ? (
             <Flex align="center" justify="center">
               <JoinGameBtn />
@@ -125,7 +129,7 @@ function GameCard() {
             <Flex align="center" justify="between">
               <ShareBtn
                 gamePrize={nextGameData?.gamePrize}
-                startDate={nextGameData?.startDate.iso}
+                startDate={nextGameData?.startDate?.iso}
               />
               <PlayDemoBtn />
             </Flex>
