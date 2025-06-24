@@ -37,6 +37,13 @@ const AppSetup = ({ children }: Props) => {
   useEffect(() => {
     disableConsoleInProduction();
     window.scrollTo(0, 0);
+    const viewport = document.querySelector("meta[name=viewport]");
+    if (viewport) {
+      viewport.setAttribute(
+        "content",
+        "width=device-width, initial-scale=1, maximum-scale=1"
+      );
+    }
   }, []);
   useEffect(() => {
     let devtoolsOpen = false;

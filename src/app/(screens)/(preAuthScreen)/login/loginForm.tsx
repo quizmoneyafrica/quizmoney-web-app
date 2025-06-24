@@ -113,81 +113,79 @@ const LoginForm = ({ loading, setLoading }: Props) => {
     }
   };
   return (
-    <>
-      <form onSubmit={handleLogin}>
-        <Flex direction="column" gap="4">
-          <CustomTextField
-            label="Email"
-            name="email"
-            value={email}
-            type="email"
-            autoComplete="email"
-            placeholder="Enter your email"
-            onChange={(e) => setEmail(e.target.value)}
-            icon={<MailIcon className="text-[#A6ABC4]" />}
-            disabled={loading}
-          />
-          <CustomTextField
-            label="Password"
-            name="password"
-            value={password}
-            type={showPassword ? "text" : "password"}
-            autoComplete="current-password"
-            placeholder="Enter your password"
-            onChange={(e) => setPassword(e.target.value)}
-            icon={
-              showPassword ? (
-                <EyeIcon
-                  className="text-[#A6ABC4]"
-                  onClick={() => setShowPassword(false)}
-                />
-              ) : (
-                <EyeSlash
-                  className="text-[#A6ABC4]"
-                  onClick={() => setShowPassword(true)}
-                />
-              )
-            }
-            disabled={loading}
-          />
-
-          <Flex justify="end">
-            <Link
-              href="/forgot-password"
-              className="underline underline-offset-4 text-primary-900"
-            >
-              Forgot your password?
-            </Link>
-          </Flex>
-          <div className="pt-4 w-full">
-            {!loading ? (
-              <CustomButton
-                type="submit"
-                width="full"
-                disabled={!isValidEmail(email) || password === ""}
-              >
-                Login
-              </CustomButton>
+    <form onSubmit={handleLogin}>
+      <Flex direction="column" gap="4">
+        <CustomTextField
+          label="Email"
+          name="email"
+          value={email}
+          type="email"
+          autoComplete="email"
+          placeholder="Enter your email"
+          onChange={(e) => setEmail(e.target.value)}
+          icon={<MailIcon className="text-[#A6ABC4]" />}
+          disabled={loading}
+        />
+        <CustomTextField
+          label="Password"
+          name="password"
+          value={password}
+          type={showPassword ? "text" : "password"}
+          autoComplete="current-password"
+          placeholder="Enter your password"
+          onChange={(e) => setPassword(e.target.value)}
+          icon={
+            showPassword ? (
+              <EyeIcon
+                className="text-[#A6ABC4]"
+                onClick={() => setShowPassword(false)}
+              />
             ) : (
-              <CustomButton type="button" width="full" loader disabled />
-            )}
-          </div>
-          <div className="py-4 space-y-6">
-            <p className="text-center pb-3">
-              Don&apos;t have an account yet?{" "}
-              <Link
-                href="/signup"
-                className="text-primary-900 font-medium underline underline-offset-2"
-              >
-                Sign up
-              </Link>
-            </p>
-            <SocialFollow />
-            <NLRC />
-          </div>
+              <EyeSlash
+                className="text-[#A6ABC4]"
+                onClick={() => setShowPassword(true)}
+              />
+            )
+          }
+          disabled={loading}
+        />
+
+        <Flex justify="end">
+          <Link
+            href="/forgot-password"
+            className="underline underline-offset-4 text-primary-900"
+          >
+            Forgot your password?
+          </Link>
         </Flex>
-      </form>
-    </>
+        <div className="pt-4 w-full">
+          {!loading ? (
+            <CustomButton
+              type="submit"
+              width="full"
+              disabled={!isValidEmail(email) || password === ""}
+            >
+              Login
+            </CustomButton>
+          ) : (
+            <CustomButton type="button" width="full" loader disabled />
+          )}
+        </div>
+        <div className="py-4 space-y-6">
+          <p className="text-center pb-3">
+            Don&apos;t have an account yet?{" "}
+            <Link
+              href="/signup"
+              className="text-primary-900 font-medium underline underline-offset-2"
+            >
+              Sign up
+            </Link>
+          </p>
+          <SocialFollow />
+          <NLRC />
+        </div>
+      </Flex>
+    </form>
   );
 };
 export default LoginForm;

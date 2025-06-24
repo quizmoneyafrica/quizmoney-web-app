@@ -77,110 +77,108 @@ function Page() {
     }
   };
   return (
-    <>
-      <Grid columns={{ initial: "1", md: "2" }} className="h-screen">
-        <LeftSide />
-        <Container className="flex items-center lg:justify-center px-4 lg:px-28 pt-8 ">
-          <form onSubmit={handleVerify}>
-            <div className="space-y-8">
-              <Link href="/" className="lg:hidden ">
-                <Image
-                  src="/icons/quizmoney-logo-blue.svg"
-                  alt="Quiz Money"
-                  width={100}
-                  height={55}
-                  priority
-                />
-              </Link>
-              <div className="">
-                <Flex
-                  align="center"
-                  gap="2"
-                  onClick={() => router.back()}
-                  className="cursor-pointer"
-                >
-                  <CircleArrowLeft /> Back
-                </Flex>
-              </div>
-              <Flex direction="column" gap="1">
-                <Heading as="h2">Enter Reset Code</Heading>
-                <Text className="text-neutral-600 ">
-                  We&apos;ve sent you an email with a reset code
-                </Text>
+    <Grid columns={{ initial: "1", md: "2" }} className="h-screen">
+      <LeftSide />
+      <Container className="flex items-center lg:justify-center px-4 lg:px-28 pt-8 ">
+        <form onSubmit={handleVerify}>
+          <div className="space-y-8">
+            <Link href="/" className="lg:hidden ">
+              <Image
+                src="/icons/quizmoney-logo-blue.svg"
+                alt="Quiz Money"
+                width={100}
+                height={55}
+                priority
+              />
+            </Link>
+            <div className="">
+              <Flex
+                align="center"
+                gap="2"
+                onClick={() => router.back()}
+                className="cursor-pointer"
+              >
+                <CircleArrowLeft /> Back
               </Flex>
-              <div>
-                <Text className="text-neutral-600 ">
-                  Check your <b>inbox</b> or <b>spam</b> folder. OTP sent to{" "}
-                  <span className="text-secondary-900 underline underline-offset-2">
-                    {email}.
-                  </span>
-                </Text>
-              </div>
-              <div>
-                <Flex direction="column" gap="4">
-                  <Heading as="h3" size="4" weight="medium">
-                    Enter OTP Code
-                  </Heading>
-                  <div className="w-full md:max-w-[50%] lg:max-w-[80%]">
-                    <OneTimePasswordField.Root
-                      className="OTPRoot"
-                      name="otp"
-                      value={otpCode}
-                      autoComplete="one-time-code"
-                      onValueChange={setOtpCode}
-                      disabled={loading}
-                    >
-                      <OneTimePasswordField.Input className="OTPInput" />
-                      <OneTimePasswordField.Input className="OTPInput" />
-                      <OneTimePasswordField.Input className="OTPInput" />
-                      <OneTimePasswordField.Input className="OTPInput" />
-                      <OneTimePasswordField.Input className="OTPInput" />
-                      <OneTimePasswordField.Input className="OTPInput" />
-                      <OneTimePasswordField.HiddenInput />
-                    </OneTimePasswordField.Root>
-                    {/* <p className="text-error-500 mt-4">
+            </div>
+            <Flex direction="column" gap="1">
+              <Heading as="h2">Enter Reset Code</Heading>
+              <Text className="text-neutral-600 ">
+                We&apos;ve sent you an email with a reset code
+              </Text>
+            </Flex>
+            <div>
+              <Text className="text-neutral-600 ">
+                Check your <b>inbox</b> or <b>spam</b> folder. OTP sent to{" "}
+                <span className="text-secondary-900 underline underline-offset-2">
+                  {email}.
+                </span>
+              </Text>
+            </div>
+            <div>
+              <Flex direction="column" gap="4">
+                <Heading as="h3" size="4" weight="medium">
+                  Enter OTP Code
+                </Heading>
+                <div className="w-full md:max-w-[50%] lg:max-w-[80%]">
+                  <OneTimePasswordField.Root
+                    className="OTPRoot"
+                    name="otp"
+                    value={otpCode}
+                    autoComplete="one-time-code"
+                    onValueChange={setOtpCode}
+                    disabled={loading}
+                  >
+                    <OneTimePasswordField.Input className="OTPInput" />
+                    <OneTimePasswordField.Input className="OTPInput" />
+                    <OneTimePasswordField.Input className="OTPInput" />
+                    <OneTimePasswordField.Input className="OTPInput" />
+                    <OneTimePasswordField.Input className="OTPInput" />
+                    <OneTimePasswordField.Input className="OTPInput" />
+                    <OneTimePasswordField.HiddenInput />
+                  </OneTimePasswordField.Root>
+                  {/* <p className="text-error-500 mt-4">
 											Incorrect OTP provided
 										</p> */}
-                  </div>
-                </Flex>
-              </div>
-              <div>
-                <Text className="text-neutral-600 ">
-                  Didn&apos;t get code?{" "}
-                  <button
-                    type="button"
-                    onClick={handleResendOTP}
-                    className={`font-medium underline underline-offset-2 ${
-                      canResend
-                        ? "text-primary-900 cursor-pointer"
-                        : "text-gray-400 cursor-not-allowed"
-                    }`}
-                  >
-                    Resend Code
-                  </button>
-                  <span> • </span>
-                  <span>{formatCountDown(countdown)}</span>
-                </Text>
-              </div>
-
-              <div className="pt-10 lg:pt-4">
-                {!loading ? (
-                  <CustomButton
-                    type="submit"
-                    width="full"
-                    disabled={otpCode.length !== 6}
-                  >
-                    Verify Account
-                  </CustomButton>
-                ) : (
-                  <CustomButton type="button" width="full" loader disabled />
-                )}
-              </div>
+                </div>
+              </Flex>
             </div>
-          </form>
-        </Container>
-      </Grid>
-    </>
+            <div>
+              <Text className="text-neutral-600 ">
+                Didn&apos;t get code?{" "}
+                <button
+                  type="button"
+                  onClick={handleResendOTP}
+                  className={`font-medium underline underline-offset-2 ${
+                    canResend
+                      ? "text-primary-900 cursor-pointer"
+                      : "text-gray-400 cursor-not-allowed"
+                  }`}
+                >
+                  Resend Code
+                </button>
+                <span> • </span>
+                <span>{formatCountDown(countdown)}</span>
+              </Text>
+            </div>
+
+            <div className="pt-10 lg:pt-4">
+              {!loading ? (
+                <CustomButton
+                  type="submit"
+                  width="full"
+                  disabled={otpCode.length !== 6}
+                >
+                  Verify Account
+                </CustomButton>
+              ) : (
+                <CustomButton type="button" width="full" loader disabled />
+              )}
+            </div>
+          </div>
+        </form>
+      </Container>
+    </Grid>
   );
 }
 

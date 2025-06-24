@@ -32,34 +32,32 @@ function GameCompleted() {
   //     return () => clearTimeout(timeout);
   //   }, [dispatch]);
   return (
-    <>
-      <div className="relative w-screen h-screen bg-black overflow-hidden">
-        <video
-          ref={videoRef}
-          src={liveGameData?.videoAds?.url}
-          className="absolute top-0 left-0 w-full h-full object-cover"
-          controls={false}
-          playsInline
-          preload="auto"
-          onEnded={() => {
-            dispatch(setPhase("result"));
-          }}
-        />
+    <div className="relative w-screen h-screen bg-black overflow-hidden">
+      <video
+        ref={videoRef}
+        src={liveGameData?.videoAds?.url}
+        className="absolute top-0 left-0 w-full h-full object-cover"
+        controls={false}
+        playsInline
+        preload="auto"
+        onEnded={() => {
+          dispatch(setPhase("result"));
+        }}
+      />
 
-        {!isPlaying && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/70 z-10">
-            <CustomButton
-              onClick={handlePlay}
-              type="button"
-              size="md"
-              className="transition"
-            >
-              ▶ Play Video
-            </CustomButton>
-          </div>
-        )}
-      </div>
-    </>
+      {!isPlaying && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/70 z-10">
+          <CustomButton
+            onClick={handlePlay}
+            type="button"
+            size="md"
+            className="transition"
+          >
+            ▶ Play Video
+          </CustomButton>
+        </div>
+      )}
+    </div>
   );
 }
 

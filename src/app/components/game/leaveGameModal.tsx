@@ -31,24 +31,22 @@ export const LeaveGameModal = () => {
     }
   };
   return (
-    <>
-      <Modal
-        handleClose={(open) => dispatch(setOpenLeaveGame(open))}
-        open={openLeaveGame}
-        redTitle
-        title="Confirm Quit Game"
-        actionBtnText="Quit Game"
-        actionOnClick={handleLeaveGame}
-        actionLoader={loading}
-      >
-        <div>
-          <p>
-            Are you sure you don&apos;t want to win{" "}
-            {formatNaira(nextGameData?.gamePrize)}? <br />
-            Of course you do, so don&apos;t quit! 😜
-          </p>
-        </div>
-      </Modal>
-    </>
+    <Modal
+      handleClose={(open) => dispatch(setOpenLeaveGame(open))}
+      open={openLeaveGame}
+      redTitle
+      title="Confirm Quit Game"
+      actionBtnText="Quit Game"
+      actionOnClick={handleLeaveGame}
+      actionLoader={loading}
+    >
+      <div>
+        <p>
+          Are you sure you don&apos;t want to win{" "}
+          {formatNaira(nextGameData?.gamePrize)}? <br />
+          Of course you do, so don&apos;t quit! 😜
+        </p>
+      </div>
+    </Modal>
   );
 };

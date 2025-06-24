@@ -12,6 +12,7 @@ import {
 import { store } from "@/app/store/store";
 import { callParseEndpoint } from "./parse/callParseEndpoint";
 import { decryptData } from "../utils/crypto";
+import { callWithSessionToken } from "./parse/callWithSessionToken";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL;
@@ -129,15 +130,20 @@ const UserAPI = {
     });
   },
 
-  updateUser(form: UpdateUserForm): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/updateProfile?firstName=${form.firstName}&lastName=${form.lastName}&dob=${form.dob}&gender=${form.gender}&country=${form.country}&facebook=${form.facebook}&instagram=${form.instagram}&twitter=${form.twitter}&whatsapp=${form.whatsapp}&avatar=${form.avatar}`,
-      {},
-      {
-        headers: getSessionTokenHeaders(),
-      }
+  updateUser(form: UpdateUserForm): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      `updateProfile?firstName=${form.firstName}&lastName=${form.lastName}&dob=${form.dob}&gender=${form.gender}&country=${form.country}&facebook=${form.facebook}&instagram=${form.instagram}&twitter=${form.twitter}&whatsapp=${form.whatsapp}&avatar=${form.avatar}`
     );
   },
+  // updateUser(form: UpdateUserForm): Promise<AxiosResponse<ApiResponse>> {
+  //   return axios.post(
+  //     `${BASE_URL}/updateProfile?firstName=${form.firstName}&lastName=${form.lastName}&dob=${form.dob}&gender=${form.gender}&country=${form.country}&facebook=${form.facebook}&instagram=${form.instagram}&twitter=${form.twitter}&whatsapp=${form.whatsapp}&avatar=${form.avatar}`,
+  //     {},
+  //     {
+  //       headers: getSessionTokenHeaders(),
+  //     }
+  //   );
+  // },
 
   getAvatars(): Promise<AxiosResponse<ApiResponse>> {
     return axios.get(`https://quizmoney.b4a.io/classes/Avatars`, {
@@ -145,6 +151,13 @@ const UserAPI = {
     });
   },
 
+  // topGamersOfToday(): Promise<ApiResponse> {
+  //   return callParseEndpoint<ApiResponse>(
+  //     "topGamersOfTheWeekend",
+  //     "",
+  //     getAuthUser()?.sessionToken
+  //   );
+  // },
   topGamersOfToday(): Promise<ApiResponse> {
     return callParseEndpoint<ApiResponse>("topGamersOfTheWeekend");
   },

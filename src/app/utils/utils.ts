@@ -83,8 +83,10 @@ export function formatNaira(
 
 //Date
 export function formatQuizDate(input: string): string {
+  if (!input) return "";
   const date = parseISO(input);
 
+  if (isNaN(date.getTime())) return "Invalid date";
   const time = format(date, "h:mm a");
 
   if (isToday(date)) {

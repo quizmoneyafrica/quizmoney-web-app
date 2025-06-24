@@ -33,7 +33,7 @@ const socialPlatforms = {
     urlPrefix: "https://twitter.com/",
     icon: <XIcon />,
   },
-  WhatsApp: {
+  Tiktok: {
     urlPrefix: "https://tiktok.com/",
     icon: <TikTokIcon />,
   },
@@ -59,7 +59,8 @@ function SocialLinksDrawer() {
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    if (!user || !wallet || initialized) return;
+    if (!user || !wallet) return;
+    if (initialized) return;
 
     const initialLinks: SocialInput[] = [];
 
@@ -73,13 +74,12 @@ function SocialLinksDrawer() {
     });
 
     setSocialInputs(initialLinks);
-    setInitialized(true);
-
     const filledCount = initialLinks.length;
 
-    if (Number(wallet.balance) > 0 && filledCount < 2) {
-      const timer = setTimeout(() => setShowUpdateDrawer(true), 5000);
-      return () => clearTimeout(timer);
+    setInitialized(true);
+
+    if (wallet && Number(wallet?.balance) > 0 && filledCount < 2) {
+      setShowUpdateDrawer(true);
     } else {
       setShowUpdateDrawer(false);
     }

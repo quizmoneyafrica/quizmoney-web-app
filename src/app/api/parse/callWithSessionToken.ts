@@ -9,7 +9,6 @@ export const callWithSessionToken = async <T>(
 ): Promise<T> => {
   const user = getAuthUser();
   const sessionToken = user?.sessionToken;
-  console.log("USER DATA", user);
 
   if (!sessionToken) {
     throw new Error("User session token not found");

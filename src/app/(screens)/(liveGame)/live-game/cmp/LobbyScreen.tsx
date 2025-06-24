@@ -21,7 +21,6 @@ function LobbyScreen() {
     null
   );
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  console.log(liveGameData);
 
   useEffect(() => {
     const updateCountdown = () => {
@@ -83,7 +82,7 @@ function LobbyScreen() {
     );
   }
   return (
-    <>
+    <main>
       <div className="min-h-[100dvh] lg:h-screen bg-primary-900 hero flex flex-col items-center justify-center  px-4">
         <div>
           {secondsLeft <= 10 ? (
@@ -101,7 +100,7 @@ function LobbyScreen() {
               </motion.div>
             </AnimatePresence>
           ) : (
-            <>
+            <section>
               <div className="">
                 <Grid gap="3" className="w-full">
                   <div className="bg-primary-50 text-sm border-4 border-primary-500 rounded-[10px] px-4 py-4 space-y-4">
@@ -141,12 +140,12 @@ function LobbyScreen() {
                   </div>
                 </Grid>
               </div>
-            </>
+            </section>
           )}
         </div>
       </div>
       <LeaveGameModal />
-    </>
+    </main>
   );
 }
 

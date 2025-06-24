@@ -27,7 +27,8 @@ function GameCard() {
         const res = await GameApi.fetchNextGame();
         console.log("GAME", res);
         const encryptedGame = res.errorData;
-        const game = await decryptGameData(encryptedGame);
+        const game = decryptGameData(encryptedGame);
+        console.log("decryptGameData: ", game);
         dispatch(setNextGameData(game));
         setLoading(false);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -45,7 +46,7 @@ function GameCard() {
   useEffect(() => {
     const checkGameTime = () => {
       const diff = differenceInSeconds(
-        new Date(nextGameData?.startDate.iso),
+        new Date(nextGameData?.startDate?.iso),
         new Date()
       );
       if (diff > 0 && diff <= 600) {
@@ -60,7 +61,7 @@ function GameCard() {
     return () => {
       clearInterval(intervalRef.current!);
     };
-  }, [nextGameData?.startDate.iso, setShowJoinBtn]);
+  }, [nextGameData?.startDate?.iso, setShowJoinBtn]);
 
   if (!nextGameData || loading)
     return (
@@ -91,7 +92,7 @@ function GameCard() {
             <Flex direction="column" gap="2" align="center" justify="center">
               {nextGameData &&
                 !nextGameData.completed &&
-                new Date(nextGameData.startDate.iso) <= new Date() && (
+                new Date(nextGameData.startDate?.iso) <= new Date() && (
                   <div className="flex items-center gap-1">
                     <div className="relative h-3 w-3 bg-error-500 rounded-full">
                       <div className="h-3 w-3 bg-error-500 rounded-full animate-ping absolute left-0 top-0" />
@@ -103,7 +104,7 @@ function GameCard() {
                 )}
 
               <Text className="text-neutral-800">
-                Next Game: {formatQuizDate(nextGameData?.startDate.iso)}
+                Next Game: {formatQuizDate(nextGameData?.startDate?.iso || "")}
               </Text>
               <Text className="text-neutral-800 font-medium">
                 Entry Fee: {formatNaira(nextGameData?.entryFee, true)}
@@ -128,7 +129,7 @@ function GameCard() {
             <Flex align="center" justify="between">
               <ShareBtn
                 gamePrize={nextGameData?.gamePrize}
-                startDate={nextGameData?.startDate.iso}
+                startDate={nextGameData?.startDate?.iso}
               />
               <PlayDemoBtn />
             </Flex>

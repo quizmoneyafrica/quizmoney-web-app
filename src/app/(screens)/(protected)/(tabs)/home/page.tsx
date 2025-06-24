@@ -63,28 +63,26 @@ function HomeTab() {
   }, [dispatch, transactions, wallet]);
 
   return (
-    <>
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -10 }}
-        transition={{ duration: 0.25, ease: "easeInOut" }}
-      >
-        <Grid columns={{ initial: "1", lg: "2" }} gap="4">
-          <div>
-            <Grid gap="4">
-              <GameCard />
-              <TopGamers />
-              <AdBanner />
-              <ReferBox refCode={user?.referralCode} />
-            </Grid>
-          </div>
-          <div className="bg-white rounded-[20px] hidden lg:inline-block p-4">
-            <TransactionHistory />
-          </div>
-        </Grid>
-      </motion.div>
-    </>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.25, ease: "easeInOut" }}
+    >
+      <Grid columns={{ initial: "1", lg: "2" }} gap="4">
+        <div>
+          <Grid gap="4">
+            <GameCard />
+            <TopGamers />
+            <AdBanner />
+            <ReferBox refCode={user?.referralCode} />
+          </Grid>
+        </div>
+        <div className="bg-white rounded-[20px] hidden lg:inline-block p-4">
+          <TransactionHistory />
+        </div>
+      </Grid>
+    </motion.div>
   );
 }
 

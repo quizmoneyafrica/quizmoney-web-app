@@ -14,7 +14,7 @@ export default function ProtectedLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <main>
       <AppLiveQueries />
       <SocialLinksDrawer />
       {!isIosPwaInstalled() && <InstallModal />}
@@ -34,6 +34,6 @@ export default function ProtectedLayout({
 
         <BottomNavigation />
       </ProtectedRoute>
-    </>
+    </main>
   );
 }

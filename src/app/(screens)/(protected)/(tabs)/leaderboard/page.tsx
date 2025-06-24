@@ -18,6 +18,7 @@ import { useDispatch } from "react-redux";
 import { Flex, Table } from "@radix-ui/themes";
 import LastGameResultCard from "./components/LastGameResultCard";
 import AdBanner from "@/app/components/advert/adBanner";
+import ShowPlayerData from "./ShowPlayerData";
 
 function Page() {
   const [activeTab, setActiveTab] = useState<"lastGame" | "allTime">(
@@ -233,6 +234,8 @@ function Page() {
         )}
 
       <div className="h-30" />
+
+      <ShowPlayerData />
     </motion.div>
   );
 }

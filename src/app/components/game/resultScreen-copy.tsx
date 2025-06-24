@@ -126,7 +126,7 @@ function ResultScreen() {
                 </h3>
               </div>
             ) : (
-              <>
+              <div>
                 {/* Not win  */}
                 <div className="space-y-4">
                   <p className="text-7xl">😢</p>
@@ -135,7 +135,7 @@ function ResultScreen() {
                     Sorry, you didn&apos;t win this time
                   </p>
                 </div>
-              </>
+              </div>
             )}
           </div>
         </Grid>
