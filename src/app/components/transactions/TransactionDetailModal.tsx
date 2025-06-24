@@ -150,11 +150,18 @@ export function TransactionDetailsModal({
                     <div className="border-b border-dashed border-[#17478B] mt-4"></div>
                   </motion.div>
 
-                  <motion.div
-                    initial={{ y: 10, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.35 }}
-                  ></motion.div>
+                  {transaction.status === "rejected" && (
+                    <motion.div
+                      className="text-[#3B3B3B] text-sm"
+                      initial={{ y: 10, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.35 }}
+                    >
+                      <span className=" text-primary-900"> Comments:</span>{" "}
+                      Transaction was rejected. Please contact support for more
+                      information.
+                    </motion.div>
+                  )}
                 </motion.div>
               </motion.div>
             </Dialog.Content>
