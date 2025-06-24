@@ -81,7 +81,8 @@ function JoinGameBtn() {
   // };
 
   const handleJoinBtn = async () => {
-    if (!isMobile) {
+    console.log(`Device Type: ${isMobile}`);
+    if (isMobile) {
       toast.error("Please join the game with your mobile device.", {
         position: "top-center",
       });
