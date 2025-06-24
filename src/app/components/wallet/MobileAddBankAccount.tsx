@@ -96,6 +96,8 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
         payload.bankCode
       );
       console.log(response);
+      const isBVNVerified = await WalletApi.isBVNVerified();
+      console.log("isBVNVerified", isBVNVerified);
 
       // if (response?.data?.result?.status === "success") {
       //   const { account_name, account_number } = response?.data?.result?.data;
@@ -158,14 +160,23 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
       setIsLoading(false);
     }
   };
-  console.log(addVerifiedAccount);
 
   // Get selected bank details
   const selectedBank = banks.find((bank) => bank.code === selectedBankCode);
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <p className="text-gray-600">Add your bank account for withdrawal</p>
-
+      <button
+        type="button"
+        onClick={() =>
+          addVerifiedAccount({
+            accountName: "",
+            accountNumber: "",
+            bankName: "",
+          })
+        }
+        className="hidden"
+      ></button>
       <div>
         <label
           htmlFor="accountNumber"

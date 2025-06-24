@@ -16,6 +16,13 @@ const WalletApi = {
       { headers: getSessionTokenHeaders() }
     );
   },
+  isBVNVerified(): Promise<AxiosResponse<ApiResponse>> {
+    return axios.post(
+      `${BASE_URL}/isBVNVerified`,
+      {},
+      { headers: getSessionTokenHeaders() }
+    );
+  },
   fetchCustomerWallet(): Promise<AxiosResponse<ApiResponse>> {
     return axios.post(
       `${BASE_URL}/fetchCustomerWallet`,
