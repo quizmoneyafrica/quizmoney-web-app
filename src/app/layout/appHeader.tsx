@@ -92,7 +92,9 @@ function AppHeader() {
       .pop()
       ?.replace(/-/g, " ")
       .replace(/\b\w/g, (char) => char.toUpperCase()) || "";
-
+  const isPin = () => pathname.includes("wallet") && pathname.includes("pin");
+  const isVerifyOtp = () =>
+    pathname.includes("wallet") && pathname.includes("verify-otp");
   return (
     <div className="pb-4">
       <Flex align="center" justify="between" gap="2">
@@ -113,9 +115,9 @@ function AppHeader() {
             <span className=" lg:flex">
               {lastSegment === "Home"
                 ? `Welcome, ${user?.firstName} 👋`
-                : pathname.includes("wallet") &&
-                  pathname.includes("reset-pin") &&
-                  pathname.includes("verify-otp")
+                : isVerifyOtp()
+                ? " Reset Pin"
+                : isPin()
                 ? " Reset Pin"
                 : lastSegment}
             </span>
