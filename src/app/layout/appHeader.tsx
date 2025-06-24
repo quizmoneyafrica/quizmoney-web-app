@@ -113,6 +113,10 @@ function AppHeader() {
             <span className=" lg:flex">
               {lastSegment === "Home"
                 ? `Welcome, ${user?.firstName} 👋`
+                : pathname.includes("wallet") &&
+                  pathname.includes("reset-pin") &&
+                  pathname.includes("verify-otp")
+                ? " Reset Pin"
                 : lastSegment}
             </span>
           </div>
