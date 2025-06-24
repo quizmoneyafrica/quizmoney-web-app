@@ -12,6 +12,7 @@ import useFcmToken from "./hooks/useFcmToken";
 import { disableConsoleInProduction, isIosPwaInstalled } from "./utils/utils";
 import PermissionGuide from "./pwa/permissionGuide";
 import AudioManager from "./(screens)/(liveGame)/live-game/cmp/GameAudioManager";
+import { isMobile } from "react-device-detect";
 
 type Props = {
   children: ReactNode;
@@ -46,24 +47,27 @@ const AppSetup = ({ children }: Props) => {
     }
   }, []);
   useEffect(() => {
-    let devtoolsOpen = false;
+    if (!isMobile) {
+      let devtoolsOpen = false;
 
-    const threshold = 160;
-    const check = () => {
-      const widthThreshold = window.outerWidth - window.innerWidth > threshold;
-      const heightThreshold =
-        window.outerHeight - window.innerHeight > threshold;
-      if (widthThreshold || heightThreshold) {
-        devtoolsOpen = true;
-      }
-    };
+      const threshold = 160;
+      const check = () => {
+        const widthThreshold =
+          window.outerWidth - window.innerWidth > threshold;
+        const heightThreshold =
+          window.outerHeight - window.innerHeight > threshold;
+        if (widthThreshold || heightThreshold) {
+          devtoolsOpen = true;
+        }
+      };
 
-    setInterval(() => {
-      check();
-      if (devtoolsOpen) {
-        window.location.href = "/blocked";
-      }
-    }, 1000);
+      setInterval(() => {
+        check();
+        if (devtoolsOpen) {
+          window.location.href = "/blocked";
+        }
+      }, 1000);
+    }
   }, []);
 
   return (
