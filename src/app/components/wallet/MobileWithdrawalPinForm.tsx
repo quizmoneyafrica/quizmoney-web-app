@@ -264,11 +264,11 @@ export const WithdrawalPinForm = ({
             <p className="text-neutral-500 text-sm">
               Can&apos;t remember your pin?
             </p>
-            <Link href="mailto:hi@quizmoney.ng">
+            {/* <Link href="mailto:hi@quizmoney.ng">
               <span className="text-primary-900 underline underline-offset-1">
                 Contact Us
               </span>
-            </Link>
+            </Link> */}
             <div className="mt-2">
               <Link href="/wallet/reset-pin">
                 <span className="text-primary-900 underline underline-offset-1 cursor-pointer">
