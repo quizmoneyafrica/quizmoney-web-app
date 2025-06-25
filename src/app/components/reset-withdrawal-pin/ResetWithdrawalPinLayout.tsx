@@ -6,6 +6,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import classNames from "classnames";
 import { motion } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
+import WalletApi from "@/app/api/wallet";
+import { store } from "@/app/store/store";
+import {
+  setWallet,
+  setWithdrawalPinModal,
+  setWithdrawalModal,
+  setWalletLoading,
+} from "@/app/store/walletSlice";
+import { toastPosition } from "@/app/utils/utils";
+import { toast } from "sonner";
+import AppLoader from "@/app/components/loader/loader";
 
 const emailSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -25,10 +36,36 @@ export default function ResetWithdrawalPinLayout() {
     mode: "onChange",
   });
 
-  const onSubmit = (data: EmailForm) => {
-    // Replace with actual OTP logic
+  const [loading, setLoading] = React.useState(false);
+
+  const onSubmit = async (data: EmailForm) => {
+    setLoading(true);
     console.log("Send OTP to:", data.email);
+    try {
+      const response = await WalletApi.forgotPin({ email: data.email });
+
+      console.log("====================================");
+      console.log(JSON.stringify(response.data.data, null, 2));
+      console.log("====================================");
+      if (response?.data?.data?.result.data) {
+        toast.success(response?.data?.data?.result?.message, {
+          position: toastPosition,
+        });
+        route.push(`/wallet/reset-pin/verify-otp`);
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      toast.error(`${err.message}`, {
+        position: toastPosition,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (loading) {
+    return <AppLoader />;
+  }
 
   return (
     <div className="flex justify-center items-center  pt-8">
@@ -72,17 +109,41 @@ export default function ResetWithdrawalPinLayout() {
             )}
           </div>
           <motion.button
-            onClick={() => {
-              route.push(currentPath + `/verify-otp`);
-            }}
             type="submit"
-            className="w-full cursor-pointer bg-[#17478B] hover:bg-[#133a6e] text-white text-lg font-semibold py-4 rounded-full mt-8 transition-colors duration-200"
+            className="w-full cursor-pointer bg-[#17478B] hover:bg-[#133a6e] text-white text-lg font-semibold py-4 rounded-full mt-8 transition-colors duration-200 flex items-center justify-center"
             whileTap={{
               scale: 0.9,
               transition: { type: "spring", stiffness: 500, damping: 15 },
             }}
+            disabled={loading}
           >
-            Send OTP
+            {loading ? (
+              <span className="flex items-center justify-center">
+                <svg
+                  className="animate-spin h-5 w-5 mr-2 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  ></path>
+                </svg>
+                Sending...
+              </span>
+            ) : (
+              "Send OTP"
+            )}
           </motion.button>
         </form>
       </motion.div>

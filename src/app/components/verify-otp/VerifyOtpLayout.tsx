@@ -5,6 +5,10 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import classNames from "classnames";
 import { motion } from "framer-motion";
+import WalletApi from "@/app/api/wallet";
+import { toastPosition } from "@/app/utils/utils";
+import { toast } from "sonner";
+import { usePathname, useRouter } from "next/navigation";
 
 const otpSchema = z.object({
   otp: z
@@ -25,6 +29,7 @@ export default function VerifyOtpLayout() {
   });
 
   const [timer, setTimer] = useState(82); // 1:22 in seconds
+  const [loading, setLoading] = useState(false); // Loading state
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const otp = watch("otp");
 
@@ -62,11 +67,28 @@ export default function VerifyOtpLayout() {
     const s = String(t % 60).padStart(2, "0");
     return `${m}:${s}`;
   };
+  const route = useRouter();
 
-  const onSubmit = (data: { otp: string[] }) => {
-    // Replace with actual OTP verification logic
-    alert(data.otp.join(""));
+  const onSubmit = async (data: { otp: string[] }) => {
+    const refined = data.otp.join("");
+    // alert();
     console.log("Verifying OTP:", data.otp.join(""));
+    setLoading(true);
+    try {
+      const response = await WalletApi.verifyPinOtp({ otp: refined });
+      if (response?.data?.data?.result.data) {
+        toast.success(response?.data?.data?.result?.message, {
+          position: toastPosition,
+        });
+        route.push("/wallet/reset-pin/pin");
+      }
+    } catch (err: any) {
+      toast.error(`${err.message}`, {
+        position: toastPosition,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const isOtpComplete = otp?.every((digit) => digit.length === 1);
@@ -141,9 +163,9 @@ export default function VerifyOtpLayout() {
               scale: 0.9,
               transition: { type: "spring", stiffness: 500, damping: 15 },
             }}
-            disabled={!isOtpComplete}
+            disabled={!isOtpComplete || loading}
           >
-            Verify OTP
+            {loading ? <span>Verifying...</span> : <span>Verify OTP</span>}
           </motion.button>
         </form>
       </motion.div>

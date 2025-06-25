@@ -269,6 +269,13 @@ export const WithdrawalPinForm = ({
                 Contact Us
               </span>
             </Link>
+            <div className="mt-2">
+              <Link href="/wallet/reset-pin">
+                <span className="text-primary-900 underline underline-offset-1 cursor-pointer">
+                  Reset Pin
+                </span>
+              </Link>
+            </div>
           </div>
         )}
       </div>

@@ -119,6 +119,20 @@ const WalletApi = {
       { headers: getSessionTokenHeaders() }
     );
   },
+  forgotPin(data: {email:string}): Promise<AxiosResponse<ApiResponse>> {
+    return axios.post(
+      `${BASE_URL}/forgotPin`,
+      { ...data },
+      { headers: getSessionTokenHeaders() }
+    );
+  },
+  verifyPinOtp(data: {otp:string}): Promise<AxiosResponse<ApiResponse>> {
+    return axios.post(
+      `${BASE_URL}/forgotPin`,
+      { ...data },
+      { headers: getSessionTokenHeaders() }
+    );
+  },
   removeBankAccount(data: {
     bankAccount: {
       accountNumber: string;
