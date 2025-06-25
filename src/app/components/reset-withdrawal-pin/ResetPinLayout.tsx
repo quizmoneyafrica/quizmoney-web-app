@@ -4,12 +4,7 @@ import { useForm } from "react-hook-form";
 import classNames from "classnames";
 import { motion } from "framer-motion";
 import WalletApi from "@/app/api/wallet";
-import {
-  setWalletLoading,
-  setWallet,
-  setWithdrawalPinModal,
-  setWithdrawalModal,
-} from "@/app/store/walletSlice";
+import { setWalletLoading, setWallet } from "@/app/store/walletSlice";
 import { store } from "@/app/store/store";
 import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";

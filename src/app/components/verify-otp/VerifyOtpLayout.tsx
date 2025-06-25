@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 import WalletApi from "@/app/api/wallet";
 import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const otpSchema = z.object({
   otp: z
@@ -82,6 +82,7 @@ export default function VerifyOtpLayout() {
         });
         route.push("/wallet/reset-pin/pin");
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(`${err.message}`, {
         position: toastPosition,

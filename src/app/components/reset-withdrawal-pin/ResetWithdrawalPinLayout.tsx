@@ -7,13 +7,6 @@ import classNames from "classnames";
 import { motion } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
 import WalletApi from "@/app/api/wallet";
-import { store } from "@/app/store/store";
-import {
-  setWallet,
-  setWithdrawalPinModal,
-  setWithdrawalModal,
-  setWalletLoading,
-} from "@/app/store/walletSlice";
 import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
 import AppLoader from "@/app/components/loader/loader";
