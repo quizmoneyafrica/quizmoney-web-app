@@ -5,7 +5,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import classNames from "classnames";
 import { motion } from "framer-motion";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import WalletApi from "@/app/api/wallet";
 import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
@@ -19,7 +19,6 @@ type EmailForm = z.infer<typeof emailSchema>;
 
 export default function ResetWithdrawalPinLayout() {
   const route = useRouter();
-  const currentPath = usePathname();
   const {
     register,
     handleSubmit,

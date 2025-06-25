@@ -46,29 +46,29 @@ const AppSetup = ({ children }: Props) => {
       );
     }
   }, []);
-  // useEffect(() => {
-  //   if (!isMobile) {
-  //     let devtoolsOpen = false;
+  useEffect(() => {
+    if (!isMobile) {
+      let devtoolsOpen = false;
 
-  //     const threshold = 160;
-  //     const check = () => {
-  //       const widthThreshold =
-  //         window.outerWidth - window.innerWidth > threshold;
-  //       const heightThreshold =
-  //         window.outerHeight - window.innerHeight > threshold;
-  //       if (widthThreshold || heightThreshold) {
-  //         devtoolsOpen = true;
-  //       }
-  //     };
+      const threshold = 160;
+      const check = () => {
+        const widthThreshold =
+          window.outerWidth - window.innerWidth > threshold;
+        const heightThreshold =
+          window.outerHeight - window.innerHeight > threshold;
+        if (widthThreshold || heightThreshold) {
+          devtoolsOpen = true;
+        }
+      };
 
-  //     setInterval(() => {
-  //       check();
-  //       if (devtoolsOpen) {
-  //         window.location.href = "/blocked";
-  //       }
-  //     }, 1000);
-  //   }
-  // }, []);
+      setInterval(() => {
+        check();
+        if (devtoolsOpen) {
+          window.location.href = "/blocked";
+        }
+      }, 1000);
+    }
+  }, []);
 
   return (
     <Theme appearance="light" className="!font-text">
