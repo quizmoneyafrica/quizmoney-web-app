@@ -71,6 +71,7 @@ export default function RootLayout({
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"
         ></link>
         <meta name="apple-mobile-web-app-title" content="Quiz Money" />
+        <meta name="google-adsense-account" content="ca-pub-7047303023694178">
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover"
