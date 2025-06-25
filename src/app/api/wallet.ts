@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { BASE_URL, getSessionTokenHeaders } from "./userApi";
 import { ApiResponse } from "./interface";
+import { callWithSessionToken } from "./parse/callWithSessionToken";
 
 const WalletApi = {
   verifyBVN(
@@ -77,11 +78,11 @@ const WalletApi = {
       { headers: getSessionTokenHeaders() }
     );
   },
-  listBanks(): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
+  listBanks(): Promise<ApiResponse>  {
+    return callWithSessionToken(
       `${BASE_URL}/listBanks`,
       {},
-      { headers: getSessionTokenHeaders() }
+     
     );
   },
   fetchDedicatedAccount(data: {
@@ -97,11 +98,10 @@ const WalletApi = {
     pin: string;
     edit?: boolean;
     oldPin?: string;
-  }): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
+  }): Promise<ApiResponse>  {
+    return callWithSessionToken(
       `${BASE_URL}/createWithdrawalPin`,
       data?.edit ? { ...data } : { pin: data?.pin },
-      { headers: getSessionTokenHeaders() }
     );
   },
   requestWithdrawal(data: {
@@ -119,18 +119,17 @@ const WalletApi = {
       { headers: getSessionTokenHeaders() }
     );
   },
-  forgotPin(data: {email:string}): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
+  forgotPin(data: {email:string}): Promise<ApiResponse>  {
+    return  callWithSessionToken<ApiResponse>(
       `${BASE_URL}/forgotPin`,
       { ...data },
-      { headers: getSessionTokenHeaders() }
+     
     );
   },
-  verifyPinOtp(data: {otp:string}): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
+  verifyPinOtp(data: {otp:string}): Promise<ApiResponse>  {
+    return callWithSessionToken(
       `${BASE_URL}/forgotPin`,
       { ...data },
-      { headers: getSessionTokenHeaders() }
     );
   },
   removeBankAccount(data: {
