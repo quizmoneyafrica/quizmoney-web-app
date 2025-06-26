@@ -79,10 +79,11 @@ const WalletApi = {
       { headers: getSessionTokenHeaders() }
     );
   },
-  listBanks(): Promise<ApiResponse>  {
-    return callWithSessionToken(
+  listBanks(): Promise<AxiosResponse<ApiResponse>> {
+    return axios.post(
       `${BASE_URL}/listBanks`,
       {},
+      { headers: getSessionTokenHeaders() }
      
     );
   },
