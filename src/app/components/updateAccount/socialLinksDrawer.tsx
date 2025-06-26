@@ -161,12 +161,23 @@ function SocialLinksDrawer() {
   };
   const selectedPlatforms = socialInputs.map((input) => input.platform);
   return (
-    <QmDrawer titleLeft title="Complete your profile" open={showUpdateDrawer}>
+    <QmDrawer
+      titleLeft
+      title="Complete your profile"
+      open={showUpdateDrawer}
+      hideCloseBtn
+      dismissible={false}
+    >
       <p className="text-sm text-neutral-600 -mt-4">
         We need you to add your social handle to complete your profile
       </p>
       <form onSubmit={handleUpdateSocials} className="space-y-4 py-6">
-        <p className="text-primary-900 font-medium">Add Social Links</p>
+        <p className="text-primary-900 font-medium">
+          Add Social Links{" "}
+          <span className="text-sm italic text-error-700">
+            (minimum of 2 socials)
+          </span>
+        </p>
 
         {socialInputs.map((input, index) => (
           <div key={index} className="flex gap-2 items-center">
@@ -226,14 +237,32 @@ function SocialLinksDrawer() {
           </div>
         ))}
 
-        <button
-          type="button"
-          className="text-blue-600 hover:underline text-sm"
-          onClick={addNewLink}
-        >
-          + Add New Link
-        </button>
-
+        {socialInputs.length < 4 && (
+          <button
+            type="button"
+            className="text-blue-600 hover:underline text-sm cursor-pointer"
+            onClick={addNewLink}
+          >
+            + Add New Link
+          </button>
+        )}
+        {socialInputs.filter(
+          (link) =>
+            link.platform &&
+            link.username &&
+            isValidURL(link.platform as Platform, link.username)
+        ).length < 2 && (
+          <p className="text-error-700 text-sm text-center">
+            {2 -
+              socialInputs.filter(
+                (link) =>
+                  link.platform &&
+                  link.username &&
+                  isValidURL(link.platform as Platform, link.username)
+              ).length}{" "}
+            socials remaining to proceed
+          </p>
+        )}
         <CustomButton
           type="submit"
           width="full"

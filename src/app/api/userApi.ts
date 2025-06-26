@@ -45,6 +45,9 @@ const getAuthUser = () => {
 };
 
 const UserAPI = {
+  checkSessionTokenValidity(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("checkSessionTokenValidity");
+  },
   login(form: LoginForm): Promise<ApiResponse> {
     return callParseEndpoint<ApiResponse>("login", form);
   },
@@ -161,18 +164,18 @@ const UserAPI = {
   topGamersOfToday(): Promise<ApiResponse> {
     return callParseEndpoint<ApiResponse>("topGamersOfTheWeekend");
   },
-  // getReferralStats(): Promise<ApiResponse> {
-  //   return callWithSessionToken<ApiResponse>("referralData", {});
-  // },
-  getReferralStats(): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/referralData`,
-      {},
-      {
-        headers: getSessionTokenHeaders(),
-      }
-    );
+  getReferralStats(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("referralData", {});
   },
+  // getReferralStats(): Promise<AxiosResponse<ApiResponse>> {
+  //   return axios.post(
+  //     `${BASE_URL}/referralData`,
+  //     {},
+  //     {
+  //       headers: getSessionTokenHeaders(),
+  //     }
+  //   );
+  // },
 };
 
 export {

@@ -28,9 +28,6 @@ const LogoutDialog = ({ open, onOpenChange }: Props) => {
 
     await persistor.purge();
 
-    // localStorage.clear();
-    // sessionStorage.clear();
-
     setLoading(false);
     onOpenChange(false);
 

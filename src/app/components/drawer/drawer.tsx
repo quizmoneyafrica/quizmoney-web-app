@@ -11,6 +11,8 @@ type VaulDrawerProps = {
   heightClass?: string;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  hideCloseBtn?: boolean;
+  dismissible?: boolean;
 };
 
 export default function QmDrawer({
@@ -21,9 +23,15 @@ export default function QmDrawer({
   open,
   onOpenChange,
   titleLeft = false,
+  hideCloseBtn = false,
+  dismissible = true,
 }: VaulDrawerProps) {
   return (
-    <Drawer.Root open={open} onOpenChange={onOpenChange}>
+    <Drawer.Root
+      open={open}
+      onOpenChange={onOpenChange}
+      dismissible={dismissible}
+    >
       <Drawer.Trigger asChild>{trigger}</Drawer.Trigger>
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 bg-black/40" />
@@ -48,11 +56,13 @@ export default function QmDrawer({
                   {title}
                 </Drawer.Title>
               )}
-              <Drawer.Close asChild>
-                <button className="absolute top-7 right-6 h-10 w-10 hidden hover:bg-neutral-50 md:grid place-items-center rounded-full">
-                  <XIcon />
-                </button>
-              </Drawer.Close>
+              {!hideCloseBtn && (
+                <Drawer.Close asChild>
+                  <button className="absolute top-7 right-6 h-10 w-10 hidden hover:bg-neutral-50 md:grid place-items-center rounded-full">
+                    <XIcon />
+                  </button>
+                </Drawer.Close>
+              )}
 
               <div className="pb-6">{children}</div>
             </div>

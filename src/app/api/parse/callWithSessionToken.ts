@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { decryptData } from "@/app/utils/crypto";
 import { callParseEndpoint } from "./callParseEndpoint";
-import { getAuthUser } from "../userApi";
+import { store } from "@/app/store/store";
 
 export const callWithSessionToken = async <T>(
   endpoint: string,
   body?: any,
   method: string = "POST"
 ): Promise<T> => {
-  const user = getAuthUser();
+  const encrypted = store.getState().auth.userEncryptedData;
+  const user = encrypted ? decryptData(encrypted) : null;
   const sessionToken = user?.sessionToken;
 
   if (!sessionToken) {
