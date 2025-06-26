@@ -39,14 +39,18 @@ export default function ResetWithdrawalPinLayout() {
       console.log("====================================");
       console.log(JSON.stringify(response.data.data, null, 2));
       console.log("====================================");
-      if (response?.data?.data?.result.data) {
-        toast.success(response?.data?.data?.result?.message, {
+      if (response?.data?.result.data) {
+        localStorage.setItem("wallet-reset-email", data.email);
+        toast.success(response?.data?.result?.message, {
           position: toastPosition,
         });
         route.push(`/wallet/reset-pin/verify-otp`);
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
+      console.log("=========ERRO===========================");
+      console.log(err);
+      console.log("====================================");
       toast.error(`${err.message}`, {
         position: toastPosition,
       });
@@ -54,10 +58,6 @@ export default function ResetWithdrawalPinLayout() {
       setLoading(false);
     }
   };
-
-  if (loading) {
-    return <AppLoader />;
-  }
 
   return (
     <div className="flex justify-center items-center  pt-8">
@@ -105,32 +105,13 @@ export default function ResetWithdrawalPinLayout() {
             className="w-full cursor-pointer bg-[#17478B] hover:bg-[#133a6e] text-white text-lg font-semibold py-4 rounded-full mt-8 transition-colors duration-200 flex items-center justify-center"
             whileTap={{
               scale: 0.9,
-              transition: { type: "spring", stiffness: 500, damping: 15 },
+              transition: { type: "spring", stiffness: 200, damping: 15 },
             }}
             disabled={loading}
           >
             {loading ? (
-              <span className="flex items-center justify-center">
-                <svg
-                  className="animate-spin h-5 w-5 mr-2 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                  ></path>
-                </svg>
+              <span className="flex items-center gap-2 justify-center">
+                <div className=" size-5 animate-spin rounded-full border-b-2 border-white" />
                 Sending...
               </span>
             ) : (

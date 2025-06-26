@@ -68,7 +68,6 @@ export default function ResetPinLayout() {
       alert("Pins do not match");
       return;
     }
-    alert("Pin set: " + data.pin.join(""));
 
     setIsCreatingPin(true);
     store.dispatch(setWalletLoading(true));
@@ -77,8 +76,9 @@ export default function ResetPinLayout() {
       const response = await WalletApi.createWithdrawalPin({
         pin: data.pin.join(""),
       });
-      if (response?.data?.data?.result?.updatedWallet) {
-        toast.success(response?.data?.data?.result?.message, {
+      if (response?.data?.result?.updatedWallet) {
+        localStorage.removeItem("wallet-reset-email");
+        toast.success(response?.data?.result?.message, {
           position: toastPosition,
         });
 
@@ -194,7 +194,13 @@ export default function ResetPinLayout() {
             }}
             disabled={!(isPinComplete && isConfirmPinComplete) || isCreatingPin}
           >
-            {isCreatingPin ? "Saving..." : "Save Pin"}
+            {isCreatingPin ? (
+              <span className="flex items-center gap-2 justify-center">
+                <div className=" size-5 animate-spin rounded-full border-b-2 border-white" />
+              </span>
+            ) : (
+              "Save Pin"
+            )}
           </motion.button>
         </form>
       </motion.div>
