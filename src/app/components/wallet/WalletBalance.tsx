@@ -151,17 +151,13 @@ export default function WalletBalance() {
                     wallet?.bankAccounts &&
                     wallet?.bankAccounts.length >= 3
                   ) {
-                    toast.info(
-                      "You've already have three account number listed",
-                      {
-                        position: "top-right",
-                      }
-                    );
+                    toast.info("You already have three account number listed", {
+                      position: "top-right",
+                    });
 
                     return;
                   }
                   store.dispatch(setWithdrawalModal(false));
-
                   store.dispatch(setAddBankModal(true));
                 }}
               />

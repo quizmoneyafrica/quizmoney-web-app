@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import WalletBalance from "./WalletBalance";
 import CustomImage from "./CustomImage";
 import classNames from "classnames";
@@ -16,6 +16,7 @@ import Link from "next/link";
 import { renderEmptyState } from "../transactions/WalletActivity";
 import { Skeleton } from "@radix-ui/themes";
 import { formatNaira } from "@/app/utils/utils";
+import { TransactionDetailsModal } from "../transactions/TransactionDetailModal";
 // import { useAppDispatch } from "@/app/hooks/useAuth";
 // import WalletApi from "@/app/api/wallet";
 // import { getAuthUser } from "@/app/api/userApi";
@@ -53,6 +54,9 @@ export interface TransactionGroup {
 
 export default function TransactionHistory(): React.JSX.Element {
   const { transactions, isTransactionsLoading } = useSelector(useWallet);
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<Transaction | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   // const dispatch = useAppDispatch();
 
   // useEffect(() => {
@@ -176,6 +180,32 @@ export default function TransactionHistory(): React.JSX.Element {
     return group;
   }, [flattenedTransactions]);
 
+  const limitedGroupedTransactions: TransactionGroup = useMemo(() => {
+    const all = [
+      ...groupedTransactions.today,
+      ...groupedTransactions.yesterday,
+      ...groupedTransactions.other,
+    ];
+    const limited = all.slice(0, 15);
+    const group: TransactionGroup = { today: [], yesterday: [], other: [] };
+    limited.forEach((transaction) => {
+      const date = parseISO(transaction?.createdAt ?? new Date().toISOString());
+      if (isToday(date)) {
+        group.today.push(transaction);
+      } else if (isYesterday(date)) {
+        group.yesterday.push(transaction);
+      } else {
+        group.other.push(transaction);
+      }
+    });
+    return group;
+  }, [groupedTransactions]);
+
+  const handleTransactionClick = (transaction: Transaction) => {
+    setSelectedTransaction(transaction);
+    setIsModalOpen(true);
+  };
+
   const renderTransaction = (
     transaction: Transaction,
     index: number,
@@ -189,9 +219,10 @@ export default function TransactionHistory(): React.JSX.Element {
       <div key={transaction.objectId || index.toString()}>
         <div
           className={classNames(
-            "bg-white px-3 md:px-4 py-3 md:py-4 hidden md:flex justify-between items-center",
+            "bg-white px-3 md:px-4 py-3 md:py-4 hidden md:flex justify-between items-center cursor-pointer",
             !isLastInGroup && "border-b border-b-[#D9D9D9]"
           )}
+          onClick={() => handleTransactionClick(transaction)}
         >
           <div className="flex gap-2 md:gap-4 items-center">
             <div
@@ -236,7 +267,10 @@ export default function TransactionHistory(): React.JSX.Element {
             <p className="text-xs md:text-sm text-gray-500">{dateData}</p>
           </div>
         </div>
-        <MobileList transaction={transaction} />
+        <MobileList
+          transaction={transaction}
+          onClick={() => handleTransactionClick(transaction)}
+        />
       </div>
     );
   };
@@ -316,14 +350,28 @@ export default function TransactionHistory(): React.JSX.Element {
           renderEmptyState()
         ) : (
           <>
-            {renderTransactionSection("Today", groupedTransactions.today)}
+            {renderTransactionSection(
+              "Today",
+              limitedGroupedTransactions.today
+            )}
             {renderTransactionSection(
               "Yesterday",
-              groupedTransactions.yesterday
+              limitedGroupedTransactions.yesterday
+            )}
+            {renderTransactionSection(
+              "Earlier",
+              limitedGroupedTransactions.other
             )}
           </>
         )}
       </div>
+      {selectedTransaction && (
+        <TransactionDetailsModal
+          transaction={selectedTransaction}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

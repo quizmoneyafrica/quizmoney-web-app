@@ -1,8 +1,14 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import classNames from "classnames";
 import { motion } from "framer-motion";
+import WalletApi from "@/app/api/wallet";
+import { setWalletLoading, setWallet } from "@/app/store/walletSlice";
+import { store } from "@/app/store/store";
+import { toastPosition } from "@/app/utils/utils";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface PinForm {
   pin: string[];
@@ -27,13 +33,14 @@ export default function ResetPinLayout() {
   const confirmPinRefs = useRef<(HTMLInputElement | null)[]>([]);
   const pin = watch("pin");
   const confirmPin = watch("confirmPin");
-
+  const [isCreatingPin, setIsCreatingPin] = useState(false);
+  const route = useRouter();
   const handlePinChange = (
     index: number,
     value: string,
     field: "pin" | "confirmPin"
   ) => {
-    if (!/^\d*$/.test(value)) return; // Only allow numbers
+    if (!/^\d*$/.test(value)) return;
     const current = field === "pin" ? [...pin] : [...confirmPin];
     current[index] = value.slice(-1);
     setValue(field, current, { shouldValidate: true });
@@ -56,13 +63,39 @@ export default function ResetPinLayout() {
   const isPinComplete = pin.every((digit) => digit.length === 1);
   const isConfirmPinComplete = confirmPin.every((digit) => digit.length === 1);
 
-  const onSubmit = (data: PinForm) => {
-    // Replace with actual PIN save logic
+  const onSubmit = async (data: PinForm) => {
     if (data.pin.join("") !== data.confirmPin.join("")) {
       alert("Pins do not match");
       return;
     }
-    alert("Pin set: " + data.pin.join(""));
+
+    setIsCreatingPin(true);
+    store.dispatch(setWalletLoading(true));
+
+    try {
+      const response = await WalletApi.createWithdrawalPin({
+        pin: data.pin.join(""),
+      });
+      if (response?.data?.result?.updatedWallet) {
+        localStorage.removeItem("wallet-reset-email");
+        toast.success(response?.data?.result?.message, {
+          position: toastPosition,
+        });
+
+        const res = await WalletApi.fetchCustomerWallet();
+        if (res.data.result.wallet) {
+          store.dispatch(setWallet(res.data.result.wallet));
+        }
+        route.replace("/wallet");
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      toast.error(`${err.message}`, {
+        position: toastPosition,
+      });
+    } finally {
+      setIsCreatingPin(false);
+    }
   };
 
   return (
@@ -159,9 +192,15 @@ export default function ResetPinLayout() {
               scale: 0.97,
               transition: { type: "spring", stiffness: 500, damping: 15 },
             }}
-            disabled={!(isPinComplete && isConfirmPinComplete)}
+            disabled={!(isPinComplete && isConfirmPinComplete) || isCreatingPin}
           >
-            Save Pin
+            {isCreatingPin ? (
+              <span className="flex items-center gap-2 justify-center">
+                <div className=" size-5 animate-spin rounded-full border-b-2 border-white" />
+              </span>
+            ) : (
+              "Save Pin"
+            )}
           </motion.button>
         </form>
       </motion.div>

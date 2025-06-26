@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import CustomButton from "@/app/utils/CustomBtn";
 import classNames from "classnames";
 import { z } from "zod";
@@ -7,7 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import WalletApi from "@/app/api/wallet";
 import { store } from "@/app/store/store";
 import {
-  setWalletLoading,
   setWallet,
   setWithdrawalPinModal,
   setWithdrawalModal,
@@ -39,7 +38,7 @@ export const WithdrawalPinForm = ({
   const [invalidPinError, setInvalidPinError] = useState(false);
   const [isCreatingPin, setIsCreatingPin] = useState<boolean>(false);
   const { wallet, withdrawalData } = useSelector(useWallet);
-  const hasPin = Boolean(wallet?.pin);
+  const hasPin = useMemo(() => wallet?.pin, [wallet?.pin]);
 
   const [isCreatingRequest, setIsCreatingRequest] = useState<boolean>(false);
   const {
@@ -119,14 +118,13 @@ export const WithdrawalPinForm = ({
 
   const createPin = async (pin: string) => {
     setIsCreatingPin(true);
-    store.dispatch(setWalletLoading(true));
 
     try {
       const response = await WalletApi.createWithdrawalPin({
         pin,
       });
-      if (response?.data?.data?.result?.updatedWallet) {
-        toast.success(response?.data?.data?.result?.message, {
+      if (response?.data?.result?.updatedWallet) {
+        toast.success(response?.data?.result?.message, {
           position: toastPosition,
         });
 
@@ -146,7 +144,6 @@ export const WithdrawalPinForm = ({
       });
     } finally {
       setIsCreatingPin(false);
-      store.dispatch(setWalletLoading(false));
     }
   };
 
@@ -264,11 +261,18 @@ export const WithdrawalPinForm = ({
             <p className="text-neutral-500 text-sm">
               Can&apos;t remember your pin?
             </p>
-            <Link href="mailto:hi@quizmoney.ng">
+            {/* <Link href="mailto:hi@quizmoney.ng">
               <span className="text-primary-900 underline underline-offset-1">
                 Contact Us
               </span>
-            </Link>
+            </Link> */}
+            <div className="mt-2">
+              <Link href="/wallet/reset-pin">
+                <span className="text-primary-900 underline underline-offset-1 cursor-pointer">
+                  Reset Pin
+                </span>
+              </Link>
+            </div>
           </div>
         )}
       </div>

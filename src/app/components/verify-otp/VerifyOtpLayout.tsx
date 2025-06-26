@@ -5,6 +5,10 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import classNames from "classnames";
 import { motion } from "framer-motion";
+import WalletApi from "@/app/api/wallet";
+import { toastPosition } from "@/app/utils/utils";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const otpSchema = z.object({
   otp: z
@@ -13,6 +17,8 @@ const otpSchema = z.object({
 });
 
 export default function VerifyOtpLayout() {
+  const localEmail = localStorage.getItem("wallet-reset-email");
+
   const {
     handleSubmit,
     formState: { errors },
@@ -25,6 +31,7 @@ export default function VerifyOtpLayout() {
   });
 
   const [timer, setTimer] = useState(82); // 1:22 in seconds
+  const [loading, setLoading] = useState(false); // Loading state
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const otp = watch("otp");
 
@@ -62,15 +69,64 @@ export default function VerifyOtpLayout() {
     const s = String(t % 60).padStart(2, "0");
     return `${m}:${s}`;
   };
+  const route = useRouter();
 
-  const onSubmit = (data: { otp: string[] }) => {
-    // Replace with actual OTP verification logic
-    alert(data.otp.join(""));
+  const onSubmit = async (data: { otp: string[] }) => {
+    if (!localEmail) {
+      return;
+    }
+    const refined = data.otp.join("");
+    // alert();
     console.log("Verifying OTP:", data.otp.join(""));
+    setLoading(true);
+    try {
+      const response = await WalletApi.verifyPinOtp({
+        otp: refined,
+        email: localEmail,
+      });
+      if (response?.data?.result.data) {
+        toast.success(response?.data?.result?.message, {
+          position: toastPosition,
+        });
+        route.push("/wallet/reset-pin/pin");
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      toast.error(`${err.message}`, {
+        position: toastPosition,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const isOtpComplete = otp?.every((digit) => digit.length === 1);
+  const resendOtp = async () => {
+    if (!localEmail) {
+      return;
+    }
+    setLoading(true);
+    console.log("Send OTP to:", localEmail);
+    try {
+      const response = await WalletApi.forgotPin({ email: localEmail });
 
+      console.log("====================================");
+      console.log(JSON.stringify(response.data.data, null, 2));
+      console.log("====================================");
+      if (response?.data?.result.data) {
+        toast.success(response?.data?.result?.message, {
+          position: toastPosition,
+        });
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      toast.error(`${err.message}`, {
+        position: toastPosition,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="flex justify-center items-center pt-8">
       <motion.div
@@ -128,7 +184,10 @@ export default function VerifyOtpLayout() {
               className="text-primary-700 underline font-medium disabled:opacity-50"
               disabled={timer > 0}
               type="button"
-              onClick={() => setTimer(82)}
+              onClick={() => {
+                resendOtp();
+                setTimer(82);
+              }}
             >
               Resend Code
             </button>
@@ -141,9 +200,16 @@ export default function VerifyOtpLayout() {
               scale: 0.9,
               transition: { type: "spring", stiffness: 500, damping: 15 },
             }}
-            disabled={!isOtpComplete}
+            disabled={!isOtpComplete || loading}
           >
-            Verify OTP
+            {loading ? (
+              <span className="flex items-center gap-2 justify-center">
+                <div className=" size-5 animate-spin rounded-full border-b-2 border-white" />
+                Verifying...
+              </span>
+            ) : (
+              <span>Verify OTP</span>
+            )}
           </motion.button>
         </form>
       </motion.div>

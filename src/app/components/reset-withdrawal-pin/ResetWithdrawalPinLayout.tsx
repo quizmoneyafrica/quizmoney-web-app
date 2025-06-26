@@ -5,7 +5,10 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import classNames from "classnames";
 import { motion } from "framer-motion";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import WalletApi from "@/app/api/wallet";
+import { toastPosition } from "@/app/utils/utils";
+import { toast } from "sonner";
 
 const emailSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -15,7 +18,6 @@ type EmailForm = z.infer<typeof emailSchema>;
 
 export default function ResetWithdrawalPinLayout() {
   const route = useRouter();
-  const currentPath = usePathname();
   const {
     register,
     handleSubmit,
@@ -25,9 +27,35 @@ export default function ResetWithdrawalPinLayout() {
     mode: "onChange",
   });
 
-  const onSubmit = (data: EmailForm) => {
-    // Replace with actual OTP logic
+  const [loading, setLoading] = React.useState(false);
+
+  const onSubmit = async (data: EmailForm) => {
+    setLoading(true);
     console.log("Send OTP to:", data.email);
+    try {
+      const response = await WalletApi.forgotPin({ email: data.email });
+
+      console.log("====================================");
+      console.log(JSON.stringify(response.data.data, null, 2));
+      console.log("====================================");
+      if (response?.data?.result.data) {
+        localStorage.setItem("wallet-reset-email", data.email);
+        toast.success(response?.data?.result?.message, {
+          position: toastPosition,
+        });
+        route.push(`/wallet/reset-pin/verify-otp`);
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      console.log("=========ERRO===========================");
+      console.log(err);
+      console.log("====================================");
+      toast.error(`${err.message}`, {
+        position: toastPosition,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -72,17 +100,22 @@ export default function ResetWithdrawalPinLayout() {
             )}
           </div>
           <motion.button
-            onClick={() => {
-              route.push(currentPath + `/verify-otp`);
-            }}
             type="submit"
-            className="w-full cursor-pointer bg-[#17478B] hover:bg-[#133a6e] text-white text-lg font-semibold py-4 rounded-full mt-8 transition-colors duration-200"
+            className="w-full cursor-pointer bg-[#17478B] hover:bg-[#133a6e] text-white text-lg font-semibold py-4 rounded-full mt-8 transition-colors duration-200 flex items-center justify-center"
             whileTap={{
               scale: 0.9,
-              transition: { type: "spring", stiffness: 500, damping: 15 },
+              transition: { type: "spring", stiffness: 200, damping: 15 },
             }}
+            disabled={loading}
           >
-            Send OTP
+            {loading ? (
+              <span className="flex items-center gap-2 justify-center">
+                <div className=" size-5 animate-spin rounded-full border-b-2 border-white" />
+                Sending...
+              </span>
+            ) : (
+              "Send OTP"
+            )}
           </motion.button>
         </form>
       </motion.div>
