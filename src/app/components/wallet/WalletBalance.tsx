@@ -125,7 +125,7 @@ export default function WalletBalance() {
             </QmDrawer>
 
             <QmDrawer
-              open={false}
+              open={withdrawalModal}
               onOpenChange={(val) => store.dispatch(setWithdrawalModal(val))}
               title="Withdraw"
               titleLeft

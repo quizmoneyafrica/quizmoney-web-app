@@ -7,7 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import WalletApi from "@/app/api/wallet";
 import { store } from "@/app/store/store";
 import {
-  setWalletLoading,
   setWallet,
   setWithdrawalPinModal,
   setWithdrawalModal,

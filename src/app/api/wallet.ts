@@ -2,7 +2,6 @@
 import axios, { AxiosResponse } from "axios";
 import { BASE_URL, getSessionTokenHeaders } from "./userApi";
 import { ApiResponse } from "./interface";
-import { callWithSessionToken } from "./parse/callWithSessionToken";
 
 const WalletApi = {
   verifyBVN(
