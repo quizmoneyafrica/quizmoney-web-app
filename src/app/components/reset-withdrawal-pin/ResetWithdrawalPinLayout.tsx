@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation";
 import WalletApi from "@/app/api/wallet";
 import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
-import AppLoader from "@/app/components/loader/loader";
 
 const emailSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
