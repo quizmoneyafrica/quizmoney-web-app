@@ -88,10 +88,12 @@ const WalletApi = {
   },
   fetchDedicatedAccount(data: {
     email: string;
-  }):  Promise<ApiResponse>  {
-    return callWithSessionToken(
+  }):  Promise<AxiosResponse<ApiResponse>> {
+    return axios.post(
       `${BASE_URL}/fetchDedicatedAccount`,
       { ...data },
+      { headers: getSessionTokenHeaders() }
+
     );
   },
   createWithdrawalPin(data: {
