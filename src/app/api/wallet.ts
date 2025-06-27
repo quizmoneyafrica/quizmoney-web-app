@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosResponse } from "axios";
 import { BASE_URL, getSessionTokenHeaders } from "./userApi";
 import { ApiResponse } from "./interface";
@@ -50,16 +51,28 @@ const WalletApi = {
       { headers: getSessionTokenHeaders() }
     );
   },
-  getPaystackCheckoutLink(data: {
-    amount: string;
-  }): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/getPaystackCheckoutLink`,
+  getPaystackCheckoutLink(
+    data: {
+      amount: string;
+    },
+    dispatch: any
+  ): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      "getPaystackCheckoutLink",
       { ...data },
-      { headers: getSessionTokenHeaders() }
+      dispatch
     );
   },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // getPaystackCheckoutLink(data: {
+  //   amount: string;
+  // }): Promise<AxiosResponse<ApiResponse>> {
+  //   return axios.post(
+  //     `${BASE_URL}/getPaystackCheckoutLink`,
+  //     { ...data },
+  //     { headers: getSessionTokenHeaders() }
+  //   );
+  // },
+
   addBankAccount(data: any): Promise<AxiosResponse<ApiResponse>> {
     return axios.post(
       `${BASE_URL}/addBankAccount`,

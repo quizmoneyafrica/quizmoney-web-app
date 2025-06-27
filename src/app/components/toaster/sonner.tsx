@@ -1,5 +1,4 @@
 "use client";
-
 import { Toaster as Sonner } from "sonner";
 import type { ComponentProps } from "react";
 
@@ -24,7 +23,6 @@ const Toaster = ({ appearance = "light", ...props }: ToasterProps) => {
             "group toast group-[.toaster]:shadow-lg group-[.toaster]:border",
             "group-[.toaster]:text-foreground",
             "group-[.toaster]:bg-background",
-
             // ✅ Success
             "data-[type=success]:!bg-positive-50 data-[type=success]:!border-positive-200",
 
