@@ -192,7 +192,7 @@ function GameScreen() {
     try {
       await GameApi.recordGameAnswer(
         gameId,
-        questionNumber,
+        questionNumber.toString(),
         toSaveAnswer,
         totalTimeFormatted
       );
@@ -201,7 +201,7 @@ function GameScreen() {
       try {
         await GameApi.recordGameAnswer(
           gameId,
-          questionNumber,
+          questionNumber.toString(),
           toSaveAnswer,
           totalTimeFormatted
         );
