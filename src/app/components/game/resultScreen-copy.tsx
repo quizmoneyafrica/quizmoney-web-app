@@ -1,4 +1,3 @@
-import GameApi from "@/app/api/game";
 import { useAppSelector } from "@/app/hooks/useAuth";
 import { CorrectCircleIcon, WrongCircleIcon } from "@/app/icons/icons";
 import { setShowAdsScreen } from "@/app/store/gameSlice";
@@ -52,10 +51,7 @@ function ResultScreen() {
   useEffect(() => {
     const fetchResult = async () => {
       try {
-        const res = await GameApi.getLoggedinUserGameResults(
-          liveGameData?.objectId
-        );
-        setResultData(res.data.result);
+        setResultData(initialGameResult);
         // console.log(res);
         setFetching(false);
 
