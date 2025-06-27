@@ -8,11 +8,11 @@ import StoreAPI from "@/app/api/storeApi";
 import { useRouter } from "next/navigation";
 import CustomButton from "@/app/utils/CustomBtn";
 import { encryptData } from "@/app/utils/crypto";
-import { useAuth } from "@/app/hooks/useAuth";
+import { useAppDispatch, useAuth } from "@/app/hooks/useAuth";
 import { Eraser } from "@/app/icons/icons";
 import { toast } from "sonner";
-import QmDrawer from "@/app/components/drawer/drawer";
 import { formatNaira } from "@/app/utils/utils";
+import Modal from "@/app/components/game/modal/ModalWindow";
 
 const displayColor = [
   {
@@ -66,22 +66,22 @@ const ProductCard = ({
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { loginUser } = useAuth();
+  const dispatch = useAppDispatch();
 
   console.log(6 % (6 - index), index);
   // console.log(displayColor[index % displayColor.length]);
 
   const handlePurchase = async () => {
     setIsLoading(true);
-    await StoreAPI.purchaseItem(product.objectId)
+    await StoreAPI.purchaseItem(product.objectId, dispatch)
       .then((res) => {
-        if (res.status === 200) {
-          setIsOpen(false);
-          setIsSuccess(true);
-          const userData = res.data.result.updatedUser;
-          const encryptedUser = encryptData(userData);
-          // ✅ Dispatch to Redux
-          loginUser(encryptedUser);
-        }
+        const userData = res.updatedUser;
+        console.log(res);
+        const encryptedUser = encryptData(userData);
+        // ✅ Dispatch to Redux
+        loginUser(encryptedUser);
+        setIsOpen(false);
+        setIsSuccess(true);
       })
       .catch((err) => {
         console.log(err);
@@ -100,7 +100,7 @@ const ProductCard = ({
       });
   };
   return (
-    <>
+    <section>
       <div
         className={` relative min-h-[265px] md:min-h-[289px] ${
           displayColor[index % displayColor.length].bg
@@ -145,13 +145,6 @@ const ProductCard = ({
                   / {product?.productQuantity} Erasers
                 </span>
               </div>
-
-              {/* <p className=" bg-[#C4FBD2] text-[#009028] text-xs px-2 rounded-full">
-                <span className=" font-semibold">
-                  {product?.bonus > 0 ? product?.bonus : "No"}{" "}
-                </span>
-                Bonus Eraser
-              </p> */}
             </div>
 
             <div
@@ -161,163 +154,107 @@ const ProductCard = ({
             />
           </div>
           <div className="px-4">
-            <QmDrawer
-              open={isOpen}
-              onOpenChange={setIsOpen}
-              title="Verify Purchase"
-              heightClass="md:h-[75%]"
-              trigger={
-                <CustomButton
-                  onClick={() => setIsOpen(true)}
-                  className={`!px-6 !py-2 md:!py-3 w-full justify-center flex  ${
-                    displayColor[index % displayColor.length].button
-                  }`}
-                >
-                  <div
-                    className={`flex items-center gap-2 text-white font-semibold `}
-                  >
-                    Buy Eraser <ArrowRightIcon />
-                  </div>
-                </CustomButton>
-              }
+            <CustomButton
+              onClick={() => setIsOpen(true)}
+              className={`!px-6 !py-2 md:!py-3 w-full justify-center flex  ${
+                displayColor[index % displayColor.length].button
+              }`}
             >
-              <>
-                <Flex
-                  direction={"column"}
-                  gap="2"
-                  justify={"between"}
-                  className=" min-h-[230px] w-full  "
-                >
-                  <Flex
-                    gap="2"
-                    className="w-full border border-primary-500 rounded-2xl p-3 py-6 md:px-6 mt-4"
-                    justify={"between"}
-                    align={"end"}
-                  >
-                    <div className=" space-y-3">
-                      <p className="font-bold ">{product?.productName}</p>
-                      <div className="flex gap-2 items-center">
-                        <Image
-                          src="/icons/eraser.svg"
-                          alt="eraser"
-                          height={24}
-                          width={24}
-                          className="w-6 h-6 scale-150 border"
-                        />
-                        <p className=" text-blue-500">
-                          {product?.productQuantity ?? "0"} Eraser
-                        </p>
-                        {product?.bonus > 0 && (
-                          <p className=" text-[#00B23D] font-semibold">
-                            {" "}
-                            <span className=" font-semibold text-black">
-                              +
-                            </span>{" "}
-                            {product?.bonus} Bonus
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="w-fit h-[33px] px-4 -space-x-5 font-bold  overflow-hidden flex flex-row justify-center items-center gap-2 bg-primary-50 text-black rounded-md">
-                      <p className=" text-sm sm:text-base font-bold pr-2">
-                        {formatNaira(product?.productPrice ?? "0")}
-                      </p>
-                    </div>
-                  </Flex>
-                </Flex>
-                <CustomButton
-                  onClick={handlePurchase}
-                  loader={isLoading}
-                  disabled={isLoading}
-                  className=" w-full"
-                >
-                  Proceed to Pay{" "}
-                  {formatNaira(Number(product?.productPrice), true)}
-                </CustomButton>
-              </>
-            </QmDrawer>
+              <div
+                className={`flex items-center gap-2 text-white font-semibold `}
+              >
+                Buy Eraser <ArrowRightIcon />
+              </div>
+            </CustomButton>
           </div>
         </div>
       </div>
 
-      {/* <Modal
-        open={isOpen}
-        onOpenChange={setIsOpen}
-        className=" !w-[1000px]"
-        title="Verify Purchase"
-        description={``}
-      >
-        <Flex
-          direction={"column"}
-          gap="2"
-          justify={"between"}
-          className=" min-h-[230px] w-full  "
+      {/* Verify Purchase Modal  */}
+      {isOpen && (
+        <Modal
+          open={isOpen}
+          handleClose={setIsOpen}
+          title="Verify Purchase"
+          showBtns={false}
         >
           <Flex
+            direction={"column"}
             gap="2"
-            className="w-full border border-primary-500 rounded-2xl p-3 py-6 md:px-6 mt-4"
             justify={"between"}
-            align={"end"}
+            className=" min-h-[230px] w-full  "
           >
-            <div className=" space-y-3">
-              <p className="font-bold ">{product?.productName}</p>
-              <div className="flex gap-2 items-center">
-                <Image
-                  src="/icons/eraser.svg"
-                  alt="eraser"
-                  height={100}
-                  width={100}
-                  className="w-6 h-6 scale-150 border"
-                />
-                <p className=" text-blue-500">
-                  {product?.productQuantity ?? "2"} Eraser
-                </p>
-                {product?.bonus > 0 && (
-                  <p className=" text-[#00B23D] font-semibold">
-                    {" "}
-                    <span className=" font-semibold text-black">+</span>{" "}
-                    {product?.bonus} Bonus
+            <Flex
+              gap="2"
+              className="w-full border border-primary-500 rounded-2xl p-3 py-6 md:px-6 mt-4"
+              justify={"between"}
+              align={"end"}
+            >
+              <div className=" space-y-3">
+                <p className="font-bold ">{product?.productName}</p>
+                <div className="flex gap-2 items-center">
+                  <Image
+                    src="/icons/eraser.svg"
+                    alt="eraser"
+                    height={100}
+                    width={100}
+                    className="w-6 h-6 scale-150 border"
+                  />
+                  <p className=" text-blue-500">
+                    {product?.productQuantity ?? "2"} Eraser
                   </p>
-                )}
+                  {product?.bonus > 0 && (
+                    <p className=" text-[#00B23D] font-semibold">
+                      {" "}
+                      <span className=" font-semibold text-black">+</span>{" "}
+                      {product?.bonus} Bonus
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
 
-            <div className="w-fit h-[33px] px-4 -space-x-5 font-bold  overflow-hidden flex flex-row justify-center items-center gap-2 bg-primary-50 text-black rounded-md">
-              <p className=" text-sm sm:text-base font-bold pr-2">
-                ₦{product?.productPrice ?? "100"}
-              </p>
-            </div>
+              <div className="w-fit h-[33px] px-4 -space-x-5 font-bold  overflow-hidden flex flex-row justify-center items-center gap-2 bg-primary-50 text-black rounded-md">
+                <p className=" text-sm sm:text-base font-bold pr-2">
+                  ₦{product?.productPrice ?? "100"}
+                </p>
+              </div>
+            </Flex>
           </Flex>
-        </Flex>
-        <CustomButton
-          onClick={handlePurchase}
-          loader={isLoading}
-          disabled={isLoading}
-          className=" w-full"
-        >
-          Proceed to Pay ₦{product?.productPrice}
-        </CustomButton>
-      </Modal> */}
-      <SuccessMessageModal
-        open={isSuccess}
-        setOpen={setIsSuccess}
-        success={true}
-        message="Awesome!"
-        subMessage={`You have successfully purchased ${product?.productQuantity} erasers.`}
-        onClose={() => router.push("/home")}
-        actionLabel="Go back Home"
-      />
-      <SuccessMessageModal
-        open={isError}
-        setOpen={setIsError}
-        success={false}
-        message="Insufficient Wallet Balance"
-        subMessage={`Your purchase of ${product?.productQuantity} erasers failed due to insufficient funds`}
-        onClose={() => router.push("/wallet")}
-        actionLabel="Fund Account"
-      />
-    </>
+          <CustomButton
+            onClick={handlePurchase}
+            loader={isLoading}
+            disabled={isLoading}
+            className=" w-full"
+          >
+            Proceed to Pay ₦{product?.productPrice}
+          </CustomButton>
+        </Modal>
+      )}
+
+      {isSuccess && (
+        <SuccessMessageModal
+          open={isSuccess}
+          setOpen={setIsSuccess}
+          success={true}
+          message="Awesome!"
+          subMessage={`You have successfully purchased ${product?.productQuantity} erasers.`}
+          onClose={() => router.push("/home")}
+          actionLabel="Go back Home"
+        />
+      )}
+
+      {isError && (
+        <SuccessMessageModal
+          open={isError}
+          setOpen={setIsError}
+          success={false}
+          message="Insufficient Wallet Balance"
+          subMessage={`Your purchase of ${product?.productQuantity} erasers failed due to insufficient funds`}
+          onClose={() => router.push("/wallet")}
+          actionLabel="Fund Account"
+        />
+      )}
+    </section>
   );
 };
 

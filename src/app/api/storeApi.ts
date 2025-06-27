@@ -1,26 +1,23 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosResponse } from "axios";
-import { appHeaders, BASE_URL, getSessionTokenHeaders } from "./userApi";
+import { BASE_URL, getSessionTokenHeaders } from "./userApi";
 import { ApiResponse } from "./interface";
+import { callParseEndpoint } from "./parse/callParseEndpoint";
+import { callWithSessionToken } from "./parse/callWithSessionToken";
 
 const StoreAPI = {
-  getProducts(): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(`${BASE_URL}/getProducts`, {}, { headers: appHeaders });
+  getProducts(): Promise<ApiResponse> {
+    return callParseEndpoint<ApiResponse>("getProducts");
   },
 
-  getProductById(productId: string): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/fetchSingleProduct`,
+  purchaseItem(productId: string, dispatch: any): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      "purchaseItem",
       { productId },
-      { headers: appHeaders }
+      dispatch
     );
   },
-  purchaseItem(productId: string): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/purchaseItem`,
-      { productId },
-      { headers: getSessionTokenHeaders() }
-    );
-  },
+
   fetchCustomerWallet(): Promise<AxiosResponse<ApiResponse>> {
     return axios.post(`${BASE_URL}/fetchCustomerWallet`, {
       headers: getSessionTokenHeaders(),

@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
+import { isMobile } from "react-device-detect";
 
 const bannedUserIds = [
   "S0FGFxqCJd",
@@ -78,7 +79,14 @@ function JoinGameBtn() {
   //     }
   //   }
   // };
+
   const handleJoinBtn = async () => {
+    if (!isMobile) {
+      toast.error("Please join the game with your mobile device.", {
+        position: "top-center",
+      });
+      return;
+    }
     const userId = user?.objectId;
 
     if (!userId) return;
@@ -106,8 +114,8 @@ function JoinGameBtn() {
     } else {
       setLoading(true);
       try {
-        const res = await GameApi.registerForGame(gameData?.objectId);
-        const game = res.data.result.userData;
+        const res = await GameApi.registerForGame(gameData?.objectId, dispatch);
+        const game = res.userData;
 
         dispatch(setLiveGameData(decryptGameData(game)));
         dispatch(setPhase("lobby"));
@@ -125,18 +133,16 @@ function JoinGameBtn() {
   };
 
   return (
-    <>
-      <button
-        onClick={handleJoinBtn}
-        disabled={loading}
-        className="bg-white border border-white rounded-full px-4 py-1 text-primary-900 font-medium cursor-pointer flex items-center gap-1 text-nowrap"
-      >
-        <i className="bi bi-play-circle mb-1 relative">
-          <i className="bi bi-play-circle mb-1 animate-ping absolute left-0 top-0"></i>
-        </i>{" "}
-        {loading ? <Spinner /> : "Join Live Game!"}
-      </button>
-    </>
+    <button
+      onClick={handleJoinBtn}
+      disabled={loading}
+      className="bg-white border border-white rounded-full px-4 py-1 text-primary-900 font-medium cursor-pointer flex items-center gap-1 text-nowrap"
+    >
+      <i className="bi bi-play-circle mb-1 relative">
+        <i className="bi bi-play-circle mb-1 animate-ping absolute left-0 top-0"></i>
+      </i>{" "}
+      {loading ? <Spinner /> : "Join Live Game!"}
+    </button>
   );
 }
 

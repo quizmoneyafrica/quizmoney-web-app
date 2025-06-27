@@ -18,6 +18,7 @@ import { useDispatch } from "react-redux";
 import { Flex, Table } from "@radix-ui/themes";
 import LastGameResultCard from "./components/LastGameResultCard";
 import AdBanner from "@/app/components/advert/adBanner";
+import ShowPlayerData from "./ShowPlayerData";
 
 function Page() {
   const [activeTab, setActiveTab] = useState<"lastGame" | "allTime">(
@@ -55,34 +56,37 @@ function Page() {
       try {
         if (tab === "lastGame") {
           if (!lastGame) {
-            const res = await LeaderboardAPI.getLastGameLeaderboard();
-            console.log("LEADERBOARD USER", res.data.result);
+            const res = await LeaderboardAPI.getLastGameLeaderboard(dispatch);
+            console.log("LEADERBOARD USER", res);
             dispatch(
               setLastGameLeaderboard({
-                createdAt: res.data.result.createdAt,
-                gameId: res.data.result.gameId,
-                msg: res.data.result.msg,
-                objectId: res.data.result.objectId,
-                rankings: res.data.result.rankings,
-                updatedAt: res.data.result.updatedAt,
-                userLastGameStats: res.data.result.userLastGameStats,
-                users: res.data.result.users,
+                createdAt: res.createdAt,
+                gameId: res.gameId,
+                msg: res.msg,
+                objectId: res.objectId,
+                rankings: res.rankings,
+                updatedAt: res.updatedAt,
+                userLastGameStats: res.userLastGameStats,
+                users: res.users,
               })
             );
           }
         } else {
           if (!allTime[page]) {
-            const res = await LeaderboardAPI.getAllTimeLeaderboard(page);
+            const res = await LeaderboardAPI.getAllTimeLeaderboard(
+              dispatch,
+              page
+            );
             console.log("ALL TIME LEADERBOARD USERS", res);
             dispatch(
               setAllTimeLeaderboard({
                 page,
                 data: {
-                  currentPage: res.data.result.currentPage,
-                  leaderboard: res.data.result.leaderboard,
-                  limit: res.data.result.limit,
-                  total: res.data.result.total,
-                  totalPages: res.data.result.totalPages,
+                  currentPage: res.currentPage,
+                  leaderboard: res.leaderboard,
+                  limit: res.limit,
+                  total: res.total,
+                  totalPages: res.totalPages,
                 },
               })
             );
@@ -233,6 +237,8 @@ function Page() {
         )}
 
       <div className="h-30" />
+
+      <ShowPlayerData />
     </motion.div>
   );
 }

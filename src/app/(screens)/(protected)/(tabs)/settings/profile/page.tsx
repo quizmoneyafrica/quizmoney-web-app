@@ -1,29 +1,25 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { genders } from "@/app/(screens)/(preAuthScreen)/signup/formSteps/step2";
 import { User } from "@/app/api/interface";
 import userApi, { getAuthUser } from "@/app/api/userApi";
 import ImagePickerModal from "@/app/components/modal/ImagePickerModal";
 import { useAppSelector, useAuth } from "@/app/hooks/useAuth";
-import {
-  ArrowDownIcon,
-  FacebookIcon,
-  MailIcon,
-  PersonIcon,
-} from "@/app/icons/icons";
+import { ArrowDownIcon, MailIcon, PersonIcon } from "@/app/icons/icons";
 import { decryptData, encryptData } from "@/app/utils/crypto";
 import CustomButton from "@/app/utils/CustomBtn";
 import CustomSelect from "@/app/utils/CustomSelect";
 import CustomTextField from "@/app/utils/CustomTextField";
 import { formatDateTime } from "@/app/utils/utils";
+import { CalendarIcon, GlobeIcon, Pencil1Icon } from "@radix-ui/react-icons";
 import {
-  CalendarIcon,
-  GlobeIcon,
-  InstagramLogoIcon,
-  Pencil1Icon,
-  TwitterLogoIcon,
-} from "@radix-ui/react-icons";
+  FaFacebook,
+  FaInstagram,
+  FaTiktok,
+  FaTwitter,
+  FaWhatsapp,
+} from "react-icons/fa";
 import { Flex, Grid } from "@radix-ui/themes";
-import { AxiosError } from "axios";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import React, { useState } from "react";
@@ -40,6 +36,7 @@ const initialForm = {
   instagram: "",
   twitter: "",
   whatsapp: "",
+  tiktok: "",
 };
 
 const Page = () => {
@@ -57,7 +54,7 @@ const Page = () => {
   });
   const authUser = getAuthUser();
   const { fullDate } = formatDateTime(
-    authUser.createdAt ?? new Date().toISOString()
+    authUser?.createdAt ?? new Date().toISOString()
   );
   console.log("FormData:", formData);
 
@@ -85,35 +82,28 @@ const Page = () => {
         dob: formData.dob,
         gender: formData.gender,
         country: formData.country,
-        facebook: formData.facebook ?? "",
-        instagram: formData.instagram ?? "",
-        twitter: formData.twitter ?? "",
-        whatsapp: formData.whatsapp ?? "",
+        facebook: formData.facebook.trim() ?? "",
+        instagram: formData.instagram.trim() ?? "",
+        twitter: formData.twitter.trim() ?? "",
+        whatsapp: formData.whatsapp.trim() ?? "",
+        tiktok: formData.tiktok.trim() ?? "",
         avatar: user?.avatar ?? "",
         promotionalMails: user?.promotionalMails ?? false,
       })
       .then((res) => {
-        if (res.status === 200) {
-          setIsEditing(false);
-          toast.success("Profile updated successfully", {
-            position: "top-center",
-          });
+        toast.success("Profile updated successfully", {
+          position: "top-center",
+        });
 
-          const userData = res.data.result.updatedUser;
-          const encryptedUser = encryptData(userData);
+        const userData = res.updatedUser;
+        const encryptedUser = encryptData(userData);
 
-          // ✅ Dispatch to Redux
-          loginUser(encryptedUser);
-        }
+        // ✅ Dispatch to Redux
+        loginUser(encryptedUser);
+        setIsEditing(false);
       })
-      .catch((err: AxiosError) => {
-        toast.error(
-          (err.response?.data as unknown as { error: string }).error ||
-            "Failed to update profile. Please try again later.",
-          {
-            position: "top-center",
-          }
-        );
+      .catch((err: any) => {
+        toast.error(err.message);
       })
       .finally(() => {
         setIsUpdating(false);
@@ -292,8 +282,9 @@ const Page = () => {
                     placeholder="@username"
                     onChange={onChange}
                     disabled={!isEditing}
-                    icon={<FacebookIcon className="text-[#A6ABC4] h-6 w-6" />}
+                    icon={<FaFacebook className="text-[#A6ABC4] text-xl" />}
                     required
+                    className="lowercase"
                   />
 
                   <CustomTextField
@@ -308,10 +299,9 @@ const Page = () => {
                     placeholder="@username"
                     onChange={onChange}
                     disabled={!isEditing}
-                    icon={
-                      <InstagramLogoIcon className="text-[#A6ABC4] h-6 w-6" />
-                    }
+                    icon={<FaInstagram className="text-[#A6ABC4] text-xl" />}
                     required
+                    className="lowercase"
                   />
 
                   <CustomTextField
@@ -324,10 +314,23 @@ const Page = () => {
                     placeholder="@username"
                     onChange={onChange}
                     disabled={!isEditing}
-                    icon={
-                      <TwitterLogoIcon className="text-[#A6ABC4] h-6 w-6" />
-                    }
+                    icon={<FaTwitter className="text-[#A6ABC4] text-xl" />}
                     required
+                    className="lowercase"
+                  />
+                  <CustomTextField
+                    label="Tiktok"
+                    name="tiktok"
+                    value={
+                      formData.tiktok == "undefined" ? "" : formData.tiktok
+                    }
+                    type="text"
+                    placeholder="@username"
+                    onChange={onChange}
+                    disabled={!isEditing}
+                    icon={<FaTiktok className="text-[#A6ABC4] text-xl" />}
+                    required
+                    className="lowercase"
                   />
 
                   <CustomTextField
@@ -338,7 +341,7 @@ const Page = () => {
                     placeholder="Enter your whatsapp number"
                     onChange={onChange}
                     disabled={!isEditing}
-                    icon={<PersonIcon className="text-[#A6ABC4] h-6 w-6" />}
+                    icon={<FaWhatsapp className="text-[#A6ABC4] text-xl" />}
                     required
                   />
 

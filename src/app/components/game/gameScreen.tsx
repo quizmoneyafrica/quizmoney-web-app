@@ -381,13 +381,15 @@ function GameScreen() {
           </div>
         </div>
       ) : (
-        <>
+        <div>
           {showAdsScreen && !showResultScreen ? (
             <AdsScreen />
           ) : (
-            <>{!showAdsScreen && showResultScreen ? <ResultScreen /> : null}</>
+            <div>
+              {!showAdsScreen && showResultScreen ? <ResultScreen /> : null}
+            </div>
           )}
-        </>
+        </div>
       )}
     </motion.div>
   );

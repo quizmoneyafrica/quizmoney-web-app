@@ -15,6 +15,7 @@ import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
 import { store } from "@/app/store/store";
 import CustomButton from "@/app/utils/CustomBtn";
+import { useRouter } from "next/navigation";
 
 interface OtpVerificationModalProps {
   open: boolean;
@@ -35,6 +36,7 @@ export default function OtpVerificationModal({
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const { wallet, withdrawalData } = useSelector(useWallet);
   const hasPin = Boolean(wallet?.pin);
+  const router = useRouter();
 
   useEffect(() => {
     if (open) {
@@ -100,6 +102,11 @@ export default function OtpVerificationModal({
 
         store.dispatch(setWalletLoading(true));
         const res = await WalletApi.fetchCustomerWallet();
+
+        if (res.data.result.wallet) {
+          store.dispatch(setWallet(res.data.result.wallet));
+        }
+
         if (res.data.result.wallet) {
           store.dispatch(setWallet(res.data.result.wallet));
         }
@@ -262,6 +269,21 @@ export default function OtpVerificationModal({
                         </div>
                       ))}
                     </div>
+
+                    {hasPin && (
+                      <button
+                        type="button"
+                        className="mt-6 text-primary-900 underline text-sm hover:text-primary-700 transition-colors"
+                        onClick={() => {
+                          onOpenChange(false);
+                          setTimeout(() => {
+                            router.push("/wallet/reset-pin");
+                          }, 200);
+                        }}
+                      >
+                        Forgot/Reset Pin?
+                      </button>
+                    )}
 
                     {isError && (
                       <div className="w-full text-center mt-4 text-red-500">

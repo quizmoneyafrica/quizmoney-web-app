@@ -1,23 +1,15 @@
-import axios, { AxiosResponse } from "axios";
-import { BASE_URL, getSessionTokenHeaders } from "./userApi";
 import { ApiResponse } from "./interface";
+import { callWithSessionToken } from "./parse/callWithSessionToken";
 
 const NotificationApi = {
-  fetchNotifications(): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/getNotifications`,
-      {},
-      { headers: getSessionTokenHeaders() }
-    );
+  fetchNotifications(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("getNotifications");
   },
-  readNotification(
-    notificationId: string
-  ): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/readNotification`,
-      { notificationId },
-      { headers: getSessionTokenHeaders() }
-    );
+
+  readNotification(notificationId: string): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("readNotification", {
+      notificationId,
+    });
   },
 };
 export default NotificationApi;

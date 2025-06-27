@@ -9,8 +9,9 @@ import StoreAPI from "@/app/api/storeApi";
 import { useRouter } from "next/navigation";
 import CustomButton from "@/app/utils/CustomBtn";
 import { encryptData } from "@/app/utils/crypto";
-import { useAuth } from "@/app/hooks/useAuth";
-import { formatNaira } from "@/app/utils/utils";
+import { useAppDispatch, useAuth } from "@/app/hooks/useAuth";
+import { formatNaira, toastPosition } from "@/app/utils/utils";
+import { toast } from "sonner";
 const FormerProductCard = ({ product }: { product: Product }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -18,22 +19,23 @@ const FormerProductCard = ({ product }: { product: Product }) => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { loginUser } = useAuth();
+  const dispatch = useAppDispatch();
 
   const handlePurchase = async () => {
     setIsLoading(true);
-    await StoreAPI.purchaseItem(product.objectId)
+    await StoreAPI.purchaseItem(product.objectId, dispatch)
       .then((res) => {
-        if (res.status === 200) {
-          setIsOpen(false);
-          setIsSuccess(true);
-          const userData = res.data.result.updatedUser;
-          const encryptedUser = encryptData(userData);
-          // ✅ Dispatch to Redux
-          loginUser(encryptedUser);
-        }
+        console.log(res);
+
+        const userData = res.updatedUser;
+        const encryptedUser = encryptData(userData);
+        // ✅ Dispatch to Redux
+        loginUser(encryptedUser);
+        setIsOpen(false);
+        setIsSuccess(true);
       })
       .catch((err) => {
-        console.log(err);
+        toast.error(err, { position: toastPosition });
         setIsOpen(false);
         setIsError(true);
       })

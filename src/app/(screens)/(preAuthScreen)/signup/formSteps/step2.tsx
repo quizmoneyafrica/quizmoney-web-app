@@ -40,45 +40,43 @@ const StepTwo: React.FunctionComponent<IStepTwoProps> = (props) => {
     nextStep();
   };
   return (
-    <>
-      <form onSubmit={handleNextForm}>
-        <Flex direction="column" gap="4">
-          <CustomTextField
-            label="Date of Birth"
-            name="dob"
-            value={formData.dob}
-            type="date"
-            autoComplete="bday"
-            onChange={onChange}
-            icon={<CalendarIcon className="text-[#A6ABC4]" />}
-            required
-          />
-          <CustomSelect
-            label="Gender"
-            name="gender"
-            value={formData.gender}
-            options={genders}
-            onChange={onChange}
-            disabledOption="Select your gender"
-            icon={<ArrowDownIcon className="text-[#A6ABC4]" />}
-          />
-          <CustomSelect
-            label="Country"
-            name="gender"
-            value={formData.gender}
-            options={[{ label: "Nigeria", value: "nigeria" }]}
-            onChange={onChange}
-            disabledOption="Select your country"
-            icon={<ArrowDownIcon className="text-[#A6ABC4]" />}
-          />
-          <div className="pt-4">
-            <CustomButton type="submit" width="full">
-              Proceed
-            </CustomButton>
-          </div>
-        </Flex>
-      </form>
-    </>
+    <form onSubmit={handleNextForm}>
+      <Flex direction="column" gap="4">
+        <CustomTextField
+          label="Date of Birth"
+          name="dob"
+          value={formData.dob}
+          type="date"
+          autoComplete="bday"
+          onChange={onChange}
+          icon={<CalendarIcon className="text-[#A6ABC4]" />}
+          required
+        />
+        <CustomSelect
+          label="Gender"
+          name="gender"
+          value={formData.gender}
+          options={genders}
+          onChange={onChange}
+          disabledOption="Select your gender"
+          icon={<ArrowDownIcon className="text-[#A6ABC4]" />}
+        />
+        <CustomSelect
+          label="Country"
+          name="gender"
+          value={formData.gender}
+          options={[{ label: "Nigeria", value: "nigeria" }]}
+          onChange={onChange}
+          disabledOption="Select your country"
+          icon={<ArrowDownIcon className="text-[#A6ABC4]" />}
+        />
+        <div className="pt-4">
+          <CustomButton type="submit" width="full">
+            Proceed
+          </CustomButton>
+        </div>
+      </Flex>
+    </form>
   );
 };
 

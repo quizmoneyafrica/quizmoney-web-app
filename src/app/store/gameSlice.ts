@@ -7,7 +7,8 @@ export type GamePhase =
   | "playing"
   | "completed"
   | "result"
-  | "cancelled";
+  | "cancelled"
+  | "demo";
 
 export interface TopGamersState {
   amountWon: number;

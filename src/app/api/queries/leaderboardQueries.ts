@@ -14,21 +14,32 @@ function LeaderboardQueries() {
   const dispatch = useAppDispatch();
 
   const getLastGameLeaderboard = useCallback(async () => {
-    const res = await LeaderboardAPI.getLastGameLeaderboard();
-    console.log("LEADERBOARD USER", res.data.result);
-    dispatch(setLastGameLeaderboard(res.data.result));
+    const res = await LeaderboardAPI.getLastGameLeaderboard(dispatch);
+    console.log("LEADERBOARD USER", res);
+    dispatch(
+      setLastGameLeaderboard({
+        createdAt: res.createdAt,
+        gameId: res.gameId,
+        msg: res.msg,
+        objectId: res.objectId,
+        rankings: res.rankings,
+        updatedAt: res.updatedAt,
+        userLastGameStats: res.userLastGameStats,
+        users: res.users,
+      })
+    );
   }, [dispatch]);
   const getAllTimeLeaderboard = useCallback(async () => {
-    const res = await LeaderboardAPI.getAllTimeLeaderboard(1);
+    const res = await LeaderboardAPI.getAllTimeLeaderboard(dispatch, 1);
     dispatch(
       setAllTimeLeaderboard({
         page: 1,
         data: {
-          currentPage: res.data.result.currentPage,
-          leaderboard: res.data.result.leaderboard,
-          limit: res.data.result.limit,
-          total: res.data.result.total,
-          totalPages: res.data.result.totalPages,
+          currentPage: res.currentPage,
+          leaderboard: res.leaderboard,
+          limit: res.limit,
+          total: res.total,
+          totalPages: res.totalPages,
         },
       })
     );

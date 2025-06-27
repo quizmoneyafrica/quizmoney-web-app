@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 // import Modal from "./Modal";
 import { toast } from "sonner";
@@ -14,9 +15,14 @@ import QmDrawer from "../drawer/drawer";
 // give me 12 images
 
 interface IAvatar {
-  _type: string;
+  __type: string;
   url: string;
   name: string;
+}
+
+interface RootObject {
+  avatar: IAvatar;
+  objectId: string;
 }
 
 const ImagePickerModal = ({
@@ -27,7 +33,7 @@ const ImagePickerModal = ({
   setOpen: (open: boolean) => void;
 }) => {
   const [showAvatar, setShowAvatar] = useState(false);
-  const [avatars, setAvatars] = useState([]);
+  const [avatars, setAvatars] = useState<IAvatar[]>([]);
   const [selectedImage, setSelectedImage] = useState<IAvatar>();
   // const handleSelectImage = () => {
   //   toast.info("Gallery Access Coming soon", {
@@ -45,15 +51,16 @@ const ImagePickerModal = ({
   };
 
   const getAvatar = async () => {
-    await UserAPI.getAvatars()
-      .then((res) =>
-        setAvatars(
-          res.data?.results?.map(
-            (data: { avatar: { url: string } }) => data.avatar
-          )
-        )
-      )
-      .catch((err) => console.log(err));
+    try {
+      const res = await UserAPI.getAvatars();
+      const results = res || [];
+
+      const mappedAvatars = results.map((item: RootObject) => item.avatar);
+      console.log("mappedAvatars", mappedAvatars);
+      setAvatars(mappedAvatars);
+    } catch (error: any) {
+      toast.error(error.message);
+    }
   };
 
   useEffect(() => {
@@ -79,18 +86,18 @@ const ImagePickerModal = ({
       promotionalMails: user?.promotionalMails ?? false,
     })
       .then((res) => {
-        if (res.status === 200) {
-          setOpen(false);
-          toast.success("Profile updated successfully", {
-            position: "top-center",
-          });
-          const userData = res.data.result.updatedUser;
-          const encryptedUser = encryptData(userData);
-          console.log("Encrypted: ", encryptedUser);
+        toast.success("Profile updated successfully", {
+          position: "top-center",
+        });
+        console.log(res);
 
-          // ✅ Dispatch to Redux
-          loginUser(encryptedUser);
-        }
+        const userData = res.updatedUser;
+        const encryptedUser = encryptData(userData);
+        console.log("Encrypted: ", encryptedUser);
+
+        // ✅ Dispatch to Redux
+        loginUser(encryptedUser);
+        setOpen(false);
       })
       .catch((err: AxiosError) => {
         toast.error(
@@ -108,7 +115,7 @@ const ImagePickerModal = ({
 
   return (
     <>
-      <QmDrawer open={open} onOpenChange={setOpen}>
+      <QmDrawer title="" open={open} onOpenChange={setOpen}>
         {!showAvatar ? (
           <div className="mt-5 md:pt-10 flex flex-col gap-4">
             <div
@@ -134,7 +141,7 @@ const ImagePickerModal = ({
             <p className="text-base md:text-lg font-medium">Pick an Avatar</p>
             <div className=" bg-zinc-800 rounded-3xl w-full h-full p-4 md:p-10">
               <div className="grid grid-cols-4 place-items-center gap-4">
-                {avatars.map((image: IAvatar) => (
+                {avatars.map((image) => (
                   <div
                     key={image.name}
                     onClick={() => handleSelectAvatar(image)}
@@ -150,6 +157,7 @@ const ImagePickerModal = ({
                       width={100}
                       height={100}
                       className="w-full h-full object-cover rounded-full"
+                      quality={100}
                     />
 
                     {selectedImage?.name === image.name && (

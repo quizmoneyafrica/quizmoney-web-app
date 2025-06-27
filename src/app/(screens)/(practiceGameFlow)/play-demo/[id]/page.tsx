@@ -37,12 +37,7 @@ function Page() {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
-  // if (!gameId) return notFound();
-  return (
-    <>
-      <DemoGameSCreen />
-    </>
-  );
+  return <DemoGameSCreen />;
 }
 
 export default Page;

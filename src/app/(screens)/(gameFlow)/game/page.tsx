@@ -62,29 +62,27 @@ function Page() {
 
   if (!liveGameData)
     return (
-      <>
-        <div className="min-h-screen lg:h-screen bg-primary-900 hero flex flex-col items-center justify-center  px-4">
-          <div className="w-full h-full mx-auto max-w-lg space-y-6 grid grid-rows-2 place-items-center">
-            <div className="w-full bg-error-50 text-center text-sm border-4 border-error-500 rounded-[10px] px-4 py-4 space-y-4 flex flex-col items-center justify-center">
-              <span className="text-5xl">🎮 </span>
-              <p className="font-medium text-base">
-                You probably refreshed this page
-              </p>
-              <p>
-                Go back home to see game details
-                <br /> Tap the button 👇
-              </p>
+      <div className="min-h-screen lg:h-screen bg-primary-900 hero flex flex-col items-center justify-center  px-4">
+        <div className="w-full h-full mx-auto max-w-lg space-y-6 grid grid-rows-2 place-items-center">
+          <div className="w-full bg-error-50 text-center text-sm border-4 border-error-500 rounded-[10px] px-4 py-4 space-y-4 flex flex-col items-center justify-center">
+            <span className="text-5xl">🎮 </span>
+            <p className="font-medium text-base">
+              You probably refreshed this page
+            </p>
+            <p>
+              Go back home to see game details
+              <br /> Tap the button 👇
+            </p>
 
-              <CustomButton
-                width="medium"
-                onClick={() => router.replace("/home")}
-              >
-                Go Home
-              </CustomButton>
-            </div>
+            <CustomButton
+              width="medium"
+              onClick={() => router.replace("/home")}
+            >
+              Go Home
+            </CustomButton>
           </div>
         </div>
-      </>
+      </div>
     );
 
   // Show nothing until we verify if the user is in the game
@@ -100,29 +98,25 @@ function Page() {
 
   if (!isAllowedInGame)
     return (
-      <>
-        <div className="min-h-screen lg:h-screen bg-primary-900 hero flex flex-col items-center justify-center  px-4">
-          <div className="w-full h-full mx-auto max-w-lg space-y-6 grid grid-rows-2 place-items-center">
-            <div className="w-full bg-error-50 text-center text-sm border-4 border-error-500 rounded-[10px] px-4 py-4 space-y-4 flex flex-col items-center justify-center">
-              <span className="text-5xl">🎮 </span>
-              <p className="font-medium text-base">
-                Next Game Is not live yet!
-              </p>
-              <p>
-                Want to know when the next game is?
-                <br /> Tap the button 👇
-              </p>
+      <div className="min-h-screen lg:h-screen bg-primary-900 hero flex flex-col items-center justify-center  px-4">
+        <div className="w-full h-full mx-auto max-w-lg space-y-6 grid grid-rows-2 place-items-center">
+          <div className="w-full bg-error-50 text-center text-sm border-4 border-error-500 rounded-[10px] px-4 py-4 space-y-4 flex flex-col items-center justify-center">
+            <span className="text-5xl">🎮 </span>
+            <p className="font-medium text-base">Next Game Is not live yet!</p>
+            <p>
+              Want to know when the next game is?
+              <br /> Tap the button 👇
+            </p>
 
-              <CustomButton
-                width="medium"
-                onClick={() => router.replace("/home")}
-              >
-                Go Home
-              </CustomButton>
-            </div>
+            <CustomButton
+              width="medium"
+              onClick={() => router.replace("/home")}
+            >
+              Go Home
+            </CustomButton>
           </div>
         </div>
-      </>
+      </div>
     );
 
   return <AppLoader />;

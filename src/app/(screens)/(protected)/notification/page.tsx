@@ -48,7 +48,7 @@ function Page() {
       {notifications?.length < 1 ? (
         <EmptyState />
       ) : (
-        <>
+        <div>
           <QmDrawer
             open={openNotification}
             onOpenChange={setOpenNotification}
@@ -72,7 +72,7 @@ function Page() {
           >
             <ViewNotification notification={passedNotification} />
           </QmDrawer>
-        </>
+        </div>
       )}
     </motion.div>
   );

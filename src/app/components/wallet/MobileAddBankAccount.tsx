@@ -10,7 +10,7 @@ import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
 import { setWallet, useWallet } from "@/app/store/walletSlice";
 import { useDispatch, useSelector } from "react-redux";
-import CustomTextField from "@/app/utils/CustomTextField";
+// import CustomTextField from "@/app/utils/CustomTextField";
 
 // Define bank interface
 export interface Bank {
@@ -38,10 +38,10 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
   const [showBankDropdown, setShowBankDropdown] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const user = getAuthUser();
-  const [bvn, setBvn] = useState("");
-  const [firstName, setFirstName] = useState(user.firstName);
-  const [lastName, setLastName] = useState(user.lastName);
+  // const user = getAuthUser();
+  // const [bvn, setBvn] = useState("");
+  // const [firstName, setFirstName] = useState(user.firstName);
+  // const [lastName, setLastName] = useState(user.lastName);
 
   const {
     register,
@@ -87,26 +87,28 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
       // console.log("==============payload======================");
       // console.log(JSON.stringify(payload, null, 2));
       // console.log("====================================");
-      // const response = await WalletApi.verifyAccount(payload);
-      const response = await WalletApi.verifyBVN(
-        payload.accountNumber,
-        bvn,
-        firstName,
-        lastName,
-        payload.bankCode
-      );
+      const response = await WalletApi.verifyAccount(payload);
+      // const response = await WalletApi.verifyBVN(
+      //   payload.accountNumber,
+      //   bvn,
+      //   firstName,
+      //   lastName,
+      //   payload.bankCode
+      // );
       console.log(response);
+      // const isBVNVerified = await WalletApi.isBVNVerified();
+      // console.log("isBVNVerified", isBVNVerified);
 
-      // if (response?.data?.result?.status === "success") {
-      //   const { account_name, account_number } = response?.data?.result?.data;
-      //   const bankName =
-      //     banks.find((item) => item?.code === data?.bankCode)?.name ?? "";
-      //   addVerifiedAccount({
-      //     accountNumber: account_number,
-      //     bankName,
-      //     accountName: account_name,
-      //   });
-      // }
+      if (response?.data?.result?.status === "success") {
+        const { account_name, account_number } = response?.data?.result?.data;
+        const bankName =
+          banks.find((item) => item?.code === data?.bankCode)?.name ?? "";
+        addVerifiedAccount({
+          accountNumber: account_number,
+          bankName,
+          accountName: account_name,
+        });
+      }
       console.log(response);
 
       if (response?.data?.result?.status === "error") {
@@ -151,21 +153,30 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      toast.error(`${err.message}`, {
+      toast.error(`${err.message} `, {
         position: toastPosition,
       });
     } finally {
       setIsLoading(false);
     }
   };
-  console.log(addVerifiedAccount);
 
   // Get selected bank details
   const selectedBank = banks.find((bank) => bank.code === selectedBankCode);
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <p className="text-gray-600">Add your bank account for withdrawal</p>
-
+      <button
+        type="button"
+        onClick={() =>
+          addVerifiedAccount({
+            accountName: "",
+            accountNumber: "",
+            bankName: "",
+          })
+        }
+        className="hidden"
+      ></button>
       <div>
         <label
           htmlFor="accountNumber"
@@ -242,7 +253,7 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
         </div>
       </div>
 
-      <CustomTextField
+      {/* <CustomTextField
         type="text"
         label="Enter your bank verification Number (BVN) "
         value={bvn}
@@ -265,7 +276,7 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
         onChange={(e) => setLastName(e.target.value)}
         required
         className="capitalize"
-      />
+      /> */}
 
       <CustomButton
         type="submit"

@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
 import CustomButton from "@/app/utils/CustomBtn";
 import VirtualDetails from "./VirtualDetails";
+import { useAppDispatch } from "@/app/hooks/useAuth";
 
 const depositFormSchema = z.object({
   amount: z
@@ -29,6 +30,7 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
     "bankTransfer" | "card" | ""
   >("card");
   const [showVirtual, setShowVirtual] = useState(false);
+  const dispatch = useAppDispatch();
 
   const amountOptions = [
     { label: "₦1,000", value: 1000 },
@@ -97,17 +99,17 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
         // const response = await WalletApi.getCheckoutLink({
         //   amount: `${numericAmount}`,
         // });
-        const response = await WalletApi.getPaystackCheckoutLink({
-          amount: `${totalAmount}`,
-        });
-        console.log(response.data.result);
-        if (
-          response?.data?.result?.status === true ||
-          response?.data.result?.data?.authorization_url
-        ) {
+        const response = await WalletApi.getPaystackCheckoutLink(
+          {
+            amount: `${totalAmount}`,
+          },
+          dispatch
+        );
+        console.log(response.data);
+        if (response.status === true || response.data?.authorization_url) {
           reset();
           setSelectedAmount(null);
-          window.location.href = response?.data.result.data.authorization_url;
+          window.location.href = response.data.authorization_url;
           close?.();
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

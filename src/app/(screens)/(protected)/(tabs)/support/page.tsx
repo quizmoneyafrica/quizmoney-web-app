@@ -14,8 +14,10 @@ import UserAPI, { getAuthUser } from "@/app/api/userApi";
 import { SuccessIcon } from "@/app/utils/successIcon";
 import useTawkHidden from "@/app/components/tawk/useTawkHidden";
 import { toast } from "sonner";
+import { useAppDispatch } from "@/app/hooks/useAuth";
 const Support = () => {
   useTawkHidden();
+  const dispatch = useAppDispatch();
   const router = useRouter();
   const user = getAuthUser();
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -27,8 +29,13 @@ const Support = () => {
   const handleFeedbackForm = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmittingForm(true);
+    const form = {
+      rating: experienceRating,
+      message: feedbackMsg,
+    };
     try {
-      const res = await UserAPI.sendFeedback(experienceRating, feedbackMsg);
+      console.log("form", form);
+      const res = await UserAPI.sendFeedback(form, dispatch);
       console.log(res);
       setSubmittingForm(false);
       setIsSuccess(true);
@@ -40,7 +47,7 @@ const Support = () => {
   };
 
   return (
-    <>
+    <div>
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -332,7 +339,7 @@ const Support = () => {
           `,
         }}
       /> */}
-    </>
+    </div>
   );
 };
 

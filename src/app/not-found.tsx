@@ -1,6 +1,6 @@
 import Link from "next/link";
-import CustomButton from "../utils/CustomBtn";
 import Image from "next/image";
+import CustomButton from "./utils/CustomBtn";
 
 export default function NotFound() {
   return (

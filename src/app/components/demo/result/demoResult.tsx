@@ -20,6 +20,7 @@ import {
 import { ApiResponse } from "@/app/api/interface";
 import UseBlockBackNavigation from "../blockBackNav";
 import { useAppSelector } from "@/app/hooks/useAuth";
+import { stopAudio } from "@/app/store/gameSlice";
 
 type Props = {
   totalTimeUsed: string;
@@ -42,12 +43,14 @@ function DemoResult({
     dispatch(clearDemoData());
     sessionStorage.clear();
     router.replace("/play-demo");
+    dispatch(stopAudio());
   };
 
   const handleGoBack = () => {
     dispatch(clearDemoData());
     router.replace("/home");
     sessionStorage.clear();
+    dispatch(stopAudio());
   };
   return (
     <motion.div

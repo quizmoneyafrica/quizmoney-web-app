@@ -6,11 +6,11 @@ import LeaderboardQueries from "./leaderboardQueries";
 
 function AppLiveQueries() {
   return (
-    <>
+    <div>
       <HomeQueries />
       <WalletQueries />
       <LeaderboardQueries />
-    </>
+    </div>
   );
 }
 

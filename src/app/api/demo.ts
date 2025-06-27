@@ -1,11 +1,10 @@
-import axios, { AxiosResponse } from "axios";
-import { appHeaders, BASE_URL } from "./userApi";
-import { ApiResponse } from "./interface"; 
- 
+import { ApiResponse } from "./interface";
+import { callParseEndpoint } from "./parse/callParseEndpoint";
+
 const DemoApi = {
-  fetchDemoGame(): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(`${BASE_URL}/getPracticeQuestions`, {}, { headers: appHeaders });
-  }, 
+  fetchDemoGame(): Promise<ApiResponse> {
+    return callParseEndpoint<ApiResponse>("getPracticeQuestions");
+  },
 };
 
 export default DemoApi;
