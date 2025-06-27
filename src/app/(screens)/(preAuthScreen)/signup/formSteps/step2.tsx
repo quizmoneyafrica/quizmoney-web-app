@@ -7,6 +7,7 @@ import CustomTextField from "@/app/utils/CustomTextField";
 import { toastPosition } from "@/app/utils/utils";
 import { Flex } from "@radix-ui/themes";
 import * as React from "react";
+import { FaWhatsapp } from "react-icons/fa";
 import { toast } from "sonner";
 
 interface IStepTwoProps {
@@ -14,11 +15,13 @@ interface IStepTwoProps {
   onChange: (
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => void;
+  phoneOnChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   nextStep: () => void;
 }
 
 const StepTwo: React.FunctionComponent<IStepTwoProps> = (props) => {
-  const { formData, onChange, nextStep } = props;
+  const { formData, onChange, nextStep, phoneOnChange } = props;
+
   const handleNextForm = (e: React.FormEvent) => {
     e.preventDefault();
     const dob = new Date(formData.dob);
@@ -60,8 +63,9 @@ const StepTwo: React.FunctionComponent<IStepTwoProps> = (props) => {
           onChange={onChange}
           disabledOption="Select your gender"
           icon={<ArrowDownIcon className="text-[#A6ABC4]" />}
+          required
         />
-        <CustomSelect
+        {/* <CustomSelect
           label="Country"
           name="gender"
           value={formData.gender}
@@ -69,6 +73,19 @@ const StepTwo: React.FunctionComponent<IStepTwoProps> = (props) => {
           onChange={onChange}
           disabledOption="Select your country"
           icon={<ArrowDownIcon className="text-[#A6ABC4]" />}
+        /> */}
+        <CustomTextField
+          label="Phone Number"
+          name="phone"
+          value={formData.phone}
+          type="tel"
+          autoComplete="tel"
+          placeholder="+234 801 234 5678"
+          onChange={phoneOnChange}
+          icon={<FaWhatsapp className="text-[#A6ABC4]" />}
+          required
+          maxLength={14}
+          pattern="^\+234[0-9]{10}$"
         />
         <div className="pt-4">
           <CustomButton type="submit" width="full">
