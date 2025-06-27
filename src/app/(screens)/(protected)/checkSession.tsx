@@ -1,13 +1,9 @@
 "use client";
-import Parse from "parse";
 import { useAppDispatch } from "@/app/hooks/useAuth";
-import { logout } from "@/app/store/authSlice";
-import { persistor } from "@/app/store/store";
-import { setTransactions, setWallet } from "@/app/store/walletSlice";
-import { performLogout } from "@/app/utils/logout";
 import { useCallback, useEffect } from "react";
 import { toast } from "sonner";
 import UserAPI from "@/app/api/userApi";
+import { handleInvalidSession } from "@/app/api/parse/handleInvalidSession";
 
 function CheckSession() {
   const dispatch = useAppDispatch();
@@ -16,13 +12,7 @@ function CheckSession() {
     try {
       await UserAPI.checkSessionTokenValidity();
     } catch {
-      await Parse.User.logOut();
-      dispatch(logout());
-      dispatch(setWallet(undefined));
-      dispatch(setTransactions([]));
-      performLogout(dispatch);
-
-      await persistor.purge();
+      handleInvalidSession(dispatch);
       toast.error("Please login to continue", { position: "top-center" });
     }
   }, [dispatch]);

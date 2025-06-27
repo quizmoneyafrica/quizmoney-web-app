@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { User } from "@/app/api/interface";
 import { useAppSelector } from "@/app/hooks/useAuth";
@@ -67,11 +68,20 @@ const InviteAndEarn = () => {
 
   useEffect(() => {
     (async () => {
-      const res = await UserAPI.getReferralStats();
-      console.log(res);
-      setReferralData({
-        ...res.data.result,
-      });
+      try {
+        const res = await UserAPI.getReferralStats();
+        console.log({
+          ...res,
+        });
+
+        setReferralData({
+          referralCount: res.referralCount,
+          referralEarnings: res.referralEarnings,
+          ...res,
+        });
+      } catch (error: any) {
+        console.error(error.message);
+      }
     })();
   }, []);
 

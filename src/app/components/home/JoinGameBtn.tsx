@@ -81,7 +81,6 @@ function JoinGameBtn() {
   // };
 
   const handleJoinBtn = async () => {
-    console.log(`Device Type: ${isMobile}`);
     if (!isMobile) {
       toast.error("Please join the game with your mobile device.", {
         position: "top-center",
@@ -115,8 +114,8 @@ function JoinGameBtn() {
     } else {
       setLoading(true);
       try {
-        const res = await GameApi.registerForGame(gameData?.objectId);
-        const game = res.data.result.userData;
+        const res = await GameApi.registerForGame(gameData?.objectId, dispatch);
+        const game = res.userData;
 
         dispatch(setLiveGameData(decryptGameData(game)));
         dispatch(setPhase("lobby"));

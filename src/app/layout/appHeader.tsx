@@ -40,7 +40,7 @@ function AppHeader() {
   const fetchNotifications = useCallback(async () => {
     try {
       const res = await NotificationApi.fetchNotifications();
-      dispatch(setNotifications(res.data.result.notifications));
+      dispatch(setNotifications(res.notifications));
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.log(err.message);
@@ -143,8 +143,8 @@ function AppHeader() {
           >
             <BellIcon />
             {unreadCount > 0 && (
-              <div className="flex items-center justify-center h-4 w-4 rounded-full bg-primary-900 absolute -top-1 right-0 text-white text-xs">
-                {unreadCount}
+              <div className="flex items-center justify-center h-4.5 w-4.5 rounded-full bg-primary-900 absolute -top-1 -right-1 text-white text-[0.5rem]">
+                {unreadCount > 99 ? "99+" : unreadCount}
               </div>
             )}
           </Link>

@@ -70,8 +70,6 @@ function GameCard() {
       </div>
     );
 
-  console.log("NEXT GAME: ", nextGameData);
-
   return (
     <div className="drop-shadow-sm rounded-[20px]">
       <div className="flex flex-col drop-shadow rounded-[20px] overflow-clip">

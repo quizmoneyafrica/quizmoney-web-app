@@ -1,12 +1,9 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/app/hooks/useAuth";
-import { logout } from "@/app/store/authSlice";
 import React, { useState } from "react";
-import { setTransactions, setWallet } from "@/app/store/walletSlice";
-import { persistor } from "@/app/store/store";
 import Modal from "../game/modal/ModalWindow";
-import { performLogout } from "@/app/utils/logout";
+import { handleInvalidSession } from "@/app/api/parse/handleInvalidSession";
 
 type Props = {
   open: boolean;
@@ -21,12 +18,7 @@ const LogoutDialog = ({ open, onOpenChange }: Props) => {
   const handleLogout = async () => {
     setLoading(true);
 
-    dispatch(logout());
-    dispatch(setWallet(undefined));
-    dispatch(setTransactions([]));
-    performLogout(dispatch);
-
-    await persistor.purge();
+    handleInvalidSession(dispatch);
 
     setLoading(false);
     onOpenChange(false);

@@ -9,6 +9,7 @@ import Image from "next/image";
 import { useDispatch } from "react-redux";
 import DemoApi from "@/app/api/demo";
 import { setDemoData } from "@/app/store/demoSlice";
+import { playAudio, setPhase } from "@/app/store/gameSlice";
 
 type RouterType = ReturnType<typeof useRouter>;
 type Props = {
@@ -17,28 +18,25 @@ type Props = {
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   router: RouterType;
 };
-export default function WelcomeScreen({
-  loading,
-  setLoading,
-  router,
-  demoData,
-}: Props) {
+export default function WelcomeScreen({ loading, setLoading, router }: Props) {
   const dispatch = useDispatch();
-  const game = demoData;
 
   const handleFetchDemoData = async () => {
     setLoading(true);
     dispatch(setDemoData({}));
     try {
       const res: ApiResponse = await DemoApi.fetchDemoGame();
-      const demoData = res.data.result;
+      const demoData = res;
       console.log(res);
 
       dispatch(setDemoData(demoData));
       sessionStorage.setItem("quizmoney_demoData", JSON.stringify(demoData));
       sessionStorage.setItem("quizmoney_demoData_d", "0");
-      // console.log("Practice Questions: ", demoData);
-      router.replace(`/play-demo/${game?.objectId}`);
+      const objectId = "practice";
+      //Play Song
+      dispatch(setPhase("demo"));
+      dispatch(playAudio());
+      router.replace(`/play-demo/${objectId}`);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {

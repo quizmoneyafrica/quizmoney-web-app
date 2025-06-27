@@ -149,7 +149,9 @@ function SocialLinksDrawer() {
         payload.facebook || "",
         payload.twitter || "",
         payload.whatsapp || "",
-        payload.instagram || ""
+        payload.instagram || "",
+        payload.tiktok || "",
+        dispatch
       );
       dispatch(updateUser(payload));
       toast.success("Social handles updated", { position: toastPosition });

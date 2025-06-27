@@ -8,7 +8,7 @@ import StoreAPI from "@/app/api/storeApi";
 import { useRouter } from "next/navigation";
 import CustomButton from "@/app/utils/CustomBtn";
 import { encryptData } from "@/app/utils/crypto";
-import { useAuth } from "@/app/hooks/useAuth";
+import { useAppDispatch, useAuth } from "@/app/hooks/useAuth";
 import { Eraser } from "@/app/icons/icons";
 import { toast } from "sonner";
 import { formatNaira } from "@/app/utils/utils";
@@ -66,22 +66,22 @@ const ProductCard = ({
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { loginUser } = useAuth();
+  const dispatch = useAppDispatch();
 
   console.log(6 % (6 - index), index);
   // console.log(displayColor[index % displayColor.length]);
 
   const handlePurchase = async () => {
     setIsLoading(true);
-    await StoreAPI.purchaseItem(product.objectId)
+    await StoreAPI.purchaseItem(product.objectId, dispatch)
       .then((res) => {
-        if (res.status === 200) {
-          setIsOpen(false);
-          setIsSuccess(true);
-          const userData = res.data.result.updatedUser;
-          const encryptedUser = encryptData(userData);
-          // ✅ Dispatch to Redux
-          loginUser(encryptedUser);
-        }
+        const userData = res.updatedUser;
+        console.log(res);
+        const encryptedUser = encryptData(userData);
+        // ✅ Dispatch to Redux
+        loginUser(encryptedUser);
+        setIsOpen(false);
+        setIsSuccess(true);
       })
       .catch((err) => {
         console.log(err);

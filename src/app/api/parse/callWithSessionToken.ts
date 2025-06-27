@@ -6,6 +6,7 @@ import { store } from "@/app/store/store";
 export const callWithSessionToken = async <T>(
   endpoint: string,
   body?: any,
+  dispatch?: any,
   method: string = "POST"
 ): Promise<T> => {
   const encrypted = store.getState().auth.userEncryptedData;
@@ -16,5 +17,5 @@ export const callWithSessionToken = async <T>(
     throw new Error("User session token not found");
   }
 
-  return callParseEndpoint<T>(endpoint, body, sessionToken, method);
+  return callParseEndpoint<T>(endpoint, body, dispatch, sessionToken, method);
 };

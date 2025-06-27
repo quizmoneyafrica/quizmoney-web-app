@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const { endpoint, method = "POST", body } = await req.json();
+    const { endpoint, method = "POST", ...params } = await req.json();
     const sessionToken = req.headers.get("x-session-token") ?? undefined;
 
     if (!endpoint) {
@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     const res = await fetch(`${BASE_URL}/${endpoint}`, {
       method,
       headers: getParseHeaders(sessionToken),
-      body: method === "GET" ? undefined : JSON.stringify(body || {}),
+      body: method === "GET" ? undefined : JSON.stringify(params),
     });
 
     const data = await res.json();

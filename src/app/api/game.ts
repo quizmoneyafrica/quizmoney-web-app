@@ -1,73 +1,40 @@
-import axios, { AxiosResponse } from "axios";
-import { BASE_URL, getSessionTokenHeaders } from "./userApi";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ApiResponse } from "./interface";
 import CryptoJS from "crypto-js";
 import { callParseEndpoint } from "./parse/callParseEndpoint";
+import { callWithSessionToken } from "./parse/callWithSessionToken";
 
 const GameApi = {
   fetchNextGame(): Promise<ApiResponse> {
     return callParseEndpoint<ApiResponse>("errorLoad");
   },
-  // fetchNextGame(): Promise<AxiosResponse<ApiResponse>> {
-  //   return axios.post(`${BASE_URL}/errorLoad`, {}, { headers: appHeaders });
-  // },
-  // registerForGame(): Promise<ApiResponse> {
-  //   return callParseEndpoint<ApiResponse>("registerForGame");
-  // },
-  registerForGame(gameId: string): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/registerForGame`,
+
+  registerForGame(gameId: string, dispatch: any): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      "registerForGame",
       { gameId },
-      { headers: getSessionTokenHeaders() }
+      dispatch
     );
   },
-  removeUserFromGame(gameId: string): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/removeUserFromGame`,
-      { gameId },
-      { headers: getSessionTokenHeaders() }
-    );
-  },
-  deactivateSession(gameId: string) {
-    return axios.post(
-      `${BASE_URL}/deactivateSession`,
-      { gameId },
-      { headers: getSessionTokenHeaders() }
-    );
-  },
-  getLoggedinUserGameResults(
-    gameId: string
-  ): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/getLoggedinUserGameResults`,
-      { gameId },
-      { headers: getSessionTokenHeaders() }
-    );
+  removeUserFromGame(gameId: string): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("removeUserFromGame", { gameId });
   },
 
-  updateErasers(erasersUsed: number) {
-    return axios.post(
-      `${BASE_URL}/updateErasers`,
-      { erasersUsed },
-      { headers: getSessionTokenHeaders() }
-    );
+  updateErasers(erasersUsed: number): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("updateErasers", { erasersUsed });
   },
   recordGameAnswer(
     gameId: string,
     questionNumber: string,
     answer: string,
     totalTime?: string
-  ) {
-    return axios.post(
-      `${BASE_URL}/recordGameAnswer`,
-      {
-        gameId,
-        questionNumber,
-        answer,
-        ...(totalTime && { totalTime }),
-      },
-      { headers: getSessionTokenHeaders() }
-    );
+  ): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("recordGameAnswer", {
+      gameId,
+      questionNumber,
+      answer,
+      ...(totalTime && { totalTime }),
+    });
   },
 };
 
