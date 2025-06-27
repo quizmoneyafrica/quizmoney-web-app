@@ -239,7 +239,7 @@ function GameScreen() {
             <div className="mt-6 text-gray-500 text-sm flex items-center justify-center">
               <CountdownCircleTimer
                 isPlaying
-                duration={8}
+                duration={7}
                 key={currentIndex}
                 colors={["#00B87B", "#A30000", "#A30000"]}
                 colorsTime={[10, 5, 0]}
