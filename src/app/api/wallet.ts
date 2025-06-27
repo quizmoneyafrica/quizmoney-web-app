@@ -63,15 +63,6 @@ const WalletApi = {
       dispatch
     );
   },
-  // getPaystackCheckoutLink(data: {
-  //   amount: string;
-  // }): Promise<AxiosResponse<ApiResponse>> {
-  //   return axios.post(
-  //     `${BASE_URL}/getPaystackCheckoutLink`,
-  //     { ...data },
-  //     { headers: getSessionTokenHeaders() }
-  //   );
-  // },
 
   addBankAccount(data: any): Promise<AxiosResponse<ApiResponse>> {
     return axios.post(

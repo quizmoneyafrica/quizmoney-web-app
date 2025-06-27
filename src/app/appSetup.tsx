@@ -71,7 +71,7 @@ const AppSetup = ({ children }: Props) => {
   }, []);
 
   return (
-    <Theme appearance="light" className="!font-text">
+    <Theme appearance="light" className="!font-text ">
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           {isVisible && !token && !isIosPwaInstalled() && <PermissionGuide />}
