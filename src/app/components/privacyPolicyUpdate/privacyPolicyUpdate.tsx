@@ -3,17 +3,31 @@ import React, { useEffect } from "react";
 import { useRef, useState } from "react";
 import QmDrawer from "../drawer/drawer";
 import CustomButton from "@/app/utils/CustomBtn";
+import { getAuthUser } from "@/app/api/userApi";
 
 function PrivacyPolicyUpdate() {
   const [htmlContent, setHtmlContent] = useState("");
   const contentRef = useRef<HTMLDivElement>(null);
   const [hasScrolledToEnd, setHasScrolledToEnd] = useState(false);
   const [open, setOpen] = useState(false);
+  const [shouldShow, setShouldShow] = useState(false);
+
+  const user = getAuthUser();
+  console.log(user.createdAt);
 
   useEffect(() => {
+    const user = getAuthUser();
     const accepted = localStorage.getItem("acceptedPrivacyPolicy") === "true";
-    if (!accepted) {
-      setOpen(true);
+
+    // Define the cutoff date
+    const cutoff = new Date("2025-06-27T00:00:00Z");
+
+    if (user?.createdAt) {
+      const createdDate = new Date(user.createdAt);
+      if (createdDate < cutoff && !accepted) {
+        setShouldShow(true);
+        setOpen(true);
+      }
     }
   }, []);
 
@@ -40,6 +54,7 @@ function PrivacyPolicyUpdate() {
     localStorage.setItem("acceptedPrivacyPolicy", "true");
     setOpen(false);
   };
+  if (!shouldShow) return null;
   return (
     <QmDrawer
       open={open}
