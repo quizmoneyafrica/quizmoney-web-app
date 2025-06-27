@@ -300,6 +300,17 @@ h6,
 .rt-Heading {
   font-family: var(--dmsans) !important;
 }
+.prose h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700;
+}
+.prose p {
+  line-height: 1.5rem;
+}
 #bg-main {
   position: relative;
   min-height: 100vh;
