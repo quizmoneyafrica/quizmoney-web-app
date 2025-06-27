@@ -18,6 +18,7 @@ const initialForm = {
   firstName: "",
   lastName: "",
   email: "",
+  phone: "",
   dob: "",
   gender: "",
   country: "nigeria",
@@ -38,6 +39,28 @@ const SignupForm = ({ step, nextStep }: Props) => {
     const target = e.target as HTMLInputElement | HTMLSelectElement;
     const { name, value } = target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const phoneOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let input = e.target.value;
+
+    // Remove any non-digit characters except for +
+    input = input.replace(/[^\d+]/g, "");
+
+    // Normalize to +234 format
+    if (input.startsWith("0")) {
+      input = "+234" + input.slice(1);
+    } else if (!input.startsWith("+234")) {
+      input = "+234" + input.replace(/^(\+)?(234)?/, "");
+    }
+
+    // Block typing if already 14 characters
+    if (input.length > 14) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: input,
+    }));
   };
 
   const toggleResetFieldVisibility = (
@@ -77,6 +100,7 @@ const SignupForm = ({ step, nextStep }: Props) => {
                 nextStep={nextStep}
                 formData={formData}
                 onChange={handleChange}
+                phoneOnChange={phoneOnChange}
               />
             )}
             {step === 3 && (
