@@ -25,7 +25,13 @@ function PrivacyPolicyUpdate() {
 
   const handleScroll = () => {
     const el = contentRef.current;
-    if (el && el.scrollHeight - el.scrollTop === el.clientHeight) {
+    if (!el) return;
+
+    const threshold = 20;
+    const atBottom =
+      el.scrollTop + el.clientHeight >= el.scrollHeight - threshold;
+
+    if (atBottom) {
       setHasScrolledToEnd(true);
     }
   };
