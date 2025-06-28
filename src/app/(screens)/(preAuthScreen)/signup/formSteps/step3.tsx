@@ -54,6 +54,7 @@ const StepThree: React.FunctionComponent<IStepThreeProps> = (props) => {
       firstName: formData.firstName,
       lastName: formData.lastName,
       email: formData.email,
+      phone: formData.phone,
       country: formData.country,
       gender: formData.gender,
       dob: formData.dob,

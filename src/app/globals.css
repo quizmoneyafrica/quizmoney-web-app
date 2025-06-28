@@ -246,6 +246,7 @@
   -webkit-user-select: none;
   -ms-user-select: none;
 } */
+
 body {
   background: #f7f7f7;
   color: var(--foreground);
@@ -272,6 +273,10 @@ body.bg-primary-900 {
 body.hideTawkTo .widget-visible {
   display: none !important;
 }
+.toaster {
+  z-index: 9999 !important;
+  position: fixed !important;
+}
 .text-count {
   color: var(--QM-Neutral-Colors-White, #fff);
   text-align: center;
@@ -294,6 +299,17 @@ h5,
 h6,
 .rt-Heading {
   font-family: var(--dmsans) !important;
+}
+.prose h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700;
+}
+.prose p {
+  line-height: 1.5rem;
 }
 #bg-main {
   position: relative;

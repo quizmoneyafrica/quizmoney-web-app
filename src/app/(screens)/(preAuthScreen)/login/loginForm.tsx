@@ -6,7 +6,7 @@ import { useAuth } from "@/app/hooks/useAuth";
 import useFcmToken from "@/app/hooks/useFcmToken";
 import { EyeIcon, EyeSlash, MailIcon } from "@/app/icons/icons";
 import getDeviceId from "@/app/pwa/deviceId";
-import { encryptData } from "@/app/utils/crypto";
+import { decryptData, encryptData } from "@/app/utils/crypto";
 import CustomButton from "@/app/utils/CustomBtn";
 import CustomTextField from "@/app/utils/CustomTextField";
 import {
@@ -17,7 +17,7 @@ import {
 import { Flex } from "@radix-ui/themes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 type Props = {
@@ -32,10 +32,26 @@ const LoginForm = ({ loading, setLoading }: Props) => {
   const { token, notificationPermissionStatus } = useFcmToken();
   const { loginUser } = useAuth();
   const router = useRouter();
+  const [ipAddress, setIpAddress] = useState("");
+
+  useEffect(() => {
+    const fetchIP = async () => {
+      try {
+        const res = await fetch("/api/app-info");
+        const data = await res.json();
+        setIpAddress(decryptData(data));
+      } catch (err) {
+        console.error("Could not fetch IP:", err);
+      }
+    };
+
+    fetchIP();
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
     if (
       notificationPermissionStatus &&
       notificationPermissionStatus !== "granted"
@@ -57,6 +73,7 @@ const LoginForm = ({ loading, setLoading }: Props) => {
       password: password,
       deviceToken: token || "",
       deviceId: deviceId,
+      ipAddress: ipAddress,
     };
     try {
       const response = await UserAPI.login(newValues);

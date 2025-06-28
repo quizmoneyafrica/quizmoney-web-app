@@ -15,7 +15,9 @@ type CustomTextFieldProps = {
   required?: boolean;
   icon?: React.ReactNode;
   autoComplete?: string;
+  pattern?: string;
   readOnly?: boolean;
+  maxLength?: number;
 };
 
 export default function CustomTextField({
@@ -31,6 +33,8 @@ export default function CustomTextField({
   icon,
   autoComplete = "off",
   readOnly = false,
+  maxLength,
+  pattern,
 }: CustomTextFieldProps) {
   return (
     <div className="w-full space-y-1">
@@ -59,6 +63,8 @@ export default function CustomTextField({
             "appearance-none min-w-0 w-full rounded-[6px] caret-primary-500 border border-neutral-300 px-4 py-3 pr-12 text-base focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 disabled:bg-neutral-100  disabled:cursor-not-allowed",
             className
           )}
+          max={maxLength}
+          pattern={pattern}
         />
 
         {icon && (

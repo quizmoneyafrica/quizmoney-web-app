@@ -168,10 +168,19 @@ export const WithdrawalPinForm = ({
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      toast.error(`${err.message}`, {
-        position: toastPosition,
-      });
+      if (err.message === "tokens must be a non-empty array") {
+        toast.error(`New withdrawal request made`, {
+          position: toastPosition,
+        });
+      } else {
+        toast.error(`${err.message}`, {
+          position: toastPosition,
+        });
+      }
     } finally {
+      store.dispatch(setWithdrawalPinModal(false));
+      store.dispatch(setWithdrawalModal(false));
+      close?.();
       setIsCreatingRequest(false);
     }
   };

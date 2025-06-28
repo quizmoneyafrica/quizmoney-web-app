@@ -17,7 +17,7 @@ function Page() {
     if (!products) {
       StoreAPI.getProducts()
         .then((res) => {
-          dispatch(setStoreProducts(res.data.result.allProducts));
+          dispatch(setStoreProducts(res.allProducts));
         })
         .catch((err) => {
           console.error("Error fetching products:", err);

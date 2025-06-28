@@ -49,6 +49,7 @@ export interface SignUpFormType {
   firstName: string;
   lastName: string;
   email: string;
+  phone: string;
   dob: string;
   gender: string;
   country: string;
@@ -133,4 +134,5 @@ export interface UpdateUserForm {
   instagram?: string;
   twitter?: string;
   whatsapp?: string;
+  tiktok?: string;
 }

@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   ApiResponse,
   InAppChangePasswordForm,
@@ -45,6 +45,9 @@ const getAuthUser = () => {
 };
 
 const UserAPI = {
+  checkSessionTokenValidity(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("checkSessionTokenValidity");
+  },
   login(form: LoginForm): Promise<ApiResponse> {
     return callParseEndpoint<ApiResponse>("login", form);
   },
@@ -59,51 +62,23 @@ const UserAPI = {
     return callParseEndpoint<ApiResponse>("resendSignupOtp", { email });
   },
 
-  // sendFeedback(rating: string, message: string): Promise<ApiResponse> {
-  //   return callWithSessionToken<ApiResponse>("sendFeedback", {
-  //     rating,
-  //     message,
-  //   });
-  // },
-  sendFeedback(
-    rating: string,
-    message: string
-  ): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/sendFeedback`,
-      { rating, message },
-      {
-        headers: getSessionTokenHeaders(),
-      }
-    );
+  sendFeedback(form: any, dispatch: any): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("sendFeedback", form, dispatch);
   },
   updateSocialHandles(
     facebook: string,
     twitter: string,
     whatsapp: string,
-    instagram: string
-  ): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/updateSocialHandles`,
-      { facebook, twitter, whatsapp, instagram },
-      {
-        headers: getSessionTokenHeaders(),
-      }
+    instagram: string,
+    tiktok: string,
+    dispatch: any
+  ): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      "updateSocialHandles",
+      { facebook, twitter, whatsapp, instagram, tiktok },
+      dispatch
     );
   },
-  // updateSocialHandles(
-  //   facebook: string,
-  //   twitter: string,
-  //   whatsapp: string,
-  //   instagram: string
-  // ): Promise<ApiResponse> {
-  //   return callWithSessionToken<ApiResponse>("updateSocialHandles", {
-  //     facebook,
-  //     twitter,
-  //     whatsapp,
-  //     instagram,
-  //   });
-  // },
 
   forgotPassword(email: string): Promise<ApiResponse> {
     return callParseEndpoint<ApiResponse>("forgotPassword", {
@@ -119,59 +94,25 @@ const UserAPI = {
     return callParseEndpoint<ApiResponse>("changePassword", form);
   },
 
-  // inAppChangePassword(form: InAppChangePasswordForm): Promise<ApiResponse> {
-  //   return callWithSessionToken<ApiResponse>("inAppChangePassword", form);
-  // },
-  inAppChangePassword(
-    form: InAppChangePasswordForm
-  ): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(`${BASE_URL}/inAppChangePassword`, form, {
-      headers: getSessionTokenHeaders(),
-    });
+  inAppChangePassword(form: InAppChangePasswordForm): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("inAppChangePassword", form);
   },
 
   updateUser(form: UpdateUserForm): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
-      `updateProfile?firstName=${form.firstName}&lastName=${form.lastName}&dob=${form.dob}&gender=${form.gender}&country=${form.country}&facebook=${form.facebook}&instagram=${form.instagram}&twitter=${form.twitter}&whatsapp=${form.whatsapp}&avatar=${form.avatar}`
+      `updateProfile?firstName=${form.firstName}&lastName=${form.lastName}&dob=${form.dob}&gender=${form.gender}&country=${form.country}&facebook=${form.facebook}&instagram=${form.instagram}&twitter=${form.twitter}&whatsapp=${form.whatsapp}&tiktok=${form.tiktok}&avatar=${form.avatar}`
     );
   },
-  // updateUser(form: UpdateUserForm): Promise<AxiosResponse<ApiResponse>> {
-  //   return axios.post(
-  //     `${BASE_URL}/updateProfile?firstName=${form.firstName}&lastName=${form.lastName}&dob=${form.dob}&gender=${form.gender}&country=${form.country}&facebook=${form.facebook}&instagram=${form.instagram}&twitter=${form.twitter}&whatsapp=${form.whatsapp}&avatar=${form.avatar}`,
-  //     {},
-  //     {
-  //       headers: getSessionTokenHeaders(),
-  //     }
-  //   );
-  // },
 
-  getAvatars(): Promise<AxiosResponse<ApiResponse>> {
-    return axios.get(`https://quizmoney.b4a.io/classes/Avatars`, {
-      headers: getSessionTokenHeaders(),
-    });
+  getAvatars(): Promise<ApiResponse> {
+    return callParseEndpoint<ApiResponse>("avatars");
   },
 
-  // topGamersOfToday(): Promise<ApiResponse> {
-  //   return callParseEndpoint<ApiResponse>(
-  //     "topGamersOfTheWeekend",
-  //     "",
-  //     getAuthUser()?.sessionToken
-  //   );
-  // },
   topGamersOfToday(): Promise<ApiResponse> {
     return callParseEndpoint<ApiResponse>("topGamersOfTheWeekend");
   },
-  // getReferralStats(): Promise<ApiResponse> {
-  //   return callWithSessionToken<ApiResponse>("referralData", {});
-  // },
-  getReferralStats(): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/referralData`,
-      {},
-      {
-        headers: getSessionTokenHeaders(),
-      }
-    );
+  getReferralStats(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("referralData", {});
   },
 };
 

@@ -73,7 +73,6 @@ const Page = () => {
       toast.error(error.message, { position: toastPosition });
       setLoading(false);
     }
-    // console.log(formData);
   };
   return (
     <motion.div

@@ -9,8 +9,11 @@ type VaulDrawerProps = {
   title?: string;
   titleLeft?: boolean;
   heightClass?: string;
+  background?: string;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  hideCloseBtn?: boolean;
+  dismissible?: boolean;
 };
 
 export default function QmDrawer({
@@ -21,20 +24,33 @@ export default function QmDrawer({
   open,
   onOpenChange,
   titleLeft = false,
+  hideCloseBtn = false,
+  dismissible = true,
+  background,
 }: VaulDrawerProps) {
   return (
-    <Drawer.Root open={open} onOpenChange={onOpenChange}>
+    <Drawer.Root
+      open={open}
+      onOpenChange={onOpenChange}
+      dismissible={dismissible}
+    >
       <Drawer.Trigger asChild>{trigger}</Drawer.Trigger>
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 bg-black/40" />
         <Drawer.Content
           aria-describedby="Drawer Content"
-          className={`bg-white md:bg-transparent flex flex-col rounded-t-[10px] fixed bottom-0 left-0 right-0 outline-none ${heightClass} max-h-[90dvh] md:max-h-screen 
+          className={`${
+            background ? background : "bg-white"
+          } md:bg-transparent flex flex-col rounded-t-[10px] fixed bottom-0 left-0 right-0 outline-none ${heightClass} max-h-[90dvh] md:max-h-screen 
           md:top-1/2 md:left-1/2 md:translate-x-[-50%] md:translate-y-[-50%] 
           md:rounded-[10px] md:max-w-xl 
           ${!open ? "md:translate-y-[70%]" : ""}`}
         >
-          <div className="md:bg-white rounded-t-[10px] md:rounded-[10px] flex-1 flex flex-col overflow-hidden">
+          <div
+            className={`${
+              background ? background : "md:bg-white"
+            } rounded-t-[10px] md:rounded-[10px] flex-1 flex flex-col overflow-hidden`}
+          >
             {/* Scrollable content wrapper */}
             <div className="p-4 overflow-y-auto flex-1">
               <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 mb-4 " />
@@ -48,11 +64,13 @@ export default function QmDrawer({
                   {title}
                 </Drawer.Title>
               )}
-              <Drawer.Close asChild>
-                <button className="absolute top-7 right-6 h-10 w-10 hidden hover:bg-neutral-50 md:grid place-items-center rounded-full">
-                  <XIcon />
-                </button>
-              </Drawer.Close>
+              {!hideCloseBtn && (
+                <Drawer.Close asChild>
+                  <button className="absolute top-7 right-6 h-10 w-10 hidden hover:bg-neutral-50 md:grid place-items-center rounded-full">
+                    <XIcon />
+                  </button>
+                </Drawer.Close>
+              )}
 
               <div className="pb-6">{children}</div>
             </div>

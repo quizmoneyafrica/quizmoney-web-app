@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosResponse } from "axios";
 import { BASE_URL, getSessionTokenHeaders } from "./userApi";
 import { ApiResponse } from "./interface";
+import { callWithSessionToken } from "./parse/callWithSessionToken";
 
 const WalletApi = {
   verifyBVN(
@@ -49,16 +51,19 @@ const WalletApi = {
       { headers: getSessionTokenHeaders() }
     );
   },
-  getPaystackCheckoutLink(data: {
-    amount: string;
-  }): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/getPaystackCheckoutLink`,
+  getPaystackCheckoutLink(
+    data: {
+      amount: string;
+    },
+    dispatch: any
+  ): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      "getPaystackCheckoutLink",
       { ...data },
-      { headers: getSessionTokenHeaders() }
+      dispatch
     );
   },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   addBankAccount(data: any): Promise<AxiosResponse<ApiResponse>> {
     return axios.post(
       `${BASE_URL}/addBankAccount`,
@@ -112,21 +117,22 @@ const WalletApi = {
       bankName: string;
       accountName: string;
     };
-  }): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/requestWithdrawal`,
-      { ...data },
-      { headers: getSessionTokenHeaders() }
-    );
+  }): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("requestWithdrawal", { ...data });
   },
-  forgotPin(data: {email:string}):Promise<AxiosResponse<ApiResponse>> {
+
+  forgotPin(data: { email: string }): Promise<AxiosResponse<ApiResponse>> {
     return axios.post(
       `${BASE_URL}/forgotPin`,
       { ...data },
+
       { headers: getSessionTokenHeaders() }
     );
   },
-  verifyPinOtp(data: {otp:string,email:string}):Promise<AxiosResponse<ApiResponse>> {
+  verifyPinOtp(data: {
+    otp: string;
+    email: string;
+  }): Promise<AxiosResponse<ApiResponse>> {
     return axios.post(
       `${BASE_URL}/verifyPinOtp`,
       { ...data },
