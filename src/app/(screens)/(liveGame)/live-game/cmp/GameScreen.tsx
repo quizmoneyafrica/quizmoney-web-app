@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   CorrectCircleIcon,
   EraserIcon,
-  TimerIcon,
+  // TimerIcon,
   WrongCircleIcon,
 } from "@/app/icons/icons";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
@@ -234,7 +234,7 @@ function GameScreen() {
           {/* Timer, countdown, Avatar  */}
           <div className="grid grid-cols-3 w-full">
             <div className="mt-6 text-white text-sm flex items-center justify-start gap-1">
-              <TimerIcon width={23} /> <span>{formatTime(totalTimeUsed)}</span>
+              {/* <TimerIcon width={23} /> <span>{formatTime(totalTimeUsed)}</span> */}
             </div>
             <div className="mt-6 text-gray-500 text-sm flex items-center justify-center">
               <CountdownCircleTimer
