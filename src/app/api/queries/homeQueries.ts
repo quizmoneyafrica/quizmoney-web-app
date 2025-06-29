@@ -4,7 +4,11 @@ import { useAppDispatch } from "@/app/hooks/useAuth";
 import { useCallback, useEffect } from "react";
 import { liveQueryClient } from "@/app/api/parse/parseClient";
 import Parse from "parse";
-import { setNextGameData, setTopGamers } from "@/app/store/gameSlice";
+import {
+  setLiveGameData,
+  setNextGameData,
+  setTopGamers,
+} from "@/app/store/gameSlice";
 import UserAPI from "../userApi";
 
 function HomeQueries() {
@@ -35,6 +39,7 @@ function HomeQueries() {
       gameSubscription?.on("update", (object: Parse.Object) => {
         // console.log("this object was updated: ", object.toJSON());
         dispatch(setNextGameData(object.toJSON()));
+        dispatch(setLiveGameData(object.toJSON()));
       });
     };
     const topGamersLiveQuery = async () => {

@@ -1,12 +1,19 @@
 import AdBanner from "@/app/components/advert/adBanner";
 import { setShowAdsScreen, stopAudio } from "@/app/store/gameSlice";
 import CustomButton from "@/app/utils/CustomBtn";
+import {
+  parseTimeStringToMilliseconds,
+  readTotalTime,
+} from "@/app/utils/utils";
 import { Grid } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { useDispatch } from "react-redux";
 
-function Results() {
+type Props = {
+  userTime: string;
+};
+function Results({ userTime }: Props) {
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -23,6 +30,14 @@ function Results() {
           <div>
             <button></button>
             <button></button>
+          </div>
+          <div className="bg-primary-50 text-sm border-4 border-primary-500 rounded-[10px] px-4 py-4 space-y-4">
+            <p className="text-center">
+              Total Time Used:{" "}
+              <span className="font-medium">
+                {readTotalTime(parseTimeStringToMilliseconds(userTime))}
+              </span>
+            </p>
           </div>
           <div className="bg-primary-50 text-center text-sm border-4 border-primary-500 rounded-[10px] px-4 py-8 space-y-6">
             <div className="space-y-3 max-w-[70%] mx-auto">
