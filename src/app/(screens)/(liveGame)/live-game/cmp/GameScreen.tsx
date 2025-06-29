@@ -8,7 +8,7 @@ import {
   WrongCircleIcon,
 } from "@/app/icons/icons";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
-import { Flex } from "@radix-ui/themes";
+import { Avatar, Flex } from "@radix-ui/themes";
 import GameApi from "@/app/api/game";
 import { playAudio, setPhase } from "@/app/store/gameSlice";
 import { getAuthUser } from "@/app/api/userApi";
@@ -36,8 +36,10 @@ type Question = {
   correctAnswer: string;
   originalIndex: number;
 };
-
-function GameScreen() {
+type Props = {
+  setUserTime: (userTime: string) => void;
+};
+function GameScreen({ setUserTime }: Props) {
   const dispatch = useAppDispatch();
   const user = getAuthUser();
   const { liveGameData, audioShouldPlay } = useAppSelector(
@@ -117,6 +119,7 @@ function GameScreen() {
     if (isLastQuestion) {
       if (totalTimeInterval.current) clearInterval(totalTimeInterval.current);
       dispatch(setPhase("completed"));
+      setUserTime(totalTimeFormatted);
       if (!hasAnswered) {
         try {
           await GameApi.recordGameAnswer(
@@ -239,6 +242,12 @@ function GameScreen() {
           <div className="grid grid-cols-3 w-full">
             <div className="mt-6 text-white text-sm flex items-center justify-start gap-1">
               {/* <TimerIcon width={23} /> <span>{formatTime(totalTimeUsed)}</span> */}
+              <Avatar
+                src={user?.avatar}
+                fallback={user?.firstName?.charAt(0).toUpperCase()}
+                radius="full"
+                className="bg-primary-50"
+              />
             </div>
             <div className="mt-6 text-gray-500 text-sm flex items-center justify-center">
               <CountdownCircleTimer

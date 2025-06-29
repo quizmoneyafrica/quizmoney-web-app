@@ -1,6 +1,6 @@
 "use client";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import LobbyScreen from "../cmp/LobbyScreen";
 import GameScreen from "../cmp/GameScreen";
 import GameCompleted from "../cmp/GameCompleted";
@@ -14,7 +14,7 @@ import { setPhase, stopAudio } from "@/app/store/gameSlice";
 function Page() {
   const dispatch = useAppDispatch();
   const { phase } = useAppSelector((state) => state.game);
-
+  const [userTime, setUserTime] = useState("");
   useEffect(() => {
     // Replace initial state so back doesn't work
     window.history.replaceState(null, "", window.location.href);
@@ -57,9 +57,9 @@ function Page() {
   }, [dispatch, phase]);
 
   if (phase === "lobby") return <LobbyScreen />;
-  if (phase === "playing") return <GameScreen />;
+  if (phase === "playing") return <GameScreen setUserTime={setUserTime} />;
   if (phase === "completed") return <GameCompleted />;
-  if (phase === "result") return <Results />;
+  if (phase === "result") return <Results userTime={userTime} />;
   if (phase === "cancelled") return <KickedOut />;
   return <NotStarted />;
 }
