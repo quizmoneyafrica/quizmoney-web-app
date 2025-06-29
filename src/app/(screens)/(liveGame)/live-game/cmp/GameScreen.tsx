@@ -123,7 +123,8 @@ function GameScreen() {
             gameId,
             questionNumber.toString(),
             "User missed it",
-            totalTimeFormatted
+            totalTimeFormatted,
+            usedEraser
           );
         } catch (error) {
           console.log(error);
@@ -137,7 +138,8 @@ function GameScreen() {
           gameId,
           questionNumber.toString(),
           "User missed it",
-          totalTimeFormatted
+          totalTimeFormatted,
+          usedEraser
         );
       } catch (error) {
         console.log(error);
@@ -194,7 +196,8 @@ function GameScreen() {
         gameId,
         questionNumber.toString(),
         toSaveAnswer,
-        totalTimeFormatted
+        totalTimeFormatted,
+        usedEraser
       );
     } catch (error) {
       console.log(error);
@@ -203,7 +206,8 @@ function GameScreen() {
           gameId,
           questionNumber.toString(),
           toSaveAnswer,
-          totalTimeFormatted
+          totalTimeFormatted,
+          usedEraser
         );
       } catch (error) {
         console.log(error);
