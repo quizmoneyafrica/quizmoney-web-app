@@ -234,8 +234,8 @@ export default function TransactionHistory(): React.JSX.Element {
                 alt="arrow-icon"
                 src={
                   transaction.type === "deposit"
-                    ? "/icons/arrow-down-green.svg"
-                    : "/icons/arrow-down-red.svg"
+                    ? "/assets/moneyOut.svg"
+                    : "/icons/moneyIn.svg"
                 }
                 className="w-4 h-4 md:w-5 md:h-5"
               />
