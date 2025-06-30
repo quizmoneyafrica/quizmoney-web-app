@@ -11,7 +11,8 @@ import { toast } from "sonner";
 import UserAPI from "@/app/api/userApi";
 import Link from "next/link";
 import { useAuth } from "@/app/hooks/useAuth";
-import { encryptData } from "@/app/utils/crypto";
+import { decryptData, encryptData } from "@/app/utils/crypto";
+import getDeviceId from "@/app/pwa/deviceId";
 
 function VerifyEmailPage() {
   const searchParams = useSearchParams();
@@ -21,12 +22,27 @@ function VerifyEmailPage() {
   const [countdown, setCountdown] = useState(resendTimer);
   const [canResend, setCanResend] = useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [ipAddress, setIpAddress] = useState("");
 
   const [otpCode, setOtpCode] = useState("");
 
   if (!email) {
     router.replace("/signup");
   }
+
+  useEffect(() => {
+    const fetchIP = async () => {
+      try {
+        const res = await fetch("/api/app-info");
+        const data = await res.json();
+        setIpAddress(decryptData(data));
+      } catch (err) {
+        console.error("Could not fetch IP:", err);
+      }
+    };
+
+    fetchIP();
+  }, []);
 
   useEffect(() => {
     if (countdown <= 0) {
@@ -45,10 +61,13 @@ function VerifyEmailPage() {
     e.preventDefault();
     setLoading(true);
     const password = sessionStorage.getItem("pass");
+    const deviceId = getDeviceId();
     const newValues = {
       email: email?.toLowerCase().trim() || "",
       otp: otpCode,
       password: password,
+      deviceId: deviceId,
+      ipAddress: ipAddress,
     };
     try {
       const response = await UserAPI.verifyEmail(newValues);

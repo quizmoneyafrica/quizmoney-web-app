@@ -27,13 +27,15 @@ const GameApi = {
     gameId: string,
     questionNumber: string,
     answer: string,
-    totalTime?: string
+    totalTime?: string,
+    usedEraser?: boolean
   ): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("recordGameAnswer", {
       gameId,
       questionNumber,
       answer,
       ...(totalTime && { totalTime }),
+      usedEraser,
     });
   },
 };
