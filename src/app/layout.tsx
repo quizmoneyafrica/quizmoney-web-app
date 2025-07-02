@@ -5,6 +5,7 @@ import AppSetup from "./appSetup";
 import "@radix-ui/themes/styles.css";
 import BodyWrapper from "./bodyWrapper";
 import InstallAppButton from "./pwa/install";
+import GoogleAdSense from "./GoogleAdSense";
 
 const spacegrotesk = Space_Grotesk({
   variable: "--spacegrotesk",
@@ -88,6 +89,7 @@ export default function RootLayout({
         className={`${spacegrotesk.variable} ${dmsans.variable} antialiased`}
       >
         <BodyWrapper>
+          <GoogleAdSense />
           <AppSetup>{children}</AppSetup>
         </BodyWrapper>
         <InstallAppButton />
