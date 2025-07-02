@@ -5,7 +5,7 @@ import AppSetup from "./appSetup";
 import "@radix-ui/themes/styles.css";
 import BodyWrapper from "./bodyWrapper";
 import InstallAppButton from "./pwa/install";
-import GoogleAdSense from "./GoogleAdSense";
+import Script from "next/script";
 
 const spacegrotesk = Space_Grotesk({
   variable: "--spacegrotesk",
@@ -84,12 +84,22 @@ export default function RootLayout({
           name="apple-mobile-web-app-status-bar-style"
           content="black-translucent"
         />
+        <Script id="adsense-init" strategy="afterInteractive">
+          {`
+        (function() {
+          var ads = document.createElement("script");
+          ads.async = true;
+          ads.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7047303023694178";
+          ads.crossOrigin = "anonymous";
+          document.head.appendChild(ads);
+        })();
+      `}
+        </Script>
       </head>
       <body
         className={`${spacegrotesk.variable} ${dmsans.variable} antialiased`}
       >
         <BodyWrapper>
-          <GoogleAdSense />
           <AppSetup>{children}</AppSetup>
         </BodyWrapper>
         <InstallAppButton />
