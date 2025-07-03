@@ -38,24 +38,15 @@ export const ActivityRow = ({
         }`}
       >
         <div className="flex gap-2 md:gap-4 items-center">
-          <div
-            className={`p-1.5 md:p-2 rounded-full ${
-              transaction.type === "deposit" ? "bg-green-100" : "bg-red-100"
-            }`}
-          >
-            {transaction.type === "deposit" ? (
-              <CustomImage
-                alt="arrow-up"
-                src="/icons/arrow-down-green.svg"
-                className="w-4 h-4 md:w-5 md:h-5"
-              />
-            ) : (
-              <CustomImage
-                alt="arrow-up"
-                src="/icons/arrow-down-red.svg"
-                className="w-4 h-4 md:w-5 md:h-5"
-              />
-            )}
+          <div className={`p-1.5 md:p-2 rounded-full `}>
+            <CustomImage
+              alt="arrow-up"
+              src={
+                transaction.type === "withdrawal"
+                  ? "/icons/moneyOut.svg"
+                  : "/icons/moneyIn.svg"
+              }
+            />
           </div>
           <div>
             <p className="text-sm md:text-base font-medium text-[#3B3B3B]">
