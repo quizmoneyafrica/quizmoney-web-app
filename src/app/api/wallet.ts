@@ -42,6 +42,7 @@ const WalletApi = {
       { headers: getSessionTokenHeaders() }
     );
   },
+
   getCheckoutLink(data: {
     amount: string;
   }): Promise<AxiosResponse<ApiResponse>> {
