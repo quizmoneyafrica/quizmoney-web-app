@@ -64,7 +64,7 @@ function GameScreen({ setUserTime }: Props) {
   const wrongSoundRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    if (liveGameData?.questions?.length && shuffledQuestions.length === 0) {
+    if (liveGameData?.questions?.length && shuffledQuestions.length < 9) {
       const questionsWithIndex = (liveGameData.questions as Question[]).map(
         (q, index) => ({
           ...q,
@@ -74,7 +74,7 @@ function GameScreen({ setUserTime }: Props) {
       const shuffled = shuffleArray(questionsWithIndex);
       setShuffledQuestions(shuffled);
     }
-  }, [liveGameData.questions, shuffledQuestions.length]);
+  }, [liveGameData.questions, shuffledQuestions]);
 
   useEffect(() => {
     correctSoundRef.current = new Audio("/sounds/correct-answer.mp3");

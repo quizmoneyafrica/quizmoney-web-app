@@ -14,6 +14,17 @@ import UserAPI from "../userApi";
 function HomeQueries() {
   const dispatch = useAppDispatch();
 
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        liveQueryClient.open();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, []);
+
   const fetchTopGamers = useCallback(async () => {
     try {
       const res = await UserAPI.topGamersOfToday();
@@ -54,6 +65,16 @@ function HomeQueries() {
       });
     };
 
+    // Reconnect logic
+    liveQueryClient.on("close", () => {
+      console.warn("LiveQuery closed. Attempting reconnect...");
+      setTimeout(() => liveQueryClient.open(), 3000);
+    });
+    liveQueryClient.on("open", () => {
+      console.log("LiveQuery connection reopened");
+      gameDataLiveQuery();
+      topGamersLiveQuery();
+    });
     gameDataLiveQuery();
     topGamersLiveQuery();
     return () => {
