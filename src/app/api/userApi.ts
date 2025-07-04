@@ -48,8 +48,11 @@ const UserAPI = {
   checkSessionTokenValidity(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("checkSessionTokenValidity");
   },
+  // login(form: LoginForm): Promise<ApiResponse> {
+  //   return callParseEndpoint<ApiResponse>("login", form);
+  // },
   login(form: LoginForm): Promise<ApiResponse> {
-    return callParseEndpoint<ApiResponse>("login", form);
+    return callParseEndpoint<ApiResponse>("auth/login", form);
   },
 
   signUp(form: SignUpForm): Promise<ApiResponse> {
