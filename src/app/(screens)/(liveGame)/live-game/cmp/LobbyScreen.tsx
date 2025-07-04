@@ -11,7 +11,7 @@ import { LeaveGameModal } from "@/app/components/game/leaveGameModal";
 
 function LobbyScreen() {
   const dispatch = useAppDispatch();
-  const { liveGameData, phase } = useAppSelector((state) => state.game);
+  const { liveGameData } = useAppSelector((state) => state.game);
   const startDate = liveGameData?.startDate.iso;
   // const startDate = "2025-06-14T13:05:00.000Z";
   const [secondsLeft, setSecondsLeft] = useState(
@@ -54,33 +54,33 @@ function LobbyScreen() {
     animate: { scale: 1.5, opacity: 1 },
     exit: { scale: 0.8, opacity: 0 },
   };
-  if (phase === "lobby" && secondsLeft < -2) {
-    return (
-      <div className="min-h-[100dvh] lg:h-screen bg-primary-900 hero flex flex-col items-center justify-center  px-4">
-        <div className="w-full h-full mx-auto max-w-lg space-y-6 grid grid-rows-2 place-items-center">
-          <div className="w-full bg-error-50 text-center text-sm border-4 border-error-500 rounded-[10px] px-4 py-4 space-y-4 flex flex-col items-center justify-center">
-            <span className="text-5xl">🚫</span>
-            <p className="font-semibold text-base text-error-900">
-              You got in late
-            </p>
-            <p className="text-error-800">
-              Game is in session
-              <br />
-              Do make sure to join in at least 5 mins before game time
-            </p>
-            <p>
-              Tap the button below to go back home.
-              <br /> 👇
-            </p>
+  // if (phase === "lobby" && secondsLeft < -2) {
+  //   return (
+  //     <div className="min-h-[100dvh] lg:h-screen bg-primary-900 hero flex flex-col items-center justify-center  px-4">
+  //       <div className="w-full h-full mx-auto max-w-lg space-y-6 grid grid-rows-2 place-items-center">
+  //         <div className="w-full bg-error-50 text-center text-sm border-4 border-error-500 rounded-[10px] px-4 py-4 space-y-4 flex flex-col items-center justify-center">
+  //           <span className="text-5xl">🚫</span>
+  //           <p className="font-semibold text-base text-error-900">
+  //             You got in late
+  //           </p>
+  //           <p className="text-error-800">
+  //             Game is in session
+  //             <br />
+  //             Do make sure to join in at least 5 mins before game time
+  //           </p>
+  //           <p>
+  //             Tap the button below to go back home.
+  //             <br /> 👇
+  //           </p>
 
-            <a href="/home" className="w-full">
-              <CustomButton width="medium">Go Home</CustomButton>
-            </a>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  //           <a href="/home" className="w-full">
+  //             <CustomButton width="medium">Go Home</CustomButton>
+  //           </a>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
   return (
     <main>
       <div className="min-h-[100dvh] lg:h-screen bg-primary-900 hero flex flex-col items-center justify-center  px-4">

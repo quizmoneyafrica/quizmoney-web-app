@@ -215,6 +215,8 @@ export default function TransactionHistory(): React.JSX.Element {
     const dateData = format(date, "MMM d h:mma").toLowerCase();
     const isLastInGroup = index === array.length - 1;
 
+    console.log(transaction.type, "=======");
+
     return (
       <div key={transaction.objectId || index.toString()}>
         <div
@@ -225,19 +227,14 @@ export default function TransactionHistory(): React.JSX.Element {
           onClick={() => handleTransactionClick(transaction)}
         >
           <div className="flex gap-2 md:gap-4 items-center">
-            <div
-              className={`p-1.5 md:p-2 rounded-full ${
-                transaction.type === "deposit" ? "bg-green-100" : "bg-red-100"
-              }`}
-            >
+            <div className={`p-1.5 md:p-2 rounded-full `}>
               <CustomImage
                 alt="arrow-icon"
                 src={
-                  transaction.type === "deposit"
-                    ? "/icons/arrow-down-green.svg"
-                    : "/icons/arrow-down-red.svg"
+                  transaction.type === "withdrawal"
+                    ? "/icons/moneyOut.svg"
+                    : "/icons/moneyIn.svg"
                 }
-                className="w-4 h-4 md:w-5 md:h-5"
               />
             </div>
             <div className="flex flex-col items-start">

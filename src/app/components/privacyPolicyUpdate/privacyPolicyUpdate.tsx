@@ -13,7 +13,7 @@ function PrivacyPolicyUpdate() {
   const [shouldShow, setShouldShow] = useState(false);
 
   const user = getAuthUser();
-  console.log(user.createdAt);
+  console.log(user?.createdAt);
 
   useEffect(() => {
     const user = getAuthUser();

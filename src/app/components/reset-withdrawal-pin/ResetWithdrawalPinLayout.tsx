@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import WalletApi from "@/app/api/wallet";
 import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
+import CustomButton from "@/app/utils/CustomBtn";
 
 const emailSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -83,7 +84,7 @@ export default function ResetWithdrawalPinLayout() {
               id="email"
               type="email"
               className={classNames(
-                `w-full border rounded-xl text-sm px-4 py-4 focus:outline-none outline-none focus:ring-2 focus:ring-transparent mt-2`,
+                `w-full border rounded-xl md:max-w-2xl  text-sm px-4 py-4 focus:outline-none outline-none focus:ring-2 focus:ring-transparent mt-2`,
                 errors.email ? "border-red-500" : "border-gray-400"
               )}
               placeholder="Johndoe@samplemail.com"
@@ -99,24 +100,15 @@ export default function ResetWithdrawalPinLayout() {
               </p>
             )}
           </div>
-          <motion.button
+
+          <CustomButton
             type="submit"
-            className="w-full cursor-pointer bg-[#17478B] hover:bg-[#133a6e] text-white text-lg font-semibold py-4 rounded-full mt-8 transition-colors duration-200 flex items-center justify-center"
-            whileTap={{
-              scale: 0.9,
-              transition: { type: "spring", stiffness: 200, damping: 15 },
-            }}
+            className=" md:max-w-2xl w-full mt-5 md:mt-10"
             disabled={loading}
+            loader={loading}
           >
-            {loading ? (
-              <span className="flex items-center gap-2 justify-center">
-                <div className=" size-5 animate-spin rounded-full border-b-2 border-white" />
-                Sending...
-              </span>
-            ) : (
-              "Send OTP"
-            )}
-          </motion.button>
+            Send OTP
+          </CustomButton>
         </form>
       </motion.div>
     </div>

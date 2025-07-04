@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   CorrectCircleIcon,
   EraserIcon,
-  // TimerIcon,
+  TimerIcon,
   WrongCircleIcon,
 } from "@/app/icons/icons";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
@@ -62,8 +62,9 @@ function GameScreen({ setUserTime }: Props) {
   //Sounds
   const correctSoundRef = useRef<HTMLAudioElement | null>(null);
   const wrongSoundRef = useRef<HTMLAudioElement | null>(null);
+
   useEffect(() => {
-    if (liveGameData?.questions?.length) {
+    if (liveGameData?.questions?.length && shuffledQuestions.length < 9) {
       const questionsWithIndex = (liveGameData.questions as Question[]).map(
         (q, index) => ({
           ...q,
@@ -73,7 +74,7 @@ function GameScreen({ setUserTime }: Props) {
       const shuffled = shuffleArray(questionsWithIndex);
       setShuffledQuestions(shuffled);
     }
-  }, [liveGameData?.questions]);
+  }, [liveGameData.questions, shuffledQuestions]);
 
   useEffect(() => {
     correctSoundRef.current = new Audio("/sounds/correct-answer.mp3");
@@ -269,9 +270,10 @@ function GameScreen({ setUserTime }: Props) {
                   setTimeout(() => setTimeLeft(remainingTime), 0);
                   return <span className="text-white">{timeLeft}</span>;
                 }} */}
-                {/* {({ remainingTime }) => (
-                  <span className="text-white">{remainingTime}</span>
-                )} */}
+                {({}) => (
+                  // <span className="text-white">{remainingTime}</span>
+                  <TimerIcon width={20} className="text-white" />
+                )}
               </CountdownCircleTimer>
             </div>
             <div className="mt-6 text-sm flex items-center justify-end">
