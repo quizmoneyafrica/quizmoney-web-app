@@ -130,8 +130,8 @@ export const WithdrawalPinForm = ({
 
         // Fetch updated wallet data
         const res = await WalletApi.fetchCustomerWallet();
-        if (res.data.result.wallet) {
-          store.dispatch(setWallet(res.data.result.wallet));
+        if (res.wallet) {
+          store.dispatch(setWallet(res.wallet));
         }
 
         store.dispatch(setWithdrawalPinModal(false));

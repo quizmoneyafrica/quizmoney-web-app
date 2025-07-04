@@ -121,7 +121,7 @@ export default function AddBankModal({
       });
       if (response?.updatedWallet) {
         const res = await WalletApi.fetchCustomerWallet();
-        dispatch(setWallet(res.data.result.wallet));
+        dispatch(setWallet(res.wallet));
         reset({
           accountNumber: "",
           bank: "",

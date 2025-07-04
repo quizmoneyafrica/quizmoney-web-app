@@ -98,8 +98,8 @@ export default function TransactionHistory(): React.JSX.Element {
   //   const fetchWallet = async () => {
   //     try {
   //       const res = await WalletApi.fetchCustomerWallet();
-  //       if (res.data.result.wallet) {
-  //         dispatch(setWallet(res.data.result.wallet));
+  //       if (res.wallet) {
+  //         dispatch(setWallet(res.wallet));
   //       }
   //     } catch (error) {
   //       console.log(error, "Wallet Error");
@@ -125,8 +125,8 @@ export default function TransactionHistory(): React.JSX.Element {
   //   (async () => {
   //     try {
   //       const response = await WalletApi.listBanks();
-  //       if (response.data.result?.data) {
-  //         dispatch(setBanks(response.data.result?.data));
+  //       if (response?.data) {
+  //         dispatch(setBanks(response?.data));
   //       }
   //     } catch (error) {
   //       console.log(error, "ERROR FETCHING BANKS");
@@ -138,7 +138,7 @@ export default function TransactionHistory(): React.JSX.Element {
   //       const response = await WalletApi.fetchDedicatedAccount({
   //         email,
   //       });
-  //       if (response.data.result?.data) {
+  //       if (response?.data) {
   //         console.log(
   //           "============fetchDedicatedAccount========================"
   //         );

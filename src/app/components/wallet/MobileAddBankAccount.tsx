@@ -144,7 +144,7 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
       if (response?.updatedWallet) {
         // dispatch(setWalletLoading(true));
         const res = await WalletApi.fetchCustomerWallet();
-        dispatch(setWallet(res.data.result.wallet));
+        dispatch(setWallet(res.wallet));
         toast.success(response.data?.result?.message, {
           position: toastPosition,
         });

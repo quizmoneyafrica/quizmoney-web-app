@@ -103,12 +103,12 @@ export default function OtpVerificationModal({
         store.dispatch(setWalletLoading(true));
         const res = await WalletApi.fetchCustomerWallet();
 
-        if (res.data.result.wallet) {
-          store.dispatch(setWallet(res.data.result.wallet));
+        if (res.wallet) {
+          store.dispatch(setWallet(res.wallet));
         }
 
-        if (res.data.result.wallet) {
-          store.dispatch(setWallet(res.data.result.wallet));
+        if (res.wallet) {
+          store.dispatch(setWallet(res.wallet));
         }
 
         store.dispatch(setWithdrawalPinModal(false));

@@ -1,6 +1,5 @@
 import classNames from "classnames";
 import React from "react";
-import CustomImage from "./CustomImage";
 import { format, parseISO } from "date-fns";
 import { Transaction } from "@/app/store/walletSlice";
 import { formatNaira } from "@/app/utils/utils";

@@ -30,8 +30,8 @@ function HomeTab() {
           const res = await WalletApi.fetchCustomerWallet();
           console.log("WALLET: ", res);
 
-          if (res.data.result.wallet) {
-            dispatch(setWallet(res.data.result.wallet));
+          if (res?.wallet) {
+            dispatch(setWallet(res?.wallet));
           }
         } catch (error) {
           console.log(error, "Wallet Error");
