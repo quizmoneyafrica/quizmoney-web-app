@@ -37,7 +37,6 @@ function HomeQueries() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (nextGameData === null) return;
     let gameSubscription: any;
     let topGamersSubscription: any;
 
@@ -58,7 +57,7 @@ function HomeQueries() {
     const liveGameDataLiveQuery = async () => {
       const query = new Parse.Query("Game").equalTo(
         "objectId",
-        nextGameData.objectId
+        nextGameData?.objectId
       );
 
       gameSubscription = await liveQueryClient.subscribe(query);
