@@ -37,6 +37,7 @@ function HomeQueries() {
   }, [dispatch]);
 
   useEffect(() => {
+    if (!nextGameData.objectId) return;
     let gameSubscription: any;
     let topGamersSubscription: any;
 
