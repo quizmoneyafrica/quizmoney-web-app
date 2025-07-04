@@ -89,7 +89,7 @@ function HomeQueries() {
       if (gameSubscription) gameSubscription.unsubscribe();
       if (topGamersSubscription) topGamersSubscription.unsubscribe();
     };
-  }, [dispatch, fetchTopGamers]);
+  }, [dispatch, fetchTopGamers, nextGameData.objectId]);
   return null;
 }
 
