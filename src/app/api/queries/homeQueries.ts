@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { useAppDispatch } from "@/app/hooks/useAuth";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import { useCallback, useEffect } from "react";
 import { liveQueryClient } from "@/app/api/parse/parseClient";
 import Parse from "parse";
@@ -12,6 +12,7 @@ import {
 import UserAPI from "../userApi";
 
 function HomeQueries() {
+  const { nextGameData } = useAppSelector((state) => state.game);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -40,7 +41,14 @@ function HomeQueries() {
     let topGamersSubscription: any;
 
     const gameDataLiveQuery = async () => {
-      const query = new Parse.Query("Game");
+      const query = new Parse.Query("Game").equalTo(
+        "objectId",
+        nextGameData.objectId
+      );
+      // query.equalTo("completed", false);
+      // query.ascending("startDate");
+      // query.limit(1);
+
       gameSubscription = await liveQueryClient.subscribe(query);
 
       gameSubscription?.on("create", (object: Parse.Object) => {
