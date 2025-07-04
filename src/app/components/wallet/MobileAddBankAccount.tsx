@@ -99,8 +99,8 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
       // const isBVNVerified = await WalletApi.isBVNVerified();
       // console.log("isBVNVerified", isBVNVerified);
 
-      if (response?.data?.result?.status === "success") {
-        const { account_name, account_number } = response?.data?.result?.data;
+      if (response?.status === "success") {
+        const { account_name, account_number } = response?.data;
         const bankName =
           banks.find((item) => item?.code === data?.bankCode)?.name ?? "";
         addVerifiedAccount({
@@ -111,8 +111,8 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
       }
       console.log(response);
 
-      if (response?.data?.result?.status === "error") {
-        toast.error(`${response?.data?.result?.message}`, {
+      if (response?.status === "error") {
+        toast.error(`${response?.message}`, {
           position: toastPosition,
         });
       }
@@ -141,7 +141,7 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
           ...data,
         },
       });
-      if (response?.data?.result?.updatedWallet) {
+      if (response?.updatedWallet) {
         // dispatch(setWalletLoading(true));
         const res = await WalletApi.fetchCustomerWallet();
         dispatch(setWallet(res.data.result.wallet));

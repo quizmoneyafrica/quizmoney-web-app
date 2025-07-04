@@ -48,10 +48,8 @@ function HomeTab() {
           dispatch(setTransactionsLoading(true));
           const res = await WalletApi.fetchTransactions();
 
-          if (res?.data?.result?.groupedTransactions) {
-            dispatch(
-              setTransactions(res?.data?.result?.groupedTransactions ?? [])
-            );
+          if (res?.groupedTransactions) {
+            dispatch(setTransactions(res?.groupedTransactions ?? []));
           }
         } catch (error) {
           console.log(error, "Transaction Error");

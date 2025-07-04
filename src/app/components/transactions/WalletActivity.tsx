@@ -65,8 +65,11 @@ export default function WalletActivity(): React.ReactElement {
           page,
           limit: PAGE_SIZE,
         });
+        const data = res;
+        console.log("=================TRANSACTIONS===================");
+        console.log(JSON.stringify(res, null, 2));
+        console.log("=================TRANSACTIONS===================");
 
-        const data = res?.data?.result;
         if (data?.groupedTransactions) {
           dispatch(setTransactions(data?.groupedTransactions));
           setTotalPages(data?.totalPages || 1);

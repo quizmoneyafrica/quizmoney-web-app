@@ -65,10 +65,7 @@ export default function DepositModal({
         amount: `${numericAmount}`,
       });
 
-      if (
-        response?.data?.result?.status === "success" ||
-        response?.data.result?.data?.link
-      ) {
+      if (response?.status === "success" || response?.data.result?.data?.link) {
         onOpenChange(false);
         reset();
         setSelectedAmount(null);

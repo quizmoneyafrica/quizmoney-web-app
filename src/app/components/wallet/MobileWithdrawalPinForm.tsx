@@ -123,8 +123,8 @@ export const WithdrawalPinForm = ({
       const response = await WalletApi.createWithdrawalPin({
         pin,
       });
-      if (response?.data?.result?.updatedWallet) {
-        toast.success(response?.data?.result?.message, {
+      if (response?.updatedWallet) {
+        toast.success(response?.message, {
           position: toastPosition,
         });
 
@@ -158,8 +158,8 @@ export const WithdrawalPinForm = ({
         pin,
         bankAccount: withdrawalData?.bankAccount,
       });
-      if (response?.data?.result) {
-        toast.success(response?.data?.result.message, {
+      if (response) {
+        toast.success(response.message, {
           position: toastPosition,
         });
         store.dispatch(setWithdrawalPinModal(false));

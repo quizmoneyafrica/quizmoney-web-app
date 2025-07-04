@@ -87,8 +87,8 @@ export default function VerifyOtpLayout() {
         otp: refined,
         email: localEmail,
       });
-      if (response?.data?.result.data) {
-        toast.success(response?.data?.result?.message, {
+      if (response.data) {
+        toast.success(response?.message, {
           position: toastPosition,
         });
         route.push("/wallet/reset-pin/pin");
@@ -116,8 +116,8 @@ export default function VerifyOtpLayout() {
       console.log("====================================");
       console.log(JSON.stringify(response.data.data, null, 2));
       console.log("====================================");
-      if (response?.data?.result.data) {
-        toast.success(response?.data?.result?.message, {
+      if (response.data) {
+        toast.success(response?.message, {
           position: toastPosition,
         });
       }
