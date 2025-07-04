@@ -37,18 +37,12 @@ function HomeQueries() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (!nextGameData) return;
+    if (nextGameData === null) return;
     let gameSubscription: any;
     let topGamersSubscription: any;
 
     const gameDataLiveQuery = async () => {
-      const query = new Parse.Query("Game").equalTo(
-        "objectId",
-        nextGameData.objectId
-      );
-      // query.equalTo("completed", false);
-      // query.ascending("startDate");
-      // query.limit(1);
+      const query = new Parse.Query("Game");
 
       gameSubscription = await liveQueryClient.subscribe(query);
 
@@ -59,6 +53,18 @@ function HomeQueries() {
       gameSubscription?.on("update", (object: Parse.Object) => {
         // console.log("this object was updated: ", object.toJSON());
         dispatch(setNextGameData(object.toJSON()));
+      });
+    };
+    const liveGameDataLiveQuery = async () => {
+      const query = new Parse.Query("Game").equalTo(
+        "objectId",
+        nextGameData.objectId
+      );
+
+      gameSubscription = await liveQueryClient.subscribe(query);
+
+      gameSubscription?.on("update", (object: Parse.Object) => {
+        // console.log("this object was updated: ", object.toJSON());
         dispatch(setLiveGameData(object.toJSON()));
       });
     };
@@ -83,9 +89,11 @@ function HomeQueries() {
       console.log("LiveQuery connection reopened");
       gameDataLiveQuery();
       topGamersLiveQuery();
+      liveGameDataLiveQuery();
     });
     gameDataLiveQuery();
     topGamersLiveQuery();
+    liveGameDataLiveQuery();
     return () => {
       if (gameSubscription) gameSubscription.unsubscribe();
       if (topGamersSubscription) topGamersSubscription.unsubscribe();
