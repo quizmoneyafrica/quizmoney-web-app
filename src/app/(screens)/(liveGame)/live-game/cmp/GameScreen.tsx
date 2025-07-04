@@ -62,8 +62,9 @@ function GameScreen({ setUserTime }: Props) {
   //Sounds
   const correctSoundRef = useRef<HTMLAudioElement | null>(null);
   const wrongSoundRef = useRef<HTMLAudioElement | null>(null);
+
   useEffect(() => {
-    if (liveGameData?.questions?.length) {
+    if (liveGameData?.questions?.length && shuffledQuestions.length === 0) {
       const questionsWithIndex = (liveGameData.questions as Question[]).map(
         (q, index) => ({
           ...q,
@@ -73,7 +74,7 @@ function GameScreen({ setUserTime }: Props) {
       const shuffled = shuffleArray(questionsWithIndex);
       setShuffledQuestions(shuffled);
     }
-  }, [liveGameData?.questions]);
+  }, [liveGameData.questions, shuffledQuestions.length]);
 
   useEffect(() => {
     correctSoundRef.current = new Audio("/sounds/correct-answer.mp3");
