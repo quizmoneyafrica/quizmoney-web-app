@@ -37,7 +37,7 @@ function HomeQueries() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (!nextGameData.objectId) return;
+    if (!nextGameData) return;
     let gameSubscription: any;
     let topGamersSubscription: any;
 
@@ -90,7 +90,7 @@ function HomeQueries() {
       if (gameSubscription) gameSubscription.unsubscribe();
       if (topGamersSubscription) topGamersSubscription.unsubscribe();
     };
-  }, [dispatch, fetchTopGamers, nextGameData.objectId]);
+  }, [dispatch, fetchTopGamers, nextGameData]);
   return null;
 }
 
