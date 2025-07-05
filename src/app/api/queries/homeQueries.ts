@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { liveQueryClient } from "@/app/api/parse/parseClient";
 import Parse from "parse";
 import {
-  setLiveGameData,
+  // setLiveGameData,
   setNextGameData,
   setTopGamers,
 } from "@/app/store/gameSlice";
@@ -42,7 +42,7 @@ function HomeQueries() {
       gameSubscription?.on("update", (object: Parse.Object) => {
         // console.log("this object was updated: ", object.toJSON());
         dispatch(setNextGameData(object.toJSON()));
-        dispatch(setLiveGameData(object.toJSON()));
+        // dispatch(setLiveGameData(object.toJSON()));
       });
     };
 
