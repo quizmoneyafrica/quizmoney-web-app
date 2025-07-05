@@ -77,15 +77,15 @@ export default function ResetPinLayout() {
       const response = await WalletApi.createWithdrawalPin({
         pin: data.pin.join(""),
       });
-      if (response?.data?.result?.updatedWallet) {
+      if (response?.updatedWallet) {
         localStorage.removeItem("wallet-reset-email");
-        toast.success(response?.data?.result?.message, {
+        toast.success(response?.message, {
           position: toastPosition,
         });
 
         const res = await WalletApi.fetchCustomerWallet();
-        if (res.data.result.wallet) {
-          store.dispatch(setWallet(res.data.result.wallet));
+        if (res.wallet) {
+          store.dispatch(setWallet(res.wallet));
         }
         route.replace("/wallet");
       }
