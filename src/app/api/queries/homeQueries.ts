@@ -59,8 +59,6 @@ function HomeQueries() {
     };
 
     // Reconnect logic
-    liveQueryClient.on("open", null as any);
-    liveQueryClient.on("close", null as any);
     liveQueryClient.on("close", () => {
       console.warn("LiveQuery closed. Attempting reconnect...");
       setIsLiveQueryConnected(false);
@@ -79,8 +77,6 @@ function HomeQueries() {
     return () => {
       if (gameSubscription) gameSubscription.unsubscribe();
       if (topGamersSubscription) topGamersSubscription.unsubscribe();
-      liveQueryClient.on("open", null as any);
-      liveQueryClient.on("close", null as any);
     };
   }, [dispatch, fetchTopGamers, nextGameData]);
 
