@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { liveQueryClient } from "@/app/api/parse/parseClient";
 import Parse from "parse";
 import {
@@ -14,17 +14,7 @@ import UserAPI from "../userApi";
 function HomeQueries() {
   const { nextGameData } = useAppSelector((state) => state.game);
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        liveQueryClient.open();
-      }
-    };
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () =>
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-  }, []);
+  const [isLiveQueryConnected, setIsLiveQueryConnected] = useState(false);
 
   const fetchTopGamers = useCallback(async () => {
     try {
@@ -41,7 +31,7 @@ function HomeQueries() {
     let topGamersSubscription: any;
 
     const gameDataLiveQuery = async () => {
-      const query = new Parse.Query("Game");
+      const query = new Parse.Query("Game").descending("createdAt").limit(1);
 
       gameSubscription = await liveQueryClient.subscribe(query);
 
@@ -52,21 +42,10 @@ function HomeQueries() {
       gameSubscription?.on("update", (object: Parse.Object) => {
         // console.log("this object was updated: ", object.toJSON());
         dispatch(setNextGameData(object.toJSON()));
-      });
-    };
-    const liveGameDataLiveQuery = async () => {
-      const query = new Parse.Query("Game").equalTo(
-        "objectId",
-        nextGameData?.objectId
-      );
-
-      gameSubscription = await liveQueryClient.subscribe(query);
-
-      gameSubscription?.on("update", (object: Parse.Object) => {
-        // console.log("this object was updated: ", object.toJSON());
         dispatch(setLiveGameData(object.toJSON()));
       });
     };
+
     const topGamersLiveQuery = async () => {
       const query = new Parse.Query("Leaderboard");
       topGamersSubscription = await liveQueryClient.subscribe(query);
@@ -80,24 +59,50 @@ function HomeQueries() {
     };
 
     // Reconnect logic
+    liveQueryClient.on("open", null as any);
+    liveQueryClient.on("close", null as any);
     liveQueryClient.on("close", () => {
       console.warn("LiveQuery closed. Attempting reconnect...");
+      setIsLiveQueryConnected(false);
       setTimeout(() => liveQueryClient.open(), 3000);
     });
     liveQueryClient.on("open", () => {
       console.log("LiveQuery connection reopened");
       gameDataLiveQuery();
       topGamersLiveQuery();
-      liveGameDataLiveQuery();
+      setIsLiveQueryConnected(true);
     });
+
     gameDataLiveQuery();
     topGamersLiveQuery();
-    liveGameDataLiveQuery();
+
     return () => {
       if (gameSubscription) gameSubscription.unsubscribe();
       if (topGamersSubscription) topGamersSubscription.unsubscribe();
+      liveQueryClient.on("open", null as any);
+      liveQueryClient.on("close", null as any);
     };
   }, [dispatch, fetchTopGamers, nextGameData]);
+
+  useEffect(() => {
+    // const handleVisibilityChange = () => {
+    //   if (!document.hidden) {
+    //     liveQueryClient.open();
+    //   }
+    // };
+    const handleVisibilityChange = () => {
+      if (isLiveQueryConnected) {
+        console.log("LiveQuery already connected");
+        return;
+      }
+
+      console.log("Reopening LiveQuery after visibility regain");
+      liveQueryClient.open();
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, [isLiveQueryConnected]);
   return null;
 }
 
