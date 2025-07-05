@@ -39,9 +39,9 @@ export default function ResetWithdrawalPinLayout() {
       console.log("====================================");
       console.log(JSON.stringify(response.data.data, null, 2));
       console.log("====================================");
-      if (response?.data?.result.data) {
+      if (response.data) {
         localStorage.setItem("wallet-reset-email", data.email);
-        toast.success(response?.data?.result?.message, {
+        toast.success(response?.message, {
           position: toastPosition,
         });
         route.push(`/wallet/reset-pin/verify-otp`);

@@ -81,17 +81,14 @@ export default function WithdrawalAccounts() {
         },
       });
 
-      if (response?.data?.result) {
+      if (response) {
         // fetchWallet();
         setAccounts(
           accounts.filter((acc) => acc.uniqueId !== account.uniqueId)
         );
-        toast.success(
-          response?.data?.result.message || "Bank account deleted successfully",
-          {
-            position: toastPosition,
-          }
-        );
+        toast.success(response.message || "Bank account deleted successfully", {
+          position: toastPosition,
+        });
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -113,8 +110,8 @@ export default function WithdrawalAccounts() {
   //   try {
   //     store.dispatch(setWalletLoading(true));
   //     const res = await WalletApi.fetchCustomerWallet();
-  //     if (res.data.result.wallet) {
-  //       store.dispatch(setWallet(res.data.result.wallet));
+  //     if (res.wallet) {
+  //       store.dispatch(setWallet(res.wallet));
   //     }
   //   } catch (error) {
   //     console.log(error, "Wallet Error");

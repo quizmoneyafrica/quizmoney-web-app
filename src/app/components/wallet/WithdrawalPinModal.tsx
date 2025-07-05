@@ -95,20 +95,20 @@ export default function OtpVerificationModal({
       const response = await WalletApi.createWithdrawalPin({
         pin,
       });
-      if (response?.data?.data?.result?.updatedWallet) {
-        toast.success(response?.data?.data?.result?.message, {
+      if (response?.data?.updatedWallet) {
+        toast.success(response?.data?.message, {
           position: toastPosition,
         });
 
         store.dispatch(setWalletLoading(true));
         const res = await WalletApi.fetchCustomerWallet();
 
-        if (res.data.result.wallet) {
-          store.dispatch(setWallet(res.data.result.wallet));
+        if (res.wallet) {
+          store.dispatch(setWallet(res.wallet));
         }
 
-        if (res.data.result.wallet) {
-          store.dispatch(setWallet(res.data.result.wallet));
+        if (res.wallet) {
+          store.dispatch(setWallet(res.wallet));
         }
 
         store.dispatch(setWithdrawalPinModal(false));
@@ -136,8 +136,8 @@ export default function OtpVerificationModal({
         pin,
         bankAccount: withdrawalData?.bankAccount,
       });
-      if (response?.data?.result) {
-        toast.success(response?.data?.result.message, {
+      if (response) {
+        toast.success(response.message, {
           position: toastPosition,
         });
         store.dispatch(setWithdrawalPinModal(false));
