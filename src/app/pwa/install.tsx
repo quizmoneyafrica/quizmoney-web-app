@@ -36,7 +36,7 @@ const InstallAppButton: React.FC = () => {
   };
 
   if (!showPrompt) return null;
-
+  return null;
   return (
     <button
       onClick={handleInstall}

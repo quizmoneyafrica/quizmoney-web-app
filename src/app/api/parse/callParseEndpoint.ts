@@ -24,15 +24,18 @@ export const callParseEndpoint = async <T>(
   const data = await res.json();
 
   if (!res.ok || data.success === false) {
-    let error = new Error(data.error || "Unknown error");
-    // @ts-expect-error can be an
-    error.code = data.code;
+    const err = new Error(data.error || data.message || "Unknown error") as any;
+    err.code = data.code;
+    err.raw = data;
+
+    // handle invalid session
     if (data.code === 209 && dispatch) {
       await handleInvalidSession(dispatch);
-      error = Error("Please Login to continue");
+      err.message = "Please login to continue.";
     }
-    throw error;
+
+    throw err;
   }
 
-  return data.result;
+  return data;
 };

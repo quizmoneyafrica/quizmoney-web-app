@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getBaseUrl, getParseHeaders } from "@/lib/parseHeaders";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -14,14 +15,15 @@ export async function POST(req: NextRequest) {
       method,
       headers: getParseHeaders(sessionToken),
       body: method === "GET" ? undefined : JSON.stringify(params),
+      next: { revalidate: 0 },
     });
 
     const data = await res.json();
     return NextResponse.json(data, { status: res.status });
-  } catch (err) {
+  } catch (err: any) {
     console.error("Proxy error:", err);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: err ?? "Internal error" },
       { status: 500 }
     );
   }

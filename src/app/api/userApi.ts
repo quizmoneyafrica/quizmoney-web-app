@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { store } from "../store/store";
 import {
   ApiResponse,
   InAppChangePasswordForm,
@@ -9,9 +10,7 @@ import {
   VerifyEmailForm,
   VerifyForgotPasswordOtpForm,
 } from "./interface";
-import { store } from "@/app/store/store";
 import { callParseEndpoint } from "./parse/callParseEndpoint";
-import { decryptData } from "../utils/crypto";
 import { callWithSessionToken } from "./parse/callWithSessionToken";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -26,9 +25,9 @@ const appHeaders = {
   "Content-Type": "application/json",
 };
 const getSessionTokenHeaders = () => {
-  const encrypted = store.getState().auth.userEncryptedData;
-  const user = encrypted ? decryptData(encrypted) : null;
-  const sessionToken = user?.sessionToken;
+  // const encrypted = store.getState().auth.accessToken;
+  // const user = encrypted ? decryptData(encrypted) : null;
+  const sessionToken = store.getState().auth.accessToken;
 
   return {
     "X-Parse-Application-Id": process.env.NEXT_PUBLIC_XParseApplicationId!,
@@ -39,8 +38,7 @@ const getSessionTokenHeaders = () => {
 };
 
 const getAuthUser = () => {
-  const encrypted = store.getState().auth.userEncryptedData;
-  const user = encrypted ? decryptData(encrypted) : null;
+  const user = store.getState().auth.user;
   return user;
 };
 
@@ -48,21 +46,18 @@ const UserAPI = {
   checkSessionTokenValidity(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("checkSessionTokenValidity");
   },
-  // login(form: LoginForm): Promise<ApiResponse> {
-  //   return callParseEndpoint<ApiResponse>("login", form);
-  // },
   login(form: LoginForm): Promise<ApiResponse> {
     return callParseEndpoint<ApiResponse>("auth/login", form);
   },
 
   signUp(form: SignUpForm): Promise<ApiResponse> {
-    return callParseEndpoint<ApiResponse>("signup", form);
+    return callParseEndpoint<ApiResponse>("auth/register", form);
   },
   verifyEmail(form: VerifyEmailForm): Promise<ApiResponse> {
-    return callParseEndpoint<ApiResponse>("verifyMail", form);
+    return callParseEndpoint<ApiResponse>("auth/otp/verify", form);
   },
   resendSignupOtp(email: string): Promise<ApiResponse> {
-    return callParseEndpoint<ApiResponse>("resendSignupOtp", { email });
+    return callParseEndpoint<ApiResponse>("auth/resend", { email });
   },
 
   sendFeedback(form: any, dispatch: any): Promise<ApiResponse> {
@@ -84,7 +79,7 @@ const UserAPI = {
   },
 
   forgotPassword(email: string): Promise<ApiResponse> {
-    return callParseEndpoint<ApiResponse>("forgotPassword", {
+    return callParseEndpoint<ApiResponse>("auth/password/forgot", {
       email,
     });
   },
@@ -94,7 +89,7 @@ const UserAPI = {
     return callParseEndpoint<ApiResponse>("forgotPassword", form);
   },
   resetPasswordAuth(form: ResetPasswordForm): Promise<ApiResponse> {
-    return callParseEndpoint<ApiResponse>("changePassword", form);
+    return callParseEndpoint<ApiResponse>("auth/password/reset", form);
   },
 
   inAppChangePassword(form: InAppChangePasswordForm): Promise<ApiResponse> {

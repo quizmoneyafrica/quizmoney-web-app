@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Container, Flex, Grid, Heading, Text } from "@radix-ui/themes";
 import React, { useEffect, useState } from "react";
@@ -12,7 +13,7 @@ import UserAPI from "@/app/api/userApi";
 import Link from "next/link";
 import { useAuth } from "@/app/hooks/useAuth";
 import { decryptData, encryptData } from "@/app/utils/crypto";
-import getDeviceId from "@/app/pwa/deviceId";
+// import getDeviceId from "@/app/pwa/deviceId";
 
 function VerifyEmailPage() {
   const searchParams = useSearchParams();
@@ -60,14 +61,15 @@ function VerifyEmailPage() {
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const password = sessionStorage.getItem("pass");
-    const deviceId = getDeviceId();
+    // const password = sessionStorage.getItem("pass");
+    // const deviceId = getDeviceId();
     const newValues = {
       email: email?.toLowerCase().trim() || "",
       otp: otpCode,
-      password: password,
-      deviceId: deviceId,
+      // password: password,
+      // deviceId: deviceId,
       ipAddress: ipAddress,
+      purpose: "EMAIL_VERIFICATION",
     };
     try {
       const response = await UserAPI.verifyEmail(newValues);
@@ -92,8 +94,9 @@ function VerifyEmailPage() {
       // 		position: "top-center",
       // 	}
       // );
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
+      console.log(err.raw);
+
       setLoading(false);
       toast.error(`${err.message}`, {
         position: toastPosition,
@@ -101,7 +104,20 @@ function VerifyEmailPage() {
     }
   };
   const handleResendOTP = async () => {
-    setCountdown(resendTimer);
+    try {
+      const res = await UserAPI.resendSignupOtp(email || "");
+      console.log(res);
+
+      toast.error("OTP sent successfully", {
+        position: toastPosition,
+      });
+      setCountdown(resendTimer);
+    } catch (err: any) {
+      console.log("ERROR Forgot Password", err);
+      toast.error(`${err.message}`, {
+        position: toastPosition,
+      });
+    }
   };
   return (
     <Grid columns={{ initial: "1", md: "2" }} className="h-screen">

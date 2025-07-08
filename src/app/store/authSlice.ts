@@ -1,41 +1,49 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { decryptData, encryptData } from "../utils/crypto";
-
+export interface UserObject {
+  email: string;
+  firstName: string;
+  lastName: string;
+}
 interface AuthState {
   isAuthenticated: boolean;
-  userEmail: string | null;
-  userEncryptedData?: string | null;
   rehydrated: boolean;
+  accessToken: string;
+  expiredAt: number;
+  refreshToken: string;
+  user: UserObject | null;
 }
 
 const initialState: AuthState = {
   isAuthenticated: false,
-  userEmail: null,
-  userEncryptedData: null,
   rehydrated: false,
+  accessToken: "",
+  expiredAt: 0,
+  refreshToken: "",
+  user: null,
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    login(state, action: PayloadAction<string>) {
+    login(state, action: PayloadAction<UserObject>) {
       state.isAuthenticated = true;
-      state.userEmail = action.payload;
-      state.userEncryptedData = action.payload;
+      state.user = action.payload;
     },
     logout(state) {
       state.isAuthenticated = false;
-      state.userEmail = null;
-      state.userEncryptedData = null;
+      state.user = null;
     },
     setRehydrated(state, action: PayloadAction<boolean>) {
       state.rehydrated = action.payload;
     },
-    updateUser(state, action: PayloadAction<object>) {
-      const currentDecrypted = decryptData(state.userEncryptedData || "") ?? {};
-      const updated = { ...currentDecrypted, ...action.payload };
-      state.userEncryptedData = encryptData(updated);
+    updateUser(state, action: PayloadAction<UserObject>) {
+      if (state.user) {
+        state.user = {
+          ...state.user,
+          ...action.payload,
+        };
+      }
     },
   },
 });

@@ -56,7 +56,7 @@ const StepThree: React.FunctionComponent<IStepThreeProps> = (props) => {
       email: formData.email,
       phone: formData.phone,
       country: formData.country,
-      gender: formData.gender,
+      gender: formData.gender.toUpperCase(),
       dob: formData.dob,
       password: formData.password,
       promotionalMails: formData.promotionalMails,
@@ -67,29 +67,10 @@ const StepThree: React.FunctionComponent<IStepThreeProps> = (props) => {
     sessionStorage.setItem("pass", formData.password);
     try {
       const response = await UserAPI.signUp(newValues);
-      const userData = response.result.newUser;
-      // const encryptedUser = encryptData(userData);
-      // loginUser(encryptedUser);
-      console.log("Signup with:", userData);
-      // toast.success(`Welcome ${capitalizeFirstLetter(userData?.firstName)}`, {
-      //   position: "top-center",
-      // });
-      // 🔐 Encrypt the user data
-      // const encryptedUser = encryptData(userData);
-      // console.log("Encrypted: ", encryptedUser);
-
-      // ✅ Dispatch to Redux
-      // loginUser(encryptedUser);
+      console.log("Signup with:", response);
 
       router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`);
-      // router.replace("/account-created");
 
-      // toast.success(
-      // 	`Welcome Back ${capitalizeFirstLetter(userData?.firstName)}`,
-      // 	{
-      // 		position: "top-center",
-      // 	}
-      // );
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.log("ERROR SIGNUP", err);
@@ -100,7 +81,6 @@ const StepThree: React.FunctionComponent<IStepThreeProps> = (props) => {
       setLoading(false);
     }
   };
-  console.log("DATA: ", formData);
 
   return (
     <form onSubmit={handleSignUp}>

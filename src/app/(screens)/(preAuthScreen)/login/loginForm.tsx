@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import UserAPI from "@/app/api/userApi";
 import NLRC from "@/app/components/follow/nlrc";
@@ -6,7 +7,7 @@ import { useAuth } from "@/app/hooks/useAuth";
 import useFcmToken from "@/app/hooks/useFcmToken";
 import { EyeIcon, EyeSlash, MailIcon } from "@/app/icons/icons";
 import getDeviceId from "@/app/pwa/deviceId";
-import { decryptData, encryptData } from "@/app/utils/crypto";
+import { decryptData } from "@/app/utils/crypto";
 import CustomButton from "@/app/utils/CustomBtn";
 import CustomTextField from "@/app/utils/CustomTextField";
 import {
@@ -69,58 +70,45 @@ const LoginForm = ({ loading, setLoading }: Props) => {
     }
     const deviceId = getDeviceId();
     const newValues = {
-      email: email.toLowerCase().trim(),
+      username: email.toLowerCase().trim(),
       password: password,
       deviceToken: token || "",
       deviceId: deviceId,
       ipAddress: ipAddress,
     };
     try {
-      const response = await UserAPI.login(newValues);
-      const userData = response;
-      console.log(response);
-      if (userData?.emailVerified) {
-        // Encrypt the user data
-        const encryptedUser = encryptData(userData);
-
-        // Dispatch to Redux
-        loginUser(encryptedUser);
-
+      const res = await UserAPI.login(newValues);
+      console.log("RES", res);
+      if (res.success) {
+        loginUser(res.data);
         router.replace("/home");
-
         toast.success(
-          `Welcome Back ${capitalizeFirstLetter(userData?.firstName)}`,
+          `Welcome Back ${capitalizeFirstLetter(res.data.user.firstName)}`,
           {
             position: "top-center",
           }
         );
-      } else {
-        sessionStorage.setItem("pass", password);
-        verifyEmail(userData?.email, userData?.firstName);
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      console.log("invalid", err);
-
-      toast.error(`${err.message}`, {
-        position: toastPosition,
-      });
+      console.log("INVALID", err.raw);
+      if (err.message === "Account deactivated") {
+        verifyEmail(email.toLowerCase().trim());
+      } else {
+        toast.error(`${err.message}`, {
+          position: toastPosition,
+        });
+      }
       setLoading(false);
     }
   };
 
-  const verifyEmail = async (email: string, firstName: string) => {
+  const verifyEmail = async (email: string) => {
     try {
       await UserAPI.resendSignupOtp(email);
       router.push(`/verify-email?email=${encodeURIComponent(email)}`);
-      toast.error(
-        `${capitalizeFirstLetter(firstName)} please verify your email.`,
-        {
-          position: "top-center",
-        }
-      );
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      toast.error("Please verify your account to continue.", {
+        position: toastPosition,
+      });
     } catch (err: any) {
       console.log("ERROR Forgot Password", err);
       toast.error(`${err.message}`, {
