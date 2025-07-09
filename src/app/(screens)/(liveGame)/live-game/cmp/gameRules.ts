@@ -20,3 +20,9 @@ export const gameRules = [
     description: "Winnings go to your wallet and can be withdrawn.",
   },
 ];
+export const gameFetch = [
+  {
+    title: "Start Game",
+    description: "Click on the button below Now!!",
+  },
+];
