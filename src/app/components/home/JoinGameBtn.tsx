@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import GameApi, { decryptGameData } from "@/app/api/game";
+import GameApi from "@/app/api/game";
 import { getAuthUser } from "@/app/api/userApi";
 import { useAppDispatch } from "@/app/hooks/useAuth";
-import { playAudio, setLiveGameData, setPhase } from "@/app/store/gameSlice";
+import { playAudio, setLobbyTime, setPhase } from "@/app/store/gameSlice";
 import { RootState } from "@/app/store/store";
 import { toastPosition } from "@/app/utils/utils";
 import { Spinner } from "@radix-ui/themes";
@@ -108,7 +108,8 @@ function JoinGameBtn() {
     );
 
     if (isInGame && diff > 0) {
-      dispatch(setLiveGameData(gameData));
+      // dispatch(setLiveGameData(gameData));
+      dispatch(setLobbyTime(gameData?.startDate.iso));
       dispatch(setPhase("lobby"));
       dispatch(playAudio());
       router.replace(`/live-game/${gameData.objectId}`);
@@ -117,8 +118,10 @@ function JoinGameBtn() {
       try {
         const res = await GameApi.registerForGame(gameData?.objectId, dispatch);
         const game = res.userData;
+        console.log(game);
 
-        dispatch(setLiveGameData(decryptGameData(game)));
+        // dispatch(setLiveGameData(decryptGameData(game)));
+        dispatch(setLobbyTime(gameData?.startDate.iso));
         dispatch(setPhase("lobby"));
         dispatch(playAudio());
         router.replace(`/live-game/${gameData.objectId}`);

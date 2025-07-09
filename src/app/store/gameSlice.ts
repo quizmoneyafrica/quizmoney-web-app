@@ -32,6 +32,7 @@ interface GameState {
   openLeaveGame: boolean;
   topGamers: TopGamersState[] | null;
   phase: GamePhase;
+  lobbyTime: string;
   audioShouldPlay: boolean;
 }
 
@@ -59,6 +60,7 @@ const initialState: GameState = {
   topGamers: null,
   phase: "loading",
   audioShouldPlay: false,
+  lobbyTime: "",
 };
 
 const gameSlice = createSlice({
@@ -95,6 +97,9 @@ const gameSlice = createSlice({
     setTopGamers(state, action: PayloadAction<TopGamersState[]>) {
       state.topGamers = action.payload;
     },
+    setLobbyTime(state, action: PayloadAction<string>) {
+      state.lobbyTime = action.payload;
+    },
     playAudio: (state) => {
       state.audioShouldPlay = true;
     },
@@ -117,5 +122,6 @@ export const {
   setPhase,
   playAudio,
   stopAudio,
+  setLobbyTime,
 } = gameSlice.actions;
 export default gameSlice.reducer;

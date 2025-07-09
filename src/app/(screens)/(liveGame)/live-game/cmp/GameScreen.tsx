@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
   CorrectCircleIcon,
@@ -9,12 +10,13 @@ import {
 } from "@/app/icons/icons";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import { Avatar, Flex } from "@radix-ui/themes";
-import GameApi from "@/app/api/game";
-import { playAudio, setPhase } from "@/app/store/gameSlice";
+import GameApi, { decryptGameData } from "@/app/api/game";
+import { playAudio, setLiveGameData, setPhase } from "@/app/store/gameSlice";
 import { getAuthUser } from "@/app/api/userApi";
 import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
 import { updateUser } from "@/app/store/authSlice";
+import CustomButton from "@/app/utils/CustomBtn";
 
 const formatTime = (ms: number) => {
   const minutes = Math.floor(ms / 60000);
@@ -40,6 +42,9 @@ type Props = {
   setUserTime: (userTime: string) => void;
 };
 function GameScreen({ setUserTime }: Props) {
+  const [fetchingQuestion, setFetchingQuestion] = useState<
+    "loading" | "error" | "loaded"
+  >("loading");
   const dispatch = useAppDispatch();
   const user = getAuthUser();
   const { liveGameData, audioShouldPlay } = useAppSelector(
@@ -63,8 +68,32 @@ function GameScreen({ setUserTime }: Props) {
   const correctSoundRef = useRef<HTMLAudioElement | null>(null);
   const wrongSoundRef = useRef<HTMLAudioElement | null>(null);
 
+  const fetchGame = useCallback(async () => {
+    setFetchingQuestion("loading");
+    try {
+      const res = await GameApi.fetchNextGame();
+      console.log("GAME", res);
+      const encryptedGame = res.errorData;
+      const game = decryptGameData(encryptedGame);
+      dispatch(setLiveGameData(game));
+      console.log("decryptGameData: ", game);
+      setFetchingQuestion("loaded");
+    } catch (err: any) {
+      console.log(err);
+      setFetchingQuestion("error");
+    }
+  }, [dispatch]);
+
   useEffect(() => {
-    if (liveGameData?.questions?.length && shuffledQuestions.length < 9) {
+    fetchGame();
+  }, [fetchGame]);
+
+  useEffect(() => {
+    if (
+      fetchingQuestion === "loaded" &&
+      liveGameData?.questions?.length &&
+      shuffledQuestions.length < 9
+    ) {
       const questionsWithIndex = (liveGameData.questions as Question[]).map(
         (q, index) => ({
           ...q,
@@ -74,13 +103,12 @@ function GameScreen({ setUserTime }: Props) {
       const shuffled = shuffleArray(questionsWithIndex);
       setShuffledQuestions(shuffled);
     }
-  }, [liveGameData.questions, shuffledQuestions]);
+  }, [fetchingQuestion, liveGameData?.questions, shuffledQuestions]);
 
   useEffect(() => {
     correctSoundRef.current = new Audio("/sounds/correct-answer.mp3");
     wrongSoundRef.current = new Audio("/sounds/wrong-answer.mp3");
   }, []);
-
   // --- User Timer Logic ---
   useEffect(() => {
     if (!currentQuestion) return;
@@ -219,6 +247,41 @@ function GameScreen({ setUserTime }: Props) {
     }
   };
 
+  if (fetchingQuestion === "loading") {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.25, ease: "easeInOut" }}
+      >
+        <div className="h-[100dvh] bg-primary-900 hero flex items-center  px-4">
+          <CustomButton loader width="full" size="md" type="button" />
+        </div>
+      </motion.div>
+    );
+  } else if (fetchingQuestion === "error") {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.25, ease: "easeInOut" }}
+      >
+        <div className="h-[100dvh] bg-primary-900 hero flex items-center  px-4">
+          <CustomButton
+            onClick={fetchGame}
+            width="full"
+            size="lg"
+            type="button"
+            variant="secondary"
+          >
+            Start Game Now
+          </CustomButton>
+        </div>
+      </motion.div>
+    );
+  }
   if (!currentQuestion)
     return (
       <motion.div
@@ -227,7 +290,17 @@ function GameScreen({ setUserTime }: Props) {
         exit={{ opacity: 0, y: -10 }}
         transition={{ duration: 0.25, ease: "easeInOut" }}
       >
-        <div className="min-h-[100dvh] bg-primary-900 hero flex flex-col items-center  px-4"></div>
+        <div className="h-[100dvh] bg-primary-900 hero flex items-center  px-4">
+          <CustomButton
+            onClick={fetchGame}
+            width="full"
+            size="lg"
+            type="button"
+            variant="secondary"
+          >
+            Start Game Now
+          </CustomButton>
+        </div>
       </motion.div>
     );
   return (
