@@ -9,7 +9,7 @@ import {
   WrongCircleIcon,
 } from "@/app/icons/icons";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
-import { Avatar, Flex } from "@radix-ui/themes";
+import { Avatar, Flex, Grid } from "@radix-ui/themes";
 import GameApi, { decryptGameData } from "@/app/api/game";
 import { playAudio, setLiveGameData, setPhase } from "@/app/store/gameSlice";
 import { getAuthUser } from "@/app/api/userApi";
@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
 import { updateUser } from "@/app/store/authSlice";
 import CustomButton from "@/app/utils/CustomBtn";
+import { gameFetch } from "./gameRules";
 
 const formatTime = (ms: number) => {
   const minutes = Math.floor(ms / 60000);
@@ -80,6 +81,9 @@ function GameScreen({ setUserTime }: Props) {
       setFetchingQuestion("loaded");
     } catch (err: any) {
       console.log(err);
+      toast.error("Please click on the button again", {
+        position: toastPosition,
+      });
       setFetchingQuestion("error");
     }
   }, [dispatch]);
@@ -256,7 +260,13 @@ function GameScreen({ setUserTime }: Props) {
         transition={{ duration: 0.25, ease: "easeInOut" }}
       >
         <div className="h-[100dvh] bg-primary-900 hero flex items-center  px-4">
-          <CustomButton loader width="full" size="md" type="button" />
+          <CustomButton
+            loader
+            width="full"
+            size="lg"
+            type="button"
+            variant="secondary"
+          />
         </div>
       </motion.div>
     );
@@ -269,15 +279,33 @@ function GameScreen({ setUserTime }: Props) {
         transition={{ duration: 0.25, ease: "easeInOut" }}
       >
         <div className="h-[100dvh] bg-primary-900 hero flex items-center  px-4">
-          <CustomButton
-            onClick={fetchGame}
-            width="full"
-            size="lg"
-            type="button"
-            variant="secondary"
-          >
-            Start Game Now
-          </CustomButton>
+          <Grid gap="3" className="w-full">
+            <div className=" bg-primary-50 text-center border-4 border-primary-500 rounded-[10px] px-4 py-4 space-y-4">
+              <h4 className="text-center text-error-900 font-bold">
+                Stay In App
+              </h4>
+              6
+              <div className="text-neutral-900 text-left space-y-4">
+                {gameFetch.map((rule, index) => (
+                  <div key={index}>
+                    <span className="font-semibold text-error-900">
+                      {index + 1}. {rule.title}
+                    </span>{" "}
+                    – {rule.description}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <CustomButton
+              onClick={fetchGame}
+              width="full"
+              size="lg"
+              type="button"
+              variant="secondary"
+            >
+              Start Game Now
+            </CustomButton>
+          </Grid>
         </div>
       </motion.div>
     );
@@ -291,15 +319,33 @@ function GameScreen({ setUserTime }: Props) {
         transition={{ duration: 0.25, ease: "easeInOut" }}
       >
         <div className="h-[100dvh] bg-primary-900 hero flex items-center  px-4">
-          <CustomButton
-            onClick={fetchGame}
-            width="full"
-            size="lg"
-            type="button"
-            variant="secondary"
-          >
-            Start Game Now
-          </CustomButton>
+          <Grid gap="3" className="w-full">
+            <div className=" bg-primary-50 text-center border-4 border-primary-500 rounded-[10px] px-4 py-4 space-y-4">
+              <h4 className="text-center text-error-900 font-bold">
+                Stay In App
+              </h4>
+
+              <div className="text-neutral-900 text-left space-y-4">
+                {gameFetch.map((rule, index) => (
+                  <div key={index}>
+                    <span className="font-semibold text-error-900">
+                      {index + 1}. {rule.title}
+                    </span>{" "}
+                    – {rule.description}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <CustomButton
+              onClick={fetchGame}
+              width="full"
+              size="lg"
+              type="button"
+              variant="secondary"
+            >
+              Start Game Now
+            </CustomButton>
+          </Grid>
         </div>
       </motion.div>
     );
