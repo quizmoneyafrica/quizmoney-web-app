@@ -59,7 +59,8 @@ function GameScreen({ setUserTime }: Props) {
   const currentQuestion = shuffledQuestions[currentIndex];
   const [shuffledOptions, setShuffledOptions] = useState<string[]>([]);
 
-  const [usedEraser, setUsedEraser] = useState(false);
+  const [eraserUsedAlready, setEraserUsedAlready] = useState(false);
+
   //countdown timer
   //game time used
   const [totalTimeUsed, setTotalTimeUsed] = useState(0);
@@ -160,7 +161,7 @@ function GameScreen({ setUserTime }: Props) {
             questionNumber.toString(),
             "User missed it",
             totalTimeFormatted,
-            usedEraser
+            false
           );
         } catch (error) {
           console.log(error);
@@ -175,7 +176,7 @@ function GameScreen({ setUserTime }: Props) {
           questionNumber.toString(),
           "User missed it",
           totalTimeFormatted,
-          usedEraser
+          false
         );
       } catch (error) {
         console.log(error);
@@ -202,11 +203,12 @@ function GameScreen({ setUserTime }: Props) {
     let toSaveAnswer = option;
     const newAnswers = [...selectedAnswers];
 
+    let usedEraserThisQuestion = false;
     // --- answer logic ---
     if (isCorrect) {
       correctSoundRef.current?.play();
       newAnswers[currentIndex] = option;
-    } else if (!usedEraser && user?.erasers > 0) {
+    } else if (!eraserUsedAlready && user?.erasers > 0) {
       toSaveAnswer = currentQuestion.correctAnswer;
       correctSoundRef.current?.play();
       newAnswers[currentIndex] = currentQuestion.correctAnswer;
@@ -217,7 +219,8 @@ function GameScreen({ setUserTime }: Props) {
 
       await GameApi.updateErasers(1);
       dispatch(updateUser({ erasers: user.erasers - 1 }));
-      setUsedEraser(true);
+      setEraserUsedAlready(true);
+      usedEraserThisQuestion = true;
     } else {
       wrongSoundRef.current?.play();
       newAnswers[currentIndex] = option;
@@ -233,7 +236,7 @@ function GameScreen({ setUserTime }: Props) {
         questionNumber.toString(),
         toSaveAnswer,
         totalTimeFormatted,
-        usedEraser
+        usedEraserThisQuestion
       );
     } catch (error) {
       console.log(error);
@@ -243,7 +246,7 @@ function GameScreen({ setUserTime }: Props) {
           questionNumber.toString(),
           toSaveAnswer,
           totalTimeFormatted,
-          usedEraser
+          usedEraserThisQuestion
         );
       } catch (error) {
         console.log(error);

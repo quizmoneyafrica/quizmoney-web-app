@@ -293,7 +293,7 @@ export default function TransactionHistory(): React.JSX.Element {
     return (
       <div className="space-y-2 md:space-y-3 pb-3 md:pb-5 mt-3 md:mt-5">
         <div className="px-3 md:px-4">
-          <h2 className="text-sm md:text-base font-semibold text-[#3B3B3B]">
+          <h2 className="text-sm md:text-base font-semibold text-[#3B3B3B] text-left">
             {title}
           </h2>
         </div>
