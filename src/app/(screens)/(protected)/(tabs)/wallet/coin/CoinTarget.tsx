@@ -5,7 +5,8 @@ import { motion } from "framer-motion";
 function CoinTarget() {
   const { balance } = useAppSelector((state) => state.coin);
   const targetStep = 1500;
-  const nextTarget = Math.ceil(balance / targetStep) * targetStep;
+  const nextTarget =
+    balance > 0 ? Math.ceil(balance / targetStep) * targetStep : targetStep;
   const prevTarget = nextTarget - targetStep;
   const progress = ((balance - prevTarget) / targetStep) * 100;
   return (
