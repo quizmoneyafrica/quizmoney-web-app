@@ -24,6 +24,7 @@ export interface UserProfile {
 export interface UserLastGameStats {
   position: number | null;
   prize: number;
+  coins: number;
   totalTime: string;
   totalCorrect: number;
   result: QuestionResult[];

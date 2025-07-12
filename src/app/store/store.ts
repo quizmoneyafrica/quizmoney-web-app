@@ -3,6 +3,7 @@ import authReducer from "./authSlice";
 import walletReducer from "./walletSlice";
 import gameReducer from "./gameSlice";
 import demoReducer from "./demoSlice";
+import coinReducer from "./coinSlice";
 import notificationReducer from "./notificationSlice";
 import leaderboardReducer from "./leaderboardSlice";
 import storeReducer from "./storeSlice";
@@ -49,6 +50,7 @@ export const store = configureStore({
     notifications: notificationReducer,
     leaderboard: leaderboardReducer,
     store: storeReducer,
+    coin: coinReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
