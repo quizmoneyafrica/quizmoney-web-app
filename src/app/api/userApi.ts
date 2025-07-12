@@ -121,7 +121,7 @@ const UserAPI = {
     return callWithSessionToken<ApiResponse>("fetchCoinTransactions", {});
   },
   redeemCoin(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("redeemCoin", {});
+    return callWithSessionToken<ApiResponse>("redeemCoinPoints", {});
   },
 };
 

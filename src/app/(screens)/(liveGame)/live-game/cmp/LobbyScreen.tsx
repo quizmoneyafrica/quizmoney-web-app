@@ -34,9 +34,9 @@ function LobbyScreen() {
       }
 
       if (diff <= -1) {
-        clearInterval(intervalRef.current!);
         dispatch(stopAudio());
         dispatch(setPhase("playing"));
+        clearInterval(intervalRef.current!);
       }
     };
 
