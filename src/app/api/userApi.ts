@@ -8,7 +8,6 @@ import {
   SignUpForm,
   UpdateUserForm,
   VerifyEmailForm,
-  VerifyForgotPasswordOtpForm,
 } from "./interface";
 import { callParseEndpoint } from "./parse/callParseEndpoint";
 import { callWithSessionToken } from "./parse/callWithSessionToken";
@@ -38,8 +37,8 @@ const getSessionTokenHeaders = () => {
 };
 
 const getAuthUser = () => {
-  const user = store.getState().auth.user;
-  return user;
+  const state = store.getState();
+  return state.auth.user;
 };
 
 const UserAPI = {
@@ -83,17 +82,18 @@ const UserAPI = {
       email,
     });
   },
-  verifyForgotPasswordOtp(
-    form: VerifyForgotPasswordOtpForm
-  ): Promise<ApiResponse> {
-    return callParseEndpoint<ApiResponse>("forgotPassword", form);
-  },
+
   resetPasswordAuth(form: ResetPasswordForm): Promise<ApiResponse> {
     return callParseEndpoint<ApiResponse>("auth/password/reset", form);
   },
 
   inAppChangePassword(form: InAppChangePasswordForm): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("inAppChangePassword", form);
+    return callWithSessionToken<ApiResponse>(
+      "customers/password/change",
+      form,
+      {},
+      "PATCH"
+    );
   },
 
   updateUser(form: UpdateUserForm): Promise<ApiResponse> {

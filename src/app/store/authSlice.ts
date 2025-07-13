@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
 export interface UserObject {
   email: string;
   firstName: string;
@@ -22,18 +23,25 @@ const initialState: AuthState = {
   user: null,
 };
 
+export interface LoginPayload {
+  accessToken: string;
+  refreshToken: string;
+  expiredAt: number;
+  user: UserObject;
+}
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    login(state, action: PayloadAction<UserObject>) {
-      state.isAuthenticated = true;
-      state.user = action.payload;
+    login(state, action: PayloadAction<LoginPayload>) {
+      Object.assign(state, {
+        isAuthenticated: true,
+        ...action.payload,
+      });
     },
-    logout(state) {
-      state.isAuthenticated = false;
-      state.user = null;
-    },
+    logout: (state) => Object.assign(state, initialState),
+
     setRehydrated(state, action: PayloadAction<boolean>) {
       state.rehydrated = action.payload;
     },

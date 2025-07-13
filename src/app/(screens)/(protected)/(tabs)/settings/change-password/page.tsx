@@ -64,9 +64,15 @@ const Page = () => {
   const handleChangePassword = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+    const newValues = {
+      oldPassword: formData.oldPassword,
+      newPassword: formData.newPassword,
+    };
     try {
-      const res = await UserAPI.inAppChangePassword(formData);
+      const res = await UserAPI.inAppChangePassword(newValues);
       console.log("Password Changed", res);
+      toast.success(res.data.message, { position: toastPosition });
+      setFormData(initialForm);
       setLoading(false);
     } catch (error: any) {
       console.log(error);

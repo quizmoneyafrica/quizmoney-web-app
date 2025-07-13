@@ -72,7 +72,9 @@ const LoginForm = ({ loading, setLoading }: Props) => {
     const newValues = {
       username: email.toLowerCase().trim(),
       password: password,
-      deviceToken: token || "",
+      deviceToken:
+        token ||
+        "e-qBtIuu3kuRpkw5yKzU1g:APA91bGUzqB0UIG9zb4XKRGHkIL6ZCkE7ZON1UMWpWMfydTI0NEchht5zbM3e4kzetSsKNwaYau3KUhMACCSoohQWa0QkGLGGbRFwYunh0_h_CGfdrnD-Ww",
       deviceId: deviceId,
       ipAddress: ipAddress,
     };

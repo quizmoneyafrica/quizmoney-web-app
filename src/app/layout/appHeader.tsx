@@ -13,29 +13,27 @@ import {
   PlusIcon,
   SupportIcon,
 } from "../icons/icons";
-import { useAppSelector } from "../hooks/useAuth";
-import { decryptData } from "../utils/crypto";
+import { useAuth } from "../hooks/useAuth";
 import { DropdownMenu } from "radix-ui";
 import LogoutDialog from "../components/logout/logout";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import NotificationApi from "../api/notification";
 import { setNotifications } from "../store/notificationSlice";
-import Parse, { liveQueryClient } from "@/app/api/parse/parseClient";
+// import Parse, { liveQueryClient } from "@/app/api/parse/parseClient";
 
 function AppHeader() {
   const dispatch = useDispatch();
   const pathname = usePathname();
   const excludedPaths = ["/practice-game"];
-  const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
   const router = useRouter();
   const [openLogout, setOpenLogout] = useState(false);
   const unreadCount = useSelector((state: RootState) => {
     const list = state.notifications.notifications;
     return Array.isArray(list) ? list.filter((n) => !n.read).length : 0;
   });
-  const user = encrypted ? decryptData(encrypted) : null;
-  console.log(user);
+  const { user } = useAuth();
+  console.log("User", user);
 
   const fetchNotifications = useCallback(async () => {
     try {
@@ -50,39 +48,40 @@ function AppHeader() {
     fetchNotifications();
   }, [fetchNotifications]);
 
-  useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let subscription: any;
-    const NotificationLiveQuery = async () => {
-      const userPointer = {
-        __type: "Pointer",
-        className: "_User",
-        objectId: user?.objectId,
-      };
+  // useEffect(() => {
+  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //   let subscription: any;
+  //   const NotificationLiveQuery = async () => {
+  //     const userPointer = {
+  //       __type: "Pointer",
+  //       className: "_User",
+  //       objectId: user?.objectId,
+  //     };
 
-      const query = new Parse.Query("Notification");
-      query.equalTo("user", userPointer);
-      subscription = await liveQueryClient.subscribe(query);
+  //     const query = new Parse.Query("Notification");
+  //     query.equalTo("user", userPointer);
+  //     subscription = await liveQueryClient.subscribe(query);
 
-      subscription?.on("create", () => {
-        // console.log("this object was created: ", object);
-        fetchNotifications();
-      });
-      subscription?.on("update", () => {
-        // console.log("this object was updated: ", object);
-        fetchNotifications();
-      });
-      subscription?.on("delete", () => {
-        // console.log("this object was deleted: ", object);
-        fetchNotifications();
-      });
-    };
+  //     subscription?.on("create", () => {
+  //       // console.log("this object was created: ", object);
+  //       fetchNotifications();
+  //     });
+  //     subscription?.on("update", () => {
+  //       // console.log("this object was updated: ", object);
+  //       fetchNotifications();
+  //     });
+  //     subscription?.on("delete", () => {
+  //       // console.log("this object was deleted: ", object);
+  //       fetchNotifications();
+  //     });
+  //   };
 
-    NotificationLiveQuery();
-    return () => {
-      if (subscription) subscription.unsubscribe();
-    };
-  }, [fetchNotifications, user?.objectId]);
+  //   NotificationLiveQuery();
+  //   return () => {
+  //     if (subscription) subscription.unsubscribe();
+  //   };
+  // }, [fetchNotifications, user?.objectId]);
+
   if (excludedPaths.includes(pathname)) return null;
 
   const lastSegment =
@@ -114,7 +113,7 @@ function AppHeader() {
             )}
             <span className=" lg:flex">
               {lastSegment === "Home"
-                ? `Welcome, ${user?.firstName} 👋`
+                ? `Welcome, ${user?.firstName || ""} 👋`
                 : isVerifyOtp()
                 ? " Reset Pin"
                 : isPin()
@@ -154,7 +153,7 @@ function AppHeader() {
                 <Flex align="center" gap="2">
                   <Avatar
                     src={user?.avatar}
-                    fallback={user?.firstName?.charAt(0).toUpperCase()}
+                    fallback={user?.firstName?.charAt(0).toUpperCase() || ""}
                     radius="full"
                     className="bg-primary-50"
                   />

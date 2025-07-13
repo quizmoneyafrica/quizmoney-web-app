@@ -35,8 +35,10 @@ export interface VerifyForgotPasswordOtpForm {
 }
 //verifyForgotPasswordOtp interface
 export interface ResetPasswordForm {
-  email: string;
+  // email: string;
+  code: string;
   password: string;
+  confirmPassword: string;
 }
 
 export interface InAppChangePasswordForm {

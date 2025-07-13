@@ -21,6 +21,7 @@ const initialForm = {
 function Page() {
   const searchParams = useSearchParams();
   const email = searchParams.get("email");
+  const code = searchParams.get("code");
   const router = useRouter();
   if (!email) {
     router.replace("/forgot-password");
@@ -59,8 +60,10 @@ function Page() {
     e.preventDefault();
     setLoading(true);
     const newValues = {
-      email: email?.toLowerCase().trim() || "",
+      // email: email?.toLowerCase().trim() || "",
+      code: code || "",
       password: resetForm.password,
+      confirmPassword: resetForm.password,
     };
 
     try {

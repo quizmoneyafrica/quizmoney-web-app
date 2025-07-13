@@ -47,9 +47,13 @@ function Page() {
       otp: otpCode,
     };
     try {
-      await UserAPI.verifyForgotPasswordOtp(newValues);
+      await UserAPI.verifyEmail(newValues);
 
-      router.push(`/reset-password?email=${encodeURIComponent(email || "")}`);
+      router.push(
+        `/reset-password?email=${encodeURIComponent(
+          email || ""
+        )}&code=${encodeURIComponent(otpCode || "")}`
+      );
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {

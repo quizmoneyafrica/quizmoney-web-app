@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   try {
     const { endpoint, method = "POST", ...params } = await req.json();
-    const sessionToken = req.headers.get("x-session-token") ?? undefined;
+    const accessToken = req.headers.get("Authorization") ?? undefined;
 
     if (!endpoint) {
       return NextResponse.json({ error: "Missing endpoint" }, { status: 400 });
@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     const BASE_URL = getBaseUrl();
     const res = await fetch(`${BASE_URL}/${endpoint}`, {
       method,
-      headers: getParseHeaders(sessionToken),
+      headers: getParseHeaders(accessToken),
       body: method === "GET" ? undefined : JSON.stringify(params),
       next: { revalidate: 0 },
     });

@@ -5,14 +5,14 @@ export const callParseEndpoint = async <T>(
   endpoint: string,
   body?: any,
   dispatch?: any,
-  sessionToken?: string,
+  accessToken?: string,
   method: string = "POST"
 ): Promise<T> => {
   const res = await fetch("/api/parse", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...(sessionToken && { "x-session-token": sessionToken }),
+      ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
     },
     body: JSON.stringify({
       endpoint,

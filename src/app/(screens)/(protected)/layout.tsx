@@ -1,13 +1,13 @@
 // import AppLiveQueries from "@/app/api/queries/AppLiveQueries";
 import InstallModal from "@/app/components/install-modal/installModal";
 import SocialLinksDrawer from "@/app/components/updateAccount/socialLinksDrawer";
-// import AppHeader from "@/app/layout/appHeader";
+import AppHeader from "@/app/layout/appHeader";
 import BottomNavigation from "@/app/layout/BottomNavigation";
 import SidebarNav from "@/app/layout/SidebarNav";
 import ProtectedRoute from "@/app/security/protectedRoute";
 import { isIosPwaInstalled } from "@/app/utils/utils";
 import "react-circular-progressbar/dist/styles.css";
-import PrivacyPolicyUpdate from "@/app/components/privacyPolicyUpdate/privacyPolicyUpdate";
+// import PrivacyPolicyUpdate from "@/app/components/privacyPolicyUpdate/privacyPolicyUpdate";
 
 export default function ProtectedLayout({
   children,
@@ -19,7 +19,7 @@ export default function ProtectedLayout({
       {/* <AppLiveQueries /> */}
       <SocialLinksDrawer />
       {!isIosPwaInstalled() && <InstallModal />}
-      <PrivacyPolicyUpdate />
+      {/* <PrivacyPolicyUpdate /> */}
       <ProtectedRoute>
         <div
           className="lg:h-screen grid grid-cols-1 lg:grid-cols-[250px_1fr] 
@@ -28,7 +28,7 @@ export default function ProtectedLayout({
           <SidebarNav />
           <main className="grid-in-content bg-[#F7F7F7] min-h-screen lg:h-screen">
             <div className="h-full overflow-y-auto px-6 pt-4 pb-24 lg:pb-6">
-              {/* <AppHeader /> */}
+              <AppHeader />
               {children}
             </div>
           </main>

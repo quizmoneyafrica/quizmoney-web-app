@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { decryptData } from "@/app/utils/crypto";
 import { callParseEndpoint } from "./callParseEndpoint";
 import { store } from "@/app/store/store";
 
@@ -9,13 +8,10 @@ export const callWithSessionToken = async <T>(
   dispatch?: any,
   method: string = "POST"
 ): Promise<T> => {
-  const encrypted = store.getState().auth.userEncryptedData;
-  const user = encrypted ? decryptData(encrypted) : null;
-  const sessionToken = user?.sessionToken;
-
-  if (!sessionToken) {
-    throw new Error("User session token not found");
+  const accessToken = store.getState().auth.accessToken;
+  if (!accessToken) {
+    throw new Error("Access token not found");
   }
 
-  return callParseEndpoint<T>(endpoint, body, dispatch, sessionToken, method);
+  return callParseEndpoint<T>(endpoint, body, dispatch, accessToken, method);
 };
