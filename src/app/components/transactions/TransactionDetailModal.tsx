@@ -133,18 +133,13 @@ export function TransactionDetailsModal({
                             ? "text-green-600"
                             : transaction.status === "pending"
                             ? "text-amber-500"
-                            : transaction.status === "failed"
+                            : transaction.status === "failed" ||
+                              transaction.status === "rejected"
                             ? "text-red-600"
                             : "text-green-600"
                         }`}
                       >
-                        {transaction.status === "successful"
-                          ? "Successful"
-                          : transaction.status === "pending"
-                          ? "Pending"
-                          : transaction.status === "failed"
-                          ? "Failed"
-                          : "Successful"}
+                        {transaction.status}
                       </span>
                     </div>
                     <div className="border-b border-dashed border-[#17478B] mt-4"></div>
