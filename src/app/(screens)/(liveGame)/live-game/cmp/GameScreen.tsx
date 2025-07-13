@@ -208,7 +208,7 @@ function GameScreen({ setUserTime }: Props) {
     if (isCorrect) {
       correctSoundRef.current?.play();
       newAnswers[currentIndex] = option;
-    } else if (!eraserUsedAlready && user?.erasers > 0) {
+    } else if (!isCorrect && !eraserUsedAlready && user?.erasers > 0) {
       toSaveAnswer = currentQuestion.correctAnswer;
       correctSoundRef.current?.play();
       newAnswers[currentIndex] = currentQuestion.correctAnswer;
