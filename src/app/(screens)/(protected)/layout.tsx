@@ -8,7 +8,7 @@ import ProtectedRoute from "@/app/security/protectedRoute";
 import { isIosPwaInstalled } from "@/app/utils/utils";
 import "react-circular-progressbar/dist/styles.css";
 import CheckSession from "./checkSession";
-import PrivacyPolicyUpdate from "@/app/components/privacyPolicyUpdate/privacyPolicyUpdate";
+// import PrivacyPolicyUpdate from "@/app/components/privacyPolicyUpdate/privacyPolicyUpdate";
 
 export default function ProtectedLayout({
   children,
@@ -21,7 +21,7 @@ export default function ProtectedLayout({
       <AppLiveQueries />
       <SocialLinksDrawer />
       {!isIosPwaInstalled() && <InstallModal />}
-      <PrivacyPolicyUpdate />
+{/*       <PrivacyPolicyUpdate /> */}
       <ProtectedRoute>
         <div
           className="lg:h-screen grid grid-cols-1 lg:grid-cols-[250px_1fr] 
