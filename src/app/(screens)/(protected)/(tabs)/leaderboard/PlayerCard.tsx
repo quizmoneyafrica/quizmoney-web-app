@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAppDispatch } from "@/app/hooks/useAuth";
+import { QMCoin } from "@/app/icons/icons";
 import {
   AllTimeLeaderboardUser,
   LeaderboardRanking,
@@ -35,6 +36,8 @@ const PlayerCard = ({ player, activeTab }: PlayerCardProps) => {
 
   const lastGamePlayer = isLastGamePlayer(player) ? player : null;
   const allTimePlayer = !isLastGamePlayer(player) ? player : null;
+
+  console.log("lastGamePlayer", lastGamePlayer);
 
   return (
     <>
@@ -130,10 +133,26 @@ const PlayerCard = ({ player, activeTab }: PlayerCardProps) => {
 
         <Table.Cell className="">
           <div className="flex items-center h-full gap-1 text-nowrap">
-            <p className="inline-block text-primary-800 h-fit bg-primary-100 rounded-md px-2 md:px-4 py-1 md:py-2 text-sm md:text-base">
-              {activeTab === "lastGame"
-                ? formatNaira(lastGamePlayer?.prize ?? 0, true)
-                : formatNaira(allTimePlayer?.amountWon ?? 0, true)}
+            <p
+              className={`inline-block text-primary-800 h-fit ${
+                lastGamePlayer && lastGamePlayer?.coins > 0
+                  ? "bg-primary-50"
+                  : "bg-primary-100"
+              } rounded-md px-2 md:px-4 py-1 md:py-2 text-sm md:text-base`}
+            >
+              {activeTab === "lastGame" ? (
+                <>
+                  {lastGamePlayer && lastGamePlayer?.coins > 0 ? (
+                    <span className="flex items-center gap-2 text-positive-900 justify-center">
+                      <QMCoin width={20} height={20} />+{lastGamePlayer?.coins}
+                    </span>
+                  ) : (
+                    formatNaira(lastGamePlayer?.prize ?? 0, true)
+                  )}{" "}
+                </>
+              ) : (
+                formatNaira(allTimePlayer?.amountWon ?? 0, true)
+              )}
             </p>
           </div>
         </Table.Cell>

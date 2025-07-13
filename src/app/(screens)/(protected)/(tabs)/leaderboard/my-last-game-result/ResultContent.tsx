@@ -22,6 +22,7 @@ import Image from "next/image";
 import React from "react";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 import { useSelector } from "react-redux";
+import { QMCoin } from "@/app/icons/icons";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -61,7 +62,8 @@ const ResultContent = () => {
     );
   }
 
-  const { totalCorrect, totalTime, prize, result } = lastGame.userLastGameStats;
+  const { totalCorrect, totalTime, prize, result, coins } =
+    lastGame.userLastGameStats;
 
   return (
     <motion.main
@@ -124,9 +126,14 @@ const ResultContent = () => {
             label: "Play Time",
           },
           {
-            icon: <Wallet size={16} className="text-primary-700" />,
-            value: formatNaira(Number(prize), true),
-            label: "Total Earned",
+            icon:
+              coins > 0 ? (
+                <QMCoin />
+              ) : (
+                <Wallet size={16} className="text-primary-700" />
+              ),
+            value: coins > 0 ? coins : formatNaira(Number(prize), true),
+            label: coins > 0 ? "Coins Earned" : "Total Earned",
           },
         ].map((stat, index) => (
           <motion.div

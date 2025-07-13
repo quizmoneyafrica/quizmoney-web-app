@@ -11,7 +11,7 @@ function KickedOut() {
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.25, ease: "easeInOut" }}
     >
-      <div className="min-h-[100dvh] bg-primary-900 hero flex flex-col items-center  px-4">
+      <div className="min-h-[100dvh] bg-primary-900 hero flex flex-col items-center justify-center  px-4">
         <div className="w-full h-full mx-auto max-w-lg space-y-6 grid grid-rows-2 place-items-center">
           <div className="w-full bg-error-50 text-center text-sm border-4 border-error-500 rounded-[10px] px-4 py-4 space-y-4 flex flex-col items-center justify-center">
             <span className="text-5xl">🚫</span>

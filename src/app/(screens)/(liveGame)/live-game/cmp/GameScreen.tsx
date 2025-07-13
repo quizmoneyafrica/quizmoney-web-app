@@ -1,20 +1,23 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
   CorrectCircleIcon,
   EraserIcon,
-  // TimerIcon,
+  TimerIcon,
   WrongCircleIcon,
 } from "@/app/icons/icons";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
-import { Avatar, Flex } from "@radix-ui/themes";
-import GameApi from "@/app/api/game";
-import { playAudio, setPhase } from "@/app/store/gameSlice";
+import { Avatar, Flex, Grid } from "@radix-ui/themes";
+import GameApi, { decryptGameData } from "@/app/api/game";
+import { playAudio, setLiveGameData, setPhase } from "@/app/store/gameSlice";
 import { getAuthUser } from "@/app/api/userApi";
 import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
 import { updateUser } from "@/app/store/authSlice";
+import CustomButton from "@/app/utils/CustomBtn";
+import { gameFetch } from "./gameRules";
 
 const formatTime = (ms: number) => {
   const minutes = Math.floor(ms / 60000);
@@ -40,6 +43,9 @@ type Props = {
   setUserTime: (userTime: string) => void;
 };
 function GameScreen({ setUserTime }: Props) {
+  const [fetchingQuestion, setFetchingQuestion] = useState<
+    "loading" | "error" | "loaded"
+  >("loading");
   const dispatch = useAppDispatch();
   const user = getAuthUser();
   const { liveGameData, audioShouldPlay } = useAppSelector(
@@ -53,7 +59,8 @@ function GameScreen({ setUserTime }: Props) {
   const currentQuestion = shuffledQuestions[currentIndex];
   const [shuffledOptions, setShuffledOptions] = useState<string[]>([]);
 
-  const [usedEraser, setUsedEraser] = useState(false);
+  const [eraserUsedAlready, setEraserUsedAlready] = useState(false);
+
   //countdown timer
   //game time used
   const [totalTimeUsed, setTotalTimeUsed] = useState(0);
@@ -62,8 +69,36 @@ function GameScreen({ setUserTime }: Props) {
   //Sounds
   const correctSoundRef = useRef<HTMLAudioElement | null>(null);
   const wrongSoundRef = useRef<HTMLAudioElement | null>(null);
+
+  const fetchGame = useCallback(async () => {
+    setFetchingQuestion("loading");
+    try {
+      const res = await GameApi.fetchNextGame();
+      console.log("GAME", res);
+      const encryptedGame = res.errorData;
+      const game = decryptGameData(encryptedGame);
+      dispatch(setLiveGameData(game));
+      console.log("decryptGameData: ", game);
+      setFetchingQuestion("loaded");
+    } catch (err: any) {
+      console.log(err);
+      toast.error("Please click on the button again", {
+        position: toastPosition,
+      });
+      setFetchingQuestion("error");
+    }
+  }, [dispatch]);
+
   useEffect(() => {
-    if (liveGameData?.questions?.length) {
+    fetchGame();
+  }, [fetchGame]);
+
+  useEffect(() => {
+    if (
+      fetchingQuestion === "loaded" &&
+      liveGameData?.questions?.length &&
+      shuffledQuestions.length < 9
+    ) {
       const questionsWithIndex = (liveGameData.questions as Question[]).map(
         (q, index) => ({
           ...q,
@@ -73,13 +108,12 @@ function GameScreen({ setUserTime }: Props) {
       const shuffled = shuffleArray(questionsWithIndex);
       setShuffledQuestions(shuffled);
     }
-  }, [liveGameData?.questions]);
+  }, [fetchingQuestion, liveGameData?.questions, shuffledQuestions]);
 
   useEffect(() => {
     correctSoundRef.current = new Audio("/sounds/correct-answer.mp3");
     wrongSoundRef.current = new Audio("/sounds/wrong-answer.mp3");
   }, []);
-
   // --- User Timer Logic ---
   useEffect(() => {
     if (!currentQuestion) return;
@@ -127,7 +161,7 @@ function GameScreen({ setUserTime }: Props) {
             questionNumber.toString(),
             "User missed it",
             totalTimeFormatted,
-            usedEraser
+            false
           );
         } catch (error) {
           console.log(error);
@@ -142,7 +176,7 @@ function GameScreen({ setUserTime }: Props) {
           questionNumber.toString(),
           "User missed it",
           totalTimeFormatted,
-          usedEraser
+          false
         );
       } catch (error) {
         console.log(error);
@@ -169,11 +203,12 @@ function GameScreen({ setUserTime }: Props) {
     let toSaveAnswer = option;
     const newAnswers = [...selectedAnswers];
 
+    let usedEraserThisQuestion = false;
     // --- answer logic ---
     if (isCorrect) {
       correctSoundRef.current?.play();
       newAnswers[currentIndex] = option;
-    } else if (!usedEraser && user?.erasers > 0) {
+    } else if (!isCorrect && !eraserUsedAlready && user?.erasers > 0) {
       toSaveAnswer = currentQuestion.correctAnswer;
       correctSoundRef.current?.play();
       newAnswers[currentIndex] = currentQuestion.correctAnswer;
@@ -184,7 +219,8 @@ function GameScreen({ setUserTime }: Props) {
 
       await GameApi.updateErasers(1);
       dispatch(updateUser({ erasers: user.erasers - 1 }));
-      setUsedEraser(true);
+      setEraserUsedAlready(true);
+      usedEraserThisQuestion = true;
     } else {
       wrongSoundRef.current?.play();
       newAnswers[currentIndex] = option;
@@ -200,7 +236,7 @@ function GameScreen({ setUserTime }: Props) {
         questionNumber.toString(),
         toSaveAnswer,
         totalTimeFormatted,
-        usedEraser
+        usedEraserThisQuestion
       );
     } catch (error) {
       console.log(error);
@@ -210,7 +246,7 @@ function GameScreen({ setUserTime }: Props) {
           questionNumber.toString(),
           toSaveAnswer,
           totalTimeFormatted,
-          usedEraser
+          usedEraserThisQuestion
         );
       } catch (error) {
         console.log(error);
@@ -218,6 +254,65 @@ function GameScreen({ setUserTime }: Props) {
     }
   };
 
+  if (fetchingQuestion === "loading") {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.25, ease: "easeInOut" }}
+      >
+        <div className="h-[100dvh] bg-primary-900 hero flex items-center  px-4">
+          <CustomButton
+            loader
+            width="full"
+            size="lg"
+            type="button"
+            variant="secondary"
+          />
+        </div>
+      </motion.div>
+    );
+  } else if (fetchingQuestion === "error") {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.25, ease: "easeInOut" }}
+      >
+        <div className="h-[100dvh] bg-primary-900 hero flex items-center  px-4">
+          <Grid gap="3" className="w-full">
+            <div className=" bg-primary-50 text-center border-4 border-primary-500 rounded-[10px] px-4 py-4 space-y-4">
+              <h4 className="text-center text-error-900 font-bold">
+                Stay In App
+              </h4>
+              6
+              <div className="text-neutral-900 text-left space-y-4">
+                {gameFetch.map((rule, index) => (
+                  <div key={index}>
+                    <span className="font-semibold text-error-900">
+                      {index + 1}. {rule.title}
+                    </span>{" "}
+                    – {rule.description}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <CustomButton
+              onClick={fetchGame}
+              width="full"
+              size="lg"
+              type="button"
+              variant="secondary"
+            >
+              Start Game Now
+            </CustomButton>
+          </Grid>
+        </div>
+      </motion.div>
+    );
+  }
   if (!currentQuestion)
     return (
       <motion.div
@@ -226,7 +321,35 @@ function GameScreen({ setUserTime }: Props) {
         exit={{ opacity: 0, y: -10 }}
         transition={{ duration: 0.25, ease: "easeInOut" }}
       >
-        <div className="min-h-[100dvh] bg-primary-900 hero flex flex-col items-center  px-4"></div>
+        <div className="h-[100dvh] bg-primary-900 hero flex items-center  px-4">
+          <Grid gap="3" className="w-full">
+            <div className=" bg-primary-50 text-center border-4 border-primary-500 rounded-[10px] px-4 py-4 space-y-4">
+              <h4 className="text-center text-error-900 font-bold">
+                Stay In App
+              </h4>
+
+              <div className="text-neutral-900 text-left space-y-4">
+                {gameFetch.map((rule, index) => (
+                  <div key={index}>
+                    <span className="font-semibold text-error-900">
+                      {index + 1}. {rule.title}
+                    </span>{" "}
+                    – {rule.description}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <CustomButton
+              onClick={fetchGame}
+              width="full"
+              size="lg"
+              type="button"
+              variant="secondary"
+            >
+              Start Game Now
+            </CustomButton>
+          </Grid>
+        </div>
       </motion.div>
     );
   return (
@@ -269,9 +392,10 @@ function GameScreen({ setUserTime }: Props) {
                   setTimeout(() => setTimeLeft(remainingTime), 0);
                   return <span className="text-white">{timeLeft}</span>;
                 }} */}
-                {/* {({ remainingTime }) => (
-                  <span className="text-white">{remainingTime}</span>
-                )} */}
+                {({}) => (
+                  // <span className="text-white">{remainingTime}</span>
+                  <TimerIcon width={20} className="text-white" />
+                )}
               </CountdownCircleTimer>
             </div>
             <div className="mt-6 text-sm flex items-center justify-end">

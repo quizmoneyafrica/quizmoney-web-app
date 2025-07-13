@@ -10,7 +10,7 @@ import {
   CircleArrowLeft,
   LogoutIcon,
   PersonIcon,
-  PlusIcon,
+  QMCoin,
   SupportIcon,
 } from "../icons/icons";
 import { useAppSelector } from "../hooks/useAuth";
@@ -25,6 +25,7 @@ import Parse, { liveQueryClient } from "@/app/api/parse/parseClient";
 
 function AppHeader() {
   const dispatch = useDispatch();
+  const { balance } = useAppSelector((state) => state.coin);
   const pathname = usePathname();
   const excludedPaths = ["/practice-game"];
   const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
@@ -125,16 +126,26 @@ function AppHeader() {
 
           {/* <span className="lg:hidden">{lastSegment}</span> */}
         </Heading>
-        <Flex align="center" gap={{ initial: "3", lg: "6" }}>
+        <Flex align="center" gap={{ initial: "1", lg: "6" }}>
+          <Link href="/wallet?tab=coin">
+            <Flex
+              align="center"
+              gap="1"
+              className="rounded-full text-xs border-2 py-1 px-2 border-neutral-400 text-neutral-500 hover:border-primary-500 hover:text-primary-900 cursor-pointer"
+            >
+              <QMCoin width={15} height={15} />
+              <span>{balance}</span>
+            </Flex>
+          </Link>
           <Link href="/store">
             <Flex
               align="center"
-              gap="2"
-              className="rounded-full border-2 py-1 px-2 border-neutral-400 text-neutral-500 hover:border-primary-500 hover:text-primary-900 cursor-pointer"
+              gap="1"
+              className="rounded-full text-xs border-2 py-1 px-2 border-neutral-400 text-neutral-500 hover:border-primary-500 hover:text-primary-900 cursor-pointer"
             >
               <EraserIcon />
               <span>{user?.erasers}</span>
-              <PlusIcon />
+              {/* <PlusIcon /> */}
             </Flex>
           </Link>
           <Link

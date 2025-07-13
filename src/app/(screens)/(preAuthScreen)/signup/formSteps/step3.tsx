@@ -67,7 +67,7 @@ const StepThree: React.FunctionComponent<IStepThreeProps> = (props) => {
     sessionStorage.setItem("pass", formData.password);
     try {
       const response = await UserAPI.signUp(newValues);
-      const userData = response.result.newUser;
+      const userData = response.newUser;
       // const encryptedUser = encryptData(userData);
       // loginUser(encryptedUser);
       console.log("Signup with:", userData);

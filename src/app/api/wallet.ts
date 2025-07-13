@@ -36,6 +36,7 @@ const WalletApi = {
       page ? { ...page } : {}
     );
   },
+
   getCheckoutLink(data: {
     amount: string;
   }): Promise<ApiResponse> {

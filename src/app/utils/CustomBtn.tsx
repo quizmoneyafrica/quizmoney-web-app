@@ -7,7 +7,7 @@ import { Spinner } from "@radix-ui/themes";
 type ButtonProps = {
   children?: React.ReactNode;
   type?: "button" | "submit" | "reset";
-  variant?: "primary" | "secondary" | "outline";
+  variant?: "primary" | "secondary" | "outline" | "coin";
   size?: "sm" | "md" | "lg";
   className?: string;
   disabled?: boolean;
@@ -20,6 +20,7 @@ const variantClasses = {
   primary: "bg-primary-900 text-white hover:bg-primary-900",
   secondary: "bg-primary-500 text-white hover:bg-primary-600",
   outline: "border border-neutral-300 text-black hover:bg-neutral-100",
+  coin: "bg-info-50 text-neutral-900 hover:bg-info-50",
 };
 
 const sizeClasses = {
