@@ -1,5 +1,5 @@
 "use client";
-import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
+import { useAppDispatch, useAppSelector, useAuth } from "@/app/hooks/useAuth";
 import { decryptData } from "@/app/utils/crypto";
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
@@ -18,10 +18,10 @@ import WalletApi from "@/app/api/wallet";
 import AdBanner from "@/app/components/advert/adBanner";
 
 function HomeTab() {
-  const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
-  const user = encrypted ? decryptData(encrypted) : null;
+  const { user } = useAuth();
   const dispatch = useAppDispatch();
   const { wallet, transactions } = useAppSelector((state) => state.wallet);
+
   useEffect(() => {
     const fetchWallet = async () => {
       if (wallet === undefined)

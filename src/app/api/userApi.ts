@@ -48,6 +48,15 @@ const UserAPI = {
   login(form: LoginForm): Promise<ApiResponse> {
     return callParseEndpoint<ApiResponse>("auth/login", form);
   },
+  customerProfile(accessToken: string): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      "customers/profile",
+      {},
+      {},
+      "GET",
+      accessToken
+    );
+  },
 
   signUp(form: SignUpForm): Promise<ApiResponse> {
     return callParseEndpoint<ApiResponse>("auth/register", form);

@@ -4,6 +4,14 @@ export interface UserObject {
   email: string;
   firstName: string;
   lastName: string;
+  phone: string;
+  dob: string;
+  avatarUrl: string;
+  createdAt: string;
+  facebook_handle: string;
+  twitter: string;
+  instagram: string;
+  whatsapp_contact: string;
 }
 interface AuthState {
   isAuthenticated: boolean;

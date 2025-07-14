@@ -25,13 +25,17 @@ const WalletApi = {
       { headers: getSessionTokenHeaders() }
     );
   },
-  fetchCustomerWallet(): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/fetchCustomerWallet`,
-      {},
-      { headers: getSessionTokenHeaders() }
-    );
+  fetchCustomerWallet(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("wallets", {}, {}, "GET");
   },
+
+  // fetchCustomerWallet(): Promise<AxiosResponse<ApiResponse>> {
+  //   return axios.post(
+  //     `${BASE_URL}/fetchCustomerWallet`,
+  //     {},
+  //     { headers: getSessionTokenHeaders() }
+  //   );
+  // },
   fetchTransactions(page?: {
     page: number;
     limit: number;

@@ -31,7 +31,7 @@ const LoginForm = ({ loading, setLoading }: Props) => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const { token, notificationPermissionStatus } = useFcmToken();
-  const { loginUser } = useAuth();
+  const { loginUser, updateCustomer } = useAuth();
   const router = useRouter();
   const [ipAddress, setIpAddress] = useState("");
 
@@ -72,17 +72,22 @@ const LoginForm = ({ loading, setLoading }: Props) => {
     const newValues = {
       username: email.toLowerCase().trim(),
       password: password,
-      deviceToken:
-        token ||
-        "e-qBtIuu3kuRpkw5yKzU1g:APA91bGUzqB0UIG9zb4XKRGHkIL6ZCkE7ZON1UMWpWMfydTI0NEchht5zbM3e4kzetSsKNwaYau3KUhMACCSoohQWa0QkGLGGbRFwYunh0_h_CGfdrnD-Ww",
+      deviceToken: token || "undefined",
       deviceId: deviceId,
       ipAddress: ipAddress,
     };
     try {
       const res = await UserAPI.login(newValues);
       console.log("RES", res);
+      const data = await UserAPI.customerProfile(res.data.accessToken);
+      console.log("Customer Profile", data);
       if (res.success) {
         loginUser(res.data);
+        if (res.data.accessToken) {
+          console.log("Customer Profile", res.data.accessToken);
+          updateCustomer(data.data);
+        }
+
         router.replace("/home");
         toast.success(
           `Welcome Back ${capitalizeFirstLetter(res.data.user.firstName)}`,
