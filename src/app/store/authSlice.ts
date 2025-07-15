@@ -5,9 +5,11 @@ export interface UserObject {
   firstName: string;
   lastName: string;
   phone: string;
+  gender: string;
   dob: string;
   avatarUrl: string;
   createdAt: string;
+  country: string;
   facebook_handle: string;
   twitter: string;
   instagram: string;

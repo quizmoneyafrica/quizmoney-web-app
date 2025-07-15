@@ -132,7 +132,7 @@ function AppHeader() {
               className="rounded-full border-2 py-1 px-2 border-neutral-400 text-neutral-500 hover:border-primary-500 hover:text-primary-900 cursor-pointer"
             >
               <EraserIcon />
-              <span>{user?.erasers}</span>
+              <span>0</span>
               <PlusIcon />
             </Flex>
           </Link>
@@ -152,7 +152,7 @@ function AppHeader() {
               <Container className="bg-white border border-primary-50 lg:border-none rounded-full p-1 lg:px-2 lg:py-1 cursor-pointer">
                 <Flex align="center" gap="2">
                   <Avatar
-                    src={user?.avatar}
+                    src={user?.avatarUrl}
                     fallback={user?.firstName?.charAt(0).toUpperCase() || ""}
                     radius="full"
                     className="bg-primary-50"

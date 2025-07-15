@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { UserObject } from "../store/authSlice";
 import { store } from "../store/store";
 import {
   ApiResponse,
@@ -6,35 +7,10 @@ import {
   LoginForm,
   ResetPasswordForm,
   SignUpForm,
-  UpdateUserForm,
   VerifyEmailForm,
 } from "./interface";
 import { callParseEndpoint } from "./parse/callParseEndpoint";
 import { callWithSessionToken } from "./parse/callWithSessionToken";
-
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL;
-const XParseApplicationId = process.env.NEXT_PUBLIC_XParseApplicationId;
-const XParseRESTAPIKey = process.env.NEXT_PUBLIC_XParseRESTAPIKey;
-const SECRET_KEY = process.env.NEXT_PUBLIC_SECRET_KEY!;
-
-const appHeaders = {
-  "X-Parse-Application-Id": XParseApplicationId,
-  "X-Parse-REST-API-Key": XParseRESTAPIKey,
-  "Content-Type": "application/json",
-};
-const getSessionTokenHeaders = () => {
-  // const encrypted = store.getState().auth.accessToken;
-  // const user = encrypted ? decryptData(encrypted) : null;
-  const sessionToken = store.getState().auth.accessToken;
-
-  return {
-    "X-Parse-Application-Id": process.env.NEXT_PUBLIC_XParseApplicationId!,
-    "X-Parse-REST-API-Key": process.env.NEXT_PUBLIC_XParseRESTAPIKey!,
-    "X-Parse-Session-Token": sessionToken,
-    "Content-Type": "application/json",
-  };
-};
 
 const getAuthUser = () => {
   const state = store.getState();
@@ -42,9 +18,6 @@ const getAuthUser = () => {
 };
 
 const UserAPI = {
-  checkSessionTokenValidity(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("checkSessionTokenValidity");
-  },
   login(form: LoginForm): Promise<ApiResponse> {
     return callParseEndpoint<ApiResponse>("auth/login", form);
   },
@@ -57,7 +30,6 @@ const UserAPI = {
       accessToken
     );
   },
-
   signUp(form: SignUpForm): Promise<ApiResponse> {
     return callParseEndpoint<ApiResponse>("auth/register", form);
   },
@@ -67,9 +39,25 @@ const UserAPI = {
   resendSignupOtp(email: string): Promise<ApiResponse> {
     return callParseEndpoint<ApiResponse>("auth/resend", { email });
   },
+  forgotPassword(email: string): Promise<ApiResponse> {
+    return callParseEndpoint<ApiResponse>("auth/password/forgot", {
+      email,
+    });
+  },
 
-  sendFeedback(form: any, dispatch: any): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("sendFeedback", form, dispatch);
+  resetPasswordAuth(form: ResetPasswordForm): Promise<ApiResponse> {
+    return callParseEndpoint<ApiResponse>("auth/password/reset", form);
+  },
+  inAppChangePassword(form: InAppChangePasswordForm): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      "customers/password/change",
+      form,
+      {},
+      "PATCH"
+    );
+  },
+  updateUser(form: UserObject): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("customers", form, {}, "PATCH");
   },
   updateSocialHandles(
     facebook: string,
@@ -82,33 +70,12 @@ const UserAPI = {
     return callWithSessionToken<ApiResponse>(
       "updateSocialHandles",
       { facebook, twitter, whatsapp, instagram, tiktok },
-      dispatch
-    );
-  },
-
-  forgotPassword(email: string): Promise<ApiResponse> {
-    return callParseEndpoint<ApiResponse>("auth/password/forgot", {
-      email,
-    });
-  },
-
-  resetPasswordAuth(form: ResetPasswordForm): Promise<ApiResponse> {
-    return callParseEndpoint<ApiResponse>("auth/password/reset", form);
-  },
-
-  inAppChangePassword(form: InAppChangePasswordForm): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(
-      "customers/password/change",
-      form,
-      {},
+      dispatch,
       "PATCH"
     );
   },
-
-  updateUser(form: UpdateUserForm): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(
-      `updateProfile?firstName=${form.firstName}&lastName=${form.lastName}&dob=${form.dob}&gender=${form.gender}&country=${form.country}&facebook=${form.facebook}&instagram=${form.instagram}&twitter=${form.twitter}&whatsapp=${form.whatsapp}&tiktok=${form.tiktok}&avatar=${form.avatar}`
-    );
+  sendFeedback(form: any, dispatch: any): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("sendFeedback", form, dispatch);
   },
 
   getAvatars(): Promise<ApiResponse> {
