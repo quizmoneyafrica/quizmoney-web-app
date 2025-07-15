@@ -65,8 +65,11 @@ export default function WalletActivity(): React.ReactElement {
           page,
           limit: PAGE_SIZE,
         });
+        const data = res;
+        console.log("=================TRANSACTIONS===================");
+        console.log(JSON.stringify(res, null, 2));
+        console.log("=================TRANSACTIONS===================");
 
-        const data = res?.data?.result;
         if (data?.groupedTransactions) {
           dispatch(setTransactions(data?.groupedTransactions));
           setTotalPages(data?.totalPages || 1);
@@ -193,11 +196,13 @@ export default function WalletActivity(): React.ReactElement {
 
 export const renderEmptyState = (): JSX.Element => (
   <div className="flex flex-col items-center justify-center py-44 px-4 bg-white rounded-lg">
-    <CustomImage
-      alt="empty-transactions"
-      src="/icons/empty-state.svg"
-      className="w-16 h-16 mb-4"
-    />
+    <div>
+      <CustomImage
+        alt="empty-transactions"
+        src="/icons/empty-state.svg"
+        className="w-16 h-16 mb-4"
+      />
+    </div>
     <p className="text-gray-500 text-center text-sm md:text-base">
       {"You've not made any recent"} <br />
       transactions yet

@@ -37,7 +37,7 @@ function Page() {
     };
 
     const handleVisibilityChange = () => {
-      if (document.hidden && phase === "playing") {
+      if (document.hidden && (phase === "playing" || phase === "lobby")) {
         dispatch(setPhase("cancelled"));
         dispatch(stopAudio());
       }

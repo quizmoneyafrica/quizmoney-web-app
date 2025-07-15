@@ -9,6 +9,7 @@ import { store } from "@/app/store/store";
 import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import CustomButton from "@/app/utils/CustomBtn";
 
 interface PinForm {
   pin: string[];
@@ -76,15 +77,15 @@ export default function ResetPinLayout() {
       const response = await WalletApi.createWithdrawalPin({
         pin: data.pin.join(""),
       });
-      if (response?.data?.result?.updatedWallet) {
+      if (response?.updatedWallet) {
         localStorage.removeItem("wallet-reset-email");
-        toast.success(response?.data?.result?.message, {
+        toast.success(response?.message, {
           position: toastPosition,
         });
 
         const res = await WalletApi.fetchCustomerWallet();
-        if (res.data.result.wallet) {
-          store.dispatch(setWallet(res.data.result.wallet));
+        if (res.wallet) {
+          store.dispatch(setWallet(res.wallet));
         }
         route.replace("/wallet");
       }
@@ -134,7 +135,7 @@ export default function ResetPinLayout() {
                   onChange={(e) => handlePinChange(idx, e.target.value, "pin")}
                   onKeyDown={(e) => handlePinKeyDown(idx, e, "pin")}
                   className={classNames(
-                    "w-14 h-14 border-1 rounded-lg text-3xl text-center focus:outline-none transition-all",
+                    " w-8 h-8 md:w-14 md:h-14 border-1 rounded-lg text-3xl text-center focus:outline-none transition-all",
                     pin[idx] ? "border-[#2A75BC]" : "border-[#2A75BC]"
                   )}
                   autoComplete="off"
@@ -164,7 +165,7 @@ export default function ResetPinLayout() {
                   }
                   onKeyDown={(e) => handlePinKeyDown(idx, e, "confirmPin")}
                   className={classNames(
-                    "w-14 h-14 border-1 rounded-lg text-3xl text-center focus:outline-none transition-all",
+                    "  w-8 h-8 md:w-14 md:h-14 border-1 rounded-lg text-3xl text-center focus:outline-none transition-all",
                     confirmPin[idx] ? "border-[#2A75BC]" : "border-[#2A75BC]"
                   )}
                   autoComplete="off"
@@ -185,23 +186,14 @@ export default function ResetPinLayout() {
             </div>
           )}
 
-          <motion.button
+          <CustomButton
             type="submit"
-            className="w-full max-w-4xl cursor-pointer bg-[#17478B] hover:bg-[#133a6e] text-white text-lg font-semibold py-4 rounded-full mt-8 transition-colors duration-200"
-            whileTap={{
-              scale: 0.97,
-              transition: { type: "spring", stiffness: 500, damping: 15 },
-            }}
+            className=" w-full max-w-4xl mt-8"
             disabled={!(isPinComplete && isConfirmPinComplete) || isCreatingPin}
+            loader={isCreatingPin}
           >
-            {isCreatingPin ? (
-              <span className="flex items-center gap-2 justify-center">
-                <div className=" size-5 animate-spin rounded-full border-b-2 border-white" />
-              </span>
-            ) : (
-              "Save Pin"
-            )}
-          </motion.button>
+            Save Pin
+          </CustomButton>
         </form>
       </motion.div>
     </div>

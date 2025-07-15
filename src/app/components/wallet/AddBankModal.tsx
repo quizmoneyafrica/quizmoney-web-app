@@ -82,8 +82,8 @@ export default function AddBankModal({
         // bankCode: "044",
       };
       const response = await WalletApi.verifyAccount(payload);
-      if (response?.data?.result?.status === "success") {
-        const { account_name, account_number } = response?.data?.result?.data;
+      if (response?.status === "success") {
+        const { account_name, account_number } = response?.data;
         const bankName =
           banks.find((item) => item?.code === data?.bank)?.name ?? "";
         addVerifiedAccount({
@@ -92,8 +92,8 @@ export default function AddBankModal({
           accountName: account_name,
         });
       }
-      if (response?.data?.result?.status === "error") {
-        toast.error(`${response?.data?.result?.message}`, {
+      if (response?.status === "error") {
+        toast.error(`${response?.message}`, {
           position: toastPosition,
         });
       }
@@ -119,9 +119,9 @@ export default function AddBankModal({
           ...data,
         },
       });
-      if (response?.data?.result?.updatedWallet) {
+      if (response?.updatedWallet) {
         const res = await WalletApi.fetchCustomerWallet();
-        dispatch(setWallet(res.data.result.wallet));
+        dispatch(setWallet(res.wallet));
         reset({
           accountNumber: "",
           bank: "",

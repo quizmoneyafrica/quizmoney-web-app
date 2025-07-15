@@ -24,6 +24,7 @@ export interface UserProfile {
 export interface UserLastGameStats {
   position: number | null;
   prize: number;
+  coins: number;
   totalTime: string;
   totalCorrect: number;
   result: QuestionResult[];
@@ -33,6 +34,7 @@ export interface UserLastGameStats {
 export interface LeaderboardRanking {
   position: number;
   prize: number;
+  coins: number;
   totalTime: string;
   totalCorrect: number;
   user: UserProfile;

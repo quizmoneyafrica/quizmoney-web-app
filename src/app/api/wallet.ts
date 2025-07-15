@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import axios, { AxiosResponse } from "axios";
-import { BASE_URL, getSessionTokenHeaders } from "./userApi";
 import { ApiResponse } from "./interface";
 import { callWithSessionToken } from "./parse/callWithSessionToken";
 
@@ -11,19 +9,17 @@ const WalletApi = {
     firstName: string,
     lastName: string,
     bankCode: string
-  ): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/verifyBVN`,
-      { accountNumber, bvn, firstName, lastName, bankCode },
-      { headers: getSessionTokenHeaders() }
-    );
+  ): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(`verifyBVN`, {
+      accountNumber,
+      bvn,
+      firstName,
+      lastName,
+      bankCode,
+    });
   },
-  isBVNVerified(): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/isBVNVerified`,
-      {},
-      { headers: getSessionTokenHeaders() }
-    );
+  isBVNVerified(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(`isBVNVerified`, {});
   },
   fetchCustomerWallet(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("wallets", {}, {}, "GET");
@@ -39,21 +35,15 @@ const WalletApi = {
   fetchTransactions(page?: {
     page: number;
     limit: number;
-  }): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/fetchTransactions`,
-      page ? { ...page } : {},
-      { headers: getSessionTokenHeaders() }
+  }): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      `fetchTransactions`,
+      page ? { ...page } : {}
     );
   },
-  getCheckoutLink(data: {
-    amount: string;
-  }): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/getCheckoutLink`,
-      { ...data },
-      { headers: getSessionTokenHeaders() }
-    );
+
+  getCheckoutLink(data: { amount: string }): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(`getCheckoutLink`, { ...data });
   },
   getPaystackCheckoutLink(
     data: {
@@ -68,49 +58,32 @@ const WalletApi = {
     );
   },
 
-  addBankAccount(data: any): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/addBankAccount`,
-      { ...data },
-      { headers: getSessionTokenHeaders() }
-    );
+  addBankAccount(data: any): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(`addBankAccount`, { ...data });
   },
   verifyAccount(data: {
     email: string;
     accountNumber: string;
     bankCode: string;
-  }): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/verifyAccount`,
-      { ...data },
-      { headers: getSessionTokenHeaders() }
-    );
+  }): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(`verifyAccount`, { ...data });
   },
-  listBanks(): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/listBanks`,
-      {},
-      { headers: getSessionTokenHeaders() }
-    );
+  listBanks(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("listBanks", {});
   },
-  fetchDedicatedAccount(data: {
-    email: string;
-  }): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/fetchDedicatedAccount`,
-      { ...data },
-      { headers: getSessionTokenHeaders() }
-    );
+  fetchDedicatedAccount(data: { email: string }): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(`fetchDedicatedAccount`, {
+      ...data,
+    });
   },
   createWithdrawalPin(data: {
     pin: string;
     edit?: boolean;
     oldPin?: string;
-  }): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/createWithdrawalPin`,
-      data?.edit ? { ...data } : { pin: data?.pin },
-      { headers: getSessionTokenHeaders() }
+  }): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      `createWithdrawalPin`,
+      data?.edit ? { ...data } : { pin: data?.pin }
     );
   },
   requestWithdrawal(data: {
@@ -125,23 +98,11 @@ const WalletApi = {
     return callWithSessionToken<ApiResponse>("requestWithdrawal", { ...data });
   },
 
-  forgotPin(data: { email: string }): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/forgotPin`,
-      { ...data },
-
-      { headers: getSessionTokenHeaders() }
-    );
+  forgotPin(data: { email: string }): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(`forgotPin`, { ...data });
   },
-  verifyPinOtp(data: {
-    otp: string;
-    email: string;
-  }): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/verifyPinOtp`,
-      { ...data },
-      { headers: getSessionTokenHeaders() }
-    );
+  verifyPinOtp(data: { otp: string; email: string }): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(`verifyPinOtp`, { ...data });
   },
   removeBankAccount(data: {
     bankAccount: {
@@ -149,21 +110,11 @@ const WalletApi = {
       bankName: string;
       accountName: string;
     };
-  }): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/removeBankAccount`,
-      { ...data },
-      { headers: getSessionTokenHeaders() }
-    );
+  }): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(`removeBankAccount`, { ...data });
   },
-  searchTransactions(data: {
-    query: string;
-  }): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/searchTransactions`,
-      { ...data },
-      { headers: getSessionTokenHeaders() }
-    );
+  searchTransactions(data: { query: string }): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(`searchTransactions`, { ...data });
   },
 };
 

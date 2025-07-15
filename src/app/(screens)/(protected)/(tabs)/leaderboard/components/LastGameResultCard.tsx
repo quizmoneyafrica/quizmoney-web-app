@@ -10,6 +10,7 @@ import {
 import { UserLastGameStats } from "@/app/store/leaderboardSlice";
 import { getAuthUser } from "@/app/api/userApi";
 import { Avatar } from "@radix-ui/themes";
+import { QMCoin } from "@/app/icons/icons";
 
 interface LastGameResultCardProps {
   userLastGameStats?: UserLastGameStats;
@@ -127,15 +128,26 @@ const LastGameResultCard = ({ userLastGameStats }: LastGameResultCardProps) => {
 
                   {/* Reward */}
                   <td className="px-2 text-right">
-                    <motion.span
+                    <motion.div
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.7, duration: 0.4 }}
                       whileHover={{ scale: 1.1 }}
-                      className="bg-[#E4F1FA] rounded p-2 text-xl font-bold text-[#2364AA] whitespace-nowrap"
+                      className={`${
+                        userLastGameStats && userLastGameStats?.coins > 0
+                          ? "bg-primary-50"
+                          : "bg-primary-100"
+                      } rounded-md px-2 md:px-4 py-1 md:py-2 text-sm md:text-base text-primary-800 font-bold`}
                     >
-                      {formatNaira(Number(userLastGameStats.prize), true)}
-                    </motion.span>
+                      {userLastGameStats.coins > 0 ? (
+                        <span className="flex items-center gap-2 text-positive-900 justify-center">
+                          <QMCoin width={20} height={20} />+
+                          {userLastGameStats.coins}
+                        </span>
+                      ) : (
+                        formatNaira(Number(userLastGameStats.prize), true)
+                      )}
+                    </motion.div>
                   </td>
                 </tr>
               </tbody>

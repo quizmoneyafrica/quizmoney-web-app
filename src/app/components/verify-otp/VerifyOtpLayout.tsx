@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,6 +9,7 @@ import WalletApi from "@/app/api/wallet";
 import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import CustomButton from "@/app/utils/CustomBtn";
 
 const otpSchema = z.object({
   otp: z
@@ -17,7 +18,9 @@ const otpSchema = z.object({
 });
 
 export default function VerifyOtpLayout() {
-  const localEmail = localStorage.getItem("wallet-reset-email");
+  const emailD = localStorage.getItem("wallet-reset-email");
+
+  const localEmail = useMemo(() => emailD ?? "", [emailD]);
 
   const {
     handleSubmit,
@@ -84,8 +87,8 @@ export default function VerifyOtpLayout() {
         otp: refined,
         email: localEmail,
       });
-      if (response?.data?.result.data) {
-        toast.success(response?.data?.result?.message, {
+      if (response.data) {
+        toast.success(response?.message, {
           position: toastPosition,
         });
         route.push("/wallet/reset-pin/pin");
@@ -113,8 +116,8 @@ export default function VerifyOtpLayout() {
       console.log("====================================");
       console.log(JSON.stringify(response.data.data, null, 2));
       console.log("====================================");
-      if (response?.data?.result.data) {
-        toast.success(response?.data?.result?.message, {
+      if (response.data) {
+        toast.success(response?.message, {
           position: toastPosition,
         });
       }
@@ -128,30 +131,32 @@ export default function VerifyOtpLayout() {
     }
   };
   return (
-    <div className="flex justify-center items-center pt-8">
+    <div className="flex w-full">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="bg-white rounded-2xl w-full  p-8 md:min-h-[60dvh] md:p-14"
+        className="bg-white rounded-2xl w-full p-3 flex flex-col  md:min-h-[60dvh] md:p-14"
       >
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className=" flex-col flex gap-1 pb-8">
-            <span className="text-2xl font-bold">Reset pin</span>
-            <p className="text-sm text-neutral-700">
+          <div className=" flex-col flex gap-1 pb-6 sm:pb-8">
+            <span className="text-xl sm:text-2xl font-bold">Reset pin</span>
+            <p className="text-xs sm:text-sm text-neutral-700">
               Please enter the 6-digit code sent to your email
-              <span className="text-primary-700 underline ml-2 cursor-pointer">
-                sampleemail@gmail.com
+              <span className="text-primary-700 underline ml-1 sm:ml-2 cursor-pointer break-all">
+                {localEmail}
               </span>{" "}
               for verification.
             </p>
           </div>
-          <div className="mb-5">
-            <span className="font-semibold text-lg text-black">
+          <div className="mb-4 sm:mb-5">
+            <span className="font-semibold text-base sm:text-lg text-black">
               Enter OTP Code
             </span>
           </div>
-          <div className="flex md:gap-10 mb-8 max-w-4xl ">
+
+          {/* Mobile: Grid layout, Desktop: Original flex layout */}
+          <div className="flex gap-2 sm:gap-4 md:gap-10 mb-6 sm:mb-8 max-w-4xl overflow-x-auto">
             {[0, 1, 2, 3, 4, 5].map((idx) => (
               <input
                 key={idx}
@@ -165,7 +170,7 @@ export default function VerifyOtpLayout() {
                 onChange={(e) => handleChange(idx, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(idx, e)}
                 className={classNames(
-                  "w-14 h-14 border-1 rounded-lg text-3xl text-center focus:outline-none focus:border-primary-700 transition-all",
+                  "w-8 h-8 sm:w-14 sm:h-14 border-1 rounded-lg text-2xl sm:text-3xl text-center focus:outline-none focus:border-primary-700 transition-all flex-shrink-0",
                   otp[idx] ? "border-primary-700" : "border-[#2A75BC]"
                 )}
                 autoComplete="one-time-code"
@@ -173,44 +178,39 @@ export default function VerifyOtpLayout() {
               />
             ))}
           </div>
+
           {errors.otp && (
-            <div className="text-red-500 text-sm mb-4">
+            <div className="text-red-500 text-xs sm:text-sm mb-4">
               {errors.otp.message}
             </div>
           )}
-          <div className="mb-12 text-sm flex items-center gap-2">
+
+          <div className="mb-8 sm:mb-12 text-xs sm:text-sm flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2">
             <span>Didn&apos;t get code?</span>
-            <button
-              className="text-primary-700 underline font-medium disabled:opacity-50"
-              disabled={timer > 0}
-              type="button"
-              onClick={() => {
-                resendOtp();
-                setTimer(82);
-              }}
-            >
-              Resend Code
-            </button>
-            <span className="font-bold">• {formatTimer(timer)}</span>
+            <div className="flex items-center gap-2">
+              <button
+                className="text-primary-700 underline font-medium disabled:opacity-50"
+                disabled={timer > 0}
+                type="button"
+                onClick={() => {
+                  resendOtp();
+                  setTimer(82);
+                }}
+              >
+                Resend Code
+              </button>
+              <span className="font-bold">• {formatTimer(timer)}</span>
+            </div>
           </div>
-          <motion.button
+
+          <CustomButton
             type="submit"
-            className="w-4xl cursor-pointer bg-[#17478B] hover:bg-[#133a6e] text-white text-lg font-semibold py-4 rounded-full mt-8 transition-colors duration-200"
-            whileTap={{
-              scale: 0.9,
-              transition: { type: "spring", stiffness: 500, damping: 15 },
-            }}
+            className=" md:max-w-2xl w-full"
             disabled={!isOtpComplete || loading}
+            loader={loading}
           >
-            {loading ? (
-              <span className="flex items-center gap-2 justify-center">
-                <div className=" size-5 animate-spin rounded-full border-b-2 border-white" />
-                Verifying...
-              </span>
-            ) : (
-              <span>Verify OTP</span>
-            )}
-          </motion.button>
+            Verify OTP
+          </CustomButton>
         </form>
       </motion.div>
     </div>

@@ -30,8 +30,8 @@ function HomeTab() {
           const res = await WalletApi.fetchCustomerWallet();
           console.log("WALLET: ", res);
 
-          if (res.data.result.wallet) {
-            dispatch(setWallet(res.data.result.wallet));
+          if (res?.wallet) {
+            dispatch(setWallet(res?.wallet));
           }
         } catch (error) {
           console.log(error, "Wallet Error");
@@ -48,10 +48,8 @@ function HomeTab() {
           dispatch(setTransactionsLoading(true));
           const res = await WalletApi.fetchTransactions();
 
-          if (res?.data?.result?.groupedTransactions) {
-            dispatch(
-              setTransactions(res?.data?.result?.groupedTransactions ?? [])
-            );
+          if (res?.groupedTransactions) {
+            dispatch(setTransactions(res?.groupedTransactions ?? []));
           }
         } catch (error) {
           console.log(error, "Transaction Error");

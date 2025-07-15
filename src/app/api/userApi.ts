@@ -88,6 +88,15 @@ const UserAPI = {
   getReferralStats(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("referralData", {});
   },
+  fetchUserCoinAccount(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("fetchUserCoinAccount", {});
+  },
+  fetchCoinTransactions(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("fetchCoinTransactions", {});
+  },
+  redeemCoin(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("redeemCoinPoints", {});
+  },
 };
 
 export {

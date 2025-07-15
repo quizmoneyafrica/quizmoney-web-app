@@ -29,10 +29,8 @@ export function FilterBar({
       console.log("====================================");
       console.log(JSON.stringify(response, null, 2));
       console.log("====================================");
-      if (response?.data?.result?.groupedTransactions) {
-        store.dispatch(
-          setTransactions(response?.data?.result?.groupedTransactions)
-        );
+      if (response?.groupedTransactions) {
+        store.dispatch(setTransactions(response?.groupedTransactions));
       }
     } catch (error) {
       console.log(error, "ERROR FETCHING TRANSACTIONS");

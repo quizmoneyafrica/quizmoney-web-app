@@ -98,8 +98,8 @@ export default function TransactionHistory(): React.JSX.Element {
   //   const fetchWallet = async () => {
   //     try {
   //       const res = await WalletApi.fetchCustomerWallet();
-  //       if (res.data.result.wallet) {
-  //         dispatch(setWallet(res.data.result.wallet));
+  //       if (res.wallet) {
+  //         dispatch(setWallet(res.wallet));
   //       }
   //     } catch (error) {
   //       console.log(error, "Wallet Error");
@@ -112,8 +112,8 @@ export default function TransactionHistory(): React.JSX.Element {
   //     try {
   //       const res = await WalletApi.fetchTransactions();
 
-  //       if (res?.data?.result?.groupedTransactions) {
-  //         dispatch(setTransactions(res?.data?.result?.groupedTransactions));
+  //       if (res?.groupedTransactions) {
+  //         dispatch(setTransactions(res?.groupedTransactions));
   //       }
   //     } catch (error) {
   //       console.log(error, "Transaction Error");
@@ -125,8 +125,8 @@ export default function TransactionHistory(): React.JSX.Element {
   //   (async () => {
   //     try {
   //       const response = await WalletApi.listBanks();
-  //       if (response.data.result?.data) {
-  //         dispatch(setBanks(response.data.result?.data));
+  //       if (response?.data) {
+  //         dispatch(setBanks(response?.data));
   //       }
   //     } catch (error) {
   //       console.log(error, "ERROR FETCHING BANKS");
@@ -138,7 +138,7 @@ export default function TransactionHistory(): React.JSX.Element {
   //       const response = await WalletApi.fetchDedicatedAccount({
   //         email,
   //       });
-  //       if (response.data.result?.data) {
+  //       if (response?.data) {
   //         console.log(
   //           "============fetchDedicatedAccount========================"
   //         );
@@ -215,6 +215,8 @@ export default function TransactionHistory(): React.JSX.Element {
     const dateData = format(date, "MMM d h:mma").toLowerCase();
     const isLastInGroup = index === array.length - 1;
 
+    console.log(transaction.type, "=======");
+
     return (
       <div key={transaction.objectId || index.toString()}>
         <div
@@ -225,19 +227,14 @@ export default function TransactionHistory(): React.JSX.Element {
           onClick={() => handleTransactionClick(transaction)}
         >
           <div className="flex gap-2 md:gap-4 items-center">
-            <div
-              className={`p-1.5 md:p-2 rounded-full ${
-                transaction.type === "deposit" ? "bg-green-100" : "bg-red-100"
-              }`}
-            >
+            <div className={`p-1.5 md:p-2 rounded-full `}>
               <CustomImage
                 alt="arrow-icon"
                 src={
-                  transaction.type === "deposit"
-                    ? "/icons/arrow-down-green.svg"
-                    : "/icons/arrow-down-red.svg"
+                  transaction.type === "withdrawal"
+                    ? "/icons/moneyOut.svg"
+                    : "/icons/moneyIn.svg"
                 }
-                className="w-4 h-4 md:w-5 md:h-5"
               />
             </div>
             <div className="flex flex-col items-start">
@@ -296,7 +293,7 @@ export default function TransactionHistory(): React.JSX.Element {
     return (
       <div className="space-y-2 md:space-y-3 pb-3 md:pb-5 mt-3 md:mt-5">
         <div className="px-3 md:px-4">
-          <h2 className="text-sm md:text-base font-semibold text-[#3B3B3B]">
+          <h2 className="text-sm md:text-base font-semibold text-[#3B3B3B] text-left">
             {title}
           </h2>
         </div>
