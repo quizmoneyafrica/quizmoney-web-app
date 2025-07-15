@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import GameApi from "@/app/api/game";
-import { getAuthUser } from "@/app/api/userApi";
-import { useAppDispatch } from "@/app/hooks/useAuth";
+import { useAppDispatch, useAuth } from "@/app/hooks/useAuth";
 import { playAudio, setLobbyTime, setPhase } from "@/app/store/gameSlice";
 import { RootState } from "@/app/store/store";
 import { toastPosition } from "@/app/utils/utils";
@@ -43,7 +42,7 @@ function JoinGameBtn() {
   const router = useRouter();
   const gameData = useSelector((state: RootState) => state.game.nextGameData);
   const [loading, setLoading] = useState(false);
-  const user = getAuthUser();
+  const { user } = useAuths();
 
   // const handleJoinBtn = async () => {
   //   const userId = user?.objectId;

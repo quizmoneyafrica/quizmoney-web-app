@@ -2,8 +2,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import QmDrawer from "../drawer/drawer";
-import UserAPI, { getAuthUser } from "@/app/api/userApi";
-import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
+import UserAPI from "@/app/api/userApi";
+import { useAppDispatch, useAppSelector, useAuth } from "@/app/hooks/useAuth";
 import CustomButton from "@/app/utils/CustomBtn";
 import { updateUser } from "@/app/store/authSlice";
 import { toast } from "sonner";
@@ -48,7 +48,7 @@ interface SocialInput {
 
 function SocialLinksDrawer() {
   const [showUpdateDrawer, setShowUpdateDrawer] = useState(false);
-  const user = getAuthUser();
+  const { user } = useAuth();
   const dispatch = useAppDispatch();
   const { wallet } = useAppSelector((state) => state.wallet);
 
@@ -59,7 +59,8 @@ function SocialLinksDrawer() {
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    if (!user || !wallet) return;
+    // if (!user || !wallet) return;
+    if (!user) return;
     if (initialized) return;
 
     const initialLinks: SocialInput[] = [];
@@ -81,7 +82,7 @@ function SocialLinksDrawer() {
     if (wallet && Number(wallet?.balance) > 0 && filledCount < 2) {
       setShowUpdateDrawer(true);
     } else {
-      setShowUpdateDrawer(false);
+      setShowUpdateDrawer(true);
     }
   }, [user, wallet, initialized]);
 

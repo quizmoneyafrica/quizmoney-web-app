@@ -68,7 +68,7 @@ const UserAPI = {
     dispatch: any
   ): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
-      "updateSocialHandles",
+      "socials",
       { facebook, twitter, whatsapp, instagram, tiktok },
       dispatch,
       "PATCH"
@@ -100,7 +100,6 @@ const UserAPI = {
 };
 
 export {
-  appHeaders,
   getSessionTokenHeaders,
   BASE_URL,
   SOCKET_URL,

@@ -12,7 +12,6 @@ function Page() {
   const dispatch = useAppDispatch();
   const products = useAppSelector((state) => state.store.products);
   const loading = products === null;
-
   useEffect(() => {
     if (!products) {
       StoreAPI.getProducts()

@@ -10,9 +10,10 @@ export interface UserObject {
   avatarUrl: string;
   createdAt: string;
   country: string;
-  facebook_handle: string;
+  facebook: string;
   twitter: string;
   instagram: string;
+  tiktok: string;
   whatsapp_contact: string;
 }
 interface AuthState {
