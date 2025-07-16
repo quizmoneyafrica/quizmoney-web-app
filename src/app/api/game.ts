@@ -6,7 +6,7 @@ import { callWithSessionToken } from "./parse/callWithSessionToken";
 
 const GameApi = {
   fetchNextGame(): Promise<ApiResponse> {
-    return callParseEndpoint<ApiResponse>("errorLoad");
+    // return callParseEndpoint<ApiResponse>("errorLoad");
   },
 
   registerForGame(gameId: string, dispatch: any): Promise<ApiResponse> {

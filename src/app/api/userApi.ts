@@ -83,7 +83,7 @@ const UserAPI = {
   },
 
   topGamersOfToday(): Promise<ApiResponse> {
-    return callParseEndpoint<ApiResponse>("topGamersOfTheWeekend");
+    // return callParseEndpoint<ApiResponse>("topGamersOfTheWeekend");
   },
   getReferralStats(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("referralData", {});

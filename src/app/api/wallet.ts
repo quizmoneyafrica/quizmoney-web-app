@@ -36,10 +36,10 @@ const WalletApi = {
     page: number;
     limit: number;
   }): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(
-      `fetchTransactions`,
-      page ? { ...page } : {}
-    );
+    // return callWithSessionToken<ApiResponse>(
+    //   `fetchTransactions`,
+    //   page ? { ...page } : {}
+    // );
   },
 
   getCheckoutLink(data: { amount: string }): Promise<ApiResponse> {

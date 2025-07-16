@@ -82,7 +82,7 @@ function SocialLinksDrawer() {
     if (wallet && Number(wallet?.balance) > 0 && filledCount < 2) {
       setShowUpdateDrawer(true);
     } else {
-      setShowUpdateDrawer(true);
+      setShowUpdateDrawer(false);
     }
   }, [user, wallet, initialized]);
 
