@@ -2,12 +2,11 @@
 import axios, { AxiosResponse } from "axios";
 import { BASE_URL, getSessionTokenHeaders } from "./userApi";
 import { ApiResponse } from "./interface";
-import { callParseEndpoint } from "./parse/callParseEndpoint";
 import { callWithSessionToken } from "./parse/callWithSessionToken";
 
 const StoreAPI = {
   getProducts(): Promise<ApiResponse> {
-    return callParseEndpoint<ApiResponse>("getProducts");
+    return callWithSessionToken<ApiResponse>("products", {}, {}, "GET");
   },
 
   purchaseItem(productId: string, dispatch: any): Promise<ApiResponse> {

@@ -10,10 +10,11 @@ export interface UserObject {
   avatarUrl: string;
   createdAt: string;
   country: string;
-  facebook_handle: string;
-  twitter: string;
-  instagram: string;
-  whatsapp_contact: string;
+  facebookHandle: string;
+  twitterHandle: string;
+  instagramHandle: string;
+  tiktokHandle: string;
+  whatsappContact: string;
 }
 interface AuthState {
   isAuthenticated: boolean;

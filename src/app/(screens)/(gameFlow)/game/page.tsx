@@ -1,7 +1,6 @@
 "use client";
-import { useAppSelector } from "@/app/hooks/useAuth";
+import { useAppSelector, useAuth } from "@/app/hooks/useAuth";
 import React, { useEffect, useState } from "react";
-import { getAuthUser } from "@/app/api/userApi";
 import { useRouter } from "next/navigation";
 import CustomButton from "@/app/utils/CustomBtn";
 import AppLoader from "@/app/components/loader/loader";
@@ -11,7 +10,7 @@ function Page() {
   const { liveGameData, isAllowedInGame, gameEnded } = useAppSelector(
     (state) => state.game
   );
-  const user = getAuthUser();
+  const { user } = useAuth();
   const [isUserInGame, setIsUserInGame] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -20,7 +19,7 @@ function Page() {
       return;
     }
 
-    const userId = user?.objectId;
+    const userId = user?.email;
     const isInGame =
       Array.isArray(liveGameData?.users) &&
       liveGameData?.users.includes(userId);

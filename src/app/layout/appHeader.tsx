@@ -13,7 +13,7 @@ import {
   QMCoin,
   SupportIcon,
 } from "../icons/icons";
-import { useAuth } from "../hooks/useAuth";
+import { useAppSelector, useAuth } from "../hooks/useAuth";
 import { DropdownMenu } from "radix-ui";
 import LogoutDialog from "../components/logout/logout";
 import { useDispatch, useSelector } from "react-redux";
@@ -144,7 +144,6 @@ function AppHeader() {
             >
               <EraserIcon />
               <span>0</span>
-              <PlusIcon />
             </Flex>
           </Link>
           <Link

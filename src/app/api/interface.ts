@@ -111,30 +111,10 @@ export interface User {
   referralCode?: string;
   referralPoints?: number;
   sessionToken?: string;
-  updatedAt?: Date; // ISO Date string
+  updatedAt?: Date;
   username?: string;
   facebook?: string;
   instagram?: string;
   twitter?: string;
   whatsapp?: string;
-}
-
-export interface UpdateUserForm {
-  firstName?: string;
-  lastName?: string;
-  dob?:
-    | string
-    | {
-        __type: "Date";
-        iso: string; // ISO Date string
-      };
-  gender?: string;
-  country?: string;
-  avatar?: string;
-  promotionalMails?: boolean;
-  facebook?: string;
-  instagram?: string;
-  twitter?: string;
-  whatsapp?: string;
-  tiktok?: string;
 }
