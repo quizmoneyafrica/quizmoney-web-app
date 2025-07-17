@@ -32,6 +32,12 @@ const WalletApi = {
   //     { headers: getSessionTokenHeaders() }
   //   );
   // },
+   fetchVirtualAccount(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("wallet-accounts", {}, {}, "GET");
+  },
+   fetchBanks(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("banks", {}, {}, "GET");
+  },
   fetchTransactions(page?: {
     page: number;
     limit: number;
@@ -58,9 +64,10 @@ const WalletApi = {
     );
   },
 
-  addBankAccount(data: any): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(`addBankAccount`, { ...data });
+  addBankAccount(data: any,dispatch:any): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(`addBankAccount`, { ...data },dispatch);
   },
+
   verifyAccount(data: {
     email: string;
     accountNumber: string;

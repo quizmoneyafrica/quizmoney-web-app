@@ -9,6 +9,7 @@ import {
   setTransactionsLoading,
   setTransactions,
   setBanks,
+  setVirtualAccount,
 } from "@/app/store/walletSlice";
 import WalletApi from "@/app/api/wallet";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
@@ -47,6 +48,29 @@ function Page() {
         }
     };
 
+    const fetchVirtualAccount = async () => {
+      try {
+        const res = await WalletApi.fetchVirtualAccount();
+        if (res.data || res.success) {
+          dispatch(setVirtualAccount(res?.data));
+        }
+      } catch (error) {
+        console.log(error, "Wallet Error");
+      } finally {
+      }
+    };
+    const fetchBanks = async () => {
+      try {
+        const res = await WalletApi.fetchBanks();
+        if (res.data || res.success) {
+          dispatch(setBanks(res?.data));
+        }
+      } catch (error) {
+        console.log(error, "Wallet Error");
+      } finally {
+      }
+    };
+
     // SET AUTH USER WALLET DATA
     const fetchTransactions = async () => {
       if (transactions.length <= 0)
@@ -65,18 +89,18 @@ function Page() {
     };
 
     // SET LIST OF BANKS
-    const fetchBankList = async () => {
-      if (banks.length <= 0) {
-        try {
-          const response = await WalletApi.listBanks();
-          if (response?.data) {
-            dispatch(setBanks(response.data));
-          }
-        } catch (error) {
-          console.error("ERROR FETCHING BANKS", error);
-        }
-      }
-    };
+    // const fetchBankList = async () => {
+    //   if (banks.length <= 0) {
+    //     try {
+    //       const response = await WalletApi.listBanks();
+    //       if (response?.data) {
+    //         dispatch(setBanks(response.data));
+    //       }
+    //     } catch (error) {
+    //       console.error("ERROR FETCHING BANKS", error);
+    //     }
+    //   }
+    // };
     // if (banks.length <= 0) {
     //   (async () => {
     //     try {
@@ -110,8 +134,9 @@ function Page() {
     // })();
     fetchWallet();
     fetchTransactions();
-    fetchBankList();
-  }, [banks.length, dispatch, transactions, wallet]);
+    fetchBanks();
+    fetchVirtualAccount();
+  }, []);
 
   return (
     <motion.div

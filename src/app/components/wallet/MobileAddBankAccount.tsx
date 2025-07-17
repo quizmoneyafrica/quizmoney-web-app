@@ -10,6 +10,8 @@ import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
 import { setWallet, useWallet } from "@/app/store/walletSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { store } from "@/app/store/store";
+import { UserObject } from "@/app/store/authSlice";
 // import CustomTextField from "@/app/utils/CustomTextField";
 
 // Define bank interface
@@ -74,7 +76,7 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
   const selectedBankCode = watch("bankCode");
 
   const onSubmit = async (data: BankAccountFormData) => {
-    const { email } = await getAuthUser();
+    const { email } = getAuthUser() as UserObject;
 
     try {
       setIsVerifying(true);
@@ -100,13 +102,13 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
       // console.log("isBVNVerified", isBVNVerified);
 
       if (response?.status === "success") {
-        const { account_name, account_number } = response?.data;
+        const { account_number } = response?.data;
         const bankName =
           banks.find((item) => item?.code === data?.bankCode)?.name ?? "";
         addVerifiedAccount({
           accountNumber: account_number,
+          bankCode: data.bankCode,
           bankName,
-          accountName: account_name,
         });
       }
       console.log(response);
@@ -131,16 +133,19 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
 
   const addVerifiedAccount = async (data: {
     accountNumber: string;
+    bankCode: string;
     bankName: string;
-    accountName: string;
   }) => {
     try {
       setIsLoading(true);
-      const response = await WalletApi.addBankAccount({
-        newBankAccount: {
-          ...data,
+      const response = await WalletApi.addBankAccount(
+        {
+          accountNumber: data.accountNumber,
+          bankCode: data.bankCode,
+          bankName: data.bankName,
         },
-      });
+        store.dispatch
+      );
       if (response?.updatedWallet) {
         // dispatch(setWalletLoading(true));
         const res = await WalletApi.fetchCustomerWallet();
@@ -170,8 +175,8 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
         type="button"
         onClick={() =>
           addVerifiedAccount({
-            accountName: "",
             accountNumber: "",
+            bankCode: "",
             bankName: "",
           })
         }

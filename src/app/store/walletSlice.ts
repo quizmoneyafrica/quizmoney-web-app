@@ -14,6 +14,7 @@ interface WalletState {
   withdrawalModal: boolean;
   withdrawalPinModal: boolean;
   addBankAccountModal: boolean;
+  virtualAccount:VirtualAccount|undefined;
   isWalletLoading: boolean;
   isTransactionsLoading: boolean;
   transactions: UserWalletTransaction[] | [];
@@ -27,6 +28,7 @@ export interface Bank {
 const initialState: WalletState = {
   withdrawalModal: false,
   withdrawalData: null,
+  virtualAccount:undefined,
   withdrawalPinModal: false,
   addBankAccountModal: false,
   wallet: undefined,
@@ -65,7 +67,15 @@ export type Wallet = {
   __type: "Object";
   className: "Wallet";
 };
-
+type VirtualAccount = {
+  accountName: string;
+  accountNumber: string;
+  accountType: string;
+  bankName: string;
+  currency: string;
+  paymentProviderName: string;
+  walletId: string;
+};
 export type TransactionType = "deposit" | "withdrawal" | "transfer" | string;
 
 export interface Transaction {
@@ -96,6 +106,9 @@ const walletSlice = createSlice({
   reducers: {
     setWallet(state, action: PayloadAction<Wallet | undefined>) {
       state.wallet = action.payload;
+    },
+    setVirtualAccount(state, action: PayloadAction<VirtualAccount | undefined>) {
+      state.virtualAccount = action.payload;
     },
     setTransactionsLoading(state, action: PayloadAction<boolean>) {
       state.isTransactionsLoading = action.payload;
@@ -133,7 +146,7 @@ const walletSlice = createSlice({
 });
 
 export const {
-  setWallet,
+  setWallet,setVirtualAccount,
   setTransactionsLoading,
   setWalletLoading,
   setTransactions,
