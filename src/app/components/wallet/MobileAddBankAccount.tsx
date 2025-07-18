@@ -86,9 +86,7 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
         accountNumber: data?.accountNumber,
         bankCode: `${data?.bankCode}`.trim(),
       };
-      // console.log("==============payload======================");
-      // console.log(JSON.stringify(payload, null, 2));
-      // console.log("====================================");
+
       const response = await WalletApi.verifyAccount(payload);
       // const response = await WalletApi.verifyBVN(
       //   payload.accountNumber,

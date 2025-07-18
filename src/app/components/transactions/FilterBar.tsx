@@ -26,9 +26,7 @@ export function FilterBar({
       const response = await WalletApi.searchTransactions({
         query,
       });
-      console.log("====================================");
-      console.log(JSON.stringify(response, null, 2));
-      console.log("====================================");
+
       if (response?.groupedTransactions) {
         store.dispatch(setTransactions(response?.groupedTransactions));
       }

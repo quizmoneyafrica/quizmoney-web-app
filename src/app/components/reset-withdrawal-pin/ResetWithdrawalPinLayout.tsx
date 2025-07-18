@@ -36,9 +36,6 @@ export default function ResetWithdrawalPinLayout() {
     try {
       const response = await WalletApi.forgotPin({ email: data.email });
 
-      console.log("====================================");
-      console.log(JSON.stringify(response.data.data, null, 2));
-      console.log("====================================");
       if (response.data) {
         localStorage.setItem("wallet-reset-email", data.email);
         toast.success(response?.message, {
@@ -48,9 +45,6 @@ export default function ResetWithdrawalPinLayout() {
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      console.log("=========ERRO===========================");
-      console.log(err);
-      console.log("====================================");
       toast.error(`${err.message}`, {
         position: toastPosition,
       });
