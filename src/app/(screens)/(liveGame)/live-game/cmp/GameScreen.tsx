@@ -206,11 +206,11 @@ function GameScreen({ setUserTime }: Props) {
     let usedEraserThisQuestion = false;
     // --- answer logic ---
     if (isCorrect) {
-      correctSoundRef.current?.play();
+      // correctSoundRef.current?.play();
       newAnswers[currentIndex] = option;
     } else if (!isCorrect && !eraserUsedAlready && user?.erasers > 0) {
       toSaveAnswer = currentQuestion.correctAnswer;
-      correctSoundRef.current?.play();
+      // correctSoundRef.current?.play();
       newAnswers[currentIndex] = currentQuestion.correctAnswer;
 
       toast.success("Eraser used! Your answer was corrected.", {
@@ -222,7 +222,7 @@ function GameScreen({ setUserTime }: Props) {
       setEraserUsedAlready(true);
       usedEraserThisQuestion = true;
     } else {
-      wrongSoundRef.current?.play();
+      // wrongSoundRef.current?.play();
       newAnswers[currentIndex] = option;
     }
 
@@ -443,12 +443,20 @@ function GameScreen({ setUserTime }: Props) {
                     key={idx}
                     onClick={() => handleOptionClick(option)}
                     disabled={locked}
+                    //       className={`w-full py-3 px-6 min-h-[80px] rounded-full text-left border-4 font-medium transition
+                    //           ${
+                    //             isCorrectSelection
+                    //               ? "bg-positive-900 border-positive-500 text-white"
+                    //               : isWrongSelection
+                    //               ? "bg-error-900 border-error-200 text-white"
+                    //               : "bg-neutral-50 border-neutral-50 text-neutral-900"
+                    //           }
+                    //   ${locked ? "cursor-not-allowed" : ""}
+                    // `}
                     className={`w-full py-3 px-6 min-h-[80px] rounded-full text-left border-4 font-medium transition 
                         ${
-                          isCorrectSelection
-                            ? "bg-positive-900 border-positive-500 text-white"
-                            : isWrongSelection
-                            ? "bg-error-900 border-error-200 text-white"
+                          isCorrectSelection || isWrongSelection
+                            ? "bg-warning-900 border-warning-200 text-white"
                             : "bg-neutral-50 border-neutral-50 text-neutral-900"
                         }
                 ${locked ? "cursor-not-allowed" : ""}
@@ -463,10 +471,10 @@ function GameScreen({ setUserTime }: Props) {
                       </Flex>
                       <span className="text-xl">
                         {isCorrectSelection && (
-                          <CorrectCircleIcon className="text-positive-300" />
+                          <CorrectCircleIcon className="text-positive-300 hidden" />
                         )}
                         {isWrongSelection && (
-                          <WrongCircleIcon className="text-error-100" />
+                          <WrongCircleIcon className="text-error-100 hidden" />
                         )}
                       </span>
                     </Flex>
