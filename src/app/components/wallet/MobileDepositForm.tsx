@@ -6,7 +6,7 @@ import WalletApi from "@/app/api/wallet";
 import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
 import CustomButton from "@/app/utils/CustomBtn";
-import VirtualDetails from "./VirtualDetails";
+import VirtualDetails, { VirtualDetailsProps } from "./VirtualDetails";
 import { useAppDispatch } from "@/app/hooks/useAuth";
 
 const depositFormSchema = z.object({
@@ -30,6 +30,7 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
     "bankTransfer" | "card" | ""
   >("card");
   const [showVirtual, setShowVirtual] = useState(false);
+  const [virtualAmount, setVirtualAmount] = useState<number | null>(null);
   const dispatch = useAppDispatch();
 
   const amountOptions = [
@@ -92,6 +93,7 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
     const totalAmount = baseAmount;
 
     if (selectedPaymentMethod === "bankTransfer") {
+      setVirtualAmount(baseAmount);
       setShowVirtual(true);
     } else {
       try {
@@ -179,17 +181,17 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
             <div className="space-y-4">
               <p className="font-medium">Choose a payment Option</p>
               <div className="space-y-4">
-                {/* <label className="flex items-center gap-2 text-sm bg-white border border-neutral-300 checked:border-primary-900 p-4 rounded-[10px]">
+                <label className="flex items-center gap-2 text-sm bg-white border border-neutral-300 checked:border-primary-900 p-4 rounded-[10px]">
                   <input
                     type="radio"
                     name="paymentMethod"
                     value="bankTransfer"
                     checked={selectedPaymentMethod === "bankTransfer"}
                     onChange={() => setSelectedPaymentMethod("bankTransfer")}
-                    className="accent-blue-600"
+                    className="accent-[#17478B] size-5"
                   />
                   Pay with Bank Transfer
-                </label> */}
+                </label>
 
                 <label className="flex items-center gap-2 text-sm bg-white border border-neutral-300 checked:border-primary-900 p-4 rounded-[10px]">
                   <input
@@ -198,12 +200,9 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
                     value="card"
                     checked={selectedPaymentMethod === "card"}
                     onChange={() => setSelectedPaymentMethod("card")}
-                    className="accent-blue-600"
+                    className="accent-[#17478B] size-5"
                   />
                   Pay with PayStack{" "}
-                  {/* <span className="text-neutral-500 italic">
-                    (Debit or Credit)
-                  </span> */}
                 </label>
               </div>
             </div>
@@ -223,7 +222,7 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
           </form>
         </div>
       ) : (
-        <VirtualDetails />
+        <VirtualDetails amount={virtualAmount || 0} />
       )}
     </>
   );

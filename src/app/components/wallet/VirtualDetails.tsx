@@ -1,19 +1,57 @@
 "use client";
 import { BankIcon } from "@/app/icons/icons";
+import { store } from "@/app/store/store";
+import { useWallet } from "@/app/store/walletSlice";
 import CustomButton from "@/app/utils/CustomBtn";
 import { formatNaira } from "@/app/utils/utils";
 import { LucideCopy } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { toast } from "sonner";
 
-function VirtualDetails() {
+export type VirtualDetailsProps = { amount?: number };
+function VirtualDetails({ amount = 1000 }: VirtualDetailsProps) {
+  const { virtualAccount } = useSelector(useWallet);
+
+  console.log("====================================");
+  console.log(virtualAccount);
+  console.log("====================================");
+
+  // wallet-accounts
+
+  const handleCopyAll = async () => {
+    const details = `Account Number: ${
+      virtualAccount?.accountNumber || ""
+    }\nBank Name: ${virtualAccount?.bankName || ""}\nAmount: ${formatNaira(
+      amount,
+      true
+    )}`;
+    try {
+      await navigator.clipboard.writeText(details);
+      toast.success("All account details copied!", { position: "top-center" });
+    } catch (err) {
+      console.error("Failed to copy all details:", err);
+      toast.error("Failed to copy account details.", {
+        position: "top-center",
+      });
+    }
+  };
+
   return (
     <div className="space-y-4 pt-3 border-t border-neutral-100">
       <div className="bg-primary-50 p-4 rounded-[10px] space-y-6">
-        <CardCopy title="Account Number" value="9944184241" />
-        <CardCopy title="Bank Name" value="Paystack-Titan" />
-        <CardCopy title="Amount" value={`${formatNaira(1000, true)}`} />
-        <CustomButton width="full">Copy account details</CustomButton>
+        <CardCopy
+          title="Account Number"
+          value={virtualAccount?.accountNumber as string}
+        />
+        <CardCopy
+          title="Bank Name"
+          value={virtualAccount?.bankName as string}
+        />
+        <CardCopy title="Amount" value={`${formatNaira(amount, true)}`} />
+        <CustomButton width="full" onClick={handleCopyAll}>
+          Copy account details
+        </CustomButton>
       </div>
       <div className="bg-warning-50 p-4 rounded-[10px] border border-warning-500 flex gap-2 items-start">
         <div>⚠</div>
