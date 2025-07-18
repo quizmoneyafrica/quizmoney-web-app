@@ -7,6 +7,7 @@ import coinReducer from "./coinSlice";
 import notificationReducer from "./notificationSlice";
 import leaderboardReducer from "./leaderboardSlice";
 import storeReducer from "./storeSlice";
+import stompSub from "./stompSlice";
 
 import { createFilter } from "redux-persist-transform-filter";
 
@@ -51,6 +52,7 @@ export const store = configureStore({
     leaderboard: leaderboardReducer,
     store: storeReducer,
     coin: coinReducer,
+    stompSub: stompSub,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
