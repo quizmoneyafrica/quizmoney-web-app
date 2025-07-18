@@ -222,7 +222,7 @@ function GameScreen({ setUserTime }: Props) {
       setEraserUsedAlready(true);
       usedEraserThisQuestion = true;
     } else {
-      wrongSoundRef.current?.play();
+      // wrongSoundRef.current?.play();
       newAnswers[currentIndex] = option;
     }
 
