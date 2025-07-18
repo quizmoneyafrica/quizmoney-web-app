@@ -14,7 +14,7 @@ interface WalletState {
   withdrawalModal: boolean;
   withdrawalPinModal: boolean;
   addBankAccountModal: boolean;
-  virtualAccount:VirtualAccount|undefined;
+  virtualAccount: VirtualAccount | undefined;
   isWalletLoading: boolean;
   isTransactionsLoading: boolean;
   transactions: UserWalletTransaction[] | [];
@@ -28,7 +28,7 @@ export interface Bank {
 const initialState: WalletState = {
   withdrawalModal: false,
   withdrawalData: null,
-  virtualAccount:undefined,
+  virtualAccount: undefined,
   withdrawalPinModal: false,
   addBankAccountModal: false,
   wallet: undefined,
@@ -48,25 +48,35 @@ export type BankAccount = {
   bankName: string;
   accountName: string;
 };
-export type Wallet = {
-  user: {
-    __type: "Pointer";
-    className: "_User";
-    objectId: string;
-  };
-  balance: string;
-  lastPaymentDate: {
-    __type: "Date";
-    iso: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-  bankAccounts: BankAccount[];
-  pin: string;
-  objectId: string;
-  __type: "Object";
-  className: "Wallet";
-};
+export interface Wallet {
+  id: string;
+  bookBalance: number;
+  availableBalance: number;
+  pendingBalance: number;
+  currency: string;
+  walletAccountNumber: string;
+  walletAccountName: string;
+  bankName: string;
+}
+// export type Wallet = {
+//   user: {
+//     __type: "Pointer";
+//     className: "_User";
+//     objectId: string;
+//   };
+//   balance: string;
+//   lastPaymentDate: {
+//     __type: "Date";
+//     iso: string;
+//   };
+//   createdAt: string;
+//   updatedAt: string;
+//   bankAccounts: BankAccount[];
+//   pin: string;
+//   objectId: string;
+//   __type: "Object";
+//   className: "Wallet";
+// };
 type VirtualAccount = {
   accountName: string;
   accountNumber: string;
@@ -107,7 +117,10 @@ const walletSlice = createSlice({
     setWallet(state, action: PayloadAction<Wallet | undefined>) {
       state.wallet = action.payload;
     },
-    setVirtualAccount(state, action: PayloadAction<VirtualAccount | undefined>) {
+    setVirtualAccount(
+      state,
+      action: PayloadAction<VirtualAccount | undefined>
+    ) {
       state.virtualAccount = action.payload;
     },
     setTransactionsLoading(state, action: PayloadAction<boolean>) {
@@ -116,9 +129,9 @@ const walletSlice = createSlice({
     setWalletLoading(state, action: PayloadAction<boolean>) {
       state.isWalletLoading = action.payload;
     },
-    setWalletBalance(state, action: PayloadAction<string>) {
+    setWalletBalance(state, action: PayloadAction<number>) {
       if (state.wallet) {
-        state.wallet.balance = action.payload;
+        state.wallet.availableBalance = action.payload;
       }
     },
     setTransactions(
@@ -146,7 +159,8 @@ const walletSlice = createSlice({
 });
 
 export const {
-  setWallet,setVirtualAccount,
+  setWallet,
+  setVirtualAccount,
   setTransactionsLoading,
   setWalletLoading,
   setTransactions,
