@@ -126,18 +126,28 @@ export default function WalletBalance() {
 
             <QmDrawer
               open={withdrawalModal}
-              onOpenChange={(val) => store.dispatch(setWithdrawalModal(val))}
+              onOpenChange={(val) => {
+                if (wallet?.pin && val === true) {
+                  store.dispatch(setWithdrawalModal(val));
+                  return;
+                } else if (!wallet?.pin && val === true) {
+                  store.dispatch(setWithdrawalPinModal(true));
+                  return;
+                }
+
+                store.dispatch(setWithdrawalModal(val));
+              }}
               title="Withdraw"
               titleLeft
               heightClass="h-[75%] md:h-[55%] lg:h-[80%]"
               trigger={
                 <button
                   onClick={() => {
-                    if (wallet?.pin) {
-                      store.dispatch(setWithdrawalModal(true));
-                    } else {
-                      store.dispatch(setWithdrawalPinModal(true));
-                    }
+                    // if (wallet?.pin) {
+                    //   store.dispatch(setWithdrawalModal(true));
+                    // } else {
+                    //   store.dispatch(setWithdrawalPinModal(true));
+                    // }
                   }}
                   className="bg-[#E4F1FA] cursor-pointer hover:bg-gray-100 text-primary-700  px-4 py-2 text-sm rounded-full flex items-center gap-0 md:gap-2 font-medium md:px-6 md:py-3 md:text-base"
                 >
