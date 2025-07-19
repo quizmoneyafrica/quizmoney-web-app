@@ -38,8 +38,8 @@ function Page() {
         try {
           dispatch(setWalletLoading(true));
           const res = await WalletApi.fetchCustomerWallet();
-          if (res?.wallet) {
-            dispatch(setWallet(res?.wallet));
+          if (res?.data) {
+            dispatch(setWallet(res?.data));
           }
         } catch (error) {
           console.log(error, "Wallet Error");

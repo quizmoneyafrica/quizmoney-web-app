@@ -45,6 +45,25 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const dropdownContentRef = useRef<HTMLDivElement>(null);
+  const [showBankList, setShowBankList] = useState(false);
+  const bankListRef = useRef<HTMLDivElement>(null);
+
+  // Custom click outside handler for bank list
+  useEffect(() => {
+    if (!showBankList) return;
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        bankListRef.current &&
+        !bankListRef.current.contains(event.target as Node)
+      ) {
+        setShowBankList(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showBankList]);
 
   const dispatch = useDispatch();
 
@@ -123,6 +142,10 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
         store.dispatch
       );
       if (response?.success || response?.data || response.code === 200) {
+        const res = await WalletApi.fetchCustomerWallet();
+        if (res.data) {
+          store.dispatch(setWallet(res.data));
+        }
         toast.success(response.data?.message, {
           position: toastPosition,
         });
@@ -141,11 +164,14 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
   // Get selected bank details
   const selectedBank = banks.find((bank) => bank.code === selectedBankCode);
 
-  const handleBankSelect = (bankCode: string) => {
-    setValue("bankCode", bankCode, { shouldValidate: true });
-    setIsDropdownOpen(false);
+  const handleBankInputFocus = () => {
+    setShowBankList(true);
+  };
+
+  const handleBankClick = (bank: Bank) => {
+    setValue("bankCode", bank.code, { shouldValidate: true });
+    setShowBankList(false);
     setSearchTerm("");
-    setIsSearchFocused(false);
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -176,13 +202,8 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
       return;
     }
 
-    // Use a small delay to handle click events on dropdown items
-    setTimeout(() => {
-      setIsSearchFocused(false);
-      if (!isDropdownOpen) {
-        setSearchTerm("");
-      }
-    }, 150);
+    // Do not close dropdown or clear searchTerm on blur; let user action handle it
+    setIsSearchFocused(false);
   };
 
   // Handle dropdown open change
@@ -203,11 +224,6 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
         searchInputRef.current?.focus();
       }, 0);
     }
-  };
-
-  // Handle clicking on dropdown items
-  const handleDropdownItemClick = (bankCode: string) => {
-    handleBankSelect(bankCode);
   };
 
   // Prevent dropdown from closing when clicking inside search area
@@ -252,88 +268,58 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
         >
           Select Bank
         </label>
-        <div className="relative">
-          <DropdownMenu.Root
-            open={isDropdownOpen}
-            onOpenChange={handleDropdownOpenChange}
-          >
-            <DropdownMenu.Trigger asChild>
-              <button
-                type="button"
-                className={`w-full border ${
-                  errors.bankCode ? "border-red-500" : "border-gray-300"
-                } rounded-lg p-3 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-primary-900 bg-white`}
-                disabled={isLoadingBanks}
-              >
-                <span className="text-left">
-                  {isLoadingBanks
-                    ? "Loading banks..."
-                    : selectedBank?.name || "Select a bank"}
-                </span>
-                <ChevronDown
-                  className={`h-5 w-5 text-gray-400 transition-transform duration-200 ${
-                    isDropdownOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-            </DropdownMenu.Trigger>
-
-            <DropdownMenu.Portal>
-              <DropdownMenu.Content
-                ref={dropdownContentRef}
-                className="bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-[35dvh] overflow-hidden min-w-[var(--radix-dropdown-menu-trigger-width)]"
-                align="start"
-                side="bottom"
-                sideOffset={4}
-              >
-                <div
-                  className="p-2 border-b border-gray-200 sticky top-0 bg-white"
-                  onMouseDown={handleSearchContainerMouseDown}
-                >
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <input
-                      ref={searchInputRef}
-                      type="text"
-                      placeholder="Search banks..."
-                      value={searchTerm}
-                      onChange={handleSearchChange}
-                      onFocus={handleSearchInputFocus}
-                      onBlur={handleSearchInputBlur}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
+        <div className="relative" ref={bankListRef}>
+          <input
+            type="text"
+            placeholder={
+              isLoadingBanks ? "Loading banks..." : "Search banks..."
+            }
+            value={searchTerm}
+            onChange={handleSearchChange}
+            onFocus={handleBankInputFocus}
+            disabled={isLoadingBanks}
+            className={`w-full border ${
+              errors.bankCode ? "border-red-500" : "border-gray-300"
+            } rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white`}
+            autoComplete="off"
+          />
+          {/* Show selected bank below input if one is selected */}
+          {selectedBank && !showBankList && (
+            <div className="mt-2 text-sm text-gray-700">
+              Selected: {selectedBank.name}
+            </div>
+          )}
+          {/* Bank list dropdown */}
+          {showBankList && (
+            <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+              {isLoadingBanks ? (
+                <div className="p-3 text-gray-500 text-center">
+                  Loading banks...
                 </div>
-
-                <div className="overflow-y-auto max-h-[30dvh]">
-                  {isLoadingBanks ? (
-                    <div className="p-3 text-gray-500 text-center">
-                      Loading banks...
-                    </div>
-                  ) : filteredBanks.length > 0 ? (
-                    filteredBanks.map((bank) => (
-                      <DropdownMenu.Item
-                        key={bank.id}
-                        className="w-full text-left p-3 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none cursor-pointer flex items-center data-[highlighted]:bg-gray-100"
-                        onSelect={() => handleDropdownItemClick(bank.code)}
-                      >
-                        {bank.name}
-                      </DropdownMenu.Item>
-                    ))
-                  ) : searchTerm.trim() ? (
-                    <div className="p-3 text-gray-500 text-center">
-                      No banks found matching "{searchTerm}"
-                    </div>
-                  ) : (
-                    <div className="p-3 text-gray-500 text-center">
-                      No banks available
-                    </div>
-                  )}
+              ) : filteredBanks.length > 0 ? (
+                filteredBanks.map((bank) => (
+                  <button
+                    type="button"
+                    key={bank.id}
+                    className={`w-full text-left p-3 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none cursor-pointer flex items-center ${
+                      selectedBankCode === bank.code ? "bg-gray-100" : ""
+                    }`}
+                    onClick={() => handleBankClick(bank)}
+                  >
+                    {bank.name}
+                  </button>
+                ))
+              ) : searchTerm.trim() ? (
+                <div className="p-3 text-gray-500 text-center">
+                  No banks found matching "{searchTerm}"
                 </div>
-              </DropdownMenu.Content>
-            </DropdownMenu.Portal>
-          </DropdownMenu.Root>
-
+              ) : (
+                <div className="p-3 text-gray-500 text-center">
+                  No banks available
+                </div>
+              )}
+            </div>
+          )}
           {errors.bankCode && (
             <p className="text-red-500 text-sm mt-1">
               {errors.bankCode.message}
