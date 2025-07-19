@@ -10,9 +10,10 @@ import {
   setTransactions,
   setBanks,
   setVirtualAccount,
+  setWalletBalance,
 } from "@/app/store/walletSlice";
 import WalletApi from "@/app/api/wallet";
-import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
+import { useAppDispatch, useAppSelector, useAuth } from "@/app/hooks/useAuth";
 import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
@@ -92,7 +93,7 @@ function Page() {
     // const fetchBankList = async () => {
     //   if (banks.length <= 0) {
     //     try {
-    //       const response = await WalletApi.listBanks();
+    //       const response = await WalletApi.fetchBanks();
     //       if (response?.data) {
     //         dispatch(setBanks(response.data));
     //       }
@@ -136,7 +137,7 @@ function Page() {
     fetchTransactions();
     fetchBanks();
     fetchVirtualAccount();
-  }, []);
+  }, [banks.length, dispatch, transactions.length, wallet]);
 
   return (
     <motion.div

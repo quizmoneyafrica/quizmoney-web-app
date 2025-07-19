@@ -72,7 +72,7 @@ export default function WalletBalance() {
                 {isBalanceHidden
                   ? "****"
                   : `${formatNaira(
-                      wallet?.balance ? wallet?.balance : "0",
+                      wallet?.availableBalance ? wallet?.availableBalance : "0",
                       true
                     )}`}
               </span>
