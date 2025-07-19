@@ -45,7 +45,7 @@ export default function WithdrawalAccounts() {
         }))
       );
     }
-  }, [wallet?.bankAccounts]);
+  }, [wallet]);
 
   // useEffect(() => {
   //   const checkIfMobile = () => {

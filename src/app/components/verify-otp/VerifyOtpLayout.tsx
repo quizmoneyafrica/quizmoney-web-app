@@ -113,9 +113,6 @@ export default function VerifyOtpLayout() {
     try {
       const response = await WalletApi.forgotPin({ email: localEmail });
 
-      console.log("====================================");
-      console.log(JSON.stringify(response.data.data, null, 2));
-      console.log("====================================");
       if (response.data) {
         toast.success(response?.message, {
           position: toastPosition,
