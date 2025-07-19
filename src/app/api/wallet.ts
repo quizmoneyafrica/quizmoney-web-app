@@ -65,7 +65,7 @@ const WalletApi = {
   },
 
   addBankAccount(data: any,dispatch:any): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(`addBankAccount`, { ...data },dispatch);
+    return callWithSessionToken<ApiResponse>(`payout-accounts`, { ...data },dispatch);
   },
 
   verifyAccount(data: {
