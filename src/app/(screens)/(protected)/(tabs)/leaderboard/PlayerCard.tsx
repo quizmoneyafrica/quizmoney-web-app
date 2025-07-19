@@ -93,7 +93,8 @@ const PlayerCard = ({ player, activeTab }: PlayerCardProps) => {
             <span>
               {isLastGamePlayer(player)
                 ? lastGamePlayer?.user?.firstName || ""
-                : allTimePlayer?.firstName || ""}
+                : allTimePlayer?.firstName || ""}{" "}
+              {/* <span>{user?.kycVerified && <VerifiedBadge />}</span> */}
             </span>
           </div>
         </Table.Cell>

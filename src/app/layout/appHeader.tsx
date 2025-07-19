@@ -12,6 +12,7 @@ import {
   PersonIcon,
   QMCoin,
   SupportIcon,
+  VerifiedBadge,
 } from "../icons/icons";
 import { useAppSelector } from "../hooks/useAuth";
 import { decryptData } from "../utils/crypto";
@@ -113,14 +114,17 @@ function AppHeader() {
                 <CircleArrowLeft />
               </button>
             )}
-            <span className=" lg:flex">
+            <span className="flex items-center gap-1">
               {lastSegment === "Home"
-                ? `Welcome, ${user?.firstName} 👋`
+                ? `Welcome, ${user?.firstName}`
                 : isVerifyOtp()
                 ? " Reset Pin"
                 : isPin()
                 ? " Reset Pin"
                 : lastSegment}
+              {lastSegment === "Home"
+                ? user.kycVerified && <VerifiedBadge />
+                : "👋"}
             </span>
           </div>
 

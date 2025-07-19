@@ -19,6 +19,7 @@ import { Flex, Table } from "@radix-ui/themes";
 import LastGameResultCard from "./components/LastGameResultCard";
 import AdBanner from "@/app/components/advert/adBanner";
 import ShowPlayerData from "./ShowPlayerData";
+import { getAuthUser } from "@/app/api/userApi";
 
 function Page() {
   const [activeTab, setActiveTab] = useState<"lastGame" | "allTime">(
@@ -29,6 +30,8 @@ function Page() {
 
   const dispatch = useDispatch();
   const { lastGame, allTime } = useAppSelector((state) => state.leaderboard);
+  const user = getAuthUser();
+  console.log("THIS USER DATA:", user);
 
   const isAllTimeLeaderboardData = (
     data: typeof leaderboardData

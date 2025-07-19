@@ -5,7 +5,12 @@ import { User } from "@/app/api/interface";
 import userApi, { getAuthUser } from "@/app/api/userApi";
 import ImagePickerModal from "@/app/components/modal/ImagePickerModal";
 import { useAppSelector, useAuth } from "@/app/hooks/useAuth";
-import { ArrowDownIcon, MailIcon, PersonIcon } from "@/app/icons/icons";
+import {
+  ArrowDownIcon,
+  MailIcon,
+  PersonIcon,
+  VerifiedBadge,
+} from "@/app/icons/icons";
 import { decryptData, encryptData } from "@/app/utils/crypto";
 import CustomButton from "@/app/utils/CustomBtn";
 import CustomSelect from "@/app/utils/CustomSelect";
@@ -161,8 +166,11 @@ const Page = () => {
                   >
                     Change Image
                   </p>
-                  <p className=" font-semibold capitalize">
-                    {user?.firstName} {user?.lastName} 🇳🇬
+                  <p className=" font-semibold capitalize flex items-center gap-1">
+                    <span>
+                      {user?.firstName} {user?.lastName}
+                    </span>{" "}
+                    <span>{user?.kycVerified && <VerifiedBadge />}</span>
                   </p>
                   <p className=" font-light">{user?.email}</p>
                   <p className=" font-light text-xs block sm:hidden">

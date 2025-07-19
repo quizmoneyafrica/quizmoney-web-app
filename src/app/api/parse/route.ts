@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error("Proxy error:", err);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "An error occurred, please try again." },
       { status: 500 }
     );
   }
