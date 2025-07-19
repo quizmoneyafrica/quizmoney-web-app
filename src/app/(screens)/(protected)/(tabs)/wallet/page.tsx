@@ -10,10 +10,9 @@ import {
   setTransactions,
   setBanks,
   setVirtualAccount,
-  setWalletBalance,
 } from "@/app/store/walletSlice";
 import WalletApi from "@/app/api/wallet";
-import { useAppDispatch, useAppSelector, useAuth } from "@/app/hooks/useAuth";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
