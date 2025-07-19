@@ -13,6 +13,7 @@ import { LeaveGameModal } from "./leaveGameModal";
 import { Grid } from "@radix-ui/themes";
 import CustomButton from "@/app/utils/CustomBtn";
 import { clearLeaderboards } from "@/app/store/leaderboardSlice";
+import { toast } from "sonner";
 
 type Props = {
   startDate: string;
@@ -80,7 +81,7 @@ export default function CountdownScreen({ startDate }: Props) {
       const diff = differenceInSeconds(new Date(startDate), new Date());
       setSecondsLeft(diff);
 
-      if (diff > 0 && diff <= 300) {
+      if (diff > 0 && diff <= 1800) {
         if (audioRef.current && userInteracted.current) {
           audioRef.current.play().catch(() => {});
         }
@@ -109,7 +110,7 @@ export default function CountdownScreen({ startDate }: Props) {
     };
   }, [startDate, dispatch, router, showGameCountdown, liveGameData?.objectId]);
 
-  if (!showGameCountdown || secondsLeft < 0 || secondsLeft > 300) return null;
+  if (!showGameCountdown || secondsLeft < 0 || secondsLeft > 1800) return null;
 
   const minutes = Math.floor(secondsLeft / 60);
   const seconds = secondsLeft % 60;
@@ -120,6 +121,11 @@ export default function CountdownScreen({ startDate }: Props) {
     exit: { scale: 0.8, opacity: 0 },
   };
 
+  const handleQuit = () => {
+    toast.info("Hello");
+    router.replace("/home");
+    dispatch(setOpenLeaveGame(true));
+  };
   return (
     <div className="fixed z-[9999] inset-0 bg-primary-900 hero text-white ">
       <div className="relative flex flex-col items-center justify-center px-10 w-full h-full max-w-lg mx-auto">
@@ -138,7 +144,7 @@ export default function CountdownScreen({ startDate }: Props) {
             </motion.div>
           </AnimatePresence>
         ) : (
-          <>
+          <div>
             <div className="w-full h-full mx-auto max-w-lg space-y-6 flex flex-col items-center justify-center ">
               <Grid gap="3" className="w-full">
                 <div className="bg-primary-50 text-sm border-4 border-primary-500 rounded-[10px] px-4 py-4 space-y-4">
@@ -170,7 +176,7 @@ export default function CountdownScreen({ startDate }: Props) {
               </Grid>
               <div className="w-full ">
                 <CustomButton
-                  onClick={() => dispatch(setOpenLeaveGame(true))}
+                  onClick={handleQuit}
                   width="full"
                   className="!bg-secondary-500 !text-neutral-900"
                 >
@@ -180,7 +186,7 @@ export default function CountdownScreen({ startDate }: Props) {
             </div>
 
             <LeaveGameModal />
-          </>
+          </div>
         )}
       </div>
     </div>

@@ -6,7 +6,7 @@ import { useAuth } from "@/app/hooks/useAuth";
 import useFcmToken from "@/app/hooks/useFcmToken";
 import { EyeIcon, EyeSlash, MailIcon } from "@/app/icons/icons";
 import getDeviceId from "@/app/pwa/deviceId";
-import { encryptData } from "@/app/utils/crypto";
+import { decryptData, encryptData } from "@/app/utils/crypto";
 import CustomButton from "@/app/utils/CustomBtn";
 import CustomTextField from "@/app/utils/CustomTextField";
 import {
@@ -17,7 +17,7 @@ import {
 import { Flex } from "@radix-ui/themes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 type Props = {
@@ -32,10 +32,26 @@ const LoginForm = ({ loading, setLoading }: Props) => {
   const { token, notificationPermissionStatus } = useFcmToken();
   const { loginUser } = useAuth();
   const router = useRouter();
+  const [ipAddress, setIpAddress] = useState("");
+
+  useEffect(() => {
+    const fetchIP = async () => {
+      try {
+        const res = await fetch("/api/app-info");
+        const data = await res.json();
+        setIpAddress(decryptData(data));
+      } catch (err) {
+        console.error("Could not fetch IP:", err);
+      }
+    };
+
+    fetchIP();
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
     if (
       notificationPermissionStatus &&
       notificationPermissionStatus !== "granted"
@@ -57,154 +73,136 @@ const LoginForm = ({ loading, setLoading }: Props) => {
       password: password,
       deviceToken: token || "",
       deviceId: deviceId,
+      ipAddress: ipAddress,
     };
     try {
       const response = await UserAPI.login(newValues);
-      const userData = response.data.result;
+      const userData = response;
+      console.log(response);
+      if (userData?.emailVerified) {
+        // Encrypt the user data
+        const encryptedUser = encryptData(userData);
 
-      // if (userData?.emailVerified) {
-      // Encrypt the user data
-      const encryptedUser = encryptData(userData);
+        // Dispatch to Redux
+        loginUser(encryptedUser);
 
-      // Dispatch to Redux
-      loginUser(encryptedUser);
+        router.replace("/home");
 
-      router.replace("/home");
+        toast.success(
+          `Welcome Back ${capitalizeFirstLetter(userData?.firstName)}`,
+          {
+            position: "top-center",
+          }
+        );
+      } else {
+        sessionStorage.setItem("pass", password);
+        verifyEmail(userData?.email, userData?.firstName);
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      console.log("invalid", err);
 
-      toast.success(
-        `Welcome Back ${capitalizeFirstLetter(userData?.firstName)}`,
+      toast.error(`${err.message}`, {
+        position: toastPosition,
+      });
+      setLoading(false);
+    }
+  };
+
+  const verifyEmail = async (email: string, firstName: string) => {
+    try {
+      await UserAPI.resendSignupOtp(email);
+      router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+      toast.error(
+        `${capitalizeFirstLetter(firstName)} please verify your email.`,
         {
           position: "top-center",
         }
       );
-      // } else {
-      //   sessionStorage.setItem("pass", password);
-      //   verifyEmail(userData?.email, userData?.firstName);
-      // }
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      setLoading(false);
-      toast.error(`${err.response.data.error}`, {
+      console.log("ERROR Forgot Password", err);
+      toast.error(`${err.message}`, {
         position: toastPosition,
       });
+      setLoading(false);
     }
   };
-  // const handleGoogleAuth = () => {
-  //   toast.info("Google Sign in Coming soon", {
-  //     position: toastPosition,
-  //     icon: <GoogleIcon />,
-  //   });
-  // };
-  // const handleFacebookAuth = () => {
-  //   toast.info("Facebook Sign in Coming soon", {
-  //     position: toastPosition,
-  //     icon: <FacebookIcon />,
-  //   });
-  // };
-  // const handleAppleAuth = () => {
-  //   toast.info("Apple Sign in Coming soon", {
-  //     position: toastPosition,
-  //     icon: <AppleIcon />,
-  //   });
-  // };
-
-  // const verifyEmail = async (email: string, firstName: string) => {
-  //   try {
-  //     const response = await UserAPI.resendSignupOtp(email);
-  //     if (response.status === 200) {
-  //       router.push(`/verify-email?email=${encodeURIComponent(email)}`);
-  //       toast.error(
-  //         `${capitalizeFirstLetter(firstName)} please verify your email.`,
-  //         {
-  //           position: "top-center",
-  //         }
-  //       );
-  //     }
-
-  //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //   } catch (err: any) {
-  //     console.log("ERROR Forgot Password", err);
-  //     toast.error(`${err.response.data.error}`, {
-  //       position: toastPosition,
-  //     });
-  //   }
-  // };
   return (
-    <>
-      <form onSubmit={handleLogin}>
-        <Flex direction="column" gap="4">
-          <CustomTextField
-            label="Email"
-            name="email"
-            value={email}
-            type="email"
-            autoComplete="email"
-            placeholder="Enter your email"
-            onChange={(e) => setEmail(e.target.value)}
-            icon={<MailIcon className="text-[#A6ABC4]" />}
-            disabled={loading}
-          />
-          <CustomTextField
-            label="Password"
-            name="password"
-            value={password}
-            type={showPassword ? "text" : "password"}
-            autoComplete="current-password"
-            placeholder="Enter your password"
-            onChange={(e) => setPassword(e.target.value)}
-            icon={
-              showPassword ? (
-                <EyeIcon
-                  className="text-[#A6ABC4]"
-                  onClick={() => setShowPassword(false)}
-                />
-              ) : (
-                <EyeSlash
-                  className="text-[#A6ABC4]"
-                  onClick={() => setShowPassword(true)}
-                />
-              )
-            }
-            disabled={loading}
-          />
-
-          <Flex justify="end">
-            <Link
-              href="/forgot-password"
-              className="underline underline-offset-4 text-primary-900"
-            >
-              Forgot your password?
-            </Link>
-          </Flex>
-          <div className="pt-4 w-full">
-            {!loading ? (
-              <CustomButton
-                type="submit"
-                width="full"
-                disabled={!isValidEmail(email) || password === ""}
-              >
-                Login
-              </CustomButton>
+    <form onSubmit={handleLogin}>
+      <Flex direction="column" gap="4">
+        <CustomTextField
+          label="Email"
+          name="email"
+          value={email}
+          type="email"
+          autoComplete="email"
+          placeholder="Enter your email"
+          onChange={(e) => setEmail(e.target.value)}
+          icon={<MailIcon className="text-[#A6ABC4]" />}
+          disabled={loading}
+        />
+        <CustomTextField
+          label="Password"
+          name="password"
+          value={password}
+          type={showPassword ? "text" : "password"}
+          autoComplete="current-password"
+          placeholder="Enter your password"
+          onChange={(e) => setPassword(e.target.value)}
+          icon={
+            showPassword ? (
+              <EyeIcon
+                className="text-[#A6ABC4]"
+                onClick={() => setShowPassword(false)}
+              />
             ) : (
-              <CustomButton type="button" width="full" loader disabled />
-            )}
-          </div>
-          <div className="py-4 space-y-6">
-            <SocialFollow />
-            <p className="text-center">
-              Don&apos;t have an account yet?{" "}
-              <Link
-                href="/signup"
-                className="text-primary-900 font-medium underline underline-offset-2"
-              >
-                Sign up
-              </Link>
-            </p>
-            <NLRC />
-          </div>
+              <EyeSlash
+                className="text-[#A6ABC4]"
+                onClick={() => setShowPassword(true)}
+              />
+            )
+          }
+          disabled={loading}
+        />
+
+        <Flex justify="end">
+          <Link
+            href="/forgot-password"
+            className="underline underline-offset-4 text-primary-900"
+          >
+            Forgot your password?
+          </Link>
         </Flex>
-      </form>
-    </>
+        <div className="pt-4 w-full">
+          {!loading ? (
+            <CustomButton
+              type="submit"
+              width="full"
+              disabled={!isValidEmail(email) || password === ""}
+            >
+              Login
+            </CustomButton>
+          ) : (
+            <CustomButton type="button" width="full" loader disabled />
+          )}
+        </div>
+        <div className="py-4 space-y-6">
+          <p className="text-center pb-3">
+            Don&apos;t have an account yet?{" "}
+            <Link
+              href="/signup"
+              className="text-primary-900 font-medium underline underline-offset-2"
+            >
+              Sign up
+            </Link>
+          </p>
+          <SocialFollow />
+          <NLRC />
+        </div>
+      </Flex>
+    </form>
   );
 };
 export default LoginForm;

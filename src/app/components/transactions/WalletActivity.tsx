@@ -24,8 +24,12 @@ const PAGE_SIZE = 15;
 export default function WalletActivity(): React.ReactElement {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [selectedFilter, setSelectedFilter] = React.useState<FilterType>(FilterType.ALL);
-  const [filteredTransactions, setFilteredTransactions] = useState<UserWalletTransaction[]>([]);
+  const [selectedFilter, setSelectedFilter] = React.useState<FilterType>(
+    FilterType.ALL
+  );
+  const [filteredTransactions, setFilteredTransactions] = useState<
+    UserWalletTransaction[]
+  >([]);
   const dispatch = useDispatch();
   const { transactions, isTransactionsLoading } = useSelector(useWallet);
 
@@ -39,14 +43,16 @@ export default function WalletActivity(): React.ReactElement {
     }
 
     // For COMPLETED and PENDING, filter the transactions
-    const filtered = transactions.map((dateGroup: UserWalletTransaction) => ({
-      ...dateGroup,
-      transactions: dateGroup.transactions.filter((transaction) => 
-        selectedFilter === FilterType.COMPLETED 
-          ? transaction.status?.toLowerCase() === 'completed'
-          : transaction.status?.toLowerCase() === 'pending'
-      )
-    })).filter((group) => group.transactions.length > 0);
+    const filtered = transactions
+      .map((dateGroup: UserWalletTransaction) => ({
+        ...dateGroup,
+        transactions: dateGroup.transactions.filter((transaction) =>
+          selectedFilter === FilterType.COMPLETED
+            ? transaction.status?.toLowerCase() === "completed"
+            : transaction.status?.toLowerCase() === "pending"
+        ),
+      }))
+      .filter((group) => group.transactions.length > 0);
 
     setFilteredTransactions(filtered);
   }, [selectedFilter, transactions]);
@@ -56,11 +62,14 @@ export default function WalletActivity(): React.ReactElement {
       try {
         dispatch(setTransactionsLoading(true));
         const res = await WalletApi.fetchTransactions({
-          page, 
+          page,
           limit: PAGE_SIZE,
         });
+        const data = res;
+        console.log("=================TRANSACTIONS===================");
+        console.log(JSON.stringify(res, null, 2));
+        console.log("=================TRANSACTIONS===================");
 
-        const data = res?.data?.result;
         if (data?.groupedTransactions) {
           dispatch(setTransactions(data?.groupedTransactions));
           setTotalPages(data?.totalPages || 1);
@@ -154,7 +163,10 @@ export default function WalletActivity(): React.ReactElement {
 
   return (
     <div className="py-5">
-      <FilterBar setSelectedFilter={setSelectedFilter} selectedFilter={selectedFilter} />
+      <FilterBar
+        setSelectedFilter={setSelectedFilter}
+        selectedFilter={selectedFilter}
+      />
       <div className="w-full gap-4 md:gap-8 flex flex-col">
         {isTransactionsLoading ? (
           renderSkeletonLoader()
@@ -184,11 +196,13 @@ export default function WalletActivity(): React.ReactElement {
 
 export const renderEmptyState = (): JSX.Element => (
   <div className="flex flex-col items-center justify-center py-44 px-4 bg-white rounded-lg">
-    <CustomImage
-      alt="empty-transactions"
-      src="/icons/empty-state.svg"
-      className="w-16 h-16 mb-4"
-    />
+    <div>
+      <CustomImage
+        alt="empty-transactions"
+        src="/icons/empty-state.svg"
+        className="w-16 h-16 mb-4"
+      />
+    </div>
     <p className="text-gray-500 text-center text-sm md:text-base">
       {"You've not made any recent"} <br />
       transactions yet

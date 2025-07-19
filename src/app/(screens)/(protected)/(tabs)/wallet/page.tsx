@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import WalletLayout from "@/app/components/wallet/WalletLayout";
 import {
@@ -11,21 +12,33 @@ import {
 } from "@/app/store/walletSlice";
 import WalletApi from "@/app/api/wallet";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
-// import { getAuthUser } from "@/app/api/userApi";
+import { Swiper, SwiperSlide } from "swiper/react";
+// Import Swiper styles
+import "swiper/css";
+import "swiper/css/pagination";
+// import required modules
+import { Pagination } from "swiper/modules";
+import Coin from "./coin/coin";
+import { useSearchParams } from "next/navigation";
 
 function Page() {
   const dispatch = useAppDispatch();
   const { wallet, transactions, banks } = useAppSelector(
     (state) => state.wallet
   );
+  const swiperRef = useRef<any>(null);
+  const searchParams = useSearchParams();
+  const tab = searchParams.get("tab");
+  const initialSlide = tab === "coin" ? 1 : 0;
+
   useEffect(() => {
     const fetchWallet = async () => {
       if (wallet === undefined)
         try {
           dispatch(setWalletLoading(true));
           const res = await WalletApi.fetchCustomerWallet();
-          if (res.data.result.wallet) {
-            dispatch(setWallet(res.data.result.wallet));
+          if (res?.wallet) {
+            dispatch(setWallet(res?.wallet));
           }
         } catch (error) {
           console.log(error, "Wallet Error");
@@ -41,10 +54,8 @@ function Page() {
           dispatch(setTransactionsLoading(true));
           const res = await WalletApi.fetchTransactions();
 
-          if (res?.data?.result?.groupedTransactions) {
-            dispatch(
-              setTransactions(res?.data?.result?.groupedTransactions ?? [])
-            );
+          if (res?.groupedTransactions) {
+            dispatch(setTransactions(res?.groupedTransactions ?? []));
           }
         } catch (error) {
           console.log(error, "Transaction Error");
@@ -58,8 +69,8 @@ function Page() {
       if (banks.length <= 0) {
         try {
           const response = await WalletApi.listBanks();
-          if (response.data.result?.data) {
-            dispatch(setBanks(response.data.result.data));
+          if (response?.data) {
+            dispatch(setBanks(response.data));
           }
         } catch (error) {
           console.error("ERROR FETCHING BANKS", error);
@@ -70,8 +81,8 @@ function Page() {
     //   (async () => {
     //     try {
     //       const response = await WalletApi.listBanks();
-    //       if (response.data.result?.data) {
-    //         dispatch(setBanks(response.data.result?.data));
+    //       if (response?.data) {
+    //         dispatch(setBanks(response?.data));
     //       }
     //     } catch (error) {
     //       console.log(error, "ERROR FETCHING BANKS");
@@ -84,7 +95,7 @@ function Page() {
     //     const response = await WalletApi.fetchDedicatedAccount({
     //       email,
     //     });
-    //     if (response.data.result?.data) {
+    //     if (response?.data) {
     //       console.log(
     //         "============fetchDedicatedAccount========================"
     //       );
@@ -109,7 +120,23 @@ function Page() {
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.25, ease: "easeInOut" }}
     >
-      <WalletLayout />
+      <Swiper
+        pagination={false}
+        modules={[Pagination]}
+        className="mySwiper"
+        initialSlide={initialSlide}
+        onSwiper={(swiper) => {
+          swiperRef.current = swiper;
+          swiper.slideTo(initialSlide);
+        }}
+      >
+        <SwiperSlide>
+          <WalletLayout />
+        </SwiperSlide>
+        <SwiperSlide>
+          <Coin />
+        </SwiperSlide>
+      </Swiper>
     </motion.div>
   );
 }

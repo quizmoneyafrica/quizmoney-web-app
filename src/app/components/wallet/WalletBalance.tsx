@@ -60,14 +60,14 @@ export default function WalletBalance() {
 
   return (
     <>
-      <div className="bg-[#17478B] text-white py-12 px-8 rounded-3xl relative overflow-hidden w-full shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm bg-opacity-95 bg-[url('/assets/images/bg.svg')] bg-cover bg-center bg-no-repeat">
+      <div className="bg-[#17478B] text-white py-12 px-8 rounded-3xl relative overflow-hidden w-full shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm bg-opacity-95 bg-[url('/assets/images/background.png')] lg:bg-[url('/assets/images/background-desktop.png')] bg-cover bg-center bg-no-repeat">
         <div className="space-y-4 relative z-10">
           <p className="text-sm opacity-90 text-center">My Wallet Balance</p>
 
           {isWalletLoading ? (
             <Loader className=" animate-spin size-3 text-white" />
           ) : (
-            <h1 className="text-4xl font-bold text-center flex items-center justify-center gap-1">
+            <h1 className="md:text-4xl text-2xl font-bold text-center flex items-center justify-center gap-1">
               <span>
                 {isBalanceHidden
                   ? "****"
@@ -112,11 +112,11 @@ export default function WalletBalance() {
               trigger={
                 <button
                   onClick={() => setOpen(true)}
-                  className="bg-[#3386CE]  cursor-pointer hover:bg-primary-700 px-6 py-3 rounded-full flex items-center gap-2 font-medium"
+                  className="bg-[#3386CE] cursor-pointer hover:bg-primary-700 px-4 py-2 text-sm rounded-full flex items-center gap-2 font-medium md:px-6 md:py-3 md:text-base"
                 >
                   Deposit
                   <span className="font-bold">
-                    <PlusIcon className=" text-white" />
+                    <PlusIcon className="text-white w-4 h-4 md:w-5 md:h-5 hidden md:block" />
                   </span>
                 </button>
               }
@@ -139,9 +139,14 @@ export default function WalletBalance() {
                       store.dispatch(setWithdrawalPinModal(true));
                     }
                   }}
-                  className="bg-[#E4F1FA] cursor-pointer hover:bg-gray-100 text-primary-700 px-6 py-3 rounded-full flex items-center gap-2 font-medium"
+                  className="bg-[#E4F1FA] cursor-pointer hover:bg-gray-100 text-primary-700  px-4 py-2 text-sm rounded-full flex items-center gap-0 md:gap-2 font-medium md:px-6 md:py-3 md:text-base"
                 >
-                  Withdraw <CustomImage alt="" src={"/icons/arrow-up.svg"} />
+                  Withdraw{" "}
+                  <CustomImage
+                    alt=""
+                    src={"/icons/arrow-up.svg"}
+                    className="w-2 h-2 md:w-5 md:h-5 hidden md:block"
+                  />
                 </button>
               }
             >
@@ -151,17 +156,13 @@ export default function WalletBalance() {
                     wallet?.bankAccounts &&
                     wallet?.bankAccounts.length >= 3
                   ) {
-                    toast.info(
-                      "You've already have three account number listed",
-                      {
-                        position: "top-right",
-                      }
-                    );
+                    toast.info("You already have three account number listed", {
+                      position: "top-right",
+                    });
 
                     return;
                   }
                   store.dispatch(setWithdrawalModal(false));
-
                   store.dispatch(setAddBankModal(true));
                 }}
               />

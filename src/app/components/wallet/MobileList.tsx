@@ -1,9 +1,9 @@
 import classNames from "classnames";
 import React from "react";
-import CustomImage from "./CustomImage";
 import { format, parseISO } from "date-fns";
 import { Transaction } from "@/app/store/walletSlice";
 import { formatNaira } from "@/app/utils/utils";
+import Image from "next/image";
 
 type Props = {
   transaction: Transaction;
@@ -28,22 +28,20 @@ export default function MobileList({ transaction, onClick }: Props) {
             transaction.type === "deposit" ? "bg-green-100" : "bg-red-100"
           }`}
         >
-          {transaction.type === "deposit" ? (
-            <CustomImage
-              alt="arrow-up"
-              src="/icons/arrow-down-green.svg"
-              className="w-4 h-4 md:w-5 md:h-5"
-            />
-          ) : (
-            <CustomImage
-              alt="arrow-up"
-              src="/icons/arrow-down-red.svg"
-              className="w-4 h-4 md:w-5 md:h-5"
-            />
-          )}
+          <Image
+            alt="arrow-up"
+            width={8}
+            height={8}
+            src={
+              transaction.type === "withdrawal"
+                ? "/icons/moneyOut.svg"
+                : "/icons/moneyIn.svg"
+            }
+            className=" size-7"
+          />
         </div>
         <div className=" flex flex-col items-start">
-          <span className="text-sm md:text-base font-medium text-[#3B3B3B]">
+          <span className="text-xs font-medium text-[#3B3B3B]">
             {transaction.title ||
               (transaction.type === "deposit"
                 ? "Wallet Top up"

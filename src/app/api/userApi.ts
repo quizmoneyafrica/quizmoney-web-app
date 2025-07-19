@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   ApiResponse,
   InAppChangePasswordForm,
@@ -10,7 +10,9 @@ import {
   VerifyForgotPasswordOtpForm,
 } from "./interface";
 import { store } from "@/app/store/store";
+import { callParseEndpoint } from "./parse/callParseEndpoint";
 import { decryptData } from "../utils/crypto";
+import { callWithSessionToken } from "./parse/callWithSessionToken";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL;
@@ -43,123 +45,83 @@ const getAuthUser = () => {
 };
 
 const UserAPI = {
-  login(form: LoginForm): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(`${BASE_URL}/login`, form, {
-      headers: appHeaders,
-    });
+  checkSessionTokenValidity(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("checkSessionTokenValidity");
   },
-  signUp(form: SignUpForm): Promise<AxiosResponse<ApiResponse>> {
-    console.log("Form: ", form);
-    return axios.post(`${BASE_URL}/signup`, form, {
-      headers: appHeaders,
-    });
+  login(form: LoginForm): Promise<ApiResponse> {
+    return callParseEndpoint<ApiResponse>("login", form);
   },
-  verifyEmail(form: VerifyEmailForm): Promise<AxiosResponse<ApiResponse>> {
-    console.log("Form: ", form);
-    return axios.post(`${BASE_URL}/verifyMail`, form, {
-      headers: appHeaders,
-    });
+
+  signUp(form: SignUpForm): Promise<ApiResponse> {
+    return callParseEndpoint<ApiResponse>("signup", form);
   },
-  resendSignupOtp(email: string): Promise<AxiosResponse<ApiResponse>> {
-    console.log("Form: ", email);
-    return axios.post(
-      `${BASE_URL}/resendSignupOtp`,
-      { email },
-      {
-        headers: appHeaders,
-      }
-    );
+  verifyEmail(form: VerifyEmailForm): Promise<ApiResponse> {
+    return callParseEndpoint<ApiResponse>("verifyMail", form);
   },
-  sendFeedback(
-    rating: string,
-    message: string
-  ): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/sendFeedback`,
-      { rating, message },
-      {
-        headers: getSessionTokenHeaders(),
-      }
-    );
+  resendSignupOtp(email: string): Promise<ApiResponse> {
+    return callParseEndpoint<ApiResponse>("resendSignupOtp", { email });
+  },
+
+  sendFeedback(form: any, dispatch: any): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("sendFeedback", form, dispatch);
   },
   updateSocialHandles(
     facebook: string,
     twitter: string,
     whatsapp: string,
-    instagram: string
-  ): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/updateSocialHandles`,
-      { facebook, twitter, whatsapp, instagram },
-      {
-        headers: getSessionTokenHeaders(),
-      }
+    instagram: string,
+    tiktok: string,
+    dispatch: any
+  ): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      "updateSocialHandles",
+      { facebook, twitter, whatsapp, instagram, tiktok },
+      dispatch
     );
   },
 
-  forgotPassword(email: string): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/forgotPassword`,
-      { email },
-      {
-        headers: appHeaders,
-      }
-    );
+  forgotPassword(email: string): Promise<ApiResponse> {
+    return callParseEndpoint<ApiResponse>("forgotPassword", {
+      email,
+    });
   },
   verifyForgotPasswordOtp(
     form: VerifyForgotPasswordOtpForm
-  ): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(`${BASE_URL}/verifyForgotPasswordOtp`, form, {
-      headers: appHeaders,
-    });
+  ): Promise<ApiResponse> {
+    return callParseEndpoint<ApiResponse>("forgotPassword", form);
   },
-  resetPasswordAuth(
-    form: ResetPasswordForm
-  ): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(`${BASE_URL}/changePassword`, form, {
-      headers: appHeaders,
-    });
-  },
-  inAppChangePassword(
-    form: InAppChangePasswordForm
-  ): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(`${BASE_URL}/inAppChangePassword`, form, {
-      headers: getSessionTokenHeaders(),
-    });
+  resetPasswordAuth(form: ResetPasswordForm): Promise<ApiResponse> {
+    return callParseEndpoint<ApiResponse>("changePassword", form);
   },
 
-  updateUser(form: UpdateUserForm): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/updateProfile?firstName=${form.firstName}&lastName=${form.lastName}&dob=${form.dob}&gender=${form.gender}&country=${form.country}&facebook=${form.facebook}&instagram=${form.instagram}&twitter=${form.twitter}&whatsapp=${form.whatsapp}&avatar=${form.avatar}`,
-      {},
-      {
-        headers: getSessionTokenHeaders(),
-      }
+  inAppChangePassword(form: InAppChangePasswordForm): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("inAppChangePassword", form);
+  },
+
+  updateUser(form: UpdateUserForm): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      `updateProfile?firstName=${form.firstName}&lastName=${form.lastName}&dob=${form.dob}&gender=${form.gender}&country=${form.country}&facebook=${form.facebook}&instagram=${form.instagram}&twitter=${form.twitter}&whatsapp=${form.whatsapp}&tiktok=${form.tiktok}&avatar=${form.avatar}`
     );
   },
 
-  getAvatars(): Promise<AxiosResponse<ApiResponse>> {
-    return axios.get(`https://quizmoney.b4a.io/classes/Avatars`, {
-      headers: getSessionTokenHeaders(),
-    });
+  getAvatars(): Promise<ApiResponse> {
+    return callParseEndpoint<ApiResponse>("avatars");
   },
 
-  topGamersOfToday(): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/topGamersOfThisMonth`,
-      {},
-      { headers: appHeaders }
-    );
+  topGamersOfToday(): Promise<ApiResponse> {
+    return callParseEndpoint<ApiResponse>("topGamersOfTheWeekend");
   },
-
-  getReferralStats(): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/referralData`,
-      {},
-      {
-        headers: getSessionTokenHeaders(),
-      }
-    );
+  getReferralStats(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("referralData", {});
+  },
+  fetchUserCoinAccount(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("fetchUserCoinAccount", {});
+  },
+  fetchCoinTransactions(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("fetchCoinTransactions", {});
+  },
+  redeemCoin(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("redeemCoinPoints", {});
   },
 };
 

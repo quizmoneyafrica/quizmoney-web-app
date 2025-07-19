@@ -15,6 +15,7 @@ import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
 import { store } from "@/app/store/store";
 import CustomButton from "@/app/utils/CustomBtn";
+import { useRouter } from "next/navigation";
 
 interface OtpVerificationModalProps {
   open: boolean;
@@ -35,6 +36,7 @@ export default function OtpVerificationModal({
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const { wallet, withdrawalData } = useSelector(useWallet);
   const hasPin = Boolean(wallet?.pin);
+  const router = useRouter();
 
   useEffect(() => {
     if (open) {
@@ -93,15 +95,20 @@ export default function OtpVerificationModal({
       const response = await WalletApi.createWithdrawalPin({
         pin,
       });
-      if (response?.data?.data?.result?.updatedWallet) {
-        toast.success(response?.data?.data?.result?.message, {
+      if (response?.data?.updatedWallet) {
+        toast.success(response?.data?.message, {
           position: toastPosition,
         });
-        
+
         store.dispatch(setWalletLoading(true));
         const res = await WalletApi.fetchCustomerWallet();
-        if (res.data.result.wallet) {
-          store.dispatch(setWallet(res.data.result.wallet));
+
+        if (res.wallet) {
+          store.dispatch(setWallet(res.wallet));
+        }
+
+        if (res.wallet) {
+          store.dispatch(setWallet(res.wallet));
         }
 
         store.dispatch(setWithdrawalPinModal(false));
@@ -109,7 +116,7 @@ export default function OtpVerificationModal({
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      toast.error(`${err.response.data.error}`, {
+      toast.error(`${err.message}`, {
         position: toastPosition,
       });
     } finally {
@@ -129,8 +136,8 @@ export default function OtpVerificationModal({
         pin,
         bankAccount: withdrawalData?.bankAccount,
       });
-      if (response?.data?.result) {
-        toast.success(response?.data?.result.message, {
+      if (response) {
+        toast.success(response.message, {
           position: toastPosition,
         });
         store.dispatch(setWithdrawalPinModal(false));
@@ -138,7 +145,7 @@ export default function OtpVerificationModal({
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      toast.error(`${err.response.data.error}`, {
+      toast.error(`${err.message}`, {
         position: toastPosition,
       });
     } finally {
@@ -262,6 +269,21 @@ export default function OtpVerificationModal({
                         </div>
                       ))}
                     </div>
+
+                    {hasPin && (
+                      <button
+                        type="button"
+                        className="mt-6 text-primary-900 underline text-sm hover:text-primary-700 transition-colors"
+                        onClick={() => {
+                          onOpenChange(false);
+                          setTimeout(() => {
+                            router.push("/wallet/reset-pin");
+                          }, 200);
+                        }}
+                      >
+                        Forgot/Reset Pin?
+                      </button>
+                    )}
 
                     {isError && (
                       <div className="w-full text-center mt-4 text-red-500">

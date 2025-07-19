@@ -15,7 +15,7 @@ import {
   setWalletLoading,
 } from "@/app/store/walletSlice";
 import WalletApi from "@/app/api/wallet";
-
+import AdBanner from "@/app/components/advert/adBanner";
 
 function HomeTab() {
   const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
@@ -30,8 +30,8 @@ function HomeTab() {
           const res = await WalletApi.fetchCustomerWallet();
           console.log("WALLET: ", res);
 
-          if (res.data.result.wallet) {
-            dispatch(setWallet(res.data.result.wallet));
+          if (res?.wallet) {
+            dispatch(setWallet(res?.wallet));
           }
         } catch (error) {
           console.log(error, "Wallet Error");
@@ -48,10 +48,8 @@ function HomeTab() {
           dispatch(setTransactionsLoading(true));
           const res = await WalletApi.fetchTransactions();
 
-          if (res?.data?.result?.groupedTransactions) {
-            dispatch(
-              setTransactions(res?.data?.result?.groupedTransactions ?? [])
-            );
+          if (res?.groupedTransactions) {
+            dispatch(setTransactions(res?.groupedTransactions ?? []));
           }
         } catch (error) {
           console.log(error, "Transaction Error");
@@ -63,27 +61,26 @@ function HomeTab() {
   }, [dispatch, transactions, wallet]);
 
   return (
-    <>
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -10 }}
-        transition={{ duration: 0.25, ease: "easeInOut" }}
-      >
-        <Grid columns={{ initial: "1", lg: "2" }} gap="4">
-          <div>
-            <Grid gap="4">
-              <GameCard />
-              <TopGamers />
-              <ReferBox refCode={user?.referralCode} />
-            </Grid>
-          </div>
-          <div className="bg-white rounded-[20px] hidden lg:inline-block p-4">
-            <TransactionHistory />
-          </div>
-        </Grid>
-      </motion.div>
-    </>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.25, ease: "easeInOut" }}
+    >
+      <Grid columns={{ initial: "1", lg: "2" }} gap="4">
+        <div>
+          <Grid gap="4">
+            <GameCard />
+            <TopGamers />
+            <AdBanner />
+            <ReferBox refCode={user?.referralCode} />
+          </Grid>
+        </div>
+        <div className="bg-white rounded-[20px] hidden lg:inline-block p-4">
+          <TransactionHistory />
+        </div>
+      </Grid>
+    </motion.div>
   );
 }
 

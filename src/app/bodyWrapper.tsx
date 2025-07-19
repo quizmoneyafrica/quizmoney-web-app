@@ -38,5 +38,5 @@ export default function BodyWrapper({
     }
   }, [pathname]);
 
-  return <>{children}</>;
+  return <section>{children}</section>;
 }

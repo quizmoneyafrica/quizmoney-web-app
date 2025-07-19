@@ -3,26 +3,15 @@
 import { useAppDispatch } from "@/app/hooks/useAuth";
 import { useCallback, useEffect } from "react";
 import WalletApi from "../wallet";
-import { setTransactions, setWallet } from "@/app/store/walletSlice";
+import { setTransactions, setWalletBalance } from "@/app/store/walletSlice";
 import { liveQueryClient } from "@/app/api/parse/parseClient";
 import Parse from "parse";
 import { getAuthUser } from "../userApi";
+import { updateCoinBalance } from "@/app/store/coinSlice";
 
 function WalletQueries() {
   const dispatch = useAppDispatch();
   const user = getAuthUser();
-
-  const fetchWallet = useCallback(async () => {
-    try {
-      const res = await WalletApi.fetchCustomerWallet();
-      if (res.data.result.wallet) {
-        dispatch(setWallet(res.data.result.wallet));
-      }
-    } catch (error) {
-      return error && null;
-    } finally {
-    }
-  }, [dispatch]);
 
   const fetchTransactions = useCallback(async () => {
     try {
@@ -41,7 +30,23 @@ function WalletQueries() {
     if (!user?.objectId) return;
     let walletSubscription: any;
     let transactionSubscription: any;
+    let coinSubscription: any;
 
+    const coinLiveQuery = async () => {
+      const query = new Parse.Query("Coin");
+      query.equalTo("user", {
+        __type: "Pointer",
+        className: "_User",
+        objectId: user?.objectId,
+      });
+      coinSubscription = await liveQueryClient.subscribe(query);
+
+      coinSubscription?.on("update", (coin: Parse.Object) => {
+        console.log("UPDATED WALLET BALANCE", coin);
+        const updatedBalance = coin.get("balance");
+        dispatch(updateCoinBalance(updatedBalance));
+      });
+    };
     const walletLiveQuery = async () => {
       const query = new Parse.Query("Wallet");
       query.equalTo("user", {
@@ -51,11 +56,13 @@ function WalletQueries() {
       });
       walletSubscription = await liveQueryClient.subscribe(query);
 
-      walletSubscription?.on("create", () => {
-        fetchWallet();
-      });
-      walletSubscription?.on("update", () => {
-        fetchWallet();
+      walletSubscription?.on("update", (wallet: Parse.Object) => {
+        const updatedBalance = wallet.get("balance");
+        console.log("UPDATED WALLET BALANCE", updatedBalance);
+
+        if (typeof updatedBalance === "string") {
+          dispatch(setWalletBalance(updatedBalance));
+        }
       });
     };
     const transactionLiveQuery = async () => {
@@ -73,15 +80,20 @@ function WalletQueries() {
       transactionSubscription?.on("update", () => {
         fetchTransactions();
       });
+      transactionSubscription?.on("delete", () => {
+        fetchTransactions();
+      });
     };
 
     walletLiveQuery();
     transactionLiveQuery();
+    coinLiveQuery();
     return () => {
       if (walletSubscription) walletSubscription.unsubscribe();
       if (transactionSubscription) transactionSubscription.unsubscribe();
+      if (coinSubscription) coinSubscription.unsubscribe();
     };
-  }, [dispatch, fetchTransactions, fetchWallet, user?.objectId]);
+  }, [dispatch, fetchTransactions, user?.objectId]);
   return null;
 }
 

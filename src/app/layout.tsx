@@ -5,6 +5,7 @@ import AppSetup from "./appSetup";
 import "@radix-ui/themes/styles.css";
 import BodyWrapper from "./bodyWrapper";
 import InstallAppButton from "./pwa/install";
+import Script from "next/script";
 
 const spacegrotesk = Space_Grotesk({
   variable: "--spacegrotesk",
@@ -71,16 +72,29 @@ export default function RootLayout({
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"
         ></link>
         <meta name="apple-mobile-web-app-title" content="Quiz Money" />
+        <meta name="google-adsense-account" content="ca-pub-7047303023694178" />
         <meta
           name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover"
         />
+
         {/* iOS-specific */}
         <meta name="mobile-web-app-capable" content="yes" />
         <meta
           name="apple-mobile-web-app-status-bar-style"
           content="black-translucent"
         />
+        <Script id="adsense-init" strategy="afterInteractive">
+          {`
+        (function() {
+          var ads = document.createElement("script");
+          ads.async = true;
+          ads.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7047303023694178";
+          ads.crossOrigin = "anonymous";
+          document.head.appendChild(ads);
+        })();
+      `}
+        </Script>
       </head>
       <body
         className={`${spacegrotesk.variable} ${dmsans.variable} antialiased`}

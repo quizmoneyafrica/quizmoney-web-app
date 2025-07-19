@@ -19,9 +19,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from "@/app/store/authSlice";
 import AdsScreen from "./adsScreen";
 import { setGameEnded, setShowAdsScreen } from "@/app/store/gameSlice";
-import ResultScreen from "./resultScreen";
 import UseGameBlock from "./useGameBlock";
 import { RootState } from "@/app/store/store";
+import ResultScreen from "./resultScreen";
 
 const formatTime = (ms: number) => {
   const minutes = Math.floor(ms / 60000);
@@ -381,13 +381,15 @@ function GameScreen() {
           </div>
         </div>
       ) : (
-        <>
+        <div>
           {showAdsScreen && !showResultScreen ? (
             <AdsScreen />
           ) : (
-            <>{!showAdsScreen && showResultScreen ? <ResultScreen /> : null}</>
+            <div>
+              {!showAdsScreen && showResultScreen ? <ResultScreen /> : null}
+            </div>
           )}
-        </>
+        </div>
       )}
     </motion.div>
   );

@@ -1,27 +1,22 @@
-import axios, { AxiosResponse } from "axios";
-import { BASE_URL, getAuthUser, getSessionTokenHeaders } from "./userApi";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ApiResponse } from "./interface";
+import { callWithSessionToken } from "./parse/callWithSessionToken";
 
-const user = getAuthUser();
 const LeaderboardAPI = {
-  getAllTimeLeaderboard(page?: number): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/getAllTimeLeaderboard`,
+  getAllTimeLeaderboard(dispatch: any, page?: number): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      "getAllTimeLeaderboard",
       {
         page: page ?? 1,
       },
-      {
-        headers: getSessionTokenHeaders(),
-      }
+      dispatch
     );
   },
-  getLastGameLeaderboard(): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/getLastGameLeaderboard`,
-      { userId: user?.objectId },
-      {
-        headers: getSessionTokenHeaders(),
-      }
+  getLastGameLeaderboard(dispatch: any): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      "getLastGameLeaderboard",
+      {},
+      dispatch
     );
   },
 };

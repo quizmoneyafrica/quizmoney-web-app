@@ -1,140 +1,286 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useEffect, useState } from "react";
 import QmDrawer from "../drawer/drawer";
 import UserAPI, { getAuthUser } from "@/app/api/userApi";
-import CustomTextField from "@/app/utils/CustomTextField";
-import { useAppDispatch } from "@/app/hooks/useAuth";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import CustomButton from "@/app/utils/CustomBtn";
 import { updateUser } from "@/app/store/authSlice";
 import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
+import { Select } from "radix-ui";
+import { ChevronDownIcon } from "lucide-react";
+import {
+  FacebookIcon,
+  InstagramIcon,
+  TikTokIcon,
+  XIcon,
+} from "@/app/icons/icons";
 
 export const cleanValue = (val?: string) =>
   typeof val === "string" && val.toLowerCase() !== "undefined" ? val : "";
+
+const socialPlatforms = {
+  Facebook: {
+    urlPrefix: "https://facebook.com/",
+    icon: <FacebookIcon />,
+  },
+  Instagram: {
+    urlPrefix: "https://instagram.com/",
+    icon: <InstagramIcon />,
+  },
+  Twitter: {
+    urlPrefix: "https://twitter.com/",
+    icon: <XIcon />,
+  },
+  Tiktok: {
+    urlPrefix: "https://tiktok.com/",
+    icon: <TikTokIcon />,
+  },
+} as const;
+
+type Platform = keyof typeof socialPlatforms;
+
+interface SocialInput {
+  platform: Platform | "";
+  username: string;
+}
 
 function SocialLinksDrawer() {
   const [showUpdateDrawer, setShowUpdateDrawer] = useState(false);
   const user = getAuthUser();
   const dispatch = useAppDispatch();
-  const [socials, setSocials] = useState({
-    facebook: cleanValue(user?.facebook),
-    twitter: cleanValue(user?.twitter),
-    whatsapp: cleanValue(user?.whatsapp),
-    instagram: cleanValue(user?.instagram),
-  });
+  const { wallet } = useAppSelector((state) => state.wallet);
+
+  const [socialInputs, setSocialInputs] = useState<SocialInput[]>([
+    { platform: "Instagram", username: "" },
+  ]);
+
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !wallet) return;
+    if (initialized) return;
 
-    const { facebook, twitter, whatsapp, instagram } = user;
+    const initialLinks: SocialInput[] = [];
 
-    const handles = [
-      cleanValue(facebook),
-      cleanValue(twitter),
-      cleanValue(whatsapp),
-      cleanValue(instagram),
-    ];
+    Object.entries(socialPlatforms).forEach(([key]) => {
+      const username = cleanValue(
+        user?.[key.toLowerCase() as keyof typeof user]
+      );
+      if (username) {
+        initialLinks.push({ platform: key as Platform, username });
+      }
+    });
 
-    const filledCount = handles.filter((handle) => handle.trim() !== "").length;
+    setSocialInputs(initialLinks);
+    const filledCount = initialLinks.length;
 
-    if (filledCount < 2) {
-      const timer = setTimeout(() => {
-        setShowUpdateDrawer(true);
-      }, 5000);
-      return () => clearTimeout(timer);
+    setInitialized(true);
+
+    if (wallet && Number(wallet?.balance) > 0 && filledCount < 2) {
+      setShowUpdateDrawer(true);
     } else {
       setShowUpdateDrawer(false);
     }
-  }, [user]);
+  }, [user, wallet, initialized]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setSocials((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const handleChange = (
+    index: number,
+    field: "platform" | "username",
+    value: string
+  ) => {
+    const updated = [...socialInputs];
+
+    if (field === "username") {
+      value = value.replace(/\s/g, "").trim();
+    }
+
+    updated[index][field] = value as any;
+    setSocialInputs(updated);
   };
-  console.log(user);
+
+  const isValidURL = (platform: Platform, username: string) => {
+    const url = socialPlatforms[platform].urlPrefix + username;
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const addNewLink = () => {
+    if (socialInputs.length < 4) {
+      const selected = socialInputs.map((s) => s.platform);
+      const remaining = Object.keys(socialPlatforms).filter(
+        (p) => !selected.includes(p as Platform)
+      );
+      if (remaining.length === 0) {
+        toast.warning("All social platforms are already added. ");
+        return;
+      }
+      setSocialInputs((prev) => [...prev, { platform: "", username: "" }]);
+    }
+  };
 
   const handleUpdateSocials = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { facebook, twitter, whatsapp, instagram } = socials;
-    const filledCount = [facebook, twitter, whatsapp, instagram].filter(
-      (field) => field && field.trim() !== ""
-    ).length;
 
-    if (filledCount < 2) {
-      toast.error("Please provide at least two social handles.");
+    const validLinks = socialInputs.filter(
+      (link) =>
+        link.platform &&
+        link.username &&
+        isValidURL(link.platform as Platform, link.username)
+    );
+
+    if (validLinks.length < 2) {
+      toast.error("Please provide at least two valid social handles.");
       return;
     }
+
+    const payload: { [key: string]: string } = {};
+    validLinks.forEach(({ platform, username }) => {
+      payload[platform.toLowerCase()] = username;
+    });
+
     try {
       await UserAPI.updateSocialHandles(
-        facebook.trim(),
-        twitter.trim(),
-        whatsapp.trim(),
-        instagram.trim()
+        payload.facebook || "",
+        payload.twitter || "",
+        payload.whatsapp || "",
+        payload.instagram || "",
+        payload.tiktok || "",
+        dispatch
       );
-
-      dispatch(updateUser({ facebook, twitter, whatsapp, instagram }));
-      setShowUpdateDrawer(false);
+      dispatch(updateUser(payload));
       toast.success("Social handles updated", { position: toastPosition });
+      setShowUpdateDrawer(false);
     } catch (err) {
       console.error(err);
       toast.error("Failed to update social handles");
     }
   };
+  const selectedPlatforms = socialInputs.map((input) => input.platform);
   return (
-    <>
-      <QmDrawer title="Complete your profile" open={showUpdateDrawer}>
-        <p className="text-sm text-error-900">
-          Please fill in minimum of two socials to continue
+    <QmDrawer
+      titleLeft
+      title="Complete your profile"
+      open={showUpdateDrawer}
+      hideCloseBtn
+      dismissible={false}
+    >
+      <p className="text-sm text-neutral-600 -mt-4">
+        We need you to add your social handle to complete your profile
+      </p>
+      <form onSubmit={handleUpdateSocials} className="space-y-4 py-6">
+        <p className="text-primary-900 font-medium">
+          Add Social Links{" "}
+          <span className="text-sm italic text-error-700">
+            (minimum of 2 socials)
+          </span>
         </p>
-        <form onSubmit={handleUpdateSocials} className="space-y-4 py-6">
-          <CustomTextField
-            label="Facebook Handle"
-            name="facebook"
-            placeholder="@username"
-            value={socials.facebook}
-            onChange={handleChange}
-          />
-          <CustomTextField
-            label="X(twitter) Handle"
-            name="twitter"
-            placeholder="@username"
-            value={socials.twitter}
-            onChange={handleChange}
-          />
-          <CustomTextField
-            label="WhatsApp Number"
-            name="whatsapp"
-            placeholder="+234 00000000"
-            value={socials.whatsapp}
-            onChange={handleChange}
-          />
-          <CustomTextField
-            label="Instagram Handle"
-            name="instagram"
-            placeholder="@username"
-            value={socials.instagram}
-            onChange={handleChange}
-          />
-          <CustomButton
-            type="submit"
-            width="full"
-            disabled={
-              [
-                socials.facebook,
-                socials.twitter,
-                socials.whatsapp,
-                socials.instagram,
-              ].filter((val) => val && val.trim() !== "").length < 2
-            }
+
+        {socialInputs.map((input, index) => (
+          <div key={index} className="flex gap-2 items-center">
+            <Select.Root
+              value={input.platform}
+              onValueChange={(value) => handleChange(index, "platform", value)}
+            >
+              <Select.Trigger className="inline-flex items-center justify-between w-18 px-3 py-2 text-sm bg-white border rounded shadow-sm hover:bg-gray-50 focus:outline-none">
+                <Select.Value placeholder="Select " />
+                <Select.Icon>
+                  <ChevronDownIcon />
+                </Select.Icon>
+              </Select.Trigger>
+              <Select.Portal>
+                <Select.Content className="overflow-hidden bg-white border rounded shadow-md">
+                  <Select.Viewport className="p-1">
+                    {Object.entries(socialPlatforms)
+                      .filter(
+                        ([platform]) =>
+                          !selectedPlatforms.includes(platform as Platform) ||
+                          input.platform === platform
+                      )
+                      .map(([platform, data]) => (
+                        <Select.Item
+                          key={platform}
+                          value={platform}
+                          className="flex items-center gap-2 px-3 py-2 text-sm text-black cursor-pointer rounded hover:bg-gray-100 focus:outline-none"
+                        >
+                          <Select.ItemText>
+                            <div className="flex items-center text-sm">
+                              <span className="mr-1">{data.icon}</span>
+                            </div>
+                          </Select.ItemText>
+                        </Select.Item>
+                      ))}
+                  </Select.Viewport>
+                </Select.Content>
+              </Select.Portal>
+            </Select.Root>
+
+            <div className="flex flex-1 border rounded overflow-hidden">
+              <span className="bg-gray-100 px-2 text-sm text-gray-600 flex items-center">
+                {input.platform
+                  ? socialPlatforms[input.platform as Platform].urlPrefix
+                  : "https://"}
+              </span>
+              <input
+                type="text"
+                className="flex-1 p-2 py-[10px] outline-none text-sm"
+                placeholder="EnterUsername"
+                value={input.username}
+                onChange={(e) =>
+                  handleChange(index, "username", e.target.value)
+                }
+              />
+            </div>
+          </div>
+        ))}
+
+        {socialInputs.length < 4 && (
+          <button
+            type="button"
+            className="text-blue-600 hover:underline text-sm cursor-pointer"
+            onClick={addNewLink}
           >
-            Update Profile
-          </CustomButton>
-        </form>
-      </QmDrawer>
-    </>
+            + Add New Link
+          </button>
+        )}
+        {socialInputs.filter(
+          (link) =>
+            link.platform &&
+            link.username &&
+            isValidURL(link.platform as Platform, link.username)
+        ).length < 2 && (
+          <p className="text-error-700 text-sm text-center">
+            {2 -
+              socialInputs.filter(
+                (link) =>
+                  link.platform &&
+                  link.username &&
+                  isValidURL(link.platform as Platform, link.username)
+              ).length}{" "}
+            socials remaining to proceed
+          </p>
+        )}
+        <CustomButton
+          type="submit"
+          width="full"
+          disabled={
+            socialInputs.filter(
+              (link) =>
+                link.platform &&
+                link.username &&
+                isValidURL(link.platform as Platform, link.username)
+            ).length < 2
+          }
+        >
+          Update Profile
+        </CustomButton>
+      </form>
+    </QmDrawer>
   );
 }
 

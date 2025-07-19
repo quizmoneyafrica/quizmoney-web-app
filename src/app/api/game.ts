@@ -1,83 +1,60 @@
-import axios, { AxiosResponse } from "axios";
-import {
-  appHeaders,
-  BASE_URL,
-  getSessionTokenHeaders,
-  SECRET_KEY,
-} from "./userApi";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ApiResponse } from "./interface";
 import CryptoJS from "crypto-js";
+import { callParseEndpoint } from "./parse/callParseEndpoint";
+import { callWithSessionToken } from "./parse/callWithSessionToken";
 
 const GameApi = {
-  fetchNextGame(): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(`${BASE_URL}/errorLoad`, {}, { headers: appHeaders });
-  },
-  registerForGame(gameId: string): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/registerForGame`,
-      { gameId },
-      { headers: getSessionTokenHeaders() }
-    );
-  },
-  removeUserFromGame(gameId: string): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/removeUserFromGame`,
-      { gameId },
-      { headers: getSessionTokenHeaders() }
-    );
-  },
-  deactivateSession(gameId: string) {
-    return axios.post(
-      `${BASE_URL}/deactivateSession`,
-      { gameId },
-      { headers: getSessionTokenHeaders() }
-    );
-  },
-  getLoggedinUserGameResults(
-    gameId: string
-  ): Promise<AxiosResponse<ApiResponse>> {
-    return axios.post(
-      `${BASE_URL}/getLoggedinUserGameResults`,
-      { gameId },
-      { headers: getSessionTokenHeaders() }
-    );
+  fetchNextGame(): Promise<ApiResponse> {
+    return callParseEndpoint<ApiResponse>("errorLoad");
   },
 
-  updateErasers(erasersUsed: number) {
-    return axios.post(
-      `${BASE_URL}/updateErasers`,
-      { erasersUsed },
-      { headers: getSessionTokenHeaders() }
+  registerForGame(gameId: string, dispatch: any): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      "registerForGame",
+      { gameId },
+      dispatch
     );
+  },
+  removeUserFromGame(gameId: string): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("removeUserFromGame", { gameId });
+  },
+
+  updateErasers(erasersUsed: number): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("updateErasers", { erasersUsed });
   },
   recordGameAnswer(
     gameId: string,
     questionNumber: string,
     answer: string,
-    totalTime?: string
-  ) {
-    return axios.post(
-      `${BASE_URL}/recordGameAnswer`,
-      {
-        gameId,
-        questionNumber,
-        answer,
-        ...(totalTime && { totalTime }),
-      },
-      { headers: getSessionTokenHeaders() }
-    );
+    totalTime?: string,
+    usedEraser?: boolean
+  ): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("recordGameAnswer", {
+      gameId,
+      questionNumber,
+      answer,
+      ...(totalTime && { totalTime }),
+      usedEraser,
+    });
   },
 };
 
 export default GameApi;
 
 export function decryptGameData(encrypted: string) {
-  const bytes = CryptoJS.AES.decrypt(encrypted, SECRET_KEY);
+  const bytes = CryptoJS.AES.decrypt(
+    encrypted,
+    process.env.NEXT_PUBLIC_SECRET_KEY!
+  );
   const decrypted = bytes.toString(CryptoJS.enc.Utf8);
   return JSON.parse(decrypted);
 }
 export function encryptGameData(data: object): string {
   const stringified = JSON.stringify(data);
-  const encrypted = CryptoJS.AES.encrypt(stringified, SECRET_KEY).toString();
+  const encrypted = CryptoJS.AES.encrypt(
+    stringified,
+    process.env.NEXT_PUBLIC_SECRET_KEY!
+  ).toString();
   return encrypted;
 }

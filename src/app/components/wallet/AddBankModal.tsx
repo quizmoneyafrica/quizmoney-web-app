@@ -82,8 +82,8 @@ export default function AddBankModal({
         // bankCode: "044",
       };
       const response = await WalletApi.verifyAccount(payload);
-      if (response?.data?.result?.status === "success") {
-        const { account_name, account_number } = response?.data?.result?.data;
+      if (response?.status === "success") {
+        const { account_name, account_number } = response?.data;
         const bankName =
           banks.find((item) => item?.code === data?.bank)?.name ?? "";
         addVerifiedAccount({
@@ -92,15 +92,15 @@ export default function AddBankModal({
           accountName: account_name,
         });
       }
-      if (response?.data?.result?.status === "error") {
-        toast.error(`${response?.data?.result?.message}`, {
+      if (response?.status === "error") {
+        toast.error(`${response?.message}`, {
           position: toastPosition,
         });
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.log("WalletApi.verifyAccount", err);
-      toast.error(`${err.response.data.error}`, {
+      toast.error(`${err.message}`, {
         position: toastPosition,
       });
     } finally {
@@ -119,9 +119,9 @@ export default function AddBankModal({
           ...data,
         },
       });
-      if (response?.data?.result?.updatedWallet) {
+      if (response?.updatedWallet) {
         const res = await WalletApi.fetchCustomerWallet();
-        dispatch(setWallet(res.data.result.wallet));
+        dispatch(setWallet(res.wallet));
         reset({
           accountNumber: "",
           bank: "",
@@ -130,7 +130,7 @@ export default function AddBankModal({
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      toast.error(`${err.response.data.error}`, {
+      toast.error(`${err.message}`, {
         position: toastPosition,
       });
     } finally {

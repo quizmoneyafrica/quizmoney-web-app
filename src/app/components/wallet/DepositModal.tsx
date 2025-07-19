@@ -65,18 +65,15 @@ export default function DepositModal({
         amount: `${numericAmount}`,
       });
 
-      if (
-        response?.data?.result?.status === "success" ||
-        response?.data.result?.data?.link
-      ) {
+      if (response?.status === "success" || response?.data?.link) {
         onOpenChange(false);
         reset();
         setSelectedAmount(null);
-        window.location.href = response?.data.result.data.link;
+        window.location.href = response?.data.link;
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      toast.error(`${err.response.data.error}`, {
+      toast.error(`${err.message}`, {
         position: toastPosition,
       });
     } finally {

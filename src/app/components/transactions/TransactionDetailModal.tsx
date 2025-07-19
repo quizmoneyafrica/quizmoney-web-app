@@ -127,30 +127,36 @@ export function TransactionDetailsModal({
                       <span className="text-primary-900  font-medium">
                         Transaction Status:
                       </span>
-                      <span className="text-right text-green-600 ">
-                        {transaction.status === "successful"
-                          ? "Successful"
-                          : transaction.status || "Successful"}
+                      <span
+                        className={`text-right ${
+                          transaction.status === "successful"
+                            ? "text-green-600"
+                            : transaction.status === "pending"
+                            ? "text-amber-500"
+                            : transaction.status === "failed" ||
+                              transaction.status === "rejected"
+                            ? "text-red-600"
+                            : "text-green-600"
+                        }`}
+                      >
+                        {transaction.status}
                       </span>
                     </div>
                     <div className="border-b border-dashed border-[#17478B] mt-4"></div>
                   </motion.div>
 
-                  <motion.div
-                    initial={{ y: 10, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.35 }}
-                  >
-                    <div>
-                      <label className="text-primary-900  text-sm font-normal">
-                        Comments:{" "}
-                        <label className="text-gray-800 mt-2">
-                          Transaction has been Approved payment has been sent
-                          your bank Account
-                        </label>
-                      </label>
-                    </div>
-                  </motion.div>
+                  {transaction.status === "rejected" && (
+                    <motion.div
+                      className="text-[#3B3B3B] text-sm"
+                      initial={{ y: 10, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.35 }}
+                    >
+                      <span className=" text-primary-900"> Comments:</span>{" "}
+                      Transaction was rejected. Please contact support for more
+                      information.
+                    </motion.div>
+                  )}
                 </motion.div>
               </motion.div>
             </Dialog.Content>

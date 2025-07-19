@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { User } from "@/app/api/interface";
 import { useAppSelector } from "@/app/hooks/useAuth";
@@ -67,11 +68,20 @@ const InviteAndEarn = () => {
 
   useEffect(() => {
     (async () => {
-      const res = await UserAPI.getReferralStats();
-      console.log(res.data);
-      setReferralData({
-        ...res.data.result,
-      });
+      try {
+        const res = await UserAPI.getReferralStats();
+        console.log({
+          ...res,
+        });
+
+        setReferralData({
+          referralCount: res.referralCount,
+          referralEarnings: res.referralEarnings,
+          ...res,
+        });
+      } catch (error: any) {
+        console.error(error.message);
+      }
     })();
   }, []);
 
@@ -226,7 +236,7 @@ const InviteAndEarn = () => {
 
               <div className="relative flex items-center !justify-end">
                 {referralData?.referralCount >= 1 && (
-                  <>
+                  <div>
                     {referralData?.referralCount >= 6 ? (
                       <div
                         className={`bg-green-500 rounded-full p-1 text-white w-fit`}
@@ -248,7 +258,7 @@ const InviteAndEarn = () => {
                         />
                       </div>
                     )}
-                  </>
+                  </div>
                 )}
               </div>
             </div>

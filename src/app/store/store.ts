@@ -3,6 +3,7 @@ import authReducer from "./authSlice";
 import walletReducer from "./walletSlice";
 import gameReducer from "./gameSlice";
 import demoReducer from "./demoSlice";
+import coinReducer from "./coinSlice";
 import notificationReducer from "./notificationSlice";
 import leaderboardReducer from "./leaderboardSlice";
 import storeReducer from "./storeSlice";
@@ -30,12 +31,13 @@ const authPersistConfig = {
   transforms: [authTransform],
 };
 
+const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
+
 // const persistConfig = {
 //   key: "root",
 //   storage: localForage,
 // };
 
-const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
 // const persistedWalletReducer = persistReducer(persistConfig, walletReducer);
 
 export const store = configureStore({
@@ -48,6 +50,7 @@ export const store = configureStore({
     notifications: notificationReducer,
     leaderboard: leaderboardReducer,
     store: storeReducer,
+    coin: coinReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

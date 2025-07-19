@@ -1,14 +1,18 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import UserAPI from "@/app/api/userApi";
 import SuccessMessageModal from "@/app/components/modal/store/SuccessMessageModal";
 import { EyeIcon, EyeSlash } from "@/app/icons/icons";
 import CustomButton from "@/app/utils/CustomBtn";
 import CustomTextField from "@/app/utils/CustomTextField";
 import { PasswordChip } from "@/app/utils/passwordChip";
+import { toastPosition } from "@/app/utils/utils";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { Flex } from "@radix-ui/themes";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { toast } from "sonner";
 
 const initialForm = {
   newPassword: "",
@@ -60,8 +64,15 @@ const Page = () => {
   const handleChangePassword = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    console.log(formData);
-    setLoading(false);
+    try {
+      const res = await UserAPI.inAppChangePassword(formData);
+      console.log("Password Changed", res);
+      setLoading(false);
+    } catch (error: any) {
+      console.log(error);
+      toast.error(error.message, { position: toastPosition });
+      setLoading(false);
+    }
   };
   return (
     <motion.div

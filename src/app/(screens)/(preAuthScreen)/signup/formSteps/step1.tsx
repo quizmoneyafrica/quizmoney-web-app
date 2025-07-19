@@ -28,59 +28,57 @@ const StepOne: React.FunctionComponent<IStepOneProps> = (props) => {
     }
   };
   return (
-    <>
-      <form onSubmit={handleNextForm}>
-        <Flex direction="column" gap="4">
-          <CustomTextField
-            label="First Name"
-            name="firstName"
-            value={formData.firstName}
-            type="text"
-            autoComplete="first-name"
-            placeholder="Enter your first name"
-            onChange={onChange}
-            icon={<PersonIcon className="text-[#A6ABC4]" />}
-            required
-          />
-          <CustomTextField
-            label="Last Name"
-            name="lastName"
-            value={formData.lastName}
-            type="text"
-            autoComplete="family-name"
-            placeholder="Enter your last name"
-            onChange={onChange}
-            icon={<PersonIcon className="text-[#A6ABC4]" />}
-            required
-          />
-          <CustomTextField
-            label="Email"
-            name="email"
-            value={formData.email}
-            type="email"
-            autoComplete="email"
-            placeholder="Enter your email address"
-            onChange={onChange}
-            icon={<MailIcon className="text-[#A6ABC4]" />}
-            required
-          />
-          <CustomTextField
-            label="Referral Code"
-            name="referredBy"
-            value={formData.referredBy}
-            type="text"
-            placeholder="TOOE26 (optional)"
-            onChange={onChange}
-            icon={<PersonIcon className="text-[#A6ABC4]" />}
-          />
-          <div className="pt-4">
-            <CustomButton type="submit" width="full">
-              Proceed
-            </CustomButton>
-          </div>
-        </Flex>
-      </form>
-    </>
+    <form onSubmit={handleNextForm}>
+      <Flex direction="column" gap="4">
+        <CustomTextField
+          label="First Name"
+          name="firstName"
+          value={formData.firstName}
+          type="text"
+          autoComplete="first-name"
+          placeholder="Enter your first name"
+          onChange={onChange}
+          icon={<PersonIcon className="text-[#A6ABC4]" />}
+          required
+        />
+        <CustomTextField
+          label="Last Name"
+          name="lastName"
+          value={formData.lastName}
+          type="text"
+          autoComplete="family-name"
+          placeholder="Enter your last name"
+          onChange={onChange}
+          icon={<PersonIcon className="text-[#A6ABC4]" />}
+          required
+        />
+        <CustomTextField
+          label="Email"
+          name="email"
+          value={formData.email}
+          type="email"
+          autoComplete="email"
+          placeholder="Enter your email address"
+          onChange={onChange}
+          icon={<MailIcon className="text-[#A6ABC4]" />}
+          required
+        />
+        <CustomTextField
+          label="Referral Code"
+          name="referredBy"
+          value={formData.referredBy}
+          type="text"
+          placeholder="TOOE26 (optional)"
+          onChange={onChange}
+          icon={<PersonIcon className="text-[#A6ABC4]" />}
+        />
+        <div className="pt-4">
+          <CustomButton type="submit" width="full">
+            Proceed
+          </CustomButton>
+        </div>
+      </Flex>
+    </form>
   );
 };
 
