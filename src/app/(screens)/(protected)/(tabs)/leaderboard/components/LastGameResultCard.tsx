@@ -10,7 +10,7 @@ import {
 import { UserLastGameStats } from "@/app/store/leaderboardSlice";
 import { getAuthUser } from "@/app/api/userApi";
 import { Avatar } from "@radix-ui/themes";
-import { QMCoin } from "@/app/icons/icons";
+import { QMCoin, VerifiedBadge } from "@/app/icons/icons";
 
 interface LastGameResultCardProps {
   userLastGameStats?: UserLastGameStats;
@@ -76,15 +76,18 @@ const LastGameResultCard = ({ userLastGameStats }: LastGameResultCardProps) => {
                           radius="full"
                         />
                       </motion.div>
-                      <motion.span
+                      <motion.p
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.4, duration: 0.4 }}
-                        className="capitalize font-medium whitespace-nowrap"
+                        className="capitalize font-medium whitespace-nowrap flex items-center gap-1"
                       >
-                        {userLastGameStats.user.firstName}{" "}
-                        {userLastGameStats.user.lastName}
-                      </motion.span>
+                        <span>
+                          {userLastGameStats.user.firstName}{" "}
+                          {userLastGameStats.user.lastName}
+                        </span>
+                        <span>{user.kycVerified && <VerifiedBadge />}</span>
+                      </motion.p>
                     </motion.div>
                   </td>
 

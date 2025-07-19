@@ -115,6 +115,7 @@ export interface User {
   instagram?: string;
   twitter?: string;
   whatsapp?: string;
+  kycVerified: boolean;
 }
 
 export interface UpdateUserForm {

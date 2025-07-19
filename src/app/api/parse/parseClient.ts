@@ -1,3 +1,4 @@
+"use client";
 import Parse from "parse";
 
 // Your Back4App keys
