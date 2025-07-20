@@ -12,7 +12,6 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
-import { isMobile } from "react-device-detect";
 
 const bannedUserIds = [
   "",
@@ -82,12 +81,12 @@ function JoinGameBtn() {
   // };
 
   const handleJoinBtn = async () => {
-    if (!isMobile) {
-      toast.error("Please join the game with your mobile device.", {
-        position: "top-center",
-      });
-      return;
-    }
+    // if (!isMobile) {
+    //   toast.error("Please join the game with your mobile device.", {
+    //     position: "top-center",
+    //   });
+    //   return;
+    // }
     const userId = user?.objectId;
 
     if (!userId) return;
