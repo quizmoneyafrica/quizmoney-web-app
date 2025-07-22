@@ -70,9 +70,6 @@ const InviteAndEarn = () => {
     (async () => {
       try {
         const res = await UserAPI.getReferralStats();
-        console.log({
-          ...res,
-        });
 
         setReferralData({
           referralCount: res.referralCount,

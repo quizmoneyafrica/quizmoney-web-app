@@ -153,11 +153,14 @@ export const WithdrawalPinForm = ({
       return;
     }
     try {
-      const response = await WalletApi.requestWithdrawal({
-        amount: withdrawalData?.amount.toString(),
-        pin,
-        bankAccount: withdrawalData?.bankAccount,
-      });
+      const response = await WalletApi.requestWithdrawal(
+        {
+          amount: withdrawalData?.amount.toString(),
+          pin,
+          purpose: "Withdrawal request",
+        },
+        store.dispatch
+      );
       if (response) {
         toast.success(response.message, {
           position: toastPosition,

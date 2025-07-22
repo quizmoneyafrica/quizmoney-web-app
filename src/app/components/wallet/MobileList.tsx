@@ -11,7 +11,9 @@ type Props = {
 };
 
 export default function MobileList({ transaction, onClick }: Props) {
-  const date = parseISO(transaction?.createdAt ?? new Date().toISOString());
+  const date = parseISO(
+    transaction?.transactionDate ?? new Date().toISOString()
+  );
   const dateData = format(date, "MMM d h:mma").toLowerCase();
 
   return (
@@ -25,7 +27,7 @@ export default function MobileList({ transaction, onClick }: Props) {
       <div className="flex gap-2 md:gap-4 items-center">
         <div
           className={`p-1.5 md:p-2 rounded-full ${
-            transaction.type === "deposit" ? "bg-green-100" : "bg-red-100"
+            transaction.direction === "CREDIT" ? "bg-green-100" : "bg-red-100"
           }`}
         >
           <Image
@@ -33,7 +35,7 @@ export default function MobileList({ transaction, onClick }: Props) {
             width={8}
             height={8}
             src={
-              transaction.type === "withdrawal"
+              transaction.direction === "DEBIT"
                 ? "/icons/moneyOut.svg"
                 : "/icons/moneyIn.svg"
             }
@@ -42,23 +44,25 @@ export default function MobileList({ transaction, onClick }: Props) {
         </div>
         <div className=" flex flex-col items-start">
           <span className="text-xs font-medium text-[#3B3B3B]">
-            {transaction.title ||
-              (transaction.type === "deposit"
+            {transaction.narration ||
+              (transaction.direction === "CREDIT"
                 ? "Wallet Top up"
                 : "Withdrawal made")}
           </span>
           <span className="text-xs md:text-sm text-gray-500">
-            {transaction.type}
+            {transaction.transactionType}
           </span>
         </div>
       </div>
       <div className="text-right">
         <p
           className={`text-sm md:text-base font-medium ${
-            transaction.type === "deposit" ? "text-green-600" : "text-red-600"
+            transaction.direction === "CREDIT"
+              ? "text-green-600"
+              : "text-red-600"
           }`}
         >
-          {transaction.type === "deposit" ? "+ " : "- "}
+          {transaction.direction === "CREDIT" ? "+ " : "- "}
           {formatNaira(Number(transaction.amount ?? 0), true)}
         </p>
         <p className="text-xs md:text-sm text-gray-500">{dateData}</p>

@@ -10,6 +10,7 @@ import {
   // setTransactions,
   // setWallet,
   useWallet,
+  Transaction as WalletTransaction,
 } from "@/app/store/walletSlice";
 import { format, parseISO, isToday, isYesterday } from "date-fns";
 import Link from "next/link";
@@ -23,39 +24,21 @@ import { TransactionDetailsModal } from "../transactions/TransactionDetailModal"
 // import Parse from "parse";
 // import { liveQueryClient } from "@/app/api/parse/parseClient";
 
-interface Transaction {
-  amount: number;
-  title: string;
-  description: string;
-  type: string;
-  status: string;
-  user: {
-    __type: string;
-    className: string;
-    objectId: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-  objectId: string;
-  __type: string;
-  className: string;
-}
-
 export type UserWalletTransaction = {
   date: string;
-  transactions: Array<Transaction>;
+  transactions: Array<WalletTransaction>;
 };
 
 export interface TransactionGroup {
-  today: Transaction[];
-  yesterday: Transaction[];
-  other: Transaction[];
+  today: WalletTransaction[];
+  yesterday: WalletTransaction[];
+  other: WalletTransaction[];
 }
 
 export default function TransactionHistory(): React.JSX.Element {
   const { transactions, isTransactionsLoading } = useSelector(useWallet);
   const [selectedTransaction, setSelectedTransaction] =
-    useState<Transaction | null>(null);
+    useState<WalletTransaction | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   // const dispatch = useAppDispatch();
 
@@ -154,7 +137,7 @@ export default function TransactionHistory(): React.JSX.Element {
   // }, [dispatch]);
 
   const flattenedTransactions = useMemo(
-    () => transactions.flatMap((walletTx) => walletTx.transactions),
+    () => (transactions && Array.isArray(transactions) ? transactions : []),
     [transactions]
   );
 
@@ -165,8 +148,14 @@ export default function TransactionHistory(): React.JSX.Element {
       other: [],
     };
 
-    flattenedTransactions.forEach((transaction: Transaction) => {
-      const date = parseISO(transaction?.createdAt ?? new Date().toISOString());
+    if (!flattenedTransactions || !Array.isArray(flattenedTransactions)) {
+      return group;
+    }
+
+    flattenedTransactions.forEach((transaction: WalletTransaction) => {
+      const date = parseISO(
+        transaction?.transactionDate ?? new Date().toISOString()
+      );
 
       if (isToday(date)) {
         group.today.push(transaction);
@@ -189,7 +178,9 @@ export default function TransactionHistory(): React.JSX.Element {
     const limited = all.slice(0, 15);
     const group: TransactionGroup = { today: [], yesterday: [], other: [] };
     limited.forEach((transaction) => {
-      const date = parseISO(transaction?.createdAt ?? new Date().toISOString());
+      const date = parseISO(
+        transaction?.transactionDate ?? new Date().toISOString()
+      );
       if (isToday(date)) {
         group.today.push(transaction);
       } else if (isYesterday(date)) {
@@ -201,24 +192,26 @@ export default function TransactionHistory(): React.JSX.Element {
     return group;
   }, [groupedTransactions]);
 
-  const handleTransactionClick = (transaction: Transaction) => {
+  const handleTransactionClick = (transaction: WalletTransaction) => {
     setSelectedTransaction(transaction);
     setIsModalOpen(true);
   };
 
   const renderTransaction = (
-    transaction: Transaction,
+    transaction: WalletTransaction,
     index: number,
-    array: Transaction[]
+    array: WalletTransaction[]
   ): React.JSX.Element => {
-    const date = parseISO(transaction.createdAt ?? new Date().toISOString());
+    const date = parseISO(
+      transaction.transactionDate ?? new Date().toISOString()
+    );
     const dateData = format(date, "MMM d h:mma").toLowerCase();
     const isLastInGroup = index === array.length - 1;
 
-    console.log(transaction.type, "=======");
+    console.log(transaction.transactionType, "=======");
 
     return (
-      <div key={transaction.objectId || index.toString()}>
+      <div key={transaction.id || index.toString()}>
         <div
           className={classNames(
             "bg-white px-3 md:px-4 py-3 md:py-4 hidden md:flex justify-between items-center cursor-pointer",
@@ -231,7 +224,7 @@ export default function TransactionHistory(): React.JSX.Element {
               <CustomImage
                 alt="arrow-icon"
                 src={
-                  transaction.type === "withdrawal"
+                  transaction.direction === "DEBIT"
                     ? "/icons/moneyOut.svg"
                     : "/icons/moneyIn.svg"
                 }
@@ -239,25 +232,25 @@ export default function TransactionHistory(): React.JSX.Element {
             </div>
             <div className="flex flex-col items-start">
               <span className="text-sm md:text-base font-medium text-[#3B3B3B]">
-                {transaction.title ||
-                  (transaction.type === "deposit"
+                {transaction.narration ||
+                  (transaction.direction === "CREDIT"
                     ? "Wallet Top up"
                     : "Withdrawal made")}
               </span>
               <span className="text-xs md:text-sm text-gray-500">
-                {transaction.type}
+                {transaction.transactionType}
               </span>
             </div>
           </div>
           <div className="text-right">
             <p
               className={`text-sm md:text-base font-medium ${
-                transaction.type === "deposit"
+                transaction.direction === "CREDIT"
                   ? "text-green-600"
                   : "text-red-600"
               }`}
             >
-              {transaction.type === "deposit" ? "+ " : "- "}
+              {transaction.direction === "CREDIT" ? "+ " : "- "}
               {/* {transaction.amount.toLocaleString()} */}
               {formatNaira(Number(transaction.amount ?? 0), true)}
             </p>
@@ -274,7 +267,7 @@ export default function TransactionHistory(): React.JSX.Element {
 
   const renderTransactionSection = (
     title: string,
-    transactions: Transaction[]
+    transactions: WalletTransaction[]
   ): React.JSX.Element | null => {
     if (transactions.length === 0) return null;
     // return (
@@ -343,7 +336,7 @@ export default function TransactionHistory(): React.JSX.Element {
               </div>
             ))}
           </div>
-        ) : flattenedTransactions.length === 0 ? (
+        ) : !flattenedTransactions || flattenedTransactions.length === 0 ? (
           renderEmptyState()
         ) : (
           <>
