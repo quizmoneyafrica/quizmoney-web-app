@@ -17,13 +17,22 @@ interface WalletState {
   virtualAccount: VirtualAccount | undefined;
   isWalletLoading: boolean;
   isTransactionsLoading: boolean;
-  transactions: UserWalletTransaction[] | [];
+  transactions: Transaction[] | [];
   banks: Bank[];
+  payoutBanks: PayoutBank | undefined;
 }
 export interface Bank {
   id: number;
   code: string;
   name: string;
+}
+
+export interface PayoutBank {
+  id: string;
+  accountNumber: string;
+  bankName: string;
+  bankCode: string;
+  status: "ACTIVE" | "INACTIVE" | string;
 }
 const initialState: WalletState = {
   withdrawalModal: false,
@@ -34,6 +43,7 @@ const initialState: WalletState = {
   wallet: undefined,
   transactions: [],
   banks: [],
+  payoutBanks: undefined,
   isTransactionsLoading: false,
   isWalletLoading: false,
 };
@@ -57,6 +67,7 @@ export interface Wallet {
   walletAccountNumber: string;
   walletAccountName: string;
   bankName: string;
+  pin?: string;
 }
 // export type Wallet = {
 //   user: {
@@ -89,26 +100,14 @@ type VirtualAccount = {
 export type TransactionType = "deposit" | "withdrawal" | "transfer" | string;
 
 export interface Transaction {
+  id: string;
+  transactionDate: string; // ISO 8601 date string
+  transactionStatus: "SUCCESSFUL" | "FAILED" | "PENDING" | string; // Adjust based on possible statuses
+  transactionType: "FUNDING" | string; // Adjust based on possible types
+  narration: string;
   amount: number;
-  title: string;
-  description: string;
-  type: string;
-  status: string;
-  user: {
-    __type: string;
-    className: string;
-    objectId: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-  objectId: string;
-  __type: string;
-  className: string;
+  direction: "CREDIT" | "DEBIT" | string; // Adjust based on possible directions
 }
-export type UserWalletTransaction = {
-  date: string;
-  transactions: Array<Transaction>;
-};
 
 const walletSlice = createSlice({
   name: "wallet",
@@ -136,12 +135,15 @@ const walletSlice = createSlice({
     },
     setTransactions(
       state,
-      action: PayloadAction<UserWalletTransaction[] | []>
+      action: PayloadAction<Transaction[] | []>
     ) {
       state.transactions = action.payload;
     },
     setBanks(state, action: PayloadAction<Bank[] | []>) {
       state.banks = action.payload;
+    },
+    setPayoutBanks(state, action: PayloadAction<PayoutBank | undefined>) {
+      state.payoutBanks = action.payload;
     },
     setWithdrawalModal(state, action: PayloadAction<boolean>) {
       state.withdrawalModal = action.payload;
@@ -165,6 +167,7 @@ export const {
   setWalletLoading,
   setTransactions,
   setBanks,
+  setPayoutBanks,
   setAddBankModal,
   setWithdrawalModal,
   setWithdrawalPinModal,

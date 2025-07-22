@@ -35,8 +35,13 @@ export default function WalletBalance() {
   );
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   // const [isMobile, setIsMobile] = useState(false);
-  const { wallet, isWalletLoading, withdrawalModal, withdrawalPinModal } =
-    useSelector(useWallet);
+  const {
+    payoutBanks,
+    wallet,
+    isWalletLoading,
+    withdrawalModal,
+    withdrawalPinModal,
+  } = useSelector(useWallet);
 
   // useEffect(() => {
   //   const checkIfMobile = () => {
@@ -56,7 +61,6 @@ export default function WalletBalance() {
   const toggleBalanceVisibility = () => {
     setIsBalanceHidden(!isBalanceHidden);
   };
-  console.log(wallet);
 
   return (
     <>
@@ -162,14 +166,10 @@ export default function WalletBalance() {
             >
               <MobileWithdrawalForm
                 onAddBank={() => {
-                  if (
-                    wallet?.bankAccounts &&
-                    wallet?.bankAccounts.length >= 3
-                  ) {
-                    toast.info("You already have three account number listed", {
+                  if (payoutBanks) {
+                    toast.info("Payout account already listed", {
                       position: "top-right",
                     });
-
                     return;
                   }
                   store.dispatch(setWithdrawalModal(false));

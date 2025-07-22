@@ -131,11 +131,14 @@ export default function OtpVerificationModal({
       return;
     }
     try {
-      const response = await WalletApi.requestWithdrawal({
-        amount: withdrawalData?.amount.toString(),
-        pin,
-        bankAccount: withdrawalData?.bankAccount,
-      });
+      const response = await WalletApi.requestWithdrawal(
+        {
+          amount: withdrawalData?.amount.toString(),
+          pin,
+          bankAccount: withdrawalData?.bankAccount,
+        },
+        store.dispatch
+      );
       if (response) {
         toast.success(response.message, {
           position: toastPosition,

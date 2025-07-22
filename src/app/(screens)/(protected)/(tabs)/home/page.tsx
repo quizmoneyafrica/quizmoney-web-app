@@ -29,7 +29,6 @@ function HomeTab() {
           dispatch(setWalletLoading(true));
           const res = await WalletApi.fetchCustomerWallet();
           console.log("WALLET: ", res);
-
           if (res?.data) {
             dispatch(setWallet(res?.data));
           }
@@ -47,9 +46,8 @@ function HomeTab() {
         try {
           dispatch(setTransactionsLoading(true));
           const res = await WalletApi.fetchTransactions();
-
-          if (res?.groupedTransactions) {
-            dispatch(setTransactions(res?.groupedTransactions ?? []));
+          if (res?.data?.content) {
+            dispatch(setTransactions(res?.data.content ?? []));
           }
         } catch (error) {
           console.log(error, "Transaction Error");

@@ -70,7 +70,7 @@ export function TransactionDetailsModal({
                         Transaction Date:
                       </span>
                       <span className="text-right text-gray-800 ">
-                        {new Date(transaction.createdAt).toLocaleString()}
+                        {new Date(transaction.transactionDate).toLocaleString()}
                       </span>
                     </div>
                     <div className="border-b border-dashed border-[#17478B] mt-4"></div>
@@ -87,7 +87,7 @@ export function TransactionDetailsModal({
                         Transaction Type:
                       </span>
                       <span className="text-right text-gray-800  capitalize">
-                        {transaction.type}
+                        {transaction.transactionType}
                       </span>
                     </div>
                     <div className="border-b border-dashed border-[#17478B] mt-4"></div>
@@ -105,12 +105,12 @@ export function TransactionDetailsModal({
                       </span>
                       <span
                         className={`text-right  font-medium ${
-                          transaction.type === "deposit"
+                          transaction.direction === "CREDIT"
                             ? "text-green-600"
                             : "text-red-600"
                         }`}
                       >
-                        {transaction.type === "deposit" ? " " : "- "}
+                        {transaction.direction === "CREDIT" ? " " : "- "}
                         {formatAmount(transaction.amount)}
                       </span>
                     </div>
@@ -129,23 +129,28 @@ export function TransactionDetailsModal({
                       </span>
                       <span
                         className={`text-right ${
-                          transaction.status === "successful"
+                          transaction.transactionStatus?.toLowerCase() ===
+                          "successful"
                             ? "text-green-600"
-                            : transaction.status === "pending"
+                            : transaction.transactionStatus?.toLowerCase() ===
+                              "pending"
                             ? "text-amber-500"
-                            : transaction.status === "failed" ||
-                              transaction.status === "rejected"
+                            : transaction.transactionStatus?.toLowerCase() ===
+                                "failed" ||
+                              transaction.transactionStatus?.toLowerCase() ===
+                                "rejected"
                             ? "text-red-600"
                             : "text-green-600"
                         }`}
                       >
-                        {transaction.status}
+                        {transaction.transactionStatus}
                       </span>
                     </div>
                     <div className="border-b border-dashed border-[#17478B] mt-4"></div>
                   </motion.div>
 
-                  {transaction.status === "rejected" && (
+                  {transaction.transactionStatus?.toLowerCase() ===
+                    "rejected" && (
                     <motion.div
                       className="text-[#3B3B3B] text-sm"
                       initial={{ y: 10, opacity: 0 }}

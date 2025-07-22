@@ -8,7 +8,12 @@ import { getAuthUser } from "@/app/api/userApi";
 import WalletApi from "@/app/api/wallet";
 import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
-import { setWallet, useWallet, setBanks } from "@/app/store/walletSlice";
+import {
+  setWallet,
+  useWallet,
+  setBanks,
+  setPayoutBanks,
+} from "@/app/store/walletSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { store } from "@/app/store/store";
 import { UserObject } from "@/app/store/authSlice";
@@ -133,30 +138,51 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
   const onSubmit = async (data: BankAccountFormData) => {
     try {
       setIsLoading(true);
-      const response = await WalletApi.addBankAccount(
-        {
-          accountNumber: data.accountNumber,
-          bankCode: data.bankCode,
-          bankName: banks.find((item) => item.code === data.bankCode)?.name,
-        },
-        store.dispatch
+
+      // Verify account number with bank code
+      setIsVerifying(true);
+      const verificationResponse = await WalletApi.confirmAccount(
+        data.accountNumber,
+        data.bankCode
       );
-      if (response?.success || response?.data || response.code === 200) {
-        const res = await WalletApi.fetchCustomerWallet();
-        if (res.data) {
-          store.dispatch(setWallet(res.data));
+
+      if (verificationResponse?.success || verificationResponse?.data) {
+        const accountNumber =
+          verificationResponse.data?.account_number || data.accountNumber;
+
+        const response = await WalletApi.addBankAccount(
+          {
+            accountNumber: accountNumber,
+            bankCode: data.bankCode,
+            bankName: banks.find((item) => item.code === data.bankCode)?.name,
+          },
+          store.dispatch
+        );
+        if (response?.success || response?.data || response.code === 200) {
+          const res = await WalletApi.fetchPayoutBanks();
+          if (res.data || res.success) {
+            dispatch(setPayoutBanks(res.data));
+          }
+          if (res.data) {
+            store.dispatch(setWallet(res.data));
+          }
+          toast.success(response.data?.message, {
+            position: toastPosition,
+          });
+          reset();
+          close?.();
         }
-        toast.success(response.data?.message, {
+      } else {
+        toast.error("Account verification failed", {
           position: toastPosition,
         });
-        reset();
-        close?.();
       }
     } catch (err: any) {
       toast.error(`${err.message} `, {
         position: toastPosition,
       });
     } finally {
+      setIsVerifying(false);
       setIsLoading(false);
     }
   };
@@ -177,58 +203,6 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
-  };
-
-  const handleSearchInputFocus = () => {
-    setIsSearchFocused(true);
-    if (!isDropdownOpen) {
-      setIsDropdownOpen(true);
-    }
-  };
-
-  const handleSearchInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    // Check if the blur is happening because user clicked inside the dropdown
-    const relatedTarget = e.relatedTarget as HTMLElement;
-    const dropdownContent = dropdownContentRef.current;
-
-    // If focus is moving to something inside the dropdown, don't blur
-    if (
-      dropdownContent &&
-      relatedTarget &&
-      dropdownContent.contains(relatedTarget)
-    ) {
-      e.preventDefault();
-      searchInputRef.current?.focus();
-      return;
-    }
-
-    // Do not close dropdown or clear searchTerm on blur; let user action handle it
-    setIsSearchFocused(false);
-  };
-
-  // Handle dropdown open change
-  const handleDropdownOpenChange = (open: boolean) => {
-    // If closing and search input is focused, prevent closing
-    if (!open && isSearchFocused) {
-      return;
-    }
-
-    setIsDropdownOpen(open);
-
-    if (!open) {
-      setSearchTerm("");
-      setIsSearchFocused(false);
-    } else {
-      // Focus search input when dropdown opens
-      setTimeout(() => {
-        searchInputRef.current?.focus();
-      }, 0);
-    }
-  };
-
-  // Prevent dropdown from closing when clicking inside search area
-  const handleSearchContainerMouseDown = (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent blur from happening
   };
 
   return (
@@ -330,14 +304,20 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
 
       <CustomButton
         type="submit"
-        disabled={isLoading || isLoadingBanks}
+        disabled={isLoading || isLoadingBanks || isVerifying}
         className={`w-full py-3 rounded-full text-white ${
-          !isLoading && !isLoadingBanks
+          !isLoading && !isLoadingBanks && !isVerifying
             ? "bg-positive-800 hover:bg-primary-600"
             : "bg-gray-400 cursor-not-allowed"
         }`}
       >
-        {isLoading ? "Adding... " : isLoadingBanks ? "Loading..." : "Add Bank"}
+        {isVerifying
+          ? "Verifying..."
+          : isLoading
+          ? "Adding..."
+          : isLoadingBanks
+          ? "Loading..."
+          : "Add Bank"}
       </CustomButton>
     </form>
   );
