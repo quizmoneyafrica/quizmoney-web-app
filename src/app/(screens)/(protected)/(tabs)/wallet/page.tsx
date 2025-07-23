@@ -69,6 +69,9 @@ function Page() {
     const fetchVirtualAccount = async () => {
       try {
         const res = await WalletApi.fetchVirtualAccount();
+
+        console.log(res.data, "Virtual Account");
+
         if (res.data || res.success) {
           dispatch(setVirtualAccount(res?.data));
         }
