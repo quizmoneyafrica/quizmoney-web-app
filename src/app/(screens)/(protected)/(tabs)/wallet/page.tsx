@@ -66,32 +66,6 @@ function Page() {
         }
     };
 
-    const fetchVirtualAccount = async () => {
-      try {
-        const res = await WalletApi.fetchVirtualAccount();
-
-        console.log(res.data, "Virtual Account");
-
-        if (res.data || res.success) {
-          dispatch(setVirtualAccount(res?.data));
-        }
-      } catch (error) {
-        console.log(error, "Wallet Error");
-      } finally {
-      }
-    };
-    const fetchBanks = async () => {
-      try {
-        const res = await WalletApi.fetchBanks();
-        if (res.data || res.success) {
-          dispatch(setBanks(res?.data));
-        }
-      } catch (error) {
-        console.log(error, "Wallet Error");
-      } finally {
-      }
-    };
-
     const fetchTransactions = async () => {
       if (transactions.length <= 0)
         try {
@@ -154,8 +128,6 @@ function Page() {
     fetchWallet();
     fetchTransactions();
     fetchPayoutAccounts();
-    fetchBanks();
-    fetchVirtualAccount();
   }, [banks.length, dispatch, transactions.length, wallet, payoutBanks]);
 
   return (

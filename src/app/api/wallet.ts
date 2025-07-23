@@ -25,16 +25,7 @@ const WalletApi = {
     return callWithSessionToken<ApiResponse>("wallets", {}, {}, "GET");
   },
 
-  // fetchCustomerWallet(): Promise<AxiosResponse<ApiResponse>> {
-  //   return axios.post(
-  //     `${BASE_URL}/fetchCustomerWallet`,
-  //     {},
-  //     { headers: getSessionTokenHeaders() }
-  //   );
-  // },
-   fetchVirtualAccount(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("wallet-accounts", {}, {}, "GET");
-  },
+
    fetchBanks(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("banks", {}, {}, "GET");
   },
