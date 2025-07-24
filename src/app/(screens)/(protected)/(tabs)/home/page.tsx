@@ -16,6 +16,8 @@ import {
 } from "@/app/store/walletSlice";
 import WalletApi from "@/app/api/wallet";
 import AdBanner from "@/app/components/advert/adBanner";
+import { updateCoinBalance } from "@/app/store/coinSlice";
+import UserAPI from "@/app/api/userApi";
 
 function HomeTab() {
   const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
@@ -39,7 +41,16 @@ function HomeTab() {
           dispatch(setWalletLoading(false));
         }
     };
-    fetchWallet();
+
+    const fetchUserCoin = async () => {
+      try {
+        const res = await UserAPI.fetchUserCoinAccount();
+        console.log("Coin Balance", res.coinAccount.balance);
+        dispatch(updateCoinBalance(res.coinAccount.balance));
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
     // SET AUTH USER WALLET DATA
     const fetchTransactions = async () => {
@@ -57,6 +68,8 @@ function HomeTab() {
           dispatch(setTransactionsLoading(false));
         }
     };
+    fetchWallet();
+    fetchUserCoin();
     fetchTransactions();
   }, [dispatch, transactions, wallet]);
 
