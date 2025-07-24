@@ -13,10 +13,6 @@ export type VirtualDetailsProps = { amount?: number };
 function VirtualDetails({ amount = 1000 }: VirtualDetailsProps) {
   const { virtualAccount } = useSelector(useWallet);
 
-  console.log("====================================");
-  console.log(virtualAccount);
-  console.log("====================================");
-
   // wallet-accounts
 
   const handleCopyAll = async () => {

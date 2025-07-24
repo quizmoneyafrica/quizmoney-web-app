@@ -1,6 +1,6 @@
 import CustomButton from "@/app/utils/CustomBtn";
-import { ChevronDown } from "lucide-react";
-import { useState, useEffect, useMemo } from "react";
+import { Search, ChevronDown } from "lucide-react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,11 +8,16 @@ import { getAuthUser } from "@/app/api/userApi";
 import WalletApi from "@/app/api/wallet";
 import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
-import { setWallet, useWallet } from "@/app/store/walletSlice";
+import {
+  setWallet,
+  useWallet,
+  setBanks,
+  setPayoutBanks,
+} from "@/app/store/walletSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { store } from "@/app/store/store";
 import { UserObject } from "@/app/store/authSlice";
-// import CustomTextField from "@/app/utils/CustomTextField";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
 // Define bank interface
 export interface Bank {
@@ -37,13 +42,35 @@ const bankAccountSchema = z.object({
 type BankAccountFormData = z.infer<typeof bankAccountSchema>;
 
 export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
-  const [showBankDropdown, setShowBankDropdown] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  // const user = getAuthUser();
-  // const [bvn, setBvn] = useState("");
-  // const [firstName, setFirstName] = useState(user.firstName);
-  // const [lastName, setLastName] = useState(user.lastName);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isLoadingBanks, setIsLoadingBanks] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const dropdownContentRef = useRef<HTMLDivElement>(null);
+  const [showBankList, setShowBankList] = useState(false);
+  const bankListRef = useRef<HTMLDivElement>(null);
+
+  // Custom click outside handler for bank list
+  useEffect(() => {
+    if (!showBankList) return;
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        bankListRef.current &&
+        !bankListRef.current.contains(event.target as Node)
+      ) {
+        setShowBankList(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showBankList]);
+
+  const dispatch = useDispatch();
 
   const {
     register,
@@ -62,10 +89,43 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
   });
 
   const { banks } = useSelector(useWallet) as { banks: Bank[] };
+
+  // Fetch banks if not already loaded
+  useEffect(() => {
+    const fetchBanks = async () => {
+      if (banks.length === 0) {
+        try {
+          setIsLoadingBanks(true);
+          const res = await WalletApi.fetchBanks();
+          if (res.data || res.success) {
+            dispatch(setBanks(res?.data || []));
+          }
+        } catch (error) {
+          console.error("Error fetching banks:", error);
+          toast.error("Failed to load banks", {
+            position: toastPosition,
+          });
+        } finally {
+          setIsLoadingBanks(false);
+        }
+      }
+    };
+
+    fetchBanks();
+  }, [banks.length, dispatch]);
+
   const sortedBanks = useMemo(
     () => [...banks].sort((a, b) => a.name.localeCompare(b.name)),
     [banks]
   );
+
+  const filteredBanks = useMemo(() => {
+    if (!searchTerm.trim()) return sortedBanks;
+
+    return sortedBanks.filter((bank) =>
+      bank.name.toLowerCase().includes(searchTerm.toLowerCase().trim())
+    );
+  }, [sortedBanks, searchTerm]);
 
   useEffect(() => {
     if (sortedBanks.length > 0 && !watch("bankCode")) {
@@ -76,112 +136,79 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
   const selectedBankCode = watch("bankCode");
 
   const onSubmit = async (data: BankAccountFormData) => {
-    const { email } = getAuthUser() as UserObject;
-
-    try {
-      setIsVerifying(true);
-
-      const payload = {
-        email: email,
-        accountNumber: data?.accountNumber,
-        bankCode: `${data?.bankCode}`.trim(),
-      };
-      // console.log("==============payload======================");
-      // console.log(JSON.stringify(payload, null, 2));
-      // console.log("====================================");
-      const response = await WalletApi.verifyAccount(payload);
-      // const response = await WalletApi.verifyBVN(
-      //   payload.accountNumber,
-      //   bvn,
-      //   firstName,
-      //   lastName,
-      //   payload.bankCode
-      // );
-      console.log(response);
-      // const isBVNVerified = await WalletApi.isBVNVerified();
-      // console.log("isBVNVerified", isBVNVerified);
-
-      if (response?.status === "success") {
-        const { account_number } = response?.data;
-        const bankName =
-          banks.find((item) => item?.code === data?.bankCode)?.name ?? "";
-        addVerifiedAccount({
-          accountNumber: account_number,
-          bankCode: data.bankCode,
-          bankName,
-        });
-      }
-      console.log(response);
-
-      if (response?.status === "error") {
-        toast.error(`${response?.message}`, {
-          position: toastPosition,
-        });
-      }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      console.log("WalletApi.verifyAccount", err);
-      toast.error(`${err.message}`, {
-        position: toastPosition,
-      });
-    } finally {
-      setIsVerifying(false);
-    }
-  };
-
-  const dispatch = useDispatch();
-
-  const addVerifiedAccount = async (data: {
-    accountNumber: string;
-    bankCode: string;
-    bankName: string;
-  }) => {
     try {
       setIsLoading(true);
-      const response = await WalletApi.addBankAccount(
-        {
-          accountNumber: data.accountNumber,
-          bankCode: data.bankCode,
-          bankName: data.bankName,
-        },
-        store.dispatch
+
+      // Verify account number with bank code
+      setIsVerifying(true);
+      const verificationResponse = await WalletApi.confirmAccount(
+        data.accountNumber,
+        data.bankCode
       );
-      if (response?.updatedWallet) {
-        // dispatch(setWalletLoading(true));
-        const res = await WalletApi.fetchCustomerWallet();
-        dispatch(setWallet(res.wallet));
-        toast.success(response.data?.result?.message, {
+
+      if (verificationResponse?.success || verificationResponse?.data) {
+        const accountNumber =
+          verificationResponse.data?.account_number || data.accountNumber;
+
+        const response = await WalletApi.addBankAccount(
+          {
+            accountNumber: accountNumber,
+            bankCode: data.bankCode,
+            bankName: banks.find((item) => item.code === data.bankCode)?.name,
+          },
+          store.dispatch
+        );
+        if (response?.success || response?.data || response.code === 200) {
+          const res = await WalletApi.fetchPayoutBanks();
+          if (res.data || res.success) {
+            dispatch(setPayoutBanks(res.data));
+          }
+          if (res.data) {
+            store.dispatch(setWallet(res.data));
+          }
+          toast.success(response.data?.message, {
+            position: toastPosition,
+          });
+          reset();
+          close?.();
+        }
+      } else {
+        toast.error("Account verification failed", {
           position: toastPosition,
         });
-        reset();
-        close?.();
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(`${err.message} `, {
         position: toastPosition,
       });
     } finally {
+      setIsVerifying(false);
       setIsLoading(false);
     }
   };
 
   // Get selected bank details
   const selectedBank = banks.find((bank) => bank.code === selectedBankCode);
+
+  const handleBankInputFocus = () => {
+    setShowBankList(true);
+  };
+
+  const handleBankClick = (bank: Bank) => {
+    setValue("bankCode", bank.code, { shouldValidate: true });
+    setShowBankList(false);
+    setSearchTerm("");
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <p className="text-gray-600">Add your bank account for withdrawal</p>
-      <button
-        type="button"
-        onClick={() =>
-          addVerifiedAccount({
-            accountNumber: "",
-            bankCode: "",
-            bankName: "",
-          })
-        }
-        className="hidden"
-      ></button>
+
       <div>
         <label
           htmlFor="accountNumber"
@@ -215,87 +242,81 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
         >
           Select Bank
         </label>
-        <div className="relative">
-          <button
-            id="bankCode"
-            type="button"
+        <div className="relative" ref={bankListRef}>
+          <input
+            type="text"
+            placeholder={
+              isLoadingBanks ? "Loading banks..." : "Search banks..."
+            }
+            value={searchTerm}
+            onChange={handleSearchChange}
+            onFocus={handleBankInputFocus}
+            disabled={isLoadingBanks}
             className={`w-full border ${
               errors.bankCode ? "border-red-500" : "border-gray-300"
-            } rounded-lg p-3 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500`}
-            onClick={() => setShowBankDropdown(!showBankDropdown)}
-            aria-expanded={showBankDropdown}
-            aria-controls="bank-dropdown"
-          >
-            <span>{selectedBank?.name || "Select a bank"}</span>
-            <ChevronDown className="h-5 w-5 text-gray-400" />
-          </button>
+            } rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white`}
+            autoComplete="off"
+          />
+          {/* Show selected bank below input if one is selected */}
+          {selectedBank && !showBankList && (
+            <div className="mt-2 text-sm text-gray-700">
+              Selected: {selectedBank.name}
+            </div>
+          )}
+          {/* Bank list dropdown */}
+          {showBankList && (
+            <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+              {isLoadingBanks ? (
+                <div className="p-3 text-gray-500 text-center">
+                  Loading banks...
+                </div>
+              ) : filteredBanks.length > 0 ? (
+                filteredBanks.map((bank) => (
+                  <button
+                    type="button"
+                    key={bank.id}
+                    className={`w-full text-left p-3 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none cursor-pointer flex items-center ${
+                      selectedBankCode === bank.code ? "bg-gray-100" : ""
+                    }`}
+                    onClick={() => handleBankClick(bank)}
+                  >
+                    {bank.name}
+                  </button>
+                ))
+              ) : searchTerm.trim() ? (
+                <div className="p-3 text-gray-500 text-center">
+                  No banks found matching "{searchTerm}"
+                </div>
+              ) : (
+                <div className="p-3 text-gray-500 text-center">
+                  No banks available
+                </div>
+              )}
+            </div>
+          )}
           {errors.bankCode && (
             <p className="text-red-500 text-sm mt-1">
               {errors.bankCode.message}
             </p>
           )}
-          {showBankDropdown && (
-            <div
-              id="bank-dropdown"
-              className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-[35dvh] overflow-y-auto"
-            >
-              <div className="p-2 sticky top-0 bg-white z-10"></div>
-              {sortedBanks.map((bank) => (
-                <button
-                  key={bank.id} // Use id as key for uniqueness
-                  type="button"
-                  className="w-full text-left p-3 hover:bg-gray-100 flex items-center"
-                  onClick={() => {
-                    setValue("bankCode", bank.code, { shouldValidate: true });
-                    setShowBankDropdown(false);
-                  }}
-                >
-                  {bank.name}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
       </div>
 
-      {/* <CustomTextField
-        type="text"
-        label="Enter your bank verification Number (BVN) "
-        value={bvn}
-        onChange={(e) => setBvn(e.target.value)}
-        required
-      />
-
-      <CustomTextField
-        type="text"
-        label="First Name (confirm)"
-        value={firstName}
-        onChange={(e) => setFirstName(e.target.value)}
-        required
-        className="capitalize"
-      />
-      <CustomTextField
-        type="text"
-        label="Last Name (confirm)"
-        value={lastName}
-        onChange={(e) => setLastName(e.target.value)}
-        required
-        className="capitalize"
-      /> */}
-
       <CustomButton
         type="submit"
-        disabled={isVerifying || isLoading}
+        disabled={isLoading || isLoadingBanks || isVerifying}
         className={`w-full py-3 rounded-full text-white ${
-          !isVerifying && !isLoading
+          !isLoading && !isLoadingBanks && !isVerifying
             ? "bg-positive-800 hover:bg-primary-600"
             : "bg-gray-400 cursor-not-allowed"
         }`}
       >
         {isVerifying
-          ? "Is verifying..."
+          ? "Verifying..."
           : isLoading
-          ? "Adding... "
+          ? "Adding..."
+          : isLoadingBanks
+          ? "Loading..."
           : "Add Bank"}
       </CustomButton>
     </form>

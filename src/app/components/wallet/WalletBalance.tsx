@@ -35,8 +35,13 @@ export default function WalletBalance() {
   );
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   // const [isMobile, setIsMobile] = useState(false);
-  const { wallet, isWalletLoading, withdrawalModal, withdrawalPinModal } =
-    useSelector(useWallet);
+  const {
+    payoutBanks,
+    wallet,
+    isWalletLoading,
+    withdrawalModal,
+    withdrawalPinModal,
+  } = useSelector(useWallet);
 
   // useEffect(() => {
   //   const checkIfMobile = () => {
@@ -56,7 +61,6 @@ export default function WalletBalance() {
   const toggleBalanceVisibility = () => {
     setIsBalanceHidden(!isBalanceHidden);
   };
-  console.log(wallet);
 
   return (
     <>
@@ -126,18 +130,28 @@ export default function WalletBalance() {
 
             <QmDrawer
               open={withdrawalModal}
-              onOpenChange={(val) => store.dispatch(setWithdrawalModal(val))}
+              onOpenChange={(val) => {
+                if (wallet?.pin && val === true) {
+                  store.dispatch(setWithdrawalModal(val));
+                  return;
+                } else if (!wallet?.pin && val === true) {
+                  store.dispatch(setWithdrawalPinModal(true));
+                  return;
+                }
+
+                store.dispatch(setWithdrawalModal(val));
+              }}
               title="Withdraw"
               titleLeft
               heightClass="h-[75%] md:h-[55%] lg:h-[80%]"
               trigger={
                 <button
                   onClick={() => {
-                    if (wallet?.pin) {
-                      store.dispatch(setWithdrawalModal(true));
-                    } else {
-                      store.dispatch(setWithdrawalPinModal(true));
-                    }
+                    // if (wallet?.pin) {
+                    //   store.dispatch(setWithdrawalModal(true));
+                    // } else {
+                    //   store.dispatch(setWithdrawalPinModal(true));
+                    // }
                   }}
                   className="bg-[#E4F1FA] cursor-pointer hover:bg-gray-100 text-primary-700  px-4 py-2 text-sm rounded-full flex items-center gap-0 md:gap-2 font-medium md:px-6 md:py-3 md:text-base"
                 >
@@ -152,14 +166,10 @@ export default function WalletBalance() {
             >
               <MobileWithdrawalForm
                 onAddBank={() => {
-                  if (
-                    wallet?.bankAccounts &&
-                    wallet?.bankAccounts.length >= 3
-                  ) {
-                    toast.info("You already have three account number listed", {
+                  if (payoutBanks) {
+                    toast.info("Payout account already listed", {
                       position: "top-right",
                     });
-
                     return;
                   }
                   store.dispatch(setWithdrawalModal(false));
@@ -171,122 +181,6 @@ export default function WalletBalance() {
         </div>
       </div>
 
-      {/* {isMobile ? (
-        <BottomSheet
-          isOpen={open}
-          onClose={() => setOpen(false)}
-          title="Deposit"
-        >
-          <MobileDepositForm />
-        </BottomSheet>
-      ) : (
-        <Dialog.Root open={open} onOpenChange={setOpen}>
-          <DepositModalModal open={open} onOpenChange={setOpen} />
-        </Dialog.Root>
-      )} */}
-      {/* {isMobile ? (
-        <BottomSheet
-          isOpen={withdrawalModal}
-          onClose={() => store.dispatch(setWithdrawalModal(false))}
-          title="Withdraw"
-        >
-          <MobileWithdrawalForm
-            onAddBank={() => {
-              if (wallet?.bankAccounts && wallet?.bankAccounts.length >= 3) {
-                toast.info("You've already have three account number listed", {
-                  position: "top-right",
-                });
-
-                return;
-              }
-              store.dispatch(setWithdrawalModal(false));
-
-              store.dispatch(setAddBankModal(true));
-            }}
-          />
-        </BottomSheet>
-      ) : (
-        <Dialog.Root
-          open={withdrawalModal}
-          onOpenChange={(d) => store.dispatch(setWithdrawalModal(d))}
-        >
-          <WithdrawalModalModal
-            open={withdrawalModal}
-            onOpenChange={(d) => store.dispatch(setWithdrawalModal(d))}
-            onAddBank={() => {
-              if (wallet?.bankAccounts && wallet?.bankAccounts.length >= 3) {
-                toast.info("You've already have three account number listed", {
-                  position: "top-right",
-                });
-
-                return;
-              }
-              store.dispatch(setWithdrawalModal(false));
-
-              store.dispatch(setAddBankModal(true));
-            }}
-          />
-        </Dialog.Root>
-      )} */}
-
-      <>
-        {/* Create withdrawal pin  */}
-        <QmDrawer
-          open={withdrawalPinModal}
-          onOpenChange={(val) => store.dispatch(setWithdrawalPinModal(val))}
-          title={`${wallet?.pin ? "Verification" : "Create withdrawal pin"}`}
-          titleLeft
-          heightClass="h-[75%] lg:h-auto"
-        >
-          <MobileWithdrawalPinForm onSubmit={() => {}} />
-        </QmDrawer>
-        {/* {isMobile ? (
-          <BottomSheet
-            isOpen={withdrawalPinModal}
-            onClose={() => store.dispatch(setWithdrawalPinModal(false))}
-            title="Create withdrawal pin "
-          >
-            <MobileWithdrawalPinForm onSubmit={() => {}} />
-          </BottomSheet>
-        ) : (
-          <Dialog.Root
-            open={withdrawalPinModal}
-            onOpenChange={(d) => store.dispatch(setWithdrawalPinModal(d))}
-          >
-            <WithdrawalPinModal
-              open={withdrawalPinModal}
-              onOpenChange={(d) => store.dispatch(setWithdrawalPinModal(d))}
-            />
-          </Dialog.Root>
-        )} */}
-      </>
-      {/* WithdrawalSuccess  */}
-      <QmDrawer
-        open={openSuccessModal}
-        onOpenChange={setOpenSuccessModal}
-        heightClass="h-[75%] lg:h-auto"
-      >
-        <MobileWithdrawalSuccess close={() => setOpenSuccessModal(false)} />
-      </QmDrawer>
-
-      {/* {isMobile ? (
-        <BottomSheet
-          full
-          isOpen={openSuccessModal}
-          onClose={() => setOpenSuccessModal(false)}
-          title=" "
-        >
-          <MobileWithdrawalSuccess close={() => setOpenSuccessModal(false)} />
-        </BottomSheet>
-      ) : (
-        <Dialog.Root open={openSuccessModal} onOpenChange={setOpenSuccessModal}>
-          <WithdrawalSuccessModal
-            open={openSuccessModal}
-            onOpenChange={setOpenSuccessModal}
-          />
-        </Dialog.Root>
-      )} */}
-
       {/* Success modal */}
       <QmDrawer
         open={isSuccessfulDepositOpen}
@@ -297,26 +191,6 @@ export default function WalletBalance() {
           title={Boolean(success) ? "Successful !" : "Failed !"}
         />
       </QmDrawer>
-
-      {/* {isMobile ? (
-        <BottomSheet
-          isOpen={isSuccessfulDepositOpen}
-          onClose={() => setIsSuccessfulDepositOpen(false)}
-          title="Deposit"
-        >
-          <MobileSuccessDeposit
-            title={Boolean(success) ? "Successful !" : "Failed !"}
-          />
-        </BottomSheet>
-      ) : (
-        <Dialog.Root open={open} onOpenChange={setOpen}>
-          <SuccessfulDepositModal
-            open={isSuccessfulDepositOpen}
-            title={Boolean(success) ? "Successful !" : "Failed !"}
-            onOpenChange={setIsSuccessfulDepositOpen}
-          />
-        </Dialog.Root>
-      )} */}
     </>
   );
 }

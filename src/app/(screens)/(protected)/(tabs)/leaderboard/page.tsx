@@ -46,8 +46,6 @@ function Page() {
   const leaderboardData = activeTab === "lastGame" ? lastGame : allTime[page];
 
   const userLastGameStats = lastGame?.userLastGameStats;
-  console.log("LAST GAME DATA:", lastGame);
-  console.log("LAST GAME LEADERBOARD:", leaderboard);
 
   const getLeaderboard = useCallback(
     async (tab: "lastGame" | "allTime") => {

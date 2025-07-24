@@ -10,16 +10,16 @@ const WalletApi = {
     lastName: string,
     bankCode: string
   ): Promise<ApiResponse> {
-    // return callWithSessionToken<ApiResponse>(`verifyBVN`, {
-    //   accountNumber,
-    //   bvn,
-    //   firstName,
-    //   lastName,
-    //   bankCode,
-    // });
+    return callWithSessionToken<ApiResponse>(`verifyBVN`, {
+      accountNumber,
+      bvn,
+      firstName,
+      lastName,
+      bankCode,
+    });
   },
   isBVNVerified(): Promise<ApiResponse> {
-    // return callWithSessionToken<ApiResponse>(`isBVNVerified`, {});
+    return callWithSessionToken<ApiResponse>(`isBVNVerified`, {});
   },
   fetchCustomerWallet(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("wallets", {}, {}, "GET");
@@ -32,20 +32,25 @@ const WalletApi = {
   //     { headers: getSessionTokenHeaders() }
   //   );
   // },
-  fetchVirtualAccount(): Promise<ApiResponse> {
+   fetchVirtualAccount(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("wallet-accounts", {}, {}, "GET");
   },
-  fetchBanks(): Promise<ApiResponse> {
+   fetchBanks(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("banks", {}, {}, "GET");
   },
-  fetchTransactions(page?: {
-    page: number;
-    limit: number;
-  }): Promise<ApiResponse> {
-    // return callWithSessionToken<ApiResponse>(
-    //   `fetchTransactions`,
-    //   page ? { ...page } : {}
-    // );
+   fetchPayoutBanks(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("payout-accounts", {}, {}, "GET");
+  },
+   confirmAccount(accountNumber: string, bankCode: string): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(`banks/name-inquiry?accountNumber=${accountNumber}&bankCode=${bankCode}`, {}, {}, "GET");
+  },
+  fetchTransactions(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      `wallet-transactions`,
+      {},
+      {},
+      "GET"
+    );
   },
 
   getCheckoutLink(data: { amount: string }): Promise<ApiResponse> {
@@ -64,12 +69,8 @@ const WalletApi = {
     );
   },
 
-  addBankAccount(data: any, dispatch: any): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(
-      `addBankAccount`,
-      { ...data },
-      dispatch
-    );
+  addBankAccount(data: any,dispatch:any): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(`payout-accounts`, { ...data },dispatch);
   },
 
   verifyAccount(data: {
@@ -83,9 +84,9 @@ const WalletApi = {
     return callWithSessionToken<ApiResponse>("listBanks", {});
   },
   fetchDedicatedAccount(data: { email: string }): Promise<ApiResponse> {
-    // return callWithSessionToken<ApiResponse>(`fetchDedicatedAccount`, {
-    //   ...data,
-    // });
+    return callWithSessionToken<ApiResponse>(`fetchDedicatedAccount`, {
+      ...data,
+    });
   },
   createWithdrawalPin(data: {
     pin: string;
@@ -100,13 +101,9 @@ const WalletApi = {
   requestWithdrawal(data: {
     amount: string;
     pin: string;
-    bankAccount: {
-      accountNumber: string;
-      bankName: string;
-      accountName: string;
-    };
-  }): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("requestWithdrawal", { ...data });
+    purpose: string;
+  },dispatch: any): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("withdraw", { ...data },dispatch);
   },
 
   forgotPin(data: { email: string }): Promise<ApiResponse> {

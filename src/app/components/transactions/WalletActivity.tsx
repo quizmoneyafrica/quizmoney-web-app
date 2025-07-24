@@ -6,14 +6,17 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   setTransactions,
   setTransactionsLoading,
-  Transaction,
+  Transaction as WalletTransaction,
   useWallet,
+  Transaction,
 } from "@/app/store/walletSlice";
 import WalletApi from "@/app/api/wallet";
-import {
-  TransactionGroup,
-  UserWalletTransaction,
-} from "../wallet/TransactionHistory";
+
+interface WalletTransactionGroup {
+  today: Transaction[];
+  yesterday: Transaction[];
+  other: Transaction[];
+}
 import { parseISO, isToday, isYesterday } from "date-fns";
 import CustomImage from "../wallet/CustomImage";
 import { ActivityRow } from "./ActivityRow";
@@ -28,13 +31,18 @@ export default function WalletActivity(): React.ReactElement {
     FilterType.ALL
   );
   const [filteredTransactions, setFilteredTransactions] = useState<
-    UserWalletTransaction[]
+    Transaction[]
   >([]);
   const dispatch = useDispatch();
   const { transactions, isTransactionsLoading } = useSelector(useWallet);
 
   useEffect(() => {
-    if (transactions.length === 0) return;
+    if (
+      !transactions ||
+      !Array.isArray(transactions) ||
+      transactions.length === 0
+    )
+      return;
 
     // For ALL filter type, return all transactions without filtering
     if (selectedFilter === FilterType.ALL) {
@@ -42,17 +50,12 @@ export default function WalletActivity(): React.ReactElement {
       return;
     }
 
-    // For COMPLETED and PENDING, filter the transactions
-    const filtered = transactions
-      .map((dateGroup: UserWalletTransaction) => ({
-        ...dateGroup,
-        transactions: dateGroup.transactions.filter((transaction) =>
-          selectedFilter === FilterType.COMPLETED
-            ? transaction.status?.toLowerCase() === "completed"
-            : transaction.status?.toLowerCase() === "pending"
-        ),
-      }))
-      .filter((group) => group.transactions.length > 0);
+    // For COMPLETED and PENDING, filter the transactions directly
+    const filtered = transactions.filter((transaction) =>
+      selectedFilter === FilterType.COMPLETED
+        ? transaction.transactionStatus?.toLowerCase() === "successful"
+        : transaction.transactionStatus?.toLowerCase() === "pending"
+    );
 
     setFilteredTransactions(filtered);
   }, [selectedFilter, transactions]);
@@ -61,17 +64,14 @@ export default function WalletActivity(): React.ReactElement {
     const fetchTransactions = async () => {
       try {
         dispatch(setTransactionsLoading(true));
-        const res = await WalletApi.fetchTransactions({
-          page,
-          limit: PAGE_SIZE,
-        });
+        const res = await WalletApi.fetchTransactions();
         const data = res;
         console.log("=================TRANSACTIONS===================");
         console.log(JSON.stringify(res, null, 2));
         console.log("=================TRANSACTIONS===================");
 
-        if (data?.groupedTransactions) {
-          dispatch(setTransactions(data?.groupedTransactions));
+        if (data?.data?.content) {
+          dispatch(setTransactions(data?.data?.content));
           setTotalPages(data?.totalPages || 1);
         } else {
           dispatch(setTransactions([]));
@@ -94,21 +94,17 @@ export default function WalletActivity(): React.ReactElement {
     }
   };
 
-  const groupedTransactions: TransactionGroup = {
+  const groupedTransactions: WalletTransactionGroup = {
     today: [],
     yesterday: [],
     other: [],
   };
 
-  const flattenedTransactions: Transaction[] = [];
-  filteredTransactions.forEach((walletTransaction: UserWalletTransaction) => {
-    walletTransaction.transactions.forEach((transaction: Transaction) => {
-      flattenedTransactions.push(transaction);
-    });
-  });
-
-  flattenedTransactions.forEach((transaction: Transaction) => {
-    const date = parseISO(transaction?.createdAt ?? new Date().toISOString());
+  // Process transactions directly since they're now an array of Transaction
+  filteredTransactions.forEach((transaction: Transaction) => {
+    const date = parseISO(
+      transaction?.transactionDate ?? new Date().toISOString()
+    );
     if (isToday(date)) {
       groupedTransactions.today.push(transaction);
     } else if (isYesterday(date)) {
@@ -134,7 +130,7 @@ export default function WalletActivity(): React.ReactElement {
           <ActivityRow
             isLast={transactions.length == index + 1}
             transaction={transaction}
-            key={transaction.objectId || index.toString()}
+            key={transaction.id || index.toString()}
           />
         ))}
       </div>
@@ -170,7 +166,7 @@ export default function WalletActivity(): React.ReactElement {
       <div className="w-full gap-4 md:gap-8 flex flex-col">
         {isTransactionsLoading ? (
           renderSkeletonLoader()
-        ) : flattenedTransactions.length === 0 ? (
+        ) : filteredTransactions.length === 0 ? (
           renderEmptyState()
         ) : (
           <React.Fragment>
@@ -183,13 +179,15 @@ export default function WalletActivity(): React.ReactElement {
           </React.Fragment>
         )}
       </div>
-      {transactions?.length > 0 && (
-        <Pagination
-          page={page}
-          pageCount={totalPages}
-          onPageChange={handlePageChange}
-        />
-      )}
+      {transactions &&
+        Array.isArray(transactions) &&
+        transactions.length > 0 && (
+          <Pagination
+            page={page}
+            pageCount={totalPages}
+            onPageChange={handlePageChange}
+          />
+        )}
     </div>
   );
 }

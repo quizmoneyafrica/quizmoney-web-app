@@ -193,7 +193,7 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
                   Pay with Bank Transfer
                 </label>
 
-                <label className="flex items-center gap-2 text-sm bg-white border border-neutral-300 checked:border-primary-900 p-4 rounded-[10px]">
+                {/* <label className="flex items-center gap-2 text-sm bg-white border border-neutral-300 checked:border-primary-900 p-4 rounded-[10px]">
                   <input
                     type="radio"
                     name="paymentMethod"
@@ -203,7 +203,7 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
                     className="accent-[#17478B] size-5"
                   />
                   Pay with PayStack{" "}
-                </label>
+                </label> */}
               </div>
             </div>
 
