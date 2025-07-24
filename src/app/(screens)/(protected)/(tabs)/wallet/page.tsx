@@ -53,13 +53,13 @@ function Page() {
         try {
           dispatch(setWalletLoading(true));
           const res = await WalletApi.fetchPayoutBanks();
-          console.log(res.data, "Payout Accounts");
+          // console.log(res.data, "Payout Accounts");
 
           if (res?.data) {
             dispatch(setPayoutBanks(res.data));
           }
         } catch (error) {
-          console.log(error, "Wallet Error");
+          // console.log(error, "Wallet Error");
         } finally {
           dispatch(setWalletLoading(false));
         }
@@ -72,7 +72,7 @@ function Page() {
           dispatch(setVirtualAccount(res?.data));
         }
       } catch (error) {
-        console.log(error, "Wallet Error");
+        // console.log(error, "Wallet Error");
       } finally {
       }
     };

@@ -1,7 +1,7 @@
 "use client";
 import { useAppDispatch, useAppSelector, useAuth } from "@/app/hooks/useAuth";
 import { decryptData } from "@/app/utils/crypto";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import GameCard from "@/app/components/home/GameCard";
 import TopGamers from "@/app/components/home/TopGamers";
@@ -22,40 +22,41 @@ function HomeTab() {
   const dispatch = useAppDispatch();
   const { wallet, transactions } = useAppSelector((state) => state.wallet);
 
-  useEffect(() => {
-    const fetchWallet = async () => {
-      if (wallet === undefined)
-        try {
-          dispatch(setWalletLoading(true));
-          const res = await WalletApi.fetchCustomerWallet();
-          if (res?.data) {
-            dispatch(setWallet(res?.data));
-          }
-        } catch (error) {
-          console.log(error, "Wallet Error");
-        } finally {
-          dispatch(setWalletLoading(false));
+  const fetchWallet = useCallback(async () => {
+    if (wallet === undefined)
+      try {
+        dispatch(setWalletLoading(true));
+        const res = await WalletApi.fetchCustomerWallet();
+        if (res?.data) {
+          dispatch(setWallet(res?.data));
         }
-    };
-    fetchWallet();
+      } catch (error) {
+        console.log(error, "Wallet Error");
+      } finally {
+        dispatch(setWalletLoading(false));
+      }
+  }, [dispatch, wallet]);
 
-    // SET AUTH USER WALLET DATA
-    const fetchTransactions = async () => {
-      if (transactions.length <= 0)
-        try {
-          dispatch(setTransactionsLoading(true));
-          const res = await WalletApi.fetchTransactions();
-          if (res?.data?.content) {
-            dispatch(setTransactions(res?.data.content ?? []));
-          }
-        } catch (error) {
-          console.log(error, "Transaction Error");
-        } finally {
-          dispatch(setTransactionsLoading(false));
+  // SET AUTH USER WALLET DATA
+  const fetchTransactions = useCallback(async () => {
+    if (transactions.length <= 0)
+      try {
+        dispatch(setTransactionsLoading(true));
+        const res = await WalletApi.fetchTransactions();
+        if (res?.data?.content) {
+          dispatch(setTransactions(res?.data.content ?? []));
         }
-    };
+      } catch (error) {
+        console.log(error, "Transaction Error");
+      } finally {
+        dispatch(setTransactionsLoading(false));
+      }
+  }, [dispatch, transactions.length]);
+
+  useEffect(() => {
+    fetchWallet();
     fetchTransactions();
-  }, [dispatch, transactions, wallet]);
+  }, [fetchTransactions, fetchWallet]);
 
   return (
     <motion.div

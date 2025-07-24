@@ -32,17 +32,25 @@ const WalletApi = {
   //     { headers: getSessionTokenHeaders() }
   //   );
   // },
-   fetchVirtualAccount(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("wallet-accounts", {}, {}, "GET");
+  fetchVirtualAccount(): Promise<ApiResponse> {
+    // return callWithSessionToken<ApiResponse>("wallet-accounts", {}, {}, "GET");
   },
-   fetchBanks(): Promise<ApiResponse> {
+  fetchBanks(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("banks", {}, {}, "GET");
   },
-   fetchPayoutBanks(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("payout-accounts", {}, {}, "GET");
+  fetchPayoutBanks(): Promise<ApiResponse> {
+    // return callWithSessionToken<ApiResponse>("payout-accounts", {}, {}, "GET");
   },
-   confirmAccount(accountNumber: string, bankCode: string): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(`banks/name-inquiry?accountNumber=${accountNumber}&bankCode=${bankCode}`, {}, {}, "GET");
+  confirmAccount(
+    accountNumber: string,
+    bankCode: string
+  ): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      `banks/name-inquiry?accountNumber=${accountNumber}&bankCode=${bankCode}`,
+      {},
+      {},
+      "GET"
+    );
   },
   fetchTransactions(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
@@ -69,8 +77,12 @@ const WalletApi = {
     );
   },
 
-  addBankAccount(data: any,dispatch:any): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(`payout-accounts`, { ...data },dispatch);
+  addBankAccount(data: any, dispatch: any): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      `payout-accounts`,
+      { ...data },
+      dispatch
+    );
   },
 
   verifyAccount(data: {
@@ -98,12 +110,15 @@ const WalletApi = {
       data?.edit ? { ...data } : { pin: data?.pin }
     );
   },
-  requestWithdrawal(data: {
-    amount: string;
-    pin: string;
-    purpose: string;
-  },dispatch: any): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("withdraw", { ...data },dispatch);
+  requestWithdrawal(
+    data: {
+      amount: string;
+      pin: string;
+      purpose: string;
+    },
+    dispatch: any
+  ): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("withdraw", { ...data }, dispatch);
   },
 
   forgotPin(data: { email: string }): Promise<ApiResponse> {
