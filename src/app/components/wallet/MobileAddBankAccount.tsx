@@ -101,7 +101,6 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
             dispatch(setBanks(res?.data || []));
           }
         } catch (error) {
-          console.error("Error fetching banks:", error);
           toast.error("Failed to load banks", {
             position: toastPosition,
           });
