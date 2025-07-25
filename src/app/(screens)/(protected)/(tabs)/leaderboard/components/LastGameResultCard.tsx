@@ -86,7 +86,11 @@ const LastGameResultCard = ({ userLastGameStats }: LastGameResultCardProps) => {
                           {userLastGameStats.user.firstName}{" "}
                           {userLastGameStats.user.lastName}
                         </span>
-                        <span>{user.kycVerified && <VerifiedBadge />}</span>
+                        <span>
+                          {user?.kycVerified && user?.kycVerified && (
+                            <VerifiedBadge />
+                          )}
+                        </span>
                       </motion.p>
                     </motion.div>
                   </td>

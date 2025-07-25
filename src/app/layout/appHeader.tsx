@@ -123,7 +123,7 @@ function AppHeader() {
                 ? " Reset Pin"
                 : lastSegment}
               {lastSegment === "Home"
-                ? user.kycVerified && <VerifiedBadge />
+                ? user?.kycVerified && <VerifiedBadge />
                 : "👋"}
             </span>
           </div>

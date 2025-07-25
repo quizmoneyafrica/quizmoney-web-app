@@ -1,19 +1,38 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import UserAPI from "@/app/api/userApi";
-import { useAppSelector } from "@/app/hooks/useAuth";
+import UserAPI, { getAuthUser } from "@/app/api/userApi";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import { EraserIcon, QMCoin } from "@/app/icons/icons";
+import { updateUser } from "@/app/store/authSlice";
 import CustomButton from "@/app/utils/CustomBtn";
 import { toastPosition } from "@/app/utils/utils";
 import { ArrowRightLeft, Gamepad2Icon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { toast } from "sonner";
 
 type Props = {
   setOpenRedeem: (openRedeem: boolean) => void;
 };
+export interface RewardObject {
+  points: number;
+  title: string;
+  type: string;
+  status: string;
+  reward: Reward;
+  freeGamesUsed: number;
+  allRewardsUsed: boolean;
+  description: string;
+}
 
+interface Reward {
+  erasers: number;
+  freeGames: number;
+}
 const RedeemModal = ({ setOpenRedeem }: Props) => {
   const { balance } = useAppSelector((state) => state.coin);
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const user = getAuthUser();
 
   const handleCancel = () => setOpenRedeem(false);
   const handleRedeem = async () => {
@@ -22,12 +41,26 @@ const RedeemModal = ({ setOpenRedeem }: Props) => {
       toast.info("Not enough coin to redeem.", { position: toastPosition });
       return;
     }
-
     try {
       const res = await UserAPI.redeemCoin();
-      console.log(res);
+      const fullData = res.createdCoinTransaction;
+      console.log(res.createdCoinTransaction);
+      const rewardData: RewardObject = {
+        points: fullData.points,
+        title: fullData.title,
+        type: fullData.type,
+        status: fullData.status,
+        reward: fullData.reward,
+        freeGamesUsed: fullData.freeGamesUsed,
+        allRewardsUsed: fullData.allRewardsUsed,
+        description: fullData.description,
+      };
+      localStorage.setItem("rewardData", JSON.stringify(rewardData));
+      router.push("/wallet/coin/success");
+      dispatch(updateUser({ erasers: user.erasers + fullData.reward.erasers }));
     } catch (err: any) {
       console.log(err);
+      toast.error(err.message, { position: toastPosition });
     }
   };
   return (
@@ -69,7 +102,7 @@ const RedeemModal = ({ setOpenRedeem }: Props) => {
             No, Cancel
           </CustomButton>
           <CustomButton size="lg" width="full" onClick={handleRedeem}>
-            Yes, Redeem QM coin
+            Redeem QM coin
           </CustomButton>
         </div>
       </div>
