@@ -16,8 +16,9 @@ export const gameRules = [
     description: "It auto corrects your first wrong answer.",
   },
   {
-    title: "Get paid",
-    description: "Winnings go to your wallet and can be withdrawn.",
+    title: "Timer Hangs",
+    description:
+      "Use the leave game button below to be refunded, and try joining again.",
   },
 ];
 export const gameFetch = [
