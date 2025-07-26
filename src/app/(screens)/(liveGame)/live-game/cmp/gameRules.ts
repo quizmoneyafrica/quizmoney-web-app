@@ -16,10 +16,14 @@ export const gameRules = [
     description: "It auto corrects your first wrong answer.",
   },
   {
-    title: "Timer Hangs",
-    description:
-      "Use the leave game button below to be refunded, and try joining again.",
+    title: "Screen Time",
+    description: "Make sure your screen light doesn't go off",
   },
+  // {
+  //   title: "Timer Hangs",
+  //   description:
+  //     "Use the leave game button below to be refunded, and try joining again.",
+  // },
 ];
 export const gameFetch = [
   {

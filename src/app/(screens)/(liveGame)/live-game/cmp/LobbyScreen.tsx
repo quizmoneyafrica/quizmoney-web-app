@@ -1,15 +1,17 @@
 "use client";
 import { Grid } from "@radix-ui/themes";
 import { differenceInSeconds } from "date-fns";
-import { motion, AnimatePresence } from "framer-motion";
-import React, { useEffect, useRef, useState } from "react";
+import { AnimatePresence } from "framer-motion";
+import React, { useEffect, useState } from "react";
 import { gameRules } from "./gameRules";
 import CustomButton from "@/app/utils/CustomBtn";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import { setOpenLeaveGame, setPhase, stopAudio } from "@/app/store/gameSlice";
 import { LeaveGameModal } from "@/app/components/game/leaveGameModal";
+import { useRouter } from "next/navigation";
 
 function LobbyScreen() {
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const { lobbyTime } = useAppSelector((state) => state.game);
   // const liveGameData = nextGameData;
@@ -22,12 +24,25 @@ function LobbyScreen() {
   const [animatedCountdown, setAnimatedCountdown] = useState<number | null>(
     null
   );
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  // const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  // const isLowEndDevice =
+  //   navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2;
+  const date = new Date(lobbyTime);
 
+  const gameTime = date.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
   useEffect(() => {
+    let animationFrameId: number;
+
     const updateCountdown = () => {
-      const diff = differenceInSeconds(new Date(startDate), new Date());
-      setSecondsLeft(diff);
+      const now = Date.now();
+      const diff = Math.floor((new Date(startDate).getTime() - now) / 1000);
+      if (diff !== secondsLeft) {
+        setSecondsLeft(diff);
+      }
 
       if (diff >= 0 && diff <= 10) {
         setAnimatedCountdown(diff);
@@ -36,26 +51,51 @@ function LobbyScreen() {
       if (diff <= -1) {
         dispatch(stopAudio());
         dispatch(setPhase("playing"));
-        clearInterval(intervalRef.current!);
+        return;
       }
+
+      animationFrameId = requestAnimationFrame(updateCountdown);
     };
 
-    updateCountdown();
-    intervalRef.current = setInterval(updateCountdown, 1000);
+    animationFrameId = requestAnimationFrame(updateCountdown);
 
     return () => {
-      clearInterval(intervalRef.current!);
+      cancelAnimationFrame(animationFrameId);
     };
-  }, [startDate, dispatch]);
+  }, [startDate, dispatch, secondsLeft]);
 
-  const minutes = Math.floor(secondsLeft / 60);
-  const seconds = secondsLeft % 60;
+  // useEffect(() => {
+  //   const updateCountdown = () => {
+  //     const diff = differenceInSeconds(new Date(startDate), new Date());
+  //     setSecondsLeft(diff);
 
-  const countdownVariants = {
-    initial: { scale: 0.8, opacity: 0 },
-    animate: { scale: 1.5, opacity: 1 },
-    exit: { scale: 0.8, opacity: 0 },
-  };
+  //     if (diff >= 0 && diff <= 10) {
+  //       setAnimatedCountdown(diff);
+  //     }
+
+  //     if (diff <= -1) {
+  //       dispatch(stopAudio());
+  //       dispatch(setPhase("playing"));
+  //       clearInterval(intervalRef.current!);
+  //     }
+  //   };
+
+  //   updateCountdown();
+  //   intervalRef.current = setInterval(updateCountdown, 1000);
+
+  //   return () => {
+  //     clearInterval(intervalRef.current!);
+  //   };
+  // }, [startDate, dispatch]);
+
+  // const minutes = Math.floor(secondsLeft / 60);
+  // const seconds = secondsLeft % 60;
+
+  // const countdownVariants = {
+  //   initial: { scale: 0.8, opacity: 0 },
+  //   animate: { scale: 1.5, opacity: 1 },
+  //   exit: { scale: 0.8, opacity: 0 },
+  // };
   // if (phase === "lobby" && secondsLeft < -2) {
   //   return (
   //     <div className="min-h-[100dvh] lg:h-screen bg-primary-900 hero flex flex-col items-center justify-center  px-4">
@@ -89,17 +129,26 @@ function LobbyScreen() {
         <div>
           {secondsLeft <= 10 ? (
             <AnimatePresence mode="wait">
-              <motion.div
-                key={animatedCountdown}
-                className="self-stretch text-center text-9xl font-bold text-count"
-                variants={countdownVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                transition={{ duration: 0.5 }}
-              >
-                {animatedCountdown}
-              </motion.div>
+              {/* {isLowEndDevice ? (
+                <div className="self-stretch text-center text-9xl font-bold text-count">
+                  <span>{animatedCountdown}</span>
+                </div>
+              ) : (
+                <motion.div
+                  key={animatedCountdown}
+                  className="self-stretch text-center text-9xl font-bold text-count"
+                  variants={countdownVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                >
+                  {animatedCountdown}
+                </motion.div>
+              )} */}
+              <div className="self-stretch text-center text-9xl font-bold text-count">
+                <span>{animatedCountdown}</span>
+              </div>
             </AnimatePresence>
           ) : (
             <section>
@@ -107,11 +156,14 @@ function LobbyScreen() {
                 <Grid gap="3" className="w-full">
                   <div className="bg-primary-50 text-sm border-4 border-primary-500 rounded-[10px] px-4 py-4 space-y-4">
                     <p className="text-center text-neutral-900 font-bolds">
-                      Game Starts in
+                      Game Starts
                     </p>
-                    <p className="self-stretch text-center text-5xl font-bold text-count">{`${
+                    {/* <p className="self-stretch text-center text-5xl font-bold text-count">{`${
                       minutes !== 0 ? `${minutes}:` : ""
-                    }${seconds}`}</p>
+                    }${seconds}`}</p> */}
+                    <p className="self-stretch text-center text-5xl font-bold text-primary-800">
+                      {gameTime}
+                    </p>
                   </div>
                   {/* body  */}
                   <div className=" bg-primary-50 text-center border-4 border-primary-500 rounded-[10px] px-4 py-4 space-y-4">
@@ -133,7 +185,10 @@ function LobbyScreen() {
                   {/* body end  */}
                   <div className="w-full ">
                     <CustomButton
-                      onClick={() => dispatch(setOpenLeaveGame(true))}
+                      onClick={() => {
+                        dispatch(setOpenLeaveGame(true));
+                        router.replace("/home");
+                      }}
                       width="full"
                       className="!bg-secondary-500 !text-neutral-900"
                     >
