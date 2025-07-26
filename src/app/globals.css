@@ -283,6 +283,7 @@ body.hideTawkTo .widget-visible {
   -webkit-text-stroke-width: 2px;
   -webkit-text-stroke-color: var(--QM-Warning-Color-800, #f4a235);
   font-style: normal;
+  will-change: transform, opacity;
 }
 /*
 html,

@@ -9,6 +9,7 @@ import NotStarted from "../cmp/NotStarted";
 import Results from "../cmp/Results";
 import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
+import { setPhase, stopAudio } from "@/app/store/gameSlice";
 // import { setPhase, stopAudio } from "@/app/store/gameSlice";
 
 function Page() {
@@ -41,6 +42,10 @@ function Page() {
       //   dispatch(setPhase("cancelled"));
       //   dispatch(stopAudio());
       // }
+      if (document.hidden && phase === "playing") {
+        dispatch(setPhase("cancelled"));
+        dispatch(stopAudio());
+      }
     };
 
     window.history.pushState(null, "", window.location.href);
