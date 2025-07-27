@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { store } from "../store/store";
 import { ApiResponse } from "./interface";
 import { callWithSessionToken } from "./parse/callWithSessionToken";
 
@@ -85,8 +86,8 @@ const WalletApi = {
     oldPin?: string;
   }): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
-      `createWithdrawalPin`,
-      data?.edit ? { ...data } : { pin: data?.pin }
+      `users/pin/set-up`,
+     { pin: data?.pin },{}, "PATCH"
     );
   },
   requestWithdrawal(data: {
