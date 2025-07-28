@@ -16,6 +16,7 @@ import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import Link from "next/link";
+import { getAuthUser } from "@/app/api/userApi";
 
 // Define schema for PIN validation with Zod
 const pinFormSchema = z.object({

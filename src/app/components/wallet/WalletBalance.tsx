@@ -131,6 +131,9 @@ export default function WalletBalance() {
             <QmDrawer
               open={withdrawalModal}
               onOpenChange={(val) => {
+                store.dispatch(setWithdrawalModal(val));
+
+                return;
                 if (wallet?.pin && val === true) {
                   store.dispatch(setWithdrawalModal(val));
                   return;
