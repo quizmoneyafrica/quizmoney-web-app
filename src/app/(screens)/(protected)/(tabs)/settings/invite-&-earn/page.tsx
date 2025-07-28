@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { User } from "@/app/api/interface";
-import { useAppSelector } from "@/app/hooks/useAuth";
+import { useAppDispatch, useAppSelector, useAuth } from "@/app/hooks/useAuth";
 import { decryptData } from "@/app/utils/crypto";
 import CustomButton from "@/app/utils/CustomBtn";
 import {
@@ -18,16 +17,13 @@ import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import copy from "copy-to-clipboard"; // Import the copy function
 import { toast } from "sonner";
 import UserAPI from "@/app/api/userApi";
-import { formatNaira } from "@/app/utils/utils";
+import { formatNaira, toastPosition } from "@/app/utils/utils";
+import { updateUser } from "@/app/store/authSlice";
 
 const InviteAndEarn = () => {
-  const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
-  const user: User | null = encrypted ? decryptData(encrypted) : null;
+  const dispatch = useAppDispatch();
+  const { user } = useAuth();
   const [isCopied, setIsCopied] = useState(false);
-  const [referralData, setReferralData] = useState({
-    referralCount: 0,
-    referralEarnings: 0,
-  });
 
   const handleCopy = () => {
     // The 'copy' function from the library returns true on success, false on failure
@@ -67,20 +63,37 @@ const InviteAndEarn = () => {
   };
 
   useEffect(() => {
-    (async () => {
+    const fetchReferralCode = async () => {
+      if (user?.referralCode) return;
       try {
-        const res = await UserAPI.getReferralStats();
-
-        setReferralData({
-          referralCount: res.referralCount,
-          referralEarnings: res.referralEarnings,
-          ...res,
-        });
-      } catch (error: any) {
-        console.error(error.message);
+        const res = await UserAPI.getReferralCode();
+        console.log("Referral Code", res);
+        dispatch(updateUser({ referralCode: res?.data?.referralCode }));
+      } catch (err: any) {
+        console.error("Error purchasing products:", err.message);
+        toast.error(`${err.message}`, { position: toastPosition });
       }
-    })();
-  }, []);
+    };
+    const fetchReferralSummary = async () => {
+      // if (user?.referralCode) return;
+      try {
+        const res = await UserAPI.getReferralSummary();
+        console.log("Referral Summary", res);
+        dispatch(
+          updateUser({
+            referralEarnings: res?.data?.referralEarnings,
+            totalReferral: res?.data?.totalReferral,
+          })
+        );
+      } catch (err: any) {
+        console.error("Error purchasing products:", err.message);
+        toast.error(`${err.message}`, { position: toastPosition });
+      }
+    };
+
+    fetchReferralCode();
+    fetchReferralSummary();
+  }, [dispatch, user?.referralCode]);
 
   return (
     <div className=" md:bg-white rounded-3xl md:p-4 min-h-screen space-y-6">
@@ -143,7 +156,7 @@ const InviteAndEarn = () => {
               <p className="font-semibold">Total Referral</p>
             </div>
             <p className=" text-xl md:text-3xl text-primary-800 font-bold">
-              {referralData.referralCount}
+              {user?.totalReferral}
             </p>
           </div>
           <div className="flex flex-col gap-1 md:gap-3 items-center py-3 md:p-6">
@@ -152,7 +165,7 @@ const InviteAndEarn = () => {
               <p className="font-semibold">Referral Earnings</p>
             </div>
             <p className=" text-xl md:text-3xl text-primary-800 font-bold">
-              {formatNaira(Number(referralData.referralEarnings), true)}
+              {formatNaira(Number(user?.referralEarnings), true)}
             </p>
           </div>
         </div>
@@ -189,7 +202,7 @@ const InviteAndEarn = () => {
                 </div>
               </div> */}
               <div className="relative flex items-center !justify-end">
-                {referralData?.referralCount >= 1 ? (
+                {user?.totalReferral || 0 >= 1 ? (
                   <div
                     className={`bg-green-500 rounded-full p-1 text-white w-fit`}
                   >
@@ -198,8 +211,8 @@ const InviteAndEarn = () => {
                 ) : (
                   <div className="absolute right-0 inline-block h-[50px] w-[50px]">
                     <CircularProgressbar
-                      value={(referralData?.referralCount / 1) * 100}
-                      text={`${referralData?.referralCount}/1`}
+                      value={(user?.totalReferral || 0 / 1) * 100}
+                      text={`${user?.totalReferral || 0}/1`}
                       className="h-[50px] w-[50px] "
                       styles={buildStyles({
                         textSize: "30px",
@@ -216,7 +229,7 @@ const InviteAndEarn = () => {
             {/* 5 people  */}
             <div
               className={`grid grid-cols-3 bg-white p-4 rounded-xl gap-3 ${
-                referralData?.referralCount >= 1 ? "opacity-100" : "opacity-60"
+                user?.totalReferral || 0 >= 1 ? "opacity-100" : "opacity-60"
               }`}
             >
               <div className="flex items-center gap-3 col-span-2">
@@ -232,38 +245,39 @@ const InviteAndEarn = () => {
               </div>
 
               <div className="relative flex items-center !justify-end">
-                {referralData?.referralCount >= 1 && (
-                  <div>
-                    {referralData?.referralCount >= 6 ? (
-                      <div
-                        className={`bg-green-500 rounded-full p-1 text-white w-fit`}
-                      >
-                        <Check size={15} />
-                      </div>
-                    ) : (
-                      <div className="absolute right-0 inline-block h-[50px] w-[50px]">
-                        <CircularProgressbar
-                          value={((referralData?.referralCount - 1) / 5) * 100}
-                          text={`${referralData?.referralCount - 1}/5`}
-                          className="h-[50px] w-[50px] "
-                          styles={buildStyles({
-                            textSize: "30px",
-                            pathColor: "#00a63e",
-                            textColor: "#000",
-                            trailColor: "#dcfce7",
-                          })}
-                        />
-                      </div>
-                    )}
-                  </div>
-                )}
+                {user?.totalReferral ||
+                  (0 >= 1 && (
+                    <div>
+                      {user?.totalReferral || 0 >= 6 ? (
+                        <div
+                          className={`bg-green-500 rounded-full p-1 text-white w-fit`}
+                        >
+                          <Check size={15} />
+                        </div>
+                      ) : (
+                        <div className="absolute right-0 inline-block h-[50px] w-[50px]">
+                          <CircularProgressbar
+                            value={((user?.totalReferral || 0 - 1) / 5) * 100}
+                            text={`${user?.totalReferral || 0 - 1}/5`}
+                            className="h-[50px] w-[50px] "
+                            styles={buildStyles({
+                              textSize: "30px",
+                              pathColor: "#00a63e",
+                              textColor: "#000",
+                              trailColor: "#dcfce7",
+                            })}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  ))}
               </div>
             </div>
 
             {/* 10 people  */}
             <div
               className={`grid grid-cols-3 bg-white p-4 rounded-xl gap-3 ${
-                referralData?.referralCount >= 16 ? "opacity-100" : "opacity-60"
+                user?.totalReferral || 0 >= 16 ? "opacity-100" : "opacity-60"
               }`}
             >
               <div className="flex items-center gap-3 col-span-2">
@@ -279,31 +293,32 @@ const InviteAndEarn = () => {
               </div>
 
               <div className="relative flex items-center !justify-end">
-                {referralData?.referralCount >= 6 && (
-                  <>
-                    {referralData?.referralCount >= 16 ? (
-                      <div
-                        className={`bg-green-500 rounded-full p-1 text-white w-fit`}
-                      >
-                        <Check size={15} />
-                      </div>
-                    ) : (
-                      <div className="absolute right-0 inline-block h-[50px] w-[50px]">
-                        <CircularProgressbar
-                          value={((referralData?.referralCount - 6) / 5) * 100}
-                          text={`${referralData?.referralCount - 6}/5`}
-                          className="h-[50px] w-[50px] "
-                          styles={buildStyles({
-                            textSize: "30px",
-                            pathColor: "#00a63e",
-                            textColor: "#000",
-                            trailColor: "#dcfce7",
-                          })}
-                        />
-                      </div>
-                    )}
-                  </>
-                )}
+                {user?.totalReferral ||
+                  (0 >= 6 && (
+                    <>
+                      {user?.totalReferral || 0 >= 16 ? (
+                        <div
+                          className={`bg-green-500 rounded-full p-1 text-white w-fit`}
+                        >
+                          <Check size={15} />
+                        </div>
+                      ) : (
+                        <div className="absolute right-0 inline-block h-[50px] w-[50px]">
+                          <CircularProgressbar
+                            value={((user?.totalReferral || 0 - 6) / 5) * 100}
+                            text={`${user?.totalReferral || 0 - 6}/5`}
+                            className="h-[50px] w-[50px] "
+                            styles={buildStyles({
+                              textSize: "30px",
+                              pathColor: "#00a63e",
+                              textColor: "#000",
+                              trailColor: "#dcfce7",
+                            })}
+                          />
+                        </div>
+                      )}
+                    </>
+                  ))}
               </div>
             </div>
           </div>
@@ -317,7 +332,7 @@ const InviteAndEarn = () => {
                 <p className="font-semibold">Total Referral</p>
               </div>
               <p className=" text-xl md:text-3xl text-primary-800 font-bold">
-                {referralData.referralCount}
+                {user?.totalReferral}
               </p>
             </div>
             <div className="flex flex-col gap-3 items-center p-3 md:p-6">
@@ -326,7 +341,7 @@ const InviteAndEarn = () => {
                 <p className="font-semibold">Referral Earnings</p>
               </div>
               <p className=" text-xl md:text-3xl text-primary-800 font-bold">
-                {formatNaira(Number(referralData.referralEarnings), true)}
+                {formatNaira(Number(user?.referralEarnings), true)}
               </p>
             </div>
           </div>

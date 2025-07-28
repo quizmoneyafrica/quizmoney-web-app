@@ -1,4 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+// type UpdateUserFieldPayload = {
+//   key: keyof UserObject;
+//   value: UserObject[keyof UserObject];
+// };
 
 export interface UserObject {
   email: string;
@@ -10,11 +14,16 @@ export interface UserObject {
   avatarUrl: string;
   createdAt: string;
   country: string;
+  pinSetup: boolean;
+  gameEraserCount: number;
   facebookHandle: string;
   twitterHandle: string;
   instagramHandle: string;
   tiktokHandle: string;
   whatsappContact: string;
+  referralCode: string;
+  referralEarnings: number;
+  totalReferral: number;
 }
 interface AuthState {
   isAuthenticated: boolean;
@@ -56,7 +65,7 @@ const authSlice = createSlice({
     setRehydrated(state, action: PayloadAction<boolean>) {
       state.rehydrated = action.payload;
     },
-    updateUser(state, action: PayloadAction<UserObject>) {
+    updateUser(state, action: PayloadAction<Partial<UserObject>>) {
       if (state.user) {
         state.user = {
           ...state.user,
@@ -64,6 +73,11 @@ const authSlice = createSlice({
         };
       }
     },
+    // updateUser(state, action: PayloadAction<UpdateUserFieldPayload>) {
+    //   if (state.user) {
+    //     state.user[action.payload.key] = action.payload.value;
+    //   }
+    // },
   },
 });
 

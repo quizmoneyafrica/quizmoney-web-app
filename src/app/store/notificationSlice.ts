@@ -3,9 +3,11 @@ import { ApiResponse } from "../api/interface";
 
 interface NotificationState {
   notifications: ApiResponse["result"] | null;
+  notificationCount: number;
 }
 const initialState: NotificationState = {
   notifications: null,
+  notificationCount: 0,
 };
 
 const notificationSlice = createSlice({
@@ -14,6 +16,9 @@ const notificationSlice = createSlice({
   reducers: {
     setNotifications(state, action: PayloadAction<ApiResponse["result"]>) {
       state.notifications = action.payload;
+    },
+    setNotificationsCount(state, action: PayloadAction<number>) {
+      state.notificationCount = action.payload;
     },
     addNotification(
       state,
@@ -45,6 +50,7 @@ export const {
   addNotification,
   markAsRead,
   clearNotifications,
+  setNotificationsCount,
 } = notificationSlice.actions;
 
 export default notificationSlice.reducer;

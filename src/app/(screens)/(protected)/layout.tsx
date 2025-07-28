@@ -1,4 +1,4 @@
-import AppLiveQueries from "@/app/api/queries/AppLiveQueries";
+// import AppLiveQueries from "@/app/api/queries/AppLiveQueries";
 import InstallModal from "@/app/components/install-modal/installModal";
 import SocialLinksDrawer from "@/app/components/updateAccount/socialLinksDrawer";
 import AppHeader from "@/app/layout/appHeader";
@@ -16,7 +16,7 @@ export default function ProtectedLayout({
 }) {
   return (
     <main>
-      <AppLiveQueries />
+      {/* <AppLiveQueries /> */}
       <SocialLinksDrawer />
       {!isIosPwaInstalled() && <InstallModal />}
       {/* <PrivacyPolicyUpdate /> */}

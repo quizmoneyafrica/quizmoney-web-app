@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Flex } from "@radix-ui/themes";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
 import React, { useState } from "react";
@@ -7,12 +8,13 @@ import SuccessMessageModal from "@/app/components/modal/store/SuccessMessageModa
 import StoreAPI from "@/app/api/storeApi";
 import { useRouter } from "next/navigation";
 import CustomButton from "@/app/utils/CustomBtn";
-import { encryptData } from "@/app/utils/crypto";
-import { useAppDispatch, useAuth } from "@/app/hooks/useAuth";
+import { useAppDispatch } from "@/app/hooks/useAuth";
 import { Eraser } from "@/app/icons/icons";
 import { toast } from "sonner";
-import { formatNaira } from "@/app/utils/utils";
+import { formatNaira, toastPosition } from "@/app/utils/utils";
 import Modal from "@/app/components/game/modal/ModalWindow";
+import UserAPI from "@/app/api/userApi";
+import { updateUser } from "@/app/store/authSlice";
 
 const displayColor = [
   {
@@ -65,39 +67,37 @@ const ProductCard = ({
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { loginUser } = useAuth();
   const dispatch = useAppDispatch();
 
   console.log(6 % (6 - index), index);
   // console.log(displayColor[index % displayColor.length]);
-
+  const getGameErasers = async () => {
+    try {
+      const res = await UserAPI.getGameErasers();
+      console.log("USER ERASER", res);
+      dispatch(updateUser({ gameEraserCount: res.data.quantity }));
+    } catch (err: any) {
+      console.error("Error getting Erasers:", err.message);
+    }
+  };
   const handlePurchase = async () => {
     setIsLoading(true);
-    await StoreAPI.purchaseItem(product.objectId, dispatch)
-      .then((res) => {
-        const userData = res.updatedUser;
-        console.log(res);
-        const encryptedUser = encryptData(userData);
-        // ✅ Dispatch to Redux
-        loginUser(encryptedUser);
-        setIsOpen(false);
-        setIsSuccess(true);
-      })
-      .catch((err) => {
-        console.log(err);
-        setIsOpen(false);
-        const error =
-          "Customer's balance is less than the amount you are about to deduct";
-        if (err.message != error) {
-          return toast.error(err.message, {
-            position: "top-center",
-          });
-        }
+    try {
+      const res = await StoreAPI.purchaseItem(product.id, dispatch);
+      console.log(res);
+      getGameErasers();
+      setIsOpen(false);
+      setIsSuccess(true);
+    } catch (err: any) {
+      console.error("Error purchasing products:", err.message);
+      setIsOpen(false);
+      toast.error(`${err.message}`, { position: toastPosition });
+      if (err.message === "Insufficient balance") {
         setIsError(true);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
   return (
     <section>
@@ -121,9 +121,9 @@ const ProductCard = ({
                 displayColor[index % displayColor.length].text
               } md:text-[28px] text-[24px] font-bold`}
             >
-              {product?.productName}
+              {product?.name}
             </p>
-            <p className=" font-semibold">{product?.productDescription}</p>
+            <p className=" font-semibold">{product?.description}</p>
           </div>
           <div className="flex flow-row items-center my-4">
             <div
@@ -139,10 +139,10 @@ const ProductCard = ({
             >
               <div className="flex-row flex  items-center">
                 <p className=" text-2xl  font-semibold">
-                  {formatNaira(Number(product?.productPrice))}
+                  {formatNaira(Number(product?.price))}
                 </p>
                 <span className="font-semibold inline-flex pl-1">
-                  / {product?.productQuantity} Erasers
+                  / {product?.quantity} Erasers
                 </span>
               </div>
             </div>
@@ -191,7 +191,7 @@ const ProductCard = ({
               align={"end"}
             >
               <div className=" space-y-3">
-                <p className="font-bold ">{product?.productName}</p>
+                <p className="font-bold ">{product?.name}</p>
                 <div className="flex gap-2 items-center">
                   <Image
                     src="/icons/eraser.svg"
@@ -201,21 +201,14 @@ const ProductCard = ({
                     className="w-6 h-6 scale-150 border"
                   />
                   <p className=" text-blue-500">
-                    {product?.productQuantity ?? "2"} Eraser
+                    {product?.quantity ?? "2"} Eraser
                   </p>
-                  {product?.bonus > 0 && (
-                    <p className=" text-[#00B23D] font-semibold">
-                      {" "}
-                      <span className=" font-semibold text-black">+</span>{" "}
-                      {product?.bonus} Bonus
-                    </p>
-                  )}
                 </div>
               </div>
 
               <div className="w-fit h-[33px] px-4 -space-x-5 font-bold  overflow-hidden flex flex-row justify-center items-center gap-2 bg-primary-50 text-black rounded-md">
                 <p className=" text-sm sm:text-base font-bold pr-2">
-                  ₦{product?.productPrice ?? "100"}
+                  ₦{product?.price ?? "100"}
                 </p>
               </div>
             </Flex>
@@ -226,7 +219,7 @@ const ProductCard = ({
             disabled={isLoading}
             className=" w-full"
           >
-            Proceed to Pay ₦{product?.productPrice}
+            Proceed to Pay ₦{product?.price}
           </CustomButton>
         </Modal>
       )}
@@ -237,7 +230,7 @@ const ProductCard = ({
           setOpen={setIsSuccess}
           success={true}
           message="Awesome!"
-          subMessage={`You have successfully purchased ${product?.productQuantity} erasers.`}
+          subMessage={`You have successfully purchased ${product?.quantity} erasers.`}
           onClose={() => router.push("/home")}
           actionLabel="Go back Home"
         />
@@ -249,7 +242,7 @@ const ProductCard = ({
           setOpen={setIsError}
           success={false}
           message="Insufficient Wallet Balance"
-          subMessage={`Your purchase of ${product?.productQuantity} erasers failed due to insufficient funds`}
+          subMessage={`Your purchase of ${product?.quantity} erasers failed due to insufficient funds`}
           onClose={() => router.push("/wallet")}
           actionLabel="Fund Account"
         />

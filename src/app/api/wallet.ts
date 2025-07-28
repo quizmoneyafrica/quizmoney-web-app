@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { store } from "../store/store";
 import { ApiResponse } from "./interface";
 import { callWithSessionToken } from "./parse/callWithSessionToken";
 
@@ -26,15 +25,22 @@ const WalletApi = {
     return callWithSessionToken<ApiResponse>("wallets", {}, {}, "GET");
   },
 
-
-   fetchBanks(): Promise<ApiResponse> {
+  fetchBanks(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("banks", {}, {}, "GET");
   },
-   fetchPayoutBanks(): Promise<ApiResponse> {
+  fetchPayoutBanks(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("payout-accounts", {}, {}, "GET");
   },
-   confirmAccount(accountNumber: string, bankCode: string): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(`banks/name-inquiry?accountNumber=${accountNumber}&bankCode=${bankCode}`, {}, {}, "GET");
+  confirmAccount(
+    accountNumber: string,
+    bankCode: string
+  ): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      `banks/name-inquiry?accountNumber=${accountNumber}&bankCode=${bankCode}`,
+      {},
+      {},
+      "GET"
+    );
   },
   fetchTransactions(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
@@ -61,8 +67,12 @@ const WalletApi = {
     );
   },
 
-  addBankAccount(data: any,dispatch:any): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(`payout-accounts`, { ...data },dispatch);
+  addBankAccount(data: any, dispatch: any): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      `payout-accounts`,
+      { ...data },
+      dispatch
+    );
   },
 
   verifyAccount(data: {
@@ -80,20 +90,23 @@ const WalletApi = {
       ...data,
     });
   },
-  createWithdrawalPin(data: {
-    pin: string;
-  }): Promise<ApiResponse> {
+  createWithdrawalPin(data: { pin: string }): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
       `users/pin/set-up`,
-     { pin: data?.pin },{}, "PATCH"
+      { pin: data?.pin },
+      {},
+      "PATCH"
     );
   },
-  requestWithdrawal(data: {
-    amount: string;
-    pin: string;
-    purpose: string;
-  },dispatch: any): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("withdraw", { ...data },dispatch);
+  requestWithdrawal(
+    data: {
+      amount: string;
+      pin: string;
+      purpose: string;
+    },
+    dispatch: any
+  ): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("withdraw", { ...data }, dispatch);
   },
 
   forgotPin(data: { email: string }): Promise<ApiResponse> {

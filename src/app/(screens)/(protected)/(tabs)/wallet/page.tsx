@@ -11,10 +11,9 @@ import {
   setBanks,
   setPayoutBanks,
   setVirtualAccount,
-  setWalletBalance,
 } from "@/app/store/walletSlice";
 import WalletApi from "@/app/api/wallet";
-import { useAppDispatch, useAppSelector, useAuth } from "@/app/hooks/useAuth";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
@@ -54,13 +53,13 @@ function Page() {
         try {
           dispatch(setWalletLoading(true));
           const res = await WalletApi.fetchPayoutBanks();
-          console.log(res.data, "Payout Accounts");
+          // console.log(res.data, "Payout Accounts");
 
           if (res?.data) {
             dispatch(setPayoutBanks(res.data));
           }
         } catch (error) {
-          console.log(error, "Wallet Error");
+          // console.log(error, "Wallet Error");
         } finally {
           dispatch(setWalletLoading(false));
         }

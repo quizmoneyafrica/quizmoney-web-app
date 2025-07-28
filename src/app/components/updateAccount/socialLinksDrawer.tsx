@@ -57,6 +57,7 @@ function SocialLinksDrawer() {
   ]);
 
   const [initialized, setInitialized] = useState(false);
+  console.log("USER", user);
 
   useEffect(() => {
     // if (!user || !wallet) return;
@@ -79,10 +80,10 @@ function SocialLinksDrawer() {
 
     setInitialized(true);
 
-    if (wallet && Number(wallet?.balance) > 0 && filledCount < 2) {
+    if (wallet && Number(wallet?.availableBalance) > 0 && filledCount < 2) {
       setShowUpdateDrawer(true);
     } else {
-      setShowUpdateDrawer(false);
+      setShowUpdateDrawer(true);
     }
   }, [user, wallet, initialized]);
 
@@ -144,6 +145,14 @@ function SocialLinksDrawer() {
     validLinks.forEach(({ platform, username }) => {
       payload[platform.toLowerCase()] = username;
     });
+    console.log(
+      "PAYLOAD",
+      payload.facebook || "",
+      payload.twitter || "",
+      payload.whatsapp || "",
+      payload.instagram || "",
+      payload.tiktok || ""
+    );
 
     try {
       await UserAPI.updateSocialHandles(
@@ -154,7 +163,7 @@ function SocialLinksDrawer() {
         payload.tiktok || "",
         dispatch
       );
-      dispatch(updateUser(payload));
+      // dispatch(updateUser(payload));
       toast.success("Social handles updated", { position: toastPosition });
       setShowUpdateDrawer(false);
     } catch (err) {
