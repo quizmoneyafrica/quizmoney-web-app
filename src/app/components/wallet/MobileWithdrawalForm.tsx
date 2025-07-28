@@ -43,9 +43,8 @@ export const MobileWithdrawalForm = ({
   banks?: BankAccount[];
   onAddBank: () => void;
 }) => {
-  const { wallet } = useSelector(useWallet);
-  // Use banks from props or from wallet
-  const bankAccounts = banks || wallet?.bankAccounts || [];
+  const { wallet, payoutBanks } = useSelector(useWallet);
+  // payoutBanks is now a single object
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
 
   const amountOptions = [
@@ -66,7 +65,7 @@ export const MobileWithdrawalForm = ({
     mode: "onChange",
     defaultValues: {
       amount: "",
-      bankId: bankAccounts.length > 0 ? String(bankAccounts[0].id) : "",
+      bankId: payoutBanks && payoutBanks.id ? String(payoutBanks.id) : "",
     },
   });
 
@@ -86,19 +85,14 @@ export const MobileWithdrawalForm = ({
     const numericAmount =
       selectedAmount || Number(data.amount.replace(/[₦,]/g, ""));
 
-    // Find the selected bank
-    const selectedBankData = bankAccounts.find(
-      (bank) => String(bank.id) === data.bankId
-    );
-
-    if (!selectedBankData) return;
+    if (!payoutBanks || !payoutBanks.id) return;
 
     const payload = {
       amount: numericAmount,
       bankAccount: {
-        accountNumber: selectedBankData.accountNumber,
-        bankName: selectedBankData.bankName,
-        accountName: selectedBankData.accountName,
+        accountNumber: payoutBanks.accountNumber,
+        bankName: payoutBanks.bankName,
+        accountName: (payoutBanks as any).accountName,
       },
     };
 
@@ -152,27 +146,19 @@ export const MobileWithdrawalForm = ({
           ))}
         </div>
         <div className="mb-6">
-          <label className="block text-gray-800 mb-3">
-            Select Bank you want to withdraw to
-          </label>
-          {bankAccounts.length > 0 ? (
-            <select
-              {...register("bankId")}
-              className={`w-full border ${
-                errors.bankId ? "border-red-500" : "border-gray-300"
-              } rounded-lg px-4 py-2 focus:outline-none focus:ring-transparent`}
-            >
-              {bankAccounts.map((bank) => (
-                <option key={bank.id} value={String(bank.id)}>
-                  {bank.accountNumber} - {bank.bankName} - {bank.accountName}
-                </option>
-              ))}
-            </select>
+          <label className="block text-gray-800 mb-3">Bank Account</label>
+          {payoutBanks && payoutBanks.accountNumber ? (
+            <div className="border border-gray-300 rounded-lg px-4 py-3 bg-gray-50 flex flex-col gap-1">
+              <span className="font-medium text-gray-900">
+                {(payoutBanks as any).accountName}
+              </span>
+              <span className="text-gray-700">{payoutBanks.accountNumber}</span>
+              <span className="text-gray-600 text-sm">
+                {payoutBanks.bankName}
+              </span>
+            </div>
           ) : (
-            <div className="text-gray-600">No banks added yet</div>
-          )}
-          {errors.bankId && (
-            <p className="text-red-500 text-sm mt-1">{errors.bankId.message}</p>
+            <div className="text-gray-600">No bank added yet</div>
           )}
           <div className="flex items-center mt-2">
             <span className="text-primary-900 text-lg font-bold mr-2">+</span>
@@ -188,7 +174,7 @@ export const MobileWithdrawalForm = ({
         <CustomButton
           type="submit"
           className="bg-primary-900 text-white w-full rounded-full py-4 hover:bg-primary-700"
-          disabled={bankAccounts.length === 0}
+          disabled={!payoutBanks || !payoutBanks.id}
         >
           Proceed
         </CustomButton>

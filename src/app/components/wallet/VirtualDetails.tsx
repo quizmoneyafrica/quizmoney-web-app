@@ -11,14 +11,12 @@ import { toast } from "sonner";
 
 export type VirtualDetailsProps = { amount?: number };
 function VirtualDetails({ amount = 1000 }: VirtualDetailsProps) {
-  const { virtualAccount } = useSelector(useWallet);
-
-  // wallet-accounts
+  const { wallet } = useSelector(useWallet);
 
   const handleCopyAll = async () => {
     const details = `Account Number: ${
-      virtualAccount?.accountNumber || ""
-    }\nBank Name: ${virtualAccount?.bankName || ""}\nAmount: ${formatNaira(
+      wallet?.walletAccountNumber || ""
+    }\nBank Name: ${wallet?.bankName || ""}\nAmount: ${formatNaira(
       amount,
       true
     )}`;
@@ -38,12 +36,9 @@ function VirtualDetails({ amount = 1000 }: VirtualDetailsProps) {
       <div className="bg-primary-50 p-4 rounded-[10px] space-y-6">
         <CardCopy
           title="Account Number"
-          value={virtualAccount?.accountNumber as string}
+          value={wallet?.walletAccountNumber as string}
         />
-        <CardCopy
-          title="Bank Name"
-          value={virtualAccount?.bankName as string}
-        />
+        <CardCopy title="Bank Name" value={wallet?.bankName as string} />
         <CardCopy title="Amount" value={`${formatNaira(amount, true)}`} />
         <CustomButton width="full" onClick={handleCopyAll}>
           Copy account details

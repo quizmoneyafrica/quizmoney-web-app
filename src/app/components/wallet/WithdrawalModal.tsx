@@ -7,6 +7,14 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus } from "lucide-react";
 import { useSelector } from "react-redux";
+
+// Define the type for payoutBanks if it's a single bank object
+type PayoutBank = {
+  id: number;
+  accountNumber: string;
+  bankName: string;
+  accountName: string;
+};
 import {
   setWithdrawalData,
   setWithdrawalModal,
@@ -15,6 +23,7 @@ import {
 } from "@/app/store/walletSlice";
 import { store } from "@/app/store/store";
 import CustomButton from "@/app/utils/CustomBtn";
+import { getAuthUser } from "@/app/api/userApi";
 
 export type BankAccount = {
   id: number;
@@ -60,17 +69,10 @@ export default function WithdrawalModal({
   onOpenChange,
   onAddBank,
 }: WithdrawalModalProps) {
-  const { wallet } = useSelector(useWallet);
-  const banks =
-    wallet?.bankAccounts?.map((item, index) => ({
-      ...item,
-      id: index + 1,
-    })) || [];
-
+  const { payoutBanks } = useSelector(useWallet) as {
+    payoutBanks: PayoutBank | undefined;
+  };
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
-  const [selectedBank, setSelectedBank] = useState<number | null>(
-    banks.length > 0 ? banks[0].id : null
-  );
 
   const {
     register,
@@ -82,44 +84,30 @@ export default function WithdrawalModal({
     resolver: zodResolver(withdrawalFormSchema),
     defaultValues: {
       amount: "",
-      bank: banks.length > 0 ? String(banks[0].id) : undefined,
+      bank: payoutBanks && payoutBanks.id ? String(payoutBanks.id) : "",
     },
   });
 
   const handleFormSubmit = (data: WithdrawalFormData) => {
     console.log("Form Data:", data);
-
     const numericAmount =
       selectedAmount || Number(data.amount.replace(/[₦,]/g, ""));
-
-    if (!selectedBank || banks.length === 0) {
-      console.error("No bank selected or no banks available");
+    if (!payoutBanks || !payoutBanks.id) {
+      console.error("No bank available");
       return;
     }
-
-    const selectedBankData = banks.find(
-      (bank) => String(bank.id) === data.bank
-    );
-
-    if (!selectedBankData) {
-      console.error("Selected bank not found");
-      return;
-    }
-
     const payload = {
       amount: numericAmount,
       bankAccount: {
-        accountNumber: selectedBankData.accountNumber,
-        bankName: selectedBankData.bankName,
-        accountName: selectedBankData.accountName,
+        accountNumber: payoutBanks.accountNumber,
+        bankName: payoutBanks.bankName,
+        accountName: payoutBanks.accountName,
       },
     };
-
     store.dispatch(setWithdrawalData(payload));
     reset();
     setSelectedAmount(null);
     store.dispatch(setWithdrawalModal(false));
-
     store.dispatch(setWithdrawalPinModal(true));
   };
 
@@ -130,12 +118,6 @@ export default function WithdrawalModal({
 
   const handleCustomAmountChange = () => {
     setSelectedAmount(null);
-  };
-
-  const handleBankChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setSelectedBank(value ? Number(value) : null);
-    setValue("bank", value, { shouldValidate: true });
   };
 
   // Animation variants for the overlay
@@ -179,6 +161,8 @@ export default function WithdrawalModal({
       },
     },
   };
+
+  const user = getAuthUser();
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -263,52 +247,22 @@ export default function WithdrawalModal({
 
                   <div>
                     <label className="block mb-2 text-gray-800">
-                      Select Bank you want to withdraw to
+                      Bank Account
                     </label>
-                    {banks.length > 0 ? (
-                      <div className="relative">
-                        <div className="relative w-full">
-                          <select
-                            {...register("bank")}
-                            onChange={handleBankChange}
-                            value={
-                              selectedBank !== null ? String(selectedBank) : ""
-                            }
-                            className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-3 pr-10 focus:outline-none"
-                          >
-                            {banks.map((bank) => (
-                              <option key={bank.id} value={String(bank.id)}>
-                                {bank.accountNumber} - {bank.bankName} -{" "}
-                                {bank.accountName}
-                              </option>
-                            ))}
-                          </select>
-                          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
-                            <svg
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M6 9L12 15L18 9"
-                                stroke="#667085"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </div>
-                        </div>
-                        {errors.bank && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {errors.bank.message}
-                          </p>
-                        )}
+                    {payoutBanks && payoutBanks.accountNumber ? (
+                      <div className="border border-gray-300 rounded-lg px-4 py-3 bg-gray-50 flex flex-col gap-1">
+                        <span className="font-medium text-gray-900">
+                          {payoutBanks.accountName}
+                        </span>
+                        <span className="text-gray-700">
+                          {payoutBanks.accountNumber}
+                        </span>
+                        <span className="text-gray-600 text-sm">
+                          {payoutBanks.bankName}
+                        </span>
                       </div>
                     ) : (
-                      <div className="text-gray-600">No banks added yet</div>
+                      <div className="text-gray-600">No bank added yet</div>
                     )}
                   </div>
 
@@ -324,7 +278,7 @@ export default function WithdrawalModal({
                   <CustomButton
                     type="submit"
                     className="bg-primary-900 text-white w-full rounded-full py-3 hover:bg-primary-900 mt-8"
-                    disabled={isSubmitting || banks.length === 0}
+                    disabled={isSubmitting || !payoutBanks || !payoutBanks.id}
                   >
                     Proceed
                   </CustomButton>

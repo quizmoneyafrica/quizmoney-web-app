@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { store } from "../store/store";
 import { ApiResponse } from "./interface";
 import { callWithSessionToken } from "./parse/callWithSessionToken";
 
@@ -25,16 +26,6 @@ const WalletApi = {
     return callWithSessionToken<ApiResponse>("wallets", {}, {}, "GET");
   },
 
-  // fetchCustomerWallet(): Promise<AxiosResponse<ApiResponse>> {
-  //   return axios.post(
-  //     `${BASE_URL}/fetchCustomerWallet`,
-  //     {},
-  //     { headers: getSessionTokenHeaders() }
-  //   );
-  // },
-  fetchVirtualAccount(): Promise<ApiResponse> {
-    // return callWithSessionToken<ApiResponse>("wallet-accounts", {}, {}, "GET");
-  },
   fetchBanks(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("banks", {}, {}, "GET");
   },
@@ -100,14 +91,12 @@ const WalletApi = {
       ...data,
     });
   },
-  createWithdrawalPin(data: {
-    pin: string;
-    edit?: boolean;
-    oldPin?: string;
-  }): Promise<ApiResponse> {
+  createWithdrawalPin(data: { pin: string }): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
-      `createWithdrawalPin`,
-      data?.edit ? { ...data } : { pin: data?.pin }
+      `users/pin/set-up`,
+      { pin: data?.pin },
+      {},
+      "PATCH"
     );
   },
   requestWithdrawal(
