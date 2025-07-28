@@ -26,6 +26,7 @@ import { EyeIcon, EyeSlash } from "@/app/icons/icons";
 import { MobileSuccessDeposit } from "./MobileSuccessDeposit";
 import { useParams } from "next/navigation";
 import QmDrawer from "../drawer/drawer";
+import { useAuth } from "@/app/hooks/useAuth";
 
 export default function WalletBalance() {
   const [open, setOpen] = useState(false);
@@ -61,7 +62,7 @@ export default function WalletBalance() {
   const toggleBalanceVisibility = () => {
     setIsBalanceHidden(!isBalanceHidden);
   };
-
+  const { user } = useAuth();
   return (
     <>
       <div className="bg-[#17478B] text-white py-12 px-8 rounded-3xl relative overflow-hidden w-full shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm bg-opacity-95 bg-[url('/assets/images/background.png')] lg:bg-[url('/assets/images/background-desktop.png')] bg-cover bg-center bg-no-repeat">
@@ -131,10 +132,10 @@ export default function WalletBalance() {
             <QmDrawer
               open={withdrawalModal}
               onOpenChange={(val) => {
-                if (wallet?.pin && val === true) {
+                if (user?.pinSetup && val === true) {
                   store.dispatch(setWithdrawalModal(val));
                   return;
-                } else if (!wallet?.pin && val === true) {
+                } else if (!user?.pinSetup && val === true) {
                   store.dispatch(setWithdrawalPinModal(true));
                   return;
                 }

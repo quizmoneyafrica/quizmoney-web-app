@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { use, useMemo, useState } from "react";
 import CustomButton from "@/app/utils/CustomBtn";
 import classNames from "classnames";
 import { z } from "zod";
@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import Link from "next/link";
 import { getAuthUser } from "@/app/api/userApi";
+import { useAuth } from "@/app/hooks/useAuth";
 
 // Define schema for PIN validation with Zod
 const pinFormSchema = z.object({
@@ -35,11 +36,13 @@ export const WithdrawalPinForm = ({
   close?: () => void;
   maxAttempts?: number;
 }) => {
+  const { user } = useAuth();
+
   const [pinValues, setPinValues] = useState(["", "", "", ""]);
   const [invalidPinError, setInvalidPinError] = useState(false);
   const [isCreatingPin, setIsCreatingPin] = useState<boolean>(false);
   const { wallet, withdrawalData } = useSelector(useWallet);
-  const hasPin = useMemo(() => wallet?.pin, [wallet?.pin]);
+  const hasPin = useMemo(() => user?.pinSetup, [user?.pinSetup]);
 
   const [isCreatingRequest, setIsCreatingRequest] = useState<boolean>(false);
   const {
