@@ -82,8 +82,6 @@ const WalletApi = {
   },
   createWithdrawalPin(data: {
     pin: string;
-    edit?: boolean;
-    oldPin?: string;
   }): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
       `users/pin/set-up`,

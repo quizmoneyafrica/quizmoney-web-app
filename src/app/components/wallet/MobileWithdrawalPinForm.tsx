@@ -123,7 +123,7 @@ export const WithdrawalPinForm = ({
       const response = await WalletApi.createWithdrawalPin({
         pin,
       });
-      if (response?.updatedWallet) {
+      if (response?.data) {
         toast.success(response?.message, {
           position: toastPosition,
         });
