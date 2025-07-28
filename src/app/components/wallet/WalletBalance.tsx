@@ -183,6 +183,22 @@ export default function WalletBalance() {
 
       {/* Success modal */}
       <QmDrawer
+        open={withdrawalPinModal}
+        onOpenChange={(val) => {
+          store.dispatch(setWithdrawalPinModal(val));
+        }}
+        title="Withdrawal Pin"
+        titleLeft
+        heightClass="h-[75%] md:h-[55%] lg:h-[80%]"
+      >
+        <MobileWithdrawalPinForm
+          onSubmit={(pin: string) => {
+            store.dispatch(setWithdrawalPinModal(false));
+            toast.success("Withdrawal pin set successfully!");
+          }}
+        />
+      </QmDrawer>
+      <QmDrawer
         open={isSuccessfulDepositOpen}
         onOpenChange={setIsSuccessfulDepositOpen}
         heightClass="h-[75%] lg:h-auto"
