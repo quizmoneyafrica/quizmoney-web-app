@@ -15,14 +15,12 @@ import QmDrawer from "../drawer/drawer";
 // give me 12 images
 
 interface IAvatar {
-  __type: string;
-  url: string;
-  name: string;
+  avatarUrl: string;
+  id: string;
 }
 
 interface RootObject {
   avatar: IAvatar;
-  objectId: string;
 }
 
 const ImagePickerModal = ({
@@ -53,11 +51,11 @@ const ImagePickerModal = ({
   const getAvatar = async () => {
     try {
       const res = await UserAPI.getAvatars();
-      const results = res || [];
+      const results = res.data || [];
 
-      const mappedAvatars = results.map((item: RootObject) => item.avatar);
-      console.log("mappedAvatars", mappedAvatars);
-      setAvatars(mappedAvatars);
+      // const mappedAvatars = results.map((item: RootObject) => item.avatar);
+      console.log("mappedAvatars", results);
+      setAvatars(results);
     } catch (error: any) {
       toast.error(error.message);
     }
@@ -143,16 +141,16 @@ const ImagePickerModal = ({
               <div className="grid grid-cols-4 place-items-center gap-4">
                 {avatars.map((image) => (
                   <div
-                    key={image.name}
+                    key={image.id}
                     onClick={() => handleSelectAvatar(image)}
                     className={`cursor-pointer w-[60px] h-[60px] md:w-20 md:h-20 bg-zinc-700 rounded-full relative ${
-                      selectedImage?.name === image.name
+                      selectedImage?.id === image.id
                         ? "border-2 border-primary-500"
                         : ""
                     }`}
                   >
                     <Image
-                      src={image.url}
+                      src={image.avatarUrl}
                       alt="avatar"
                       width={100}
                       height={100}
@@ -160,7 +158,7 @@ const ImagePickerModal = ({
                       quality={100}
                     />
 
-                    {selectedImage?.name === image.name && (
+                    {selectedImage?.id === image.id && (
                       <div className="absolute bottom-0 right-1 md:right-4 bg-primary-400 rounded-full flex items-center justify-center">
                         <div className="text-white text-2xl font-bold">
                           <CheckIcon className="w-4 h-4" />

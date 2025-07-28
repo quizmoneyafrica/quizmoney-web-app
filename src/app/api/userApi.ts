@@ -74,12 +74,25 @@ const UserAPI = {
       "PATCH"
     );
   },
+  getGameErasers(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("erasers", {}, {}, "GET");
+  },
+  getAvatars(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("avatars", {}, {}, "GET");
+  },
+  getReferralCode(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("referrals/code", {}, {}, "GET");
+  },
+  getReferralSummary(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      "referrals/summary",
+      {},
+      {},
+      "GET"
+    );
+  },
   sendFeedback(form: any, dispatch: any): Promise<ApiResponse> {
     // return callWithSessionToken<ApiResponse>("sendFeedback", form, dispatch);
-  },
-
-  getAvatars(): Promise<ApiResponse> {
-    return callParseEndpoint<ApiResponse>("avatars");
   },
 
   topGamersOfToday(): Promise<ApiResponse> {

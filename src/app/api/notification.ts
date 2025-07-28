@@ -2,15 +2,30 @@ import { ApiResponse } from "./interface";
 import { callWithSessionToken } from "./parse/callWithSessionToken";
 
 const NotificationApi = {
+  fetchNotificationsCount(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      "notifications/count",
+      {},
+      {},
+      "GET"
+    );
+  },
   fetchNotifications(): Promise<ApiResponse> {
-    // return callWithSessionToken<ApiResponse>("getNotifications");
-    // return;
+    return callWithSessionToken<ApiResponse>(
+      "notifications?page=0&count=10",
+      {},
+      {},
+      "GET"
+    );
   },
 
-  readNotification(notificationId: string): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("readNotification", {
-      notificationId,
-    });
+  readNotification(id: string): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      `notifications/${id}`,
+      {},
+      {},
+      "GET"
+    );
   },
 };
 export default NotificationApi;

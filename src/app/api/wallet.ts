@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { store } from "../store/store";
 import { ApiResponse } from "./interface";
 import { callWithSessionToken } from "./parse/callWithSessionToken";
 
@@ -30,7 +29,7 @@ const WalletApi = {
     return callWithSessionToken<ApiResponse>("banks", {}, {}, "GET");
   },
   fetchPayoutBanks(): Promise<ApiResponse> {
-    // return callWithSessionToken<ApiResponse>("payout-accounts", {}, {}, "GET");
+    return callWithSessionToken<ApiResponse>("payout-accounts", {}, {}, "GET");
   },
   confirmAccount(
     accountNumber: string,

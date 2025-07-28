@@ -11,9 +11,10 @@ const StoreAPI = {
 
   purchaseItem(productId: string, dispatch: any): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
-      "purchaseItem",
+      "products/purchase",
       { productId },
-      dispatch
+      dispatch,
+      "POST"
     );
   },
 

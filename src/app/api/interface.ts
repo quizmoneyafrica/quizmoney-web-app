@@ -65,20 +65,12 @@ export interface SignUpFormType {
 }
 
 export interface Product {
-  productImage: {
-    name: string;
-    url: string;
-  };
-  productDescription: string;
-  productName: string;
-  productPrice: number;
-  productQuantity: number;
-  productCategory: string;
-  stock: string;
-  createdAt: string; // or Date if you're parsing it
-  updatedAt: string; // or Date
-  objectId: string;
-  bonus: number;
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  quantity: number;
+  category: string;
 }
 
 export interface User {

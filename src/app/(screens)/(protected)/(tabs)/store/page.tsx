@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Grid } from "@radix-ui/themes";
 import React, { useEffect } from "react";
@@ -7,21 +8,28 @@ import StoreAPI from "@/app/api/storeApi";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import { setStoreProducts } from "@/app/store/storeSlice";
 import ProductSkeleton from "./productSkeleton";
+import { toast } from "sonner";
+import { toastPosition } from "@/app/utils/utils";
 
 function Page() {
   const dispatch = useAppDispatch();
   const products = useAppSelector((state) => state.store.products);
   const loading = products === null;
   useEffect(() => {
-    if (!products) {
-      StoreAPI.getProducts()
-        .then((res) => {
-          dispatch(setStoreProducts(res.allProducts));
-        })
-        .catch((err) => {
+    const fetchProducts = async () => {
+      if (!products) {
+        try {
+          const res = await StoreAPI.getProducts();
+          console.log(res.data);
+
+          dispatch(setStoreProducts(res.data));
+        } catch (err: any) {
           console.error("Error fetching products:", err);
-        });
-    }
+          toast.error(`${err.message}`, { position: toastPosition });
+        }
+      }
+    };
+    fetchProducts();
   }, [dispatch, products]);
 
   if (loading) {
@@ -42,11 +50,7 @@ function Page() {
 
         <Grid columns={{ initial: "1", md: "2", lg: "3" }} gap={"20px"}>
           {products?.map((product, index) => (
-            <ProductCard
-              key={product.objectId}
-              product={product}
-              index={index}
-            />
+            <ProductCard key={product.id} product={product} index={index} />
           ))}
         </Grid>
       </div>

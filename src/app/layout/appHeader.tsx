@@ -16,10 +16,9 @@ import {
 import { useAppSelector, useAuth } from "../hooks/useAuth";
 import { DropdownMenu } from "radix-ui";
 import LogoutDialog from "../components/logout/logout";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../store/store";
+import { useDispatch } from "react-redux";
 import NotificationApi from "../api/notification";
-import { setNotifications } from "../store/notificationSlice";
+import { setNotificationsCount } from "../store/notificationSlice";
 // import Parse, { liveQueryClient } from "@/app/api/parse/parseClient";
 
 function AppHeader() {
@@ -29,59 +28,25 @@ function AppHeader() {
   const excludedPaths = ["/practice-game"];
   const router = useRouter();
   const [openLogout, setOpenLogout] = useState(false);
-  const unreadCount = useSelector((state: RootState) => {
-    const list = state.notifications.notifications;
-    return Array.isArray(list) ? list.filter((n) => !n.read).length : 0;
-  });
+  const { notificationCount } = useAppSelector((state) => state.notifications);
   const { user } = useAuth();
   console.log("User", user);
 
   const fetchNotifications = useCallback(async () => {
     try {
-      const res = await NotificationApi.fetchNotifications();
-      dispatch(setNotifications(res.notifications));
+      const res = await NotificationApi.fetchNotificationsCount();
+      console.log("Notify", res);
+
+      dispatch(setNotificationsCount(res.data.count));
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.log(err.message);
     }
   }, [dispatch]);
+
   useEffect(() => {
     fetchNotifications();
   }, [fetchNotifications]);
-
-  // useEffect(() => {
-  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //   let subscription: any;
-  //   const NotificationLiveQuery = async () => {
-  //     const userPointer = {
-  //       __type: "Pointer",
-  //       className: "_User",
-  //       objectId: user?.objectId,
-  //     };
-
-  //     const query = new Parse.Query("Notification");
-  //     query.equalTo("user", userPointer);
-  //     subscription = await liveQueryClient.subscribe(query);
-
-  //     subscription?.on("create", () => {
-  //       // console.log("this object was created: ", object);
-  //       fetchNotifications();
-  //     });
-  //     subscription?.on("update", () => {
-  //       // console.log("this object was updated: ", object);
-  //       fetchNotifications();
-  //     });
-  //     subscription?.on("delete", () => {
-  //       // console.log("this object was deleted: ", object);
-  //       fetchNotifications();
-  //     });
-  //   };
-
-  //   NotificationLiveQuery();
-  //   return () => {
-  //     if (subscription) subscription.unsubscribe();
-  //   };
-  // }, [fetchNotifications, user?.objectId]);
 
   if (excludedPaths.includes(pathname)) return null;
 
@@ -143,7 +108,7 @@ function AppHeader() {
               className="rounded-full text-xs border-2 py-1 px-2 border-neutral-400 text-neutral-500 hover:border-primary-500 hover:text-primary-900 cursor-pointer"
             >
               <EraserIcon />
-              <span>0</span>
+              <span>{user?.gameEraserCount}</span>
             </Flex>
           </Link>
           <Link
@@ -151,9 +116,9 @@ function AppHeader() {
             className="text-neutral-600 hover:text-primary-900 relative"
           >
             <BellIcon />
-            {unreadCount > 0 && (
+            {notificationCount > 0 && (
               <div className="flex items-center justify-center h-4.5 w-4.5 rounded-full bg-primary-900 absolute -top-1 -right-1 text-white text-[0.5rem]">
-                {unreadCount > 99 ? "99+" : unreadCount}
+                {notificationCount > 99 ? "99+" : notificationCount}
               </div>
             )}
           </Link>
