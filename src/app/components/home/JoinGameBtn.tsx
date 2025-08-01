@@ -81,12 +81,9 @@ function JoinGameBtn() {
   // };
 
   const handleJoinBtn = async () => {
-    // if (!isMobile) {
-    //   toast.error("Please join the game with your mobile device.", {
-    //     position: "top-center",
-    //   });
-    //   return;
-    // }
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("Request timed out, try again")), 10000)
+    );
     const userId = user?.objectId;
 
     if (!userId) return;
@@ -115,7 +112,12 @@ function JoinGameBtn() {
     } else {
       setLoading(true);
       try {
-        const res = await GameApi.registerForGame(gameData?.objectId, dispatch);
+        const res = await Promise.race([
+          GameApi.registerForGame(gameData?.objectId, dispatch),
+          timeoutPromise,
+        ]);
+
+        // const res = await GameApi.registerForGame(gameData?.objectId, dispatch);
         const game = res.userData;
         console.log(game);
 
