@@ -72,6 +72,20 @@ export interface Product {
   quantity: number;
   category: string;
 }
+export interface UpdateProfile {
+  firstName?: string;
+  lastName?: string;
+  dob?: string;
+  country?: string;
+  gender?: string;
+  avatarUrl?: string;
+  promotions?: boolean;
+  facebook?: string;
+  twitter?: string;
+  instagram?: string;
+  whatsapp?: string;
+  tiktok?: string;
+}
 
 export interface User {
   admin?: boolean;

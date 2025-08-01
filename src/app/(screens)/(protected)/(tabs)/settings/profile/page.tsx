@@ -40,17 +40,10 @@ const initialForm = {
 };
 
 const Page = () => {
-  const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
-  const user: User | null = encrypted ? decryptData(encrypted) : null;
-  const rawDob = user?.dob?.iso;
-  const formattedDOB =
-    rawDob && !isNaN(new Date(rawDob).getTime())
-      ? new Date(rawDob).toISOString().split("T")[0]
-      : "";
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     ...initialForm,
     ...user,
-    dob: formattedDOB,
   });
   const authUser = getAuthUser();
   const { fullDate } = formatDateTime(
@@ -76,19 +69,20 @@ const Page = () => {
     setIsUpdating(true);
 
     await userApi
-      .updateUser({
+      .updateProfile({
         firstName: formData.firstName,
         lastName: formData.lastName,
         dob: formData.dob,
-        gender: formData.gender,
-        country: formData.country,
-        facebook: formData.facebook.trim() ?? "",
-        instagram: formData.instagram.trim() ?? "",
-        twitter: formData.twitter.trim() ?? "",
-        whatsapp: formData.whatsapp.trim() ?? "",
-        tiktok: formData.tiktok.trim() ?? "",
-        avatar: user?.avatar ?? "",
-        promotionalMails: user?.promotionalMails ?? false,
+        facebook: formData.facebookHandle ? formData.facebookHandle.trim() : "",
+        instagram: formData.instagramHandle
+          ? formData.instagramHandle.trim()
+          : "",
+        twitter: formData.twitterHandle ? formData.twitterHandle.trim() : "",
+        whatsapp: formData.whatsappContact
+          ? formData.whatsappContact.trim()
+          : "",
+        tiktok: formData.tiktokHandle ? formData.tiktokHandle.trim() : "",
+        avatarUrl: user?.avatarUrl ? user?.avatarUrl : "",
       })
       .then((res) => {
         toast.success("Profile updated successfully", {
@@ -96,10 +90,7 @@ const Page = () => {
         });
 
         const userData = res.updatedUser;
-        const encryptedUser = encryptData(userData);
 
-        // ✅ Dispatch to Redux
-        loginUser(encryptedUser);
         setIsEditing(false);
       })
       .catch((err: any) => {
@@ -137,7 +128,7 @@ const Page = () => {
               >
                 <div className="w-full h-full flex items-center justify-center relative">
                   <Image
-                    src={user?.avatar ?? "/assets/images/profile.png"}
+                    src={user?.avatarUrl ?? "/assets/images/profile.png"}
                     alt="profile"
                     width={100}
                     height={100}
@@ -230,7 +221,7 @@ const Page = () => {
                   icon={<MailIcon className="text-[#A6ABC4]" />}
                   required
                 />
-                <CustomSelect
+                {/* <CustomSelect
                   label="Gender"
                   name="gender"
                   value={formData.gender}
@@ -239,7 +230,7 @@ const Page = () => {
                   disabledOption="Select your gender"
                   icon={<ArrowDownIcon className="text-[#A6ABC4]" />}
                   disabled
-                />
+                /> */}
                 <CustomTextField
                   label="Date of Birth"
                   name="dob"
@@ -253,7 +244,7 @@ const Page = () => {
                   // className="min-0 !w-full"
                 />
 
-                <CustomSelect
+                {/* <CustomSelect
                   label="Country"
                   name="gender"
                   value={formData.gender}
@@ -262,7 +253,7 @@ const Page = () => {
                   disabled={!isEditing}
                   disabledOption="Select your country"
                   icon={<GlobeIcon className="text-[#A6ABC4] h-6 w-6" />}
-                />
+                /> */}
               </Grid>
 
               <div>
@@ -274,12 +265,14 @@ const Page = () => {
                 >
                   <CustomTextField
                     label="Facebook"
-                    name="facebook"
+                    name="facebookHandle"
                     value={
-                      formData.facebook == "undefined" ? "" : formData.facebook
+                      formData.facebookHandle == "undefined"
+                        ? ""
+                        : formData.facebookHandle
                     }
                     type="text"
-                    placeholder="@username"
+                    placeholder="username"
                     onChange={onChange}
                     disabled={!isEditing}
                     icon={<FaFacebook className="text-[#A6ABC4] text-xl" />}
@@ -289,14 +282,14 @@ const Page = () => {
 
                   <CustomTextField
                     label="Instagram"
-                    name="instagram"
+                    name="instagramHandle"
                     value={
-                      formData.instagram == "undefined"
+                      formData.instagramHandle == "undefined"
                         ? ""
-                        : formData.instagram
+                        : formData.instagramHandle
                     }
                     type="text"
-                    placeholder="@username"
+                    placeholder="username"
                     onChange={onChange}
                     disabled={!isEditing}
                     icon={<FaInstagram className="text-[#A6ABC4] text-xl" />}
@@ -306,12 +299,14 @@ const Page = () => {
 
                   <CustomTextField
                     label="X Formerly Twitter"
-                    name="twitter"
+                    name="twitterHandle"
                     value={
-                      formData.twitter == "undefined" ? "" : formData.twitter
+                      formData.twitterHandle == "undefined"
+                        ? ""
+                        : formData.twitterHandle
                     }
                     type="text"
-                    placeholder="@username"
+                    placeholder="username"
                     onChange={onChange}
                     disabled={!isEditing}
                     icon={<FaTwitter className="text-[#A6ABC4] text-xl" />}
@@ -320,12 +315,14 @@ const Page = () => {
                   />
                   <CustomTextField
                     label="Tiktok"
-                    name="tiktok"
+                    name="tiktokHandle"
                     value={
-                      formData.tiktok == "undefined" ? "" : formData.tiktok
+                      formData.tiktokHandle == "undefined"
+                        ? ""
+                        : formData.tiktokHandle
                     }
                     type="text"
-                    placeholder="@username"
+                    placeholder="username"
                     onChange={onChange}
                     disabled={!isEditing}
                     icon={<FaTiktok className="text-[#A6ABC4] text-xl" />}
@@ -335,8 +332,8 @@ const Page = () => {
 
                   <CustomTextField
                     label="Whatsapp"
-                    name="whatsapp"
-                    value={formData.whatsapp}
+                    name="whatsappContact"
+                    value={formData.whatsappContact}
                     type="text"
                     placeholder="Enter your whatsapp number"
                     onChange={onChange}

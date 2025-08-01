@@ -7,6 +7,7 @@ import {
   LoginForm,
   ResetPasswordForm,
   SignUpForm,
+  UpdateProfile,
   VerifyEmailForm,
 } from "./interface";
 import { callParseEndpoint } from "./parse/callParseEndpoint";
@@ -57,6 +58,9 @@ const UserAPI = {
     );
   },
   updateUser(form: UserObject): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("customers", form, {}, "PATCH");
+  },
+  updateProfile(form: UpdateProfile): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("customers", form, {}, "PATCH");
   },
   updateSocialHandles(
