@@ -351,7 +351,7 @@ function GameScreen({ setUserTime }: Props) {
         exit={{ opacity: 0, y: -10 }}
         transition={{ duration: 0.25, ease: "easeInOut" }}
       >
-        <div className="h-[100dvh] bg-primary-900 hero flex items-center  px-4">
+        <div className="h-[100dvh] bg-primary-900 hero flex flex-col items-center justify-center gap-2 px-4">
           <CustomButton
             loader
             width="full"
@@ -359,6 +359,15 @@ function GameScreen({ setUserTime }: Props) {
             type="button"
             variant="secondary"
           />
+          <CustomButton
+            onClick={fetchGame}
+            width="full"
+            size="lg"
+            type="button"
+            variant="secondary"
+          >
+            Start Game Now
+          </CustomButton>
         </div>
       </motion.div>
     );
