@@ -111,15 +111,19 @@ function GameScreen({ setUserTime }: Props) {
       console.log("GAME", res);
       const encryptedGame = res.errorData;
       const game = decryptGameData(encryptedGame);
+
       dispatch(setLiveGameData(game));
+      if (game.questions.length < 1) {
+        toast.info("Questions not yet live", { position: "top-center" });
+      }
       console.log("decryptGameData: ", game);
       setFetchingQuestion("loaded");
     } catch (err: any) {
+      setFetchingQuestion("error");
       console.log(err);
       toast.error(err.message || "Please click on the button again", {
         position: toastPosition,
       });
-      setFetchingQuestion("error");
     }
   }, [dispatch]);
   useEffect(() => {
