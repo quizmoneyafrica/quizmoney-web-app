@@ -467,7 +467,7 @@ function GameScreen({ setUserTime }: Props) {
           <div className="grid grid-cols-3 w-full">
             <div className="mt-6 text-white text-sm flex items-center justify-start gap-1">
               {/* <TimerIcon width={23} /> <span>{formatTime(totalTimeUsed)}</span> */}
-              <span>{formatTime(totalTimeRef.current)}</span>
+{/*               <span>{formatTime(totalTimeRef.current)}</span> */}
               <Avatar
                 src={user?.avatar}
                 fallback={user?.firstName?.charAt(0).toUpperCase()}
