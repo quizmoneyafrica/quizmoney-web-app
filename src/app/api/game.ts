@@ -1,17 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ApiResponse } from "./interface";
 import CryptoJS from "crypto-js";
-import { callParseEndpoint } from "./parse/callParseEndpoint";
 import { callWithSessionToken } from "./parse/callWithSessionToken";
 
 const GameApi = {
   fetchNextGame(): Promise<ApiResponse> {
-    // return callParseEndpoint<ApiResponse>("errorLoad");
+    return callWithSessionToken<ApiResponse>("games", {}, {}, "GET");
   },
 
   registerForGame(gameId: string, dispatch: any): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
-      "registerForGame",
+      "games/join",
       { gameId },
       dispatch
     );

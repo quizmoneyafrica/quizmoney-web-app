@@ -1,137 +1,44 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import GameApi from "@/app/api/game";
-import { useAppDispatch, useAuth } from "@/app/hooks/useAuth";
+import { useAppDispatch } from "@/app/hooks/useAuth";
 import { playAudio, setLobbyTime, setPhase } from "@/app/store/gameSlice";
 import { RootState } from "@/app/store/store";
 import { toastPosition } from "@/app/utils/utils";
 import { Spinner } from "@radix-ui/themes";
-import { differenceInSeconds } from "date-fns";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
-import { isMobile } from "react-device-detect";
-
-const bannedUserIds = [
-  "",
-  // "S0FGFxqCJd",
-  // "2FScl8GRdx",
-  // "cFPeCE4IQx",
-  // "r4BEe38SGm",
-  // "qwomdtFbvx",
-  // "STpU8qgPFW",
-  // "b0D4fmr14T",
-  // "PSxG6ji5vP",
-  // "uWTNBkb8Xa",
-  // "DDxlEda8ZA",
-  // "PuSTqJJbaU",
-  // "rsr3ct9WF2",
-  // "3fqVZCYKLm",
-  // "6qkJ3U238n",
-  // "IAa2gOwETF",
-  // "3DPuIkKZEz",
-  // "MxlRiRKLS3",
-  // "Ol2iE8nIYM",
-  // "9qXm1dvrJk",
-  // "iHwr5aWKAn",
-];
 
 function JoinGameBtn() {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const gameData = useSelector((state: RootState) => state.game.nextGameData);
   const [loading, setLoading] = useState(false);
-  const { user } = useAuths();
-
-  // const handleJoinBtn = async () => {
-  //   const userId = user?.objectId;
-  //   const isInGame =
-  //     Array.isArray(gameData?.users) && gameData?.users.includes(userId);
-  //   const diff = differenceInSeconds(
-  //     new Date(gameData?.startDate.iso),
-  //     new Date()
-  //   );
-
-  //   if (isInGame && diff > 0) {
-  //     dispatch(setLiveGameData(gameData));
-  //     dispatch(setPhase("lobby"));
-  //     dispatch(playAudio());
-  //     router.replace(`/live-game/${gameData.objectId}`);
-  //   } else {
-  //     setLoading(true);
-  //     try {
-  //       const res = await GameApi.registerForGame(gameData?.objectId);
-  //       const game = res.data.result.userData;
-
-  //       dispatch(setLiveGameData(decryptGameData(game)));
-  //       dispatch(setPhase("lobby"));
-  //       dispatch(playAudio());
-  //       router.replace(`/live-game/${gameData.objectId}`);
-  //       setLoading(false);
-  //       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //     } catch (err: any) {
-  //       console.log(err.message);
-  //       toast.error(err.message, {
-  //         position: toastPosition,
-  //       });
-  //       setLoading(false);
-  //     }
-  //   }
-  // };
 
   const handleJoinBtn = async () => {
-    if (!isMobile) {
-      toast.error("Please join the game with your mobile device.", {
-        position: "top-center",
-      });
-      return;
-    }
-    const userId = user?.objectId;
+    setLoading(true);
+    try {
+      const res = await GameApi.registerForGame(
+        gameData?.gameId || "",
+        dispatch
+      );
+      const game = res.userData;
+      console.log(game);
 
-    if (!userId) return;
-
-    // Prevent banned users from joining
-    if (bannedUserIds.includes(userId)) {
-      toast.error("An error occurred.", {
-        position: toastPosition,
-      });
-      return;
-    }
-
-    const isInGame =
-      Array.isArray(gameData?.users) && gameData?.users.includes(userId);
-    const diff = differenceInSeconds(
-      new Date(gameData?.startDate.iso),
-      new Date()
-    );
-
-    if (isInGame && diff > 0) {
-      // dispatch(setLiveGameData(gameData));
-      dispatch(setLobbyTime(gameData?.startDate.iso));
+      // dispatch(setLiveGameData(decryptGameData(game)));
+      dispatch(setLobbyTime(gameData?.startTime || ""));
       dispatch(setPhase("lobby"));
       dispatch(playAudio());
-      router.replace(`/live-game/${gameData.objectId}`);
-    } else {
-      setLoading(true);
-      try {
-        const res = await GameApi.registerForGame(gameData?.objectId, dispatch);
-        const game = res.userData;
-        console.log(game);
-
-        // dispatch(setLiveGameData(decryptGameData(game)));
-        dispatch(setLobbyTime(gameData?.startDate.iso));
-        dispatch(setPhase("lobby"));
-        dispatch(playAudio());
-        router.replace(`/live-game/${gameData.objectId}`);
-      } catch (err: any) {
-        console.log(err.message);
-        toast.error(err.message, {
-          position: toastPosition,
-        });
-      } finally {
-        setLoading(false);
-      }
+      router.replace(`/live-game/${gameData?.gameId}`);
+    } catch (err: any) {
+      console.log(err.message);
+      toast.error(err.message, {
+        position: toastPosition,
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -143,7 +50,7 @@ function JoinGameBtn() {
     >
       <i className="bi bi-play-circle mb-1 relative">
         <i className="bi bi-play-circle mb-1 animate-ping absolute left-0 top-0"></i>
-      </i>{" "}
+      </i>
       {loading ? <Spinner /> : "Join Live Game!"}
     </button>
   );
