@@ -1,11 +1,9 @@
 "use client";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
-import { decryptData } from "@/app/utils/crypto";
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import GameCard from "@/app/components/home/GameCard";
 import TopGamers from "@/app/components/home/TopGamers";
-import ReferBox from "@/app/components/home/ReferBox";
 import { Grid } from "@radix-ui/themes";
 import TransactionHistory from "@/app/components/wallet/TransactionHistory";
 import {
@@ -21,8 +19,6 @@ import UserAPI from "@/app/api/userApi";
 import { GameZoneCardHome } from "@/app/components/home/GameZoneCardHome";
 
 function HomeTab() {
-  const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
-  const user = encrypted ? decryptData(encrypted) : null;
   const dispatch = useAppDispatch();
   const { wallet, transactions } = useAppSelector((state) => state.wallet);
   useEffect(() => {

@@ -1,6 +1,5 @@
 "use client";
 
-import { Play } from "lucide-react";
 import CustomImage from "../wallet/CustomImage";
 import { useRouter } from "next/navigation";
 import GameZoneButton from "./game-zone-btn";

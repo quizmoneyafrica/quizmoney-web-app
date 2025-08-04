@@ -1,10 +1,9 @@
 import classNames from "classnames";
-import { useRouter } from "next/navigation";
 import React from "react";
 
-interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
-
-export default function GameZoneButton(props: Props) {
+export default function GameZoneButton(
+  props: React.ButtonHTMLAttributes<HTMLButtonElement>
+) {
   return (
     <button
       className={classNames(
