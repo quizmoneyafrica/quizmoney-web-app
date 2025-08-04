@@ -18,6 +18,7 @@ import WalletApi from "@/app/api/wallet";
 import AdBanner from "@/app/components/advert/adBanner";
 import { updateCoinBalance } from "@/app/store/coinSlice";
 import UserAPI from "@/app/api/userApi";
+import { GameZoneCardHome } from "@/app/components/home/GameZoneCardHome";
 
 function HomeTab() {
   const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
@@ -84,9 +85,11 @@ function HomeTab() {
         <div>
           <Grid gap="4">
             <GameCard />
-            <TopGamers />
+            <GameZoneCardHome />
             <AdBanner />
-            <ReferBox refCode={user?.referralCode} />
+            <TopGamers />
+
+            {/* <ReferBox refCode={user?.referralCode} /> */}
           </Grid>
         </div>
         <div className="bg-white rounded-[20px] hidden lg:inline-block p-4">
