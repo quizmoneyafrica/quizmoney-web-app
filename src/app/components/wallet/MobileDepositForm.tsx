@@ -12,26 +12,6 @@ import { usePaystackPayment } from "react-paystack";
 import { Loader } from "lucide-react";
 import { getAuthUser } from "@/app/api/userApi";
 
-// Declare Paystack type for TypeScript
-declare global {
-  interface Window {
-    PaystackPop: {
-      setup: (options: {
-        key: string;
-        email: string;
-        amount: number;
-        ref: string;
-        onSuccess: (transaction: any) => void;
-        onLoad: (response: any) => void;
-        onCancel: () => void;
-        onError: (error: any) => void;
-      }) => {
-        openIframe: () => void;
-      };
-    };
-  }
-}
-
 const depositFormSchema = z.object({
   amount: z
     .string()
@@ -151,7 +131,6 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
           response.data?.accessCode &&
           response.data?.reference
         ) {
-          // Initialize Paystack popup
           initializePaystackPayment(
             response.data.accessCode,
             response.data.reference,
