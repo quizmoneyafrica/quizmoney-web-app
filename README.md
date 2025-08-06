@@ -14,7 +14,7 @@ This is the frontend codebase for the QuizMoney trivia platform where users comp
 - 📊 Leaderboard, earnings, and user profile dashboard 
 - 🎯 Smooth onboarding with Swiper.js 
 
----
+--- 
 
 ## 🛠️ Tech Stack
 
