@@ -105,7 +105,7 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
           amount: totalAmount,
         });
         console.log(JSON.stringify(response, null, 2), "====PAYSTCK=======");
-        if (response.success || response.data?.authorization_url) {
+        if (response.success && response.data?.authorization_url) {
           reset();
           setSelectedAmount(null);
           window.open(response.data.authorization_url, "_blank");
