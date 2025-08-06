@@ -88,7 +88,6 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
     setSelectedAmount(null);
   };
 
-  // Function to initialize Paystack
   const initializePaystackPayment = (
     accessCode: string,
     reference: string,
