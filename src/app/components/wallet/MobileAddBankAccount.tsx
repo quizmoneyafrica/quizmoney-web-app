@@ -1,10 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import CustomButton from "@/app/utils/CustomBtn";
-import { Search, ChevronDown } from "lucide-react";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getAuthUser } from "@/app/api/userApi";
 import WalletApi from "@/app/api/wallet";
 import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
@@ -16,8 +15,6 @@ import {
 } from "@/app/store/walletSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { store } from "@/app/store/store";
-import { UserObject } from "@/app/store/authSlice";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
 // Define bank interface
 export interface Bank {
@@ -45,11 +42,11 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  // const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoadingBanks, setIsLoadingBanks] = useState(false);
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const searchInputRef = useRef<HTMLInputElement>(null);
-  const dropdownContentRef = useRef<HTMLDivElement>(null);
+  // const [isSearchFocused, setIsSearchFocused] = useState(false);
+  // const searchInputRef = useRef<HTMLInputElement>(null);
+  // const dropdownContentRef = useRef<HTMLDivElement>(null);
   const [showBankList, setShowBankList] = useState(false);
   const bankListRef = useRef<HTMLDivElement>(null);
 
@@ -104,6 +101,7 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
           toast.error("Failed to load banks", {
             position: toastPosition,
           });
+          console.log(error);
         } finally {
           setIsLoadingBanks(false);
         }
@@ -284,7 +282,7 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
                 ))
               ) : searchTerm.trim() ? (
                 <div className="p-3 text-gray-500 text-center">
-                  No banks found matching "{searchTerm}"
+                  No banks found matching &quot;{searchTerm}&quot;
                 </div>
               ) : (
                 <div className="p-3 text-gray-500 text-center">

@@ -1,11 +1,10 @@
 "use client";
 import { BankIcon } from "@/app/icons/icons";
-import { store } from "@/app/store/store";
 import { useWallet } from "@/app/store/walletSlice";
 import CustomButton from "@/app/utils/CustomBtn";
 import { formatNaira } from "@/app/utils/utils";
 import { LucideCopy } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 

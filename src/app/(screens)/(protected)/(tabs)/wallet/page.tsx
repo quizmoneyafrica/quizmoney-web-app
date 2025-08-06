@@ -8,9 +8,7 @@ import {
   setWalletLoading,
   setTransactionsLoading,
   setTransactions,
-  setBanks,
   setPayoutBanks,
-  setVirtualAccount,
 } from "@/app/store/walletSlice";
 import WalletApi from "@/app/api/wallet";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
@@ -59,7 +57,7 @@ function Page() {
             dispatch(setPayoutBanks(res.data));
           }
         } catch (error) {
-          // console.log(error, "Wallet Error");
+          console.log(error, "Wallet Error");
         } finally {
           dispatch(setWalletLoading(false));
         }
