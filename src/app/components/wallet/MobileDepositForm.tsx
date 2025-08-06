@@ -8,7 +8,29 @@ import { toastPosition } from "@/app/utils/utils";
 import CustomButton from "@/app/utils/CustomBtn";
 import VirtualDetails, { VirtualDetailsProps } from "./VirtualDetails";
 import { useAppDispatch } from "@/app/hooks/useAuth";
+import { usePaystackPayment } from "react-paystack";
 import { Loader } from "lucide-react";
+import { getAuthUser } from "@/app/api/userApi";
+
+// Declare Paystack type for TypeScript
+declare global {
+  interface Window {
+    PaystackPop: {
+      setup: (options: {
+        key: string;
+        email: string;
+        amount: number;
+        ref: string;
+        onSuccess: (transaction: any) => void;
+        onLoad: (response: any) => void;
+        onCancel: () => void;
+        onError: (error: any) => void;
+      }) => {
+        openIframe: () => void;
+      };
+    };
+  }
+}
 
 const depositFormSchema = z.object({
   amount: z
@@ -26,6 +48,7 @@ const depositFormSchema = z.object({
 type DepositFormData = z.infer<typeof depositFormSchema>;
 
 export const MobileDepositForm = ({ close }: { close?: () => void }) => {
+  const { email: userEmail }: any = getAuthUser();
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
     "bankTransfer" | "card" | ""
@@ -65,18 +88,35 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
     setSelectedAmount(null);
   };
 
-  // const calculatePaystackFee = (amount: number): number => {
-  //   let fee = amount * 0.015;
-  //   if (amount >= 2500) {
-  //     fee += 100;
-  //   }
-
-  //   if (fee > 2000) {
-  //     fee = 2000;
-  //   }
-
-  //   return fee;
-  // };
+  // Function to initialize Paystack
+  const initializePaystackPayment = (
+    accessCode: string,
+    reference: string,
+    amount: number
+  ) => {
+    const initializePayment = usePaystackPayment({
+      publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
+      email: userEmail,
+      amount: amount * 100,
+      reference: reference,
+    });
+    initializePayment({
+      onSuccess: function (transaction: any) {
+        toast.success("Payment successful!", {
+          position: toastPosition,
+        });
+        reset();
+        setSelectedAmount(null);
+        close?.();
+      },
+      onClose: function (error: any) {
+        toast.error("Payment failed. Please try again.", {
+          position: toastPosition,
+        });
+        console.error("Payment error:", JSON.stringify(error, null, 2));
+      },
+    });
+  };
 
   const onFormSubmit = async (data: DepositFormData) => {
     if (!selectedAmount && !data.amount) {
@@ -90,7 +130,6 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
 
     const baseAmount =
       selectedAmount || Number(data.amount.replace(/[₦,]/g, ""));
-    // const paystackFee = calculatePaystackFee(baseAmount);
     const totalAmount = baseAmount;
 
     if (selectedPaymentMethod === "bankTransfer") {
@@ -99,20 +138,31 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
     } else {
       try {
         setLoading(true);
-        // const response = await WalletApi.getCheckoutLink({
-        //   amount: `${numericAmount}`,
-        // });
+
         const response = await WalletApi.initializePaystack({
           amount: totalAmount,
         });
-        console.log(JSON.stringify(response, null, 2), "====PAYSTCK=======");
-        if (response.success && response.data?.authorization_url) {
-          reset();
-          setSelectedAmount(null);
-          window.open(response.data.authorization_url, "_blank");
-          close?.();
+        console.log("=======userEmail=============================");
+        console.log(userEmail);
+        console.log("====================================");
+        console.log(JSON.stringify(response, null, 2), "====PAYSTACK=======");
+
+        if (
+          response.success &&
+          response.data?.accessCode &&
+          response.data?.reference
+        ) {
+          // Initialize Paystack popup
+          initializePaystackPayment(
+            response.data.accessCode,
+            response.data.reference,
+            totalAmount
+          );
+        } else {
+          toast.error("Failed to initialize payment. Please try again.", {
+            position: toastPosition,
+          });
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         toast.error(`${err.message}`, {
           position: toastPosition,
