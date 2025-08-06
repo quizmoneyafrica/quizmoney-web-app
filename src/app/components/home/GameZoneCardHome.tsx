@@ -39,6 +39,8 @@ export function GameZoneCardHome() {
 						alt=""
 						src={"/assets/images/gamezone.png"}
 					className="w-full h-full"
+						width={124.87}
+							height={137.59}
 					/>
 				</div>
 			</div>
