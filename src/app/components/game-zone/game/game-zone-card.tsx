@@ -40,12 +40,12 @@ export function GameZoneCard({
 			</div>
 
 			{/* Decorative Lines (Mobile Only) */}
-			<div className="absolute left-0 pb-5 bottom-0 right-0 ml-5 flex opacity-50  z-10 flex-col items-center w-full justify-center">
+			<div className="absolute z-1 left-0 pb-5 bottom-0 right-0 ml-5 flex opacity-50  z-10 flex-col items-center w-full justify-center">
 				<CustomImage className="w-full" alt="River Line 1" src={riverLine1} />
 				<CustomImage className="w-full" alt="River Line 2" src={riverLine2} />
 			</div>
 
-			<div className="grid grid-cols-2 pt-5 ">
+			<div className="relative z-2 grid grid-cols-2 pt-5 ">
 				{/* Left Content */}
 				<div className="flex flex-col gap-3 max-w-md justify-center z-[2000]">
 					<CustomImage alt="Game Zone Icon" src={gameZoneIcon} />
@@ -63,8 +63,9 @@ export function GameZoneCard({
 						alt="Game Illustration"
 						src={gameZoneImage}
 						quality={100}
-						width={100}
-						height={100}
+						className="w-full h-full"
+						width={124.87}
+							height={137.59}
 					/>
 				</div>
 			</div>
