@@ -16,7 +16,7 @@ export function GameZoneCardHome() {
 				<CustomImage className=" w-full" alt="" src={"/icons/riverline1.svg"} />
 				<CustomImage className=" w-full" alt="" src={"/icons/riverline2.svg"} />
 			</div>
-			<div className="z-2 grid grid-cols-2 pt-5 z-50">
+			<div className="relative z-2 grid grid-cols-2 pt-5 z-50">
 				{/* Left Content */}
 				<div className="flex flex-col gap-3 max-w-md  justify-center">
 					<CustomImage alt="" src={"/icons/game-z.svg"} />
