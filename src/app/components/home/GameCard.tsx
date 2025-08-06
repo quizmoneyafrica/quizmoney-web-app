@@ -90,7 +90,7 @@ function GameCard() {
                 as="h1"
                 className="text-primary-900 !text-5xl !font-black"
               >
-                {formatNaira(nextGameData?.gamePrize)}
+                {formatNaira(nextGameData?.prize)}
               </Heading>
               <Flex direction="column" gap="2" align="center" justify="center">
                 {nextGameData && nextGameData.status === "INPROGRESS" && (
@@ -142,8 +142,8 @@ function GameCard() {
           ) : (
             <Flex align="center" justify="between">
               <ShareBtn
-                gamePrize={nextGameData?.gamePrize}
-                startDate={nextGameData?.startTime}
+                gamePrize={nextGameData?.prize || 0}
+                startDate={nextGameData?.startTime || ""}
               />
               <JoinGameBtn />
               <PlayDemoBtn />

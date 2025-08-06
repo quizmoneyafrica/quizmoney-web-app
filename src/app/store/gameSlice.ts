@@ -15,6 +15,7 @@ interface CurrentGameObj {
   gameId: string;
   status: GameStatus;
   fee: number;
+  prize: number;
   duration: number;
   startTime: string;
   description: string;

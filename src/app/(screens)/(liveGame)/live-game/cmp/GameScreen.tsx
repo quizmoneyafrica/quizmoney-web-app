@@ -208,7 +208,12 @@ function GameScreen({ setUserTime }: Props) {
     if (isCorrect) {
       correctSoundRef.current?.play();
       newAnswers[currentIndex] = option;
-    } else if (!isCorrect && !eraserUsedAlready && user?.erasers > 0) {
+    } else if (
+      !isCorrect &&
+      !eraserUsedAlready &&
+      user?.gameEraserCount &&
+      user?.gameEraserCount > 0
+    ) {
       toSaveAnswer = currentQuestion.correctAnswer;
       correctSoundRef.current?.play();
       newAnswers[currentIndex] = currentQuestion.correctAnswer;
@@ -218,7 +223,7 @@ function GameScreen({ setUserTime }: Props) {
       });
 
       await GameApi.updateErasers(1);
-      dispatch(updateUser({ erasers: user.erasers - 1 }));
+      dispatch(updateUser({ gameEraserCount: user.gameEraserCount - 1 }));
       setEraserUsedAlready(true);
       usedEraserThisQuestion = true;
     } else {
