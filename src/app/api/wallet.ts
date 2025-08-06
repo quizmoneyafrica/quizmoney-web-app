@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { store } from "../store/store";
 import { ApiResponse } from "./interface";
 import { callWithSessionToken } from "./parse/callWithSessionToken";
 
@@ -107,6 +108,13 @@ const WalletApi = {
     dispatch: any
   ): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("withdraw", { ...data }, dispatch);
+  },
+  initializePaystack(
+    data:{
+   amount:number
+}
+  ): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("wallets/initialize/payment", { ...data }, store.dispatch);
   },
 
   forgotPin(data: { email: string }): Promise<ApiResponse> {
