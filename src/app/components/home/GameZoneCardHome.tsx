@@ -12,11 +12,11 @@ export function GameZoneCardHome() {
 				<CustomImage alt="" src={"/icons/tabler_badge-filled.svg"} />
 			</div>
 			{/* Lines */}
-			<div className=" absolute left-0 pb-5 bottom-0 right-0 ml-5 flex md:hidden z-10 flex-col items-center w-full  justify-center">
+			<div className=" absolute z-1 left-0 pb-5 bottom-0 right-0 ml-5 flex md:hidden z-10 flex-col items-center w-full  justify-center">
 				<CustomImage className=" w-full" alt="" src={"/icons/riverline1.svg"} />
 				<CustomImage className=" w-full" alt="" src={"/icons/riverline2.svg"} />
 			</div>
-			<div className=" grid grid-cols-2 pt-5 z-50">
+			<div className="z-2 grid grid-cols-2 pt-5 z-50">
 				{/* Left Content */}
 				<div className="flex flex-col gap-3 max-w-md  justify-center">
 					<CustomImage alt="" src={"/icons/game-z.svg"} />
@@ -40,6 +40,7 @@ export function GameZoneCardHome() {
 						src={"/assets/images/gamezone.png"}
 {/* 						width={124.87} */}
 {/* 						height={137.59} */}
+					className="w-full h-full"
 					/>
 				</div>
 			</div>
