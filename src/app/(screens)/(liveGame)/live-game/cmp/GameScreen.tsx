@@ -355,24 +355,36 @@ function GameScreen({ setUserTime }: Props) {
         exit={{ opacity: 0, y: -10 }}
         transition={{ duration: 0.25, ease: "easeInOut" }}
       >
-        <div className="h-[100dvh] bg-primary-900 hero flex flex-col items-center justify-center gap-2 px-4">
-          <CustomButton
-            loader
-            width="full"
-            size="lg"
-            type="button"
-            variant="secondary"
-          />
-          <CustomButton
-            onClick={fetchGame}
-            width="full"
-            size="lg"
-            type="button"
-            variant="secondary"
-          >
-            Start Game Now
-          </CustomButton>
+        <div className="h-[100dvh] bg-primary-900 hero flex items-center  px-4">
+          <Grid gap="3" className="w-full">
+            <div className=" bg-primary-50 text-center border-4 border-primary-500 rounded-[10px] px-4 py-4 space-y-4">
+              <h4 className="text-center text-error-900 font-bold">
+                Stay In App
+              </h4>
+              
+              <div className="text-neutral-900 text-left space-y-4">
+                {gameFetch.map((rule, index) => (
+                  <div key={index}>
+                    <span className="font-semibold text-error-900">
+                      {index + 1}. {rule.title}
+                    </span>{" "}
+                    – {rule.description}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <CustomButton
+              onClick={fetchGame}
+              width="full"
+              size="lg"
+              type="button"
+              variant="secondary"
+            >
+              Start Game Now
+            </CustomButton>
+          </Grid>
         </div>
+        
       </motion.div>
     );
   } else if (fetchingQuestion === "error") {
@@ -389,7 +401,7 @@ function GameScreen({ setUserTime }: Props) {
               <h4 className="text-center text-error-900 font-bold">
                 Stay In App
               </h4>
-              6
+              
               <div className="text-neutral-900 text-left space-y-4">
                 {gameFetch.map((rule, index) => (
                   <div key={index}>
