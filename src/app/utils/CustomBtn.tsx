@@ -14,6 +14,7 @@ type ButtonProps = {
   onClick?: () => void;
   width?: "full" | "medium" | "inline";
   loader?: boolean;
+  loaderComponent?: any;
 };
 
 const variantClasses = {
@@ -39,12 +40,14 @@ export default function CustomButton({
   type = "button",
   variant = "primary",
   size = "lg",
+  loaderComponent = Spinner,
   className = "",
   disabled = false,
   onClick,
   width = "inline",
   loader,
 }: ButtonProps) {
+  const LoaderComponent = loaderComponent;
   return (
     <button
       type={type}
@@ -60,7 +63,7 @@ export default function CustomButton({
         className
       )}
     >
-      {loader && <Spinner />}
+      {loader && <>{loaderComponent ? loaderComponent : <Spinner />}</>}
       {children}
     </button>
   );

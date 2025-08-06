@@ -8,6 +8,7 @@ import { toastPosition } from "@/app/utils/utils";
 import CustomButton from "@/app/utils/CustomBtn";
 import VirtualDetails, { VirtualDetailsProps } from "./VirtualDetails";
 import { useAppDispatch } from "@/app/hooks/useAuth";
+import { Loader } from "lucide-react";
 
 const depositFormSchema = z.object({
   amount: z
@@ -205,6 +206,9 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
             </div>
 
             <CustomButton
+              loaderComponent={
+                <Loader className=" mr-2 text-white animate-spin size-5" />
+              }
               width="full"
               disabled={loading}
               loader={loading}
