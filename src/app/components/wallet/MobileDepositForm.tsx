@@ -210,11 +210,7 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
               loader={loading}
               type="submit"
             >
-              {loading ? (
-                <div className=" animate-spin border-b-2 border-b-white rounded-full size-4 mx-auto" />
-              ) : (
-                "Proceed"
-              )}
+              Proceed
             </CustomButton>
           </form>
         </div>
