@@ -5,7 +5,7 @@ This is the frontend codebase for the QuizMoney trivia platform where users comp
  
 --- 
 ## 🚀 Features 
- 
+  
 - 📱 **PWA support** – installable on Android, iOS (via Safari), and desktop
 - 🔐 User authentication (login, signup, forgot password)
 - 🧠 Live quiz experience (integrated via WebSocket) 
@@ -14,7 +14,7 @@ This is the frontend codebase for the QuizMoney trivia platform where users comp
 - 📊 Leaderboard, earnings, and user profile dashboard 
 - 🎯 Smooth onboarding with Swiper.js 
 
----
+--- 
 
 ## 🛠️ Tech Stack
 

@@ -4,14 +4,16 @@ import classnames from "classnames";
 import React from "react";
 
 export default function CustomImage({ className, ...props }: ImageProps) {
-  return (
-    <Image
-      width={props?.width ?? 0}
-      height={props?.height ?? 0}
-      sizes="100vw"
-      className={classnames("w-[auto] h-[auto]", className)}
-      {...props}
-      alt=""
-    />
-  );
+	return (
+		<Image
+			width={props?.width ?? 0}
+			height={props?.height ?? 0}
+			sizes="100vw"
+			className={classnames("w-[auto] h-[auto]", className)}
+			{...props}
+			alt=""
+			priority
+			quality={100}
+		/>
+	);
 }
