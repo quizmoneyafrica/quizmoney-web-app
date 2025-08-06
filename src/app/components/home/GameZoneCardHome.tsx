@@ -38,8 +38,8 @@ export function GameZoneCardHome() {
 					<CustomImage
 						alt=""
 						src={"/assets/images/gamezone.png"}
-						width={124.87}
-						height={137.59}
+{/* 						width={124.87} */}
+{/* 						height={137.59} */}
 					/>
 				</div>
 			</div>
