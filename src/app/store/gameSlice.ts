@@ -9,6 +9,17 @@ export type GamePhase =
   | "result"
   | "cancelled"
   | "demo";
+export type GameStatus = "UPCOMING" | "INPROGRESS" | "WAITING" | "ENDED";
+
+interface CurrentGameObj {
+  gameId: string;
+  status: GameStatus;
+  fee: number;
+  prize: number;
+  duration: number;
+  startTime: string;
+  description: string;
+}
 
 export interface TopGamersState {
   amountWon: number;
@@ -22,7 +33,7 @@ export interface TopGamersState {
   userId: string;
 }
 interface GameState {
-  nextGameData: ApiResponse["result"] | null;
+  nextGameData: CurrentGameObj | null;
   showGameCountdown: boolean;
   isAllowedInGame: boolean;
   gameEnded: boolean;
@@ -67,11 +78,11 @@ const gameSlice = createSlice({
   name: "game",
   initialState,
   reducers: {
+    setNextGameData(state, action: PayloadAction<CurrentGameObj>) {
+      state.nextGameData = action.payload;
+    },
     setPhase: (state, action: PayloadAction<GamePhase>) => {
       state.phase = action.payload;
-    },
-    setNextGameData(state, action: PayloadAction<ApiResponse["result"]>) {
-      state.nextGameData = action.payload;
     },
     setShowGameCountdown(state, action: PayloadAction<boolean>) {
       state.showGameCountdown = action.payload;

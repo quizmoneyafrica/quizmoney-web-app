@@ -5,7 +5,7 @@ import QmDrawer from "../drawer/drawer";
 import UserAPI from "@/app/api/userApi";
 import { useAppDispatch, useAppSelector, useAuth } from "@/app/hooks/useAuth";
 import CustomButton from "@/app/utils/CustomBtn";
-import { updateUser } from "@/app/store/authSlice";
+import { updateUser, UserObject } from "@/app/store/authSlice";
 import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
 import { Select } from "radix-ui";
@@ -21,19 +21,19 @@ export const cleanValue = (val?: string) =>
   typeof val === "string" && val.toLowerCase() !== "undefined" ? val : "";
 
 const socialPlatforms = {
-  Facebook: {
+  FacebookHandle: {
     urlPrefix: "https://facebook.com/",
     icon: <FacebookIcon />,
   },
-  Instagram: {
+  InstagramHandle: {
     urlPrefix: "https://instagram.com/",
     icon: <InstagramIcon />,
   },
-  Twitter: {
+  TwitterHandle: {
     urlPrefix: "https://twitter.com/",
     icon: <XIcon />,
   },
-  Tiktok: {
+  TiktokHandle: {
     urlPrefix: "https://tiktok.com/",
     icon: <TikTokIcon />,
   },
@@ -53,37 +53,72 @@ function SocialLinksDrawer() {
   const { wallet } = useAppSelector((state) => state.wallet);
 
   const [socialInputs, setSocialInputs] = useState<SocialInput[]>([
-    { platform: "Instagram", username: "" },
+    { platform: "InstagramHandle", username: "" },
   ]);
 
   const [initialized, setInitialized] = useState(false);
   console.log("USER", user);
 
+  // useEffect(() => {
+  //   // if (!user || !wallet) return;
+  //   if (!user) return;
+  //   // if (initialized) return;
+
+  //   const initialLinks: SocialInput[] = [];
+
+  //   Object.entries(socialPlatforms).forEach(([key]) => {
+  //     const username = cleanValue(
+  //       user?.[key.toLowerCase() as keyof typeof user]
+  //     );
+  //     console.log("username", username);
+
+  //     if (username) {
+  //       initialLinks.push({ platform: key as Platform, username });
+  //     }
+  //   });
+
+  //   setSocialInputs(initialLinks);
+  //   const filledCount = initialLinks.length;
+
+  //   setInitialized(true);
+
+  //   if (wallet && Number(wallet?.availableBalance) > 0 && filledCount < 2) {
+  //     setShowUpdateDrawer(true);
+  //   } else {
+  //     setShowUpdateDrawer(true);
+  //   }
+  // }, [user, wallet, initialized]);
+
   useEffect(() => {
-    // if (!user || !wallet) return;
-    if (!user) return;
+    if (!user && !wallet) return;
     if (initialized) return;
 
     const initialLinks: SocialInput[] = [];
 
-    Object.entries(socialPlatforms).forEach(([key]) => {
-      const username = cleanValue(
-        user?.[key.toLowerCase() as keyof typeof user]
-      );
+    Object.entries(socialPlatforms).forEach(([platformKey]) => {
+      const reduxKey = (platformKey.charAt(0).toLowerCase() +
+        platformKey.slice(1)) as keyof UserObject;
+      const username = cleanValue(user && user[reduxKey]);
+
       if (username) {
-        initialLinks.push({ platform: key as Platform, username });
+        initialLinks.push({ platform: platformKey as Platform, username });
       }
     });
 
-    setSocialInputs(initialLinks);
-    const filledCount = initialLinks.length;
-
+    setSocialInputs(
+      initialLinks.length > 0 ? initialLinks : [{ platform: "", username: "" }]
+    );
     setInitialized(true);
 
-    if (wallet && Number(wallet?.availableBalance) > 0 && filledCount < 2) {
+    // Optionally show drawer logic
+    if (
+      wallet &&
+      Number(wallet?.availableBalance) > 0 &&
+      initialLinks.length < 2
+    ) {
       setShowUpdateDrawer(true);
     } else {
-      setShowUpdateDrawer(true);
+      setShowUpdateDrawer(false);
     }
   }, [user, wallet, initialized]);
 
@@ -125,6 +160,7 @@ function SocialLinksDrawer() {
       setSocialInputs((prev) => [...prev, { platform: "", username: "" }]);
     }
   };
+  console.log(socialInputs);
 
   const handleUpdateSocials = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -145,26 +181,25 @@ function SocialLinksDrawer() {
     validLinks.forEach(({ platform, username }) => {
       payload[platform.toLowerCase()] = username;
     });
-    console.log(
-      "PAYLOAD",
-      payload.facebook || "",
-      payload.twitter || "",
-      payload.whatsapp || "",
-      payload.instagram || "",
-      payload.tiktok || ""
-    );
 
     try {
       await UserAPI.updateSocialHandles(
-        payload.facebook || "",
-        payload.twitter || "",
-        payload.whatsapp || "",
-        payload.instagram || "",
-        payload.tiktok || "",
+        payload.facebookhandle || "",
+        payload.twitterhandle || "",
+        user?.whatsappContact || "",
+        payload.instagramhandle || "",
+        payload.tiktokhandle || "",
         dispatch
       );
-      // dispatch(updateUser(payload));
       toast.success("Social handles updated", { position: toastPosition });
+      dispatch(
+        updateUser({
+          facebookHandle: payload.facebookhandle,
+          twitterHandle: payload.twitterhandle,
+          instagramHandle: payload.instagramhandle,
+          tiktokHandle: payload.tiktokhandle,
+        })
+      );
       setShowUpdateDrawer(false);
     } catch (err) {
       console.error(err);

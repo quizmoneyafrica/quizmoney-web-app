@@ -7,6 +7,7 @@ import {
   LoginForm,
   ResetPasswordForm,
   SignUpForm,
+  UpdateProfile,
   VerifyEmailForm,
 } from "./interface";
 import { callParseEndpoint } from "./parse/callParseEndpoint";
@@ -59,6 +60,9 @@ const UserAPI = {
   updateUser(form: UserObject): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("customers", form, {}, "PATCH");
   },
+  updateProfile(form: UpdateProfile): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("customers", form, {}, "PATCH");
+  },
   updateSocialHandles(
     facebook: string,
     twitter: string,
@@ -92,33 +96,25 @@ const UserAPI = {
     );
   },
   sendFeedback(form: any, dispatch: any): Promise<ApiResponse> {
-    // return callWithSessionToken<ApiResponse>("sendFeedback", form, dispatch);
+    return callWithSessionToken<ApiResponse>("sendFeedback", form, dispatch);
   },
 
   topGamersOfToday(): Promise<ApiResponse> {
-    // return callParseEndpoint<ApiResponse>("topGamersOfTheWeekend");
+    return callParseEndpoint<ApiResponse>("topGamersOfTheWeekend");
   },
   getReferralStats(): Promise<ApiResponse> {
-    // return callWithSessionToken<ApiResponse>("referralData", {});
+    return callWithSessionToken<ApiResponse>("referralData", {});
   },
   fetchUserCoinAccount(): Promise<ApiResponse> {
-    // return callWithSessionToken<ApiResponse>("fetchUserCoinAccount", {});
+    return callWithSessionToken<ApiResponse>("fetchUserCoinAccount", {});
   },
   fetchCoinTransactions(): Promise<ApiResponse> {
-    // return callWithSessionToken<ApiResponse>("fetchCoinTransactions", {});
+    return callWithSessionToken<ApiResponse>("fetchCoinTransactions", {});
   },
   redeemCoin(): Promise<ApiResponse> {
-    // return callWithSessionToken<ApiResponse>("redeemCoinPoints", {});
+    return callWithSessionToken<ApiResponse>("redeemCoinPoints", {});
   },
 };
 
-export {
-  getSessionTokenHeaders,
-  BASE_URL,
-  SOCKET_URL,
-  XParseApplicationId,
-  XParseRESTAPIKey,
-  SECRET_KEY,
-  getAuthUser,
-};
+export { getAuthUser };
 export default UserAPI;

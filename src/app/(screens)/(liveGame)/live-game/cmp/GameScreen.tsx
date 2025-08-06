@@ -208,7 +208,12 @@ function GameScreen({ setUserTime }: Props) {
     if (isCorrect) {
       correctSoundRef.current?.play();
       newAnswers[currentIndex] = option;
-    } else if (!isCorrect && !eraserUsedAlready && user?.erasers > 0) {
+    } else if (
+      !isCorrect &&
+      !eraserUsedAlready &&
+      user?.gameEraserCount &&
+      user?.gameEraserCount > 0
+    ) {
       toSaveAnswer = currentQuestion.correctAnswer;
       correctSoundRef.current?.play();
       newAnswers[currentIndex] = currentQuestion.correctAnswer;
@@ -218,7 +223,7 @@ function GameScreen({ setUserTime }: Props) {
       });
 
       await GameApi.updateErasers(1);
-      dispatch(updateUser({ erasers: user.erasers - 1 }));
+      dispatch(updateUser({ gameEraserCount: user.gameEraserCount - 1 }));
       setEraserUsedAlready(true);
       usedEraserThisQuestion = true;
     } else {
@@ -366,8 +371,8 @@ function GameScreen({ setUserTime }: Props) {
             <div className="mt-6 text-white text-sm flex items-center justify-start gap-1">
               {/* <TimerIcon width={23} /> <span>{formatTime(totalTimeUsed)}</span> */}
               <Avatar
-                src={user?.avatar}
-                fallback={user?.firstName?.charAt(0).toUpperCase()}
+                src={user?.avatarUrl}
+                fallback={user?.firstName?.charAt(0).toUpperCase() || ""}
                 radius="full"
                 className="bg-primary-50"
               />
@@ -405,7 +410,7 @@ function GameScreen({ setUserTime }: Props) {
                 className="rounded-full border py-1 px-4 border-neutral-50 text-neutral-50"
               >
                 <EraserIcon width={20} height={20} />
-                <span>{user?.erasers}</span>
+                <span>{user?.gameEraserCount}</span>
               </Flex>
             </div>
           </div>
