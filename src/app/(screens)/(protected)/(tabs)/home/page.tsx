@@ -1,6 +1,5 @@
 "use client";
 import { useAppDispatch, useAppSelector, useAuth } from "@/app/hooks/useAuth";
-import { decryptData } from "@/app/utils/crypto";
 import React, { useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import GameCard from "@/app/components/home/GameCard";
@@ -71,7 +70,7 @@ function HomeTab() {
             <GameCard />
             <TopGamers />
             <AdBanner />
-            <ReferBox refCode={user?.referralCode} />
+            <ReferBox refCode={user?.referralCode || ""} />
           </Grid>
         </div>
         <div className="bg-white rounded-[20px] hidden lg:inline-block p-4">

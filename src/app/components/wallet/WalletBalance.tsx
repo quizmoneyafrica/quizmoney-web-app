@@ -10,7 +10,6 @@ import { MobileWithdrawalForm } from "./MobileWithdrawalForm";
 // import WithdrawalPinModal from "./WithdrawalPinModal";
 import MobileWithdrawalPinForm from "./MobileWithdrawalPinForm";
 // import WithdrawalSuccessModal from "./WithdrawalSuccessModal";
-import MobileWithdrawalSuccess from "./MobileWithdrawalSuccess";
 import { useSelector } from "react-redux";
 import { store } from "@/app/store/store";
 import { Loader } from "lucide-react";
@@ -34,7 +33,7 @@ export default function WalletBalance() {
   const [isSuccessfulDepositOpen, setIsSuccessfulDepositOpen] = useState(
     Boolean(success)
   );
-  const [openSuccessModal, setOpenSuccessModal] = useState(false);
+  // const [openSuccessModal, setOpenSuccessModal] = useState(false);
   // const [isMobile, setIsMobile] = useState(false);
   const {
     payoutBanks,
@@ -193,7 +192,7 @@ export default function WalletBalance() {
         heightClass="h-[75%] md:h-[55%] lg:h-[80%]"
       >
         <MobileWithdrawalPinForm
-          onSubmit={(pin: string) => {
+          onSubmit={() => {
             store.dispatch(setWithdrawalPinModal(false));
             toast.success("Withdrawal pin set successfully!");
           }}

@@ -8,8 +8,7 @@ import { CheckIcon } from "@radix-ui/react-icons";
 import UserAPI from "@/app/api/userApi";
 import CustomButton from "@/app/utils/CustomBtn";
 import { useAppSelector, useAuth } from "@/app/hooks/useAuth";
-import { decryptData, encryptData } from "@/app/utils/crypto";
-import { User } from "@/app/api/interface";
+import { encryptData } from "@/app/utils/crypto";
 import { AxiosError } from "axios";
 import QmDrawer from "../drawer/drawer";
 // give me 12 images
@@ -17,10 +16,6 @@ import QmDrawer from "../drawer/drawer";
 interface IAvatar {
   avatarUrl: string;
   id: string;
-}
-
-interface RootObject {
-  avatar: IAvatar;
 }
 
 const ImagePickerModal = ({
@@ -38,8 +33,8 @@ const ImagePickerModal = ({
   //     position: toastPosition,
   //   });
   // };
-  const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
-  const user: User | null = encrypted ? decryptData(encrypted) : null;
+  // const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
+  const user = useAppSelector((state) => state.auth);
   const [isUpdating, setIsUpdating] = useState(false);
   const { loginUser } = useAuth();
 

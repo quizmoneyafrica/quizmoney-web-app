@@ -1,17 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { genders } from "@/app/(screens)/(preAuthScreen)/signup/formSteps/step2";
-import { User } from "@/app/api/interface";
 import userApi, { getAuthUser } from "@/app/api/userApi";
 import ImagePickerModal from "@/app/components/modal/ImagePickerModal";
-import { useAppSelector, useAuth } from "@/app/hooks/useAuth";
-import { ArrowDownIcon, MailIcon, PersonIcon } from "@/app/icons/icons";
-import { decryptData, encryptData } from "@/app/utils/crypto";
+import { useAuth } from "@/app/hooks/useAuth";
+import { MailIcon, PersonIcon } from "@/app/icons/icons";
 import CustomButton from "@/app/utils/CustomBtn";
-import CustomSelect from "@/app/utils/CustomSelect";
 import CustomTextField from "@/app/utils/CustomTextField";
 import { formatDateTime } from "@/app/utils/utils";
-import { CalendarIcon, GlobeIcon, Pencil1Icon } from "@radix-ui/react-icons";
+import { CalendarIcon, Pencil1Icon } from "@radix-ui/react-icons";
 import {
   FaFacebook,
   FaInstagram,
@@ -55,8 +51,6 @@ const Page = () => {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const { loginUser } = useAuth();
-
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -90,6 +84,7 @@ const Page = () => {
         });
 
         const userData = res.updatedUser;
+        console.log(userData);
 
         setIsEditing(false);
       })
