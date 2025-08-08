@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import * as React from "react";
@@ -63,7 +64,7 @@ export default function CustomButton({
         className
       )}
     >
-      {loader && <>{loaderComponent ? loaderComponent : <Spinner />}</>}
+      {loader && (loaderComponent ? <LoaderComponent /> : <Spinner />)}
       {children}
     </button>
   );

@@ -2,10 +2,13 @@
 "use client";
 import GameApi from "@/app/api/game";
 import { useAppDispatch } from "@/app/hooks/useAuth";
+import { useStompClient } from "@/app/hooks/useStompClient";
 import { playAudio, setLobbyTime, setPhase } from "@/app/store/gameSlice";
+import { addSubscription } from "@/app/store/stompSlice";
 import { RootState } from "@/app/store/store";
 import { toastPosition } from "@/app/utils/utils";
 import { Spinner } from "@radix-ui/themes";
+import { IMessage } from "@stomp/stompjs";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
@@ -17,6 +20,11 @@ function JoinGameBtn() {
   const gameData = useSelector((state: RootState) => state.game.nextGameData);
   const [loading, setLoading] = useState(false);
 
+  const onMessage = (msg: IMessage) => {
+    console.log("🎲  Game Update:", msg.body);
+    // dispatch(setWalletBalance(Number(msg.body)));
+  };
+  useStompClient({ onMessage });
   const handleJoinBtn = async () => {
     setLoading(true);
     try {
@@ -28,6 +36,8 @@ function JoinGameBtn() {
       console.log(game);
 
       // dispatch(setLiveGameData(decryptGameData(game)));
+      dispatch(addSubscription(`/topic/questions`));
+
       dispatch(setLobbyTime(gameData?.startTime || ""));
       dispatch(setPhase("lobby"));
       dispatch(playAudio());

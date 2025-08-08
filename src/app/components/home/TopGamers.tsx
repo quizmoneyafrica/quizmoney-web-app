@@ -1,4 +1,3 @@
-import UserAPI from "@/app/api/userApi";
 import { formatNaira, formatRank, toastPosition } from "@/app/utils/utils";
 import { Avatar, Flex, Grid, Skeleton, Text } from "@radix-ui/themes";
 import React, { useEffect, useState } from "react";
@@ -8,11 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FacebookIcon, InstagramIcon, XIcon } from "@/app/icons/icons";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
-import {
-  initialTopGamers,
-  setTopGamers,
-  TopGamersState,
-} from "@/app/store/gameSlice";
+import { initialTopGamers, TopGamersState } from "@/app/store/gameSlice";
 import { cleanValue } from "../updateAccount/socialLinksDrawer";
 import { removeAtSymbol } from "@/app/(screens)/(protected)/(tabs)/leaderboard/PlayerCard";
 
@@ -29,11 +24,11 @@ function TopGamers() {
       if (topGamers !== null) return null;
       setLoading(true);
       try {
-        const res = await UserAPI.topGamersOfToday();
+        // const res = await UserAPI.topGamersOfToday();
         // console.log(res.data.result.weekendLeaderboard);
-        console.log(res);
+        // console.log(res);
         // setTopGamers(res.data.result.monthlyLeaderboard);
-        dispatch(setTopGamers(res.weekendLeaderboard));
+        // dispatch(setTopGamers(res.weekendLeaderboard));
         setLoading(false);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {

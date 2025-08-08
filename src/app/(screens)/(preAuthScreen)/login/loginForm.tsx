@@ -180,7 +180,12 @@ const LoginForm = ({ loading, setLoading }: Props) => {
               Login
             </CustomButton>
           ) : (
-            <CustomButton type="button" width="full" loader disabled />
+            <CustomButton
+              type="button"
+              width="full"
+              loader
+              disabled
+            ></CustomButton>
           )}
         </div>
         <div className="py-4 space-y-6">
