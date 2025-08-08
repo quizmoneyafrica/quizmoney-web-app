@@ -40,7 +40,7 @@ export default function GameZoneHeader({
       </motion.button>
 
       {/* Right - Balance Button */}
-      <motion.button
+{/*       <motion.button
         onClick={onTopUp}
         className="bg-white text-[#17478B] rounded-full px-4 py-2 flex items-center gap-2 text-sm font-semibold"
         aria-label="Top up balance"
@@ -50,7 +50,7 @@ export default function GameZoneHeader({
       >
         ₦{balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
         <PlusCircle className="w-4 h-4" />
-      </motion.button>
+      </motion.button> */}
     </motion.div>
   );
 }
