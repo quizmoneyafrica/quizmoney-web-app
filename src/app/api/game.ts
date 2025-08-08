@@ -15,8 +15,12 @@ const GameApi = {
       dispatch
     );
   },
-  removeUserFromGame(gameId: string): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("removeUserFromGame", { gameId });
+  removeUserFromGame(gameId: string, dispatch: any): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      "games/leave",
+      { gameId },
+      dispatch
+    );
   },
 
   updateErasers(erasersUsed: number): Promise<ApiResponse> {

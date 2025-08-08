@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { useAppDispatch, useAppSelector, useAuth } from "@/app/hooks/useAuth";
-import { decryptData } from "@/app/utils/crypto";
+import { useAppDispatch, useAuth } from "@/app/hooks/useAuth";
 import CustomButton from "@/app/utils/CustomBtn";
 import {
   Check,

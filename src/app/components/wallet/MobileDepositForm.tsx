@@ -6,11 +6,8 @@ import WalletApi from "@/app/api/wallet";
 import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
 import CustomButton from "@/app/utils/CustomBtn";
-import VirtualDetails, { VirtualDetailsProps } from "./VirtualDetails";
+import VirtualDetails from "./VirtualDetails";
 import { useAppDispatch } from "@/app/hooks/useAuth";
-import { usePaystackPayment } from "react-paystack";
-import { Loader } from "lucide-react";
-import { getAuthUser } from "@/app/api/userApi";
 
 const depositFormSchema = z.object({
   amount: z
@@ -28,7 +25,6 @@ const depositFormSchema = z.object({
 type DepositFormData = z.infer<typeof depositFormSchema>;
 
 export const MobileDepositForm = ({ close }: { close?: () => void }) => {
-  const { email: userEmail }: any = getAuthUser();
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
     "bankTransfer" | "card" | ""
@@ -68,34 +64,18 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
     setSelectedAmount(null);
   };
 
-  const initializePaystackPayment = (
-    accessCode: string,
-    reference: string,
-    amount: number
-  ) => {
-    const initializePayment = usePaystackPayment({
-      publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
-      email: userEmail,
-      amount: amount * 100,
-      reference: reference,
-    });
-    initializePayment({
-      onSuccess: function (transaction: any) {
-        toast.success("Payment successful!", {
-          position: toastPosition,
-        });
-        reset();
-        setSelectedAmount(null);
-        close?.();
-      },
-      onClose: function (error: any) {
-        toast.error("Payment failed. Please try again.", {
-          position: toastPosition,
-        });
-        console.error("Payment error:", JSON.stringify(error, null, 2));
-      },
-    });
-  };
+  // const calculatePaystackFee = (amount: number): number => {
+  //   let fee = amount * 0.015;
+  //   if (amount >= 2500) {
+  //     fee += 100;
+  //   }
+
+  //   if (fee > 2000) {
+  //     fee = 2000;
+  //   }
+
+  //   return fee;
+  // };
 
   const onFormSubmit = async (data: DepositFormData) => {
     if (!selectedAmount && !data.amount) {
@@ -109,6 +89,7 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
 
     const baseAmount =
       selectedAmount || Number(data.amount.replace(/[₦,]/g, ""));
+    // const paystackFee = calculatePaystackFee(baseAmount);
     const totalAmount = baseAmount;
 
     if (selectedPaymentMethod === "bankTransfer") {
@@ -117,30 +98,23 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
     } else {
       try {
         setLoading(true);
-
-        const response = await WalletApi.initializePaystack({
-          amount: totalAmount,
-        });
-        console.log("=======userEmail=============================");
-        console.log(userEmail);
-        console.log("====================================");
-        console.log(JSON.stringify(response, null, 2), "====PAYSTACK=======");
-
-        if (
-          response.success &&
-          response.data?.accessCode &&
-          response.data?.reference
-        ) {
-          initializePaystackPayment(
-            response.data.accessCode,
-            response.data.reference,
-            totalAmount
-          );
-        } else {
-          toast.error("Failed to initialize payment. Please try again.", {
-            position: toastPosition,
-          });
+        // const response = await WalletApi.getCheckoutLink({
+        //   amount: `${numericAmount}`,
+        // });
+        const response = await WalletApi.getPaystackCheckoutLink(
+          {
+            amount: `${totalAmount}`,
+          },
+          dispatch
+        );
+        console.log(response.data);
+        if (response.status === true || response.data?.authorization_url) {
+          reset();
+          setSelectedAmount(null);
+          window.location.href = response.data.authorization_url;
+          close?.();
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         toast.error(`${err.message}`, {
           position: toastPosition,
@@ -219,7 +193,7 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
                   Pay with Bank Transfer
                 </label>
 
-                <label className="flex items-center gap-2 text-sm bg-white border border-neutral-300 checked:border-primary-900 p-4 rounded-[10px]">
+                {/* <label className="flex items-center gap-2 text-sm bg-white border border-neutral-300 checked:border-primary-900 p-4 rounded-[10px]">
                   <input
                     type="radio"
                     name="paymentMethod"
@@ -229,20 +203,21 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
                     className="accent-[#17478B] size-5"
                   />
                   Pay with PayStack{" "}
-                </label>
+                </label> */}
               </div>
             </div>
 
             <CustomButton
-              loaderComponent={
-                <Loader className=" mr-2 text-white animate-spin size-5" />
-              }
               width="full"
               disabled={loading}
               loader={loading}
               type="submit"
             >
-              Proceed
+              {loading ? (
+                <div className=" animate-spin border-b-2 border-b-white rounded-full size-4 mx-auto" />
+              ) : (
+                "Proceed"
+              )}
             </CustomButton>
           </form>
         </div>

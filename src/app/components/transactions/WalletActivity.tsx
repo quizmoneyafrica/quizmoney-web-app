@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   setTransactions,
   setTransactionsLoading,
-  Transaction as WalletTransaction,
   useWallet,
   Transaction,
 } from "@/app/store/walletSlice";
@@ -22,7 +21,7 @@ import CustomImage from "../wallet/CustomImage";
 import { ActivityRow } from "./ActivityRow";
 import { Skeleton } from "@radix-ui/themes";
 
-const PAGE_SIZE = 15;
+// const PAGE_SIZE = 15;
 
 export default function WalletActivity(): React.ReactElement {
   const [page, setPage] = useState(1);

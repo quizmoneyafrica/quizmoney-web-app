@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import CustomButton from "@/app/utils/CustomBtn";
 import { z } from "zod";
@@ -37,13 +38,13 @@ type WithdrawFormData = z.infer<typeof withdrawFormSchema>;
 
 export const MobileWithdrawalForm = ({
   onAddBank,
-  banks, // Allow override from props or use from wallet
-}: {
+} // banks, // Allow override from props or use from wallet
+: {
   close?: () => void;
   banks?: BankAccount[];
   onAddBank: () => void;
 }) => {
-  const { wallet, payoutBanks } = useSelector(useWallet);
+  const { payoutBanks } = useSelector(useWallet);
   // payoutBanks is now a single object
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
 
