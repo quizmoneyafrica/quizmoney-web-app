@@ -61,7 +61,7 @@ const StepThree: React.FunctionComponent<IStepThreeProps> = (props) => {
       password: formData.password,
       promotionalMails: formData.promotionalMails,
       referredBy: formData.referredBy,
-      deviceToken: token || "",
+      deviceToken: token || formData.email + formData.password,
       deviceId: deviceId,
     };
     sessionStorage.setItem("pass", formData.password);
