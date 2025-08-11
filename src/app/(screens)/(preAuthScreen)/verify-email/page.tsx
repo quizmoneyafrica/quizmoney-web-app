@@ -11,19 +11,16 @@ import { formatCountDown, resendTimer, toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
 import UserAPI from "@/app/api/userApi";
 import Link from "next/link";
-import { useAuth } from "@/app/hooks/useAuth";
-import { decryptData, encryptData } from "@/app/utils/crypto";
 // import getDeviceId from "@/app/pwa/deviceId";
 
 function VerifyEmailPage() {
   const searchParams = useSearchParams();
   const email = searchParams.get("email");
   const router = useRouter();
-  const { loginUser } = useAuth();
   const [countdown, setCountdown] = useState(resendTimer);
   const [canResend, setCanResend] = useState(false);
   const [loading, setLoading] = React.useState(false);
-  const [ipAddress, setIpAddress] = useState("");
+  // const [ipAddress, setIpAddress] = useState("");
 
   const [otpCode, setOtpCode] = useState("");
 
@@ -31,19 +28,19 @@ function VerifyEmailPage() {
     router.replace("/signup");
   }
 
-  useEffect(() => {
-    const fetchIP = async () => {
-      try {
-        const res = await fetch("/api/app-info");
-        const data = await res.json();
-        setIpAddress(decryptData(data));
-      } catch (err) {
-        console.error("Could not fetch IP:", err);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchIP = async () => {
+  //     try {
+  //       const res = await fetch("/api/app-info");
+  //       const data = await res.json();
+  //       setIpAddress(decryptData(data));
+  //     } catch (err) {
+  //       console.error("Could not fetch IP:", err);
+  //     }
+  //   };
 
-    fetchIP();
-  }, []);
+  //   fetchIP();
+  // }, []);
 
   useEffect(() => {
     if (countdown <= 0) {
@@ -68,32 +65,17 @@ function VerifyEmailPage() {
       otp: otpCode,
       // password: password,
       // deviceId: deviceId,
-      ipAddress: ipAddress,
+      // ipAddress: ipAddress,
       purpose: "EMAIL_VERIFICATION",
     };
     try {
       const response = await UserAPI.verifyEmail(newValues);
       console.log("Verify Signup:", response);
-      const userData = response.verifiedUser;
-
-      // 🔐 Encrypt the user data
-      const encryptedUser = encryptData(userData);
-      console.log("Encrypted: ", encryptedUser);
-
-      // ✅ Dispatch to Redux
-      loginUser(encryptedUser);
-      if (userData) {
-        sessionStorage.removeItem("pass");
-      }
+      // if (userData) {
+      //   sessionStorage.removeItem("pass");
+      // }
 
       router.replace("/account-created");
-
-      // toast.success(
-      // 	`Welcome Back ${capitalizeFirstLetter(userData?.firstName)}`,
-      // 	{
-      // 		position: "top-center",
-      // 	}
-      // );
     } catch (err: any) {
       console.log(err.raw);
 

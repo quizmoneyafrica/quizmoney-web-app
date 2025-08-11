@@ -72,7 +72,7 @@ const LoginForm = ({ loading, setLoading }: Props) => {
     const newValues = {
       username: email.toLowerCase().trim(),
       password: password,
-      deviceToken: token || "uundefined",
+      deviceToken: token || "undefined",
       deviceId: deviceId,
       ipAddress: ipAddress,
     };
@@ -83,22 +83,21 @@ const LoginForm = ({ loading, setLoading }: Props) => {
       console.log("Customer Profile", data);
       if (res.success) {
         loginUser(res.data);
-        if (res.data.accessToken) {
-          console.log("Customer Profile", res.data.accessToken);
+        if (data.data) {
           updateCustomer(data.data);
+          router.replace("/home");
+          toast.success(
+            `Welcome Back ${capitalizeFirstLetter(res.data.user.firstName)}`,
+            {
+              position: "top-center",
+            }
+          );
         }
-
-        router.replace("/home");
-        toast.success(
-          `Welcome Back ${capitalizeFirstLetter(res.data.user.firstName)}`,
-          {
-            position: "top-center",
-          }
-        );
       }
     } catch (err: any) {
       console.log("INVALID", err.raw);
       if (err.message === "Account deactivated") {
+        localStorage.setItem("login", JSON.stringify(newValues));
         verifyEmail(email.toLowerCase().trim());
       } else {
         toast.error(`${err.message}`, {
