@@ -1,4 +1,4 @@
-import { getAuthUser } from "@/app/api/userApi";
+import { useAppSelector } from "@/app/hooks/useAuth";
 import { formatNaira, formatQuizDate, toastPosition } from "@/app/utils/utils";
 import React from "react";
 import { toast } from "sonner";
@@ -9,7 +9,7 @@ type Props = {
 };
 
 export const ShareBtn = ({ gamePrize, startDate }: Props) => {
-  const user = getAuthUser();
+  const user = useAppSelector((s) => s.auth.user);
   const fallbackCopy = () => {
     navigator.clipboard.writeText("https://app.quizmoney.ng");
     toast.info("Link copied to clipboard!", { position: toastPosition });
@@ -22,7 +22,7 @@ export const ShareBtn = ({ gamePrize, startDate }: Props) => {
           text: `The next trivia game is about to start!
 				Time: ${formatQuizDate(startDate)}
 				Prize Pool: ${formatNaira(gamePrize)}
-				Hurry so you don’t miss out! Use my code: ${user.referralCode}`,
+				Hurry so you don’t miss out! Use my code: ${user?.referralCode}`,
           url: "https://app.quizmoney.ng",
         });
       } else {

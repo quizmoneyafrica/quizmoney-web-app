@@ -68,7 +68,7 @@ const WalletApi = {
     );
   },
 
-  addBankAccount(data: any, dispatch: any): Promise<ApiResponse> {
+  addBankAccount(data: any, dispatch?: any): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
       `payout-accounts`,
       { ...data },
@@ -103,9 +103,9 @@ const WalletApi = {
     data: {
       amount: string;
       pin: string;
-      purpose: string;
+      purpose?: string;
     },
-    dispatch: any
+    dispatch?: any
   ): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("withdraw", { ...data }, dispatch);
   },

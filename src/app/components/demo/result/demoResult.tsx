@@ -113,7 +113,7 @@ function DemoResult({
 
               <p>
                 Join the next game and compete for your share of{" "}
-                {formatNaira(Number(nextGameData?.gamePrize), true)}. Just 10
+                {formatNaira(Number(nextGameData?.prize), true)}. Just 10
                 questions, 10 seconds each.
               </p>
             </div>

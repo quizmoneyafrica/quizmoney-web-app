@@ -231,7 +231,7 @@ function GameScreen() {
     if (isCorrect) {
       correctSoundRef.current?.play();
       newAnswers[currentIndex] = option;
-    } else if (!usedEraser && user?.erasers > 0) {
+    } else if (!usedEraser && user?.gameEraserCount || 0 > 0) {
       toSaveAnswer = currentQuestion.correctAnswer;
       correctSoundRef.current?.play();
       newAnswers[currentIndex] = currentQuestion.correctAnswer;
@@ -241,7 +241,7 @@ function GameScreen() {
       });
 
       await GameApi.updateErasers(1);
-      dispatch(updateUser({ erasers: user.erasers - 1 }));
+      dispatch(updateUser({ gameEraserCount: user?.gameEraserCount || 0 - 1 }));
       setUsedEraser(true);
     } else {
       wrongSoundRef.current?.play();
@@ -308,7 +308,7 @@ function GameScreen() {
                   className="rounded-full border py-1 px-4 border-neutral-50 text-neutral-50"
                 >
                   <EraserIcon width={20} height={20} />
-                  <span>{user?.erasers}</span>
+                  <span>{user?.gameEraserCount}</span>
                 </Flex>
               </div>
             </div>

@@ -10,16 +10,16 @@ import Link from "next/link";
 import { MessageSquareShare } from "lucide-react";
 import QmDrawer from "@/app/components/drawer/drawer";
 import CustomButton from "@/app/utils/CustomBtn";
-import UserAPI, { getAuthUser } from "@/app/api/userApi";
+import UserAPI from "@/app/api/userApi";
 import { SuccessIcon } from "@/app/utils/successIcon";
 import useTawkHidden from "@/app/components/tawk/useTawkHidden";
 import { toast } from "sonner";
-import { useAppDispatch } from "@/app/hooks/useAuth";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 const Support = () => {
   useTawkHidden();
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const user = getAuthUser();
+  const user = useAppSelector((s) => s.auth.user);
   const [openDrawer, setOpenDrawer] = useState(false);
   const [submittingForm, setSubmittingForm] = useState(false);
   const [experienceRating, setExperienceRating] = useState("");
@@ -294,7 +294,7 @@ const Support = () => {
                     <p>
                       Thank you{" "}
                       <span className="capitalize font-medium text-primary-900">
-                        {user.firstName}
+                        {user?.firstName}
                       </span>{" "}
                       for your feedback.
                     </p>

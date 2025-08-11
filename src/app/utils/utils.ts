@@ -1,5 +1,5 @@
 import { format, isToday, isTomorrow, isPast, parseISO } from "date-fns";
-import { Transaction, UserWalletTransaction } from "../store/walletSlice";
+import { Transaction } from "../store/walletSlice";
 
 export function isIosPwaInstalled(): boolean {
   if (typeof window === "undefined") return false;
@@ -53,16 +53,16 @@ export interface FlatTransaction extends Transaction {
   section: string;
 }
 
-export function flattenTransactionsByDate(
-  transactionsByDate: UserWalletTransaction[]
-): FlatTransaction[] {
-  return transactionsByDate.flatMap((section) =>
-    section.transactions.map((tx) => ({
-      ...tx,
-      section: section.date,
-    }))
-  );
-}
+// export function flattenTransactionsByDate(
+//   transactionsByDate: UserWalletTransaction[]
+// ): FlatTransaction[] {
+//   return transactionsByDate.flatMap((section) =>
+//     section.transactions.map((tx) => ({
+//       ...tx,
+//       section: section.date,
+//     }))
+//   );
+// }
 
 //Format Amounts
 export function formatNaira(

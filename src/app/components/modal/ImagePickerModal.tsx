@@ -1,17 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
-// import Modal from "./Modal";
 import { toast } from "sonner";
-// import { toastPosition } from "@/app/utils/utils";
 import Image from "next/image";
 import { CheckIcon } from "@radix-ui/react-icons";
 import UserAPI from "@/app/api/userApi";
 import CustomButton from "@/app/utils/CustomBtn";
-import { useAppSelector, useAuth } from "@/app/hooks/useAuth";
-import { encryptData } from "@/app/utils/crypto";
-import { AxiosError } from "axios";
+import { useAppSelector } from "@/app/hooks/useAuth";
 import QmDrawer from "../drawer/drawer";
-// give me 12 images
 
 interface IAvatar {
   avatarUrl: string;
@@ -36,7 +31,6 @@ const ImagePickerModal = ({
   // const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
   const user = useAppSelector((state) => state.auth);
   const [isUpdating, setIsUpdating] = useState(false);
-  const { loginUser } = useAuth();
 
   const handleSelectAvatar = (image: IAvatar) => {
     setSelectedImage(image);
@@ -64,46 +58,47 @@ const ImagePickerModal = ({
 
   const updateUser = async () => {
     setIsUpdating(true);
+    console.log(user);
 
-    await UserAPI.updateUser({
-      firstName: user?.firstName,
-      lastName: user?.lastName,
-      dob: user?.dob?.iso,
-      gender: user?.gender,
-      country: user?.country,
-      facebook: user?.facebook,
-      instagram: user?.instagram,
-      twitter: user?.twitter,
-      whatsapp: user?.whatsapp,
-      avatar: selectedImage?.url ? selectedImage?.url : user?.avatar,
-      promotionalMails: user?.promotionalMails ?? false,
-    })
-      .then((res) => {
-        toast.success("Profile updated successfully", {
-          position: "top-center",
-        });
-        console.log(res);
+    // await UserAPI.updateUser({
+    //   firstName: user?.firstName,
+    //   lastName: user?.lastName,
+    //   dob: user?.dob?.iso,
+    //   gender: user?.gender,
+    //   country: user?.country,
+    //   facebook: user?.facebook,
+    //   instagram: user?.instagram,
+    //   twitter: user?.twitter,
+    //   whatsapp: user?.whatsapp,
+    //   avatar: selectedImage?.url ? selectedImage?.url : user?.avatar,
+    //   promotionalMails: user?.promotionalMails ?? false,
+    // })
+    //   .then((res) => {
+    //     toast.success("Profile updated successfully", {
+    //       position: "top-center",
+    //     });
+    //     console.log(res);
 
-        const userData = res.updatedUser;
-        const encryptedUser = encryptData(userData);
-        console.log("Encrypted: ", encryptedUser);
+    //     const userData = res.updatedUser;
+    //     const encryptedUser = encryptData(userData);
+    //     console.log("Encrypted: ", encryptedUser);
 
-        // ✅ Dispatch to Redux
-        loginUser(encryptedUser);
-        setOpen(false);
-      })
-      .catch((err: AxiosError) => {
-        toast.error(
-          (err.response?.data as unknown as { error: string }).error ||
-            "Failed to update profile. Please try again later.",
-          {
-            position: "top-center",
-          }
-        );
-      })
-      .finally(() => {
-        setIsUpdating(false);
-      });
+    //     // ✅ Dispatch to Redux
+    //     loginUser(encryptedUser);
+    //     setOpen(false);
+    //   })
+    //   .catch((err: AxiosError) => {
+    //     toast.error(
+    //       (err.response?.data as unknown as { error: string }).error ||
+    //         "Failed to update profile. Please try again later.",
+    //       {
+    //         position: "top-center",
+    //       }
+    //     );
+    //   })
+    //   .finally(() => {
+    //     setIsUpdating(false);
+    //   });
   };
 
   return (

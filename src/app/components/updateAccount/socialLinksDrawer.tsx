@@ -17,7 +17,9 @@ import {
   XIcon,
 } from "@/app/icons/icons";
 
-export const cleanValue = (val?: string) =>
+// export const cleanValue = (val?: string): string =>
+//   typeof val === "string" && val.toLowerCase() !== "undefined" ? val : "";
+export const cleanValue = (val: unknown): string =>
   typeof val === "string" && val.toLowerCase() !== "undefined" ? val : "";
 
 const socialPlatforms = {
@@ -98,8 +100,7 @@ function SocialLinksDrawer() {
     Object.entries(socialPlatforms).forEach(([platformKey]) => {
       const reduxKey = (platformKey.charAt(0).toLowerCase() +
         platformKey.slice(1)) as keyof UserObject;
-      const username = cleanValue(user && user[reduxKey]);
-
+      const username = cleanValue(user && user?.[reduxKey]);
       if (username) {
         initialLinks.push({ platform: platformKey as Platform, username });
       }

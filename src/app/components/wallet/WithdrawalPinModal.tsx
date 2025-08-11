@@ -135,7 +135,7 @@ export default function OtpVerificationModal({
         {
           amount: withdrawalData?.amount.toString(),
           pin,
-          bankAccount: withdrawalData?.bankAccount,
+          // bankAccount: withdrawalData?.bankAccount,
         },
         store.dispatch
       );
