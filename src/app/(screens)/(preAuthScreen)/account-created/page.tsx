@@ -23,7 +23,7 @@ function Page() {
       console.log("Customer Profile", data);
       if (res.success) {
         loginUser(res.data);
-        if (data.data) {
+        if (res.data.accessToken) {
           updateCustomer(data.data);
           router.replace("/home");
           localStorage.removeItem("login");
