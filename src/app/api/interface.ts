@@ -21,7 +21,7 @@ export interface SignUpForm {
 export interface VerifyEmailForm {
   email?: string;
   otp: string;
-  purpose: string;
+  purpose?: string;
 }
 
 //ResendSignupOTP interface
