@@ -20,11 +20,6 @@ function JoinGameBtn() {
   const gameData = useSelector((state: RootState) => state.game.nextGameData);
   const [loading, setLoading] = useState(false);
 
-  const onMessage = (msg: IMessage) => {
-    console.log("🎲  Game Update:", msg.body);
-    // dispatch(setWalletBalance(Number(msg.body)));
-  };
-  useStompClient({ onMessage });
   const handleJoinBtn = async () => {
     setLoading(true);
     try {
