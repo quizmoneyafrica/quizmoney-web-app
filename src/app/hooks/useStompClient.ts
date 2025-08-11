@@ -12,6 +12,8 @@ export const useStompClient = ({
   const clientRef = useRef<Client | null>(null);
   const subsRef = useRef<Map<string, StompSubscription>>(new Map());
   const subscriptionsRef = useRef<string[]>(subscriptions);
+  const retryCountRef = useRef<number>(0);
+  const MAX_RETRIES = 10;
 
   useEffect(() => {
     subscriptionsRef.current = subscriptions;
@@ -31,6 +33,7 @@ export const useStompClient = ({
       },
       onConnect: () => {
         console.log("✅ STOMP Connected");
+        retryCountRef.current = 0;
         subscriptions.forEach((dest) => {
           if (!subsRef.current.has(dest)) {
             const sub = client.subscribe(dest, onMessage);
@@ -42,6 +45,15 @@ export const useStompClient = ({
       onWebSocketClose: () => {
         console.log("🔌 WEBSOCKET STOMP Disconnected");
         subsRef.current.clear();
+
+        retryCountRef.current += 1;
+        console.warn(`Reconnect attempt #${retryCountRef.current}`);
+
+        if (retryCountRef.current > MAX_RETRIES) {
+          console.error("❌ Max reconnect attempts reached. Stopping client.");
+          client.deactivate();
+          client.reconnectDelay = 0;
+        }
       },
       onStompError: (frame) => {
         console.error("❌ STOMP Error:", frame.headers["message"]);
