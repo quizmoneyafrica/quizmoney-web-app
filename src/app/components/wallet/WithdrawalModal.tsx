@@ -23,7 +23,6 @@ import {
 } from "@/app/store/walletSlice";
 import { store } from "@/app/store/store";
 import CustomButton from "@/app/utils/CustomBtn";
-import { getAuthUser } from "@/app/api/userApi";
 
 export type BankAccount = {
   id: number;
@@ -161,8 +160,6 @@ export default function WithdrawalModal({
       },
     },
   };
-
-  const user = getAuthUser();
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
