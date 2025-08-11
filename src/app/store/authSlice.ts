@@ -32,6 +32,7 @@ interface AuthState {
   expiredAt: number;
   refreshToken: string;
   user: UserObject | null;
+  userEncryptedData: string | null;
 }
 
 const initialState: AuthState = {
@@ -41,6 +42,7 @@ const initialState: AuthState = {
   expiredAt: 0,
   refreshToken: "",
   user: null,
+  userEncryptedData: null,
 };
 
 export interface LoginPayload {
