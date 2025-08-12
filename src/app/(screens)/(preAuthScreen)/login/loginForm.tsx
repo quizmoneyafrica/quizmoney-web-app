@@ -72,7 +72,7 @@ const LoginForm = ({ loading, setLoading }: Props) => {
     const newValues = {
       username: email.toLowerCase().trim(),
       password: password,
-      deviceToken: token || email.toLowerCase().trim()+password,
+      deviceToken: token || email.toLowerCase().trim() + password,
       deviceId: deviceId,
       ipAddress: ipAddress,
     };
@@ -103,6 +103,11 @@ const LoginForm = ({ loading, setLoading }: Props) => {
         toast.error(`${err.message}`, {
           position: toastPosition,
         });
+        if (err.data.errorList) {
+          toast.error(`${err.data.errorList[0]}`, {
+            position: toastPosition,
+          });
+        }
       }
       setLoading(false);
     }
