@@ -35,7 +35,7 @@ const widthClasses = {
   medium: "w-[50%]",
   inline: "",
 };
-
+// vgvcgvcvnavebvc
 export default function CustomButton({
   children,
   type = "button",
@@ -51,6 +51,7 @@ export default function CustomButton({
   const LoaderComponent = loaderComponent;
   return (
     <button
+      key={Math.random().toString(36).substring(2, 15)}
       type={type}
       onClick={onClick}
       disabled={disabled}
