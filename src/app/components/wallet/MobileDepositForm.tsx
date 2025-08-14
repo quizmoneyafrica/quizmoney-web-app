@@ -7,8 +7,6 @@ import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
 import CustomButton from "@/app/utils/CustomBtn";
 import VirtualDetails from "./VirtualDetails";
-import { useAppDispatch } from "@/app/hooks/useAuth";
-import { usePaystackPayment } from "react-paystack";
 import { getAuthUser } from "@/app/api/userApi";
 
 const depositFormSchema = z.object({
@@ -66,6 +64,11 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
     setSelectedAmount(null);
   };
 
+  const loadPaystack = async () => {
+    const paystackModule = await import("react-paystack");
+    return paystackModule;
+  };
+
   const onFormSubmit = async (data: DepositFormData) => {
     if (!selectedAmount && !data.amount) {
       toast.error("Please select an amount.");
@@ -93,6 +96,8 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
 
         if (response.success || response.data?.reference) {
           const { reference } = response.data;
+
+          const { usePaystackPayment } = await loadPaystack();
           const initializePayment = usePaystackPayment({
             reference: reference,
             email: user?.email!,
