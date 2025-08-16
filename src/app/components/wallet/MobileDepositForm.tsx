@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { use, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import WalletApi from "@/app/api/wallet";
 import { toast } from "sonner";
-import { toastPosition } from "@/app/utils/utils"; 
+import { toastPosition } from "@/app/utils/utils";
 import CustomButton from "@/app/utils/CustomBtn";
 import VirtualDetails from "./VirtualDetails";
-import { useAppDispatch } from "@/app/hooks/useAuth";
+import { getAuthUser } from "@/app/api/userApi";
 
 const depositFormSchema = z.object({
   amount: z
@@ -29,9 +29,9 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
     "bankTransfer" | "card" | ""
   >("card");
+  const user = getAuthUser();
   const [showVirtual, setShowVirtual] = useState(false);
   const [virtualAmount, setVirtualAmount] = useState<number | null>(null);
-  const dispatch = useAppDispatch();
 
   const amountOptions = [
     { label: "₦1,000", value: 1000 },
@@ -64,18 +64,10 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
     setSelectedAmount(null);
   };
 
-  // const calculatePaystackFee = (amount: number): number => {
-  //   let fee = amount * 0.015;
-  //   if (amount >= 2500) {
-  //     fee += 100;
-  //   }
-
-  //   if (fee > 2000) {
-  //     fee = 2000;
-  //   }
-
-  //   return fee;
-  // };
+  const loadPaystack = async () => {
+    const paystackModule = await import("react-paystack");
+    return paystackModule;
+  };
 
   const onFormSubmit = async (data: DepositFormData) => {
     if (!selectedAmount && !data.amount) {
@@ -89,7 +81,6 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
 
     const baseAmount =
       selectedAmount || Number(data.amount.replace(/[₦,]/g, ""));
-    // const paystackFee = calculatePaystackFee(baseAmount);
     const totalAmount = baseAmount;
 
     if (selectedPaymentMethod === "bankTransfer") {
@@ -98,23 +89,34 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
     } else {
       try {
         setLoading(true);
-        // const response = await WalletApi.getCheckoutLink({
-        //   amount: `${numericAmount}`,
-        // });
-        const response = await WalletApi.getPaystackCheckoutLink(
-          {
-            amount: `${totalAmount}`,
-          },
-          dispatch
-        );
+        const response = await WalletApi.initializePaystack({
+          amount: totalAmount,
+        });
         console.log(response.data);
-        if (response.status === true || response.data?.authorization_url) {
-          reset();
-          setSelectedAmount(null);
-          window.location.href = response.data.authorization_url;
-          close?.();
+
+        if (response.success || response.data?.reference) {
+          const { reference } = response.data;
+
+          const { usePaystackPayment } = await loadPaystack();
+          const initializePayment = usePaystackPayment({
+            reference: reference,
+            email: user?.email!,
+            amount: totalAmount * 100,
+            publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "",
+          });
+          initializePayment({
+            onSuccess: (response: any) => {
+              toast.success("Payment successful!", { position: toastPosition });
+              reset();
+              setSelectedAmount(null);
+              close?.();
+            },
+            onClose: () => {
+              toast.info("Payment cancelled", { position: toastPosition });
+              setLoading(false);
+            },
+          });
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         toast.error(`${err.message}`, {
           position: toastPosition,
@@ -193,7 +195,7 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
                   Pay with Bank Transfer
                 </label>
 
-                {/* <label className="flex items-center gap-2 text-sm bg-white border border-neutral-300 checked:border-primary-900 p-4 rounded-[10px]">
+                <label className="flex items-center gap-2 text-sm bg-white border border-neutral-300 checked:border-primary-900 p-4 rounded-[10px]">
                   <input
                     type="radio"
                     name="paymentMethod"
@@ -203,7 +205,7 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
                     className="accent-[#17478B] size-5"
                   />
                   Pay with PayStack{" "}
-                </label> */}
+                </label>
               </div>
             </div>
 
