@@ -24,6 +24,7 @@ export interface UserObject {
   referralCode: string;
   referralEarnings: number;
   totalReferral: number;
+  phoneVerified: boolean;
 }
 interface AuthState {
   isAuthenticated: boolean;

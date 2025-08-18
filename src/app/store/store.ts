@@ -8,6 +8,7 @@ import notificationReducer from "./notificationSlice";
 import leaderboardReducer from "./leaderboardSlice";
 import storeReducer from "./storeSlice";
 import stompSub from "./stompSlice";
+import numberGuessGameSlice from "./numberGuessGameSlice";
 
 import { createFilter } from "redux-persist-transform-filter";
 
@@ -31,21 +32,22 @@ const authPersistConfig = {
   storage: localForage,
   transforms: [authTransform],
 };
+const walletPersistConfig = {
+  key: "wallet",
+  storage: localForage,
+  transforms: [authTransform],
+};
 
 const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
-
-// const persistConfig = {
-//   key: "root",
-//   storage: localForage,
-// };
-
-// const persistedWalletReducer = persistReducer(persistConfig, walletReducer);
+const persistedWalletReducer = persistReducer(
+  walletPersistConfig,
+  walletReducer
+);
 
 export const store = configureStore({
   reducer: {
     auth: persistedAuthReducer,
-    // wallet: persistedWalletReducer,
-    wallet: walletReducer,
+    wallet: persistedWalletReducer,
     game: gameReducer,
     demo: demoReducer,
     notifications: notificationReducer,
@@ -53,6 +55,7 @@ export const store = configureStore({
     store: storeReducer,
     coin: coinReducer,
     stompSub: stompSub,
+    numberGuess: numberGuessGameSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

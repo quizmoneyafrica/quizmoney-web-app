@@ -2,7 +2,7 @@
 import { Flex, Text } from "@radix-ui/themes";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { bottomNav, navs } from "./nav";
+import { bottomNav, navSidebar } from "./nav";
 import { AnimatePresence, motion } from "framer-motion";
 import LogoutDialog from "../components/logout/logout";
 import { useState } from "react";
@@ -38,7 +38,7 @@ function SidebarNav() {
           />
         </div>
         <Flex direction="column" px="2" className="relative">
-          {navs.map((nav, index) => {
+          {navSidebar.map((nav, index) => {
             // const isActive = splitName.includes(nav.name.toLowerCase());
             const isActive =
               pathname === nav.path || pathname.startsWith(nav.path + "/");

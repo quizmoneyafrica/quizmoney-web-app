@@ -4,7 +4,6 @@ import React, { useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import GameCard from "@/app/components/home/GameCard";
 import TopGamers from "@/app/components/home/TopGamers";
-import ReferBox from "@/app/components/home/ReferBox";
 import { Grid } from "@radix-ui/themes";
 import TransactionHistory from "@/app/components/wallet/TransactionHistory";
 import {
@@ -15,11 +14,19 @@ import {
 } from "@/app/store/walletSlice";
 import WalletApi from "@/app/api/wallet";
 import AdBanner from "@/app/components/advert/adBanner";
+import KycStart from "@/app/components/kyc/kyc-start";
+import KycContinue from "@/app/components/kyc/kyc-continue";
+import GameZoneCardTemp, {
+  GameZoneCardObject,
+} from "@/app/components/home/(game-zone)/temp/GameZoneCardTemp";
+import { GameZoneTitle } from "@/app/icons/icons";
+import { useRouter } from "next/navigation";
 
 function HomeTab() {
   const { user } = useAuth();
   const dispatch = useAppDispatch();
   const { wallet, transactions } = useAppSelector((state) => state.wallet);
+  const router = useRouter();
 
   const fetchWallet = useCallback(async () => {
     if (wallet === undefined)
@@ -57,20 +64,29 @@ function HomeTab() {
     fetchTransactions();
   }, [fetchTransactions, fetchWallet]);
 
+  const gameZoneData: GameZoneCardObject = {
+    title: <GameZoneTitle />,
+    description: "Play games daily & win cash instantly",
+    src: "/assets/images/game-zone.png",
+    onClick: () => router.push("/game-zone"),
+  };
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.25, ease: "easeInOut" }}
+      className="space-y-4"
     >
+      {!user?.phoneVerified ? <KycStart /> : <KycContinue />}
       <Grid columns={{ initial: "1", lg: "2" }} gap="4">
         <div>
           <Grid gap="4">
             <GameCard />
-            <TopGamers />
+            <GameZoneCardTemp data={gameZoneData} />
             <AdBanner />
-            <ReferBox refCode={user?.referralCode || ""} />
+            <TopGamers />
+            {/* <ReferBox refCode={user?.referralCode || ""} /> */}
           </Grid>
         </div>
         <div className="bg-white rounded-[20px] hidden lg:inline-block p-4">

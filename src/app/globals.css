@@ -241,21 +241,59 @@
     --color-info-900: #55068a;
   }
 }
-/* * {
-  user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-} */
+
+@layer utilities {
+  .text-outline-cyan {
+    text-shadow:
+      3px 3px 0 #17478b,
+      -1px 1px 0 #17478b,
+      2px -1px 0 #17478b,
+      -1px -1px 0 #17478b,
+      3px 0 0 #17478b,
+      -2px 0 0 #17478b,
+      0 3px 0 #17478b,
+      0 -2px 0 #17478b;
+  }
+  .text-outline-blue {
+    text-shadow:
+      3px 3px 0 #17478b,
+      -1px 1px 0 #17478b,
+      2px -1px 0 #17478b,
+      -1px -1px 0 #17478b,
+      3px 0 0 #17478b,
+      -2px 0 0 #17478b,
+      0 3px 0 #17478b,
+      0 -2px 0 #17478b;
+  }
+  .text-outline-green {
+    text-shadow:
+      3px 3px 0 #009028,
+      -1px 1px 0 #009028,
+      2px -1px 0 #009028,
+      -1px -1px 0 #009028,
+      3px 0 0 #009028,
+      -2px 0 0 #009028,
+      0 3px 0 #009028,
+      0 -2px 0 #009028;
+  }
+}
 
 body {
   background: #f7f7f7;
   color: var(--foreground);
-  font-family: var(--spacegrotesk);
+  font-family: var(--font-text);
   padding-top: env(safe-area-inset-top);
 
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+.heading {
+  font-family: var(--dmsans) !important;
+}
+.space-text {
+  font-family: var(--spacegrotesk) !important;
 }
 body.bg-auth {
   background-color: #ffffff;
@@ -283,6 +321,9 @@ body.hideTawkTo .widget-visible {
   -webkit-text-stroke-width: 2px;
   -webkit-text-stroke-color: var(--QM-Warning-Color-800, #f4a235);
   font-style: normal;
+}
+button {
+  cursor: pointer;
 }
 /*
 html,
@@ -312,7 +353,24 @@ body {
   height: 100%;
   object-fit: cover;
 }
-
+/* .game-z-title {
+  text-shadow:
+    3px 3px 0 #17478b,
+    -1px 1px 0 #17478b,
+    2px -1px 0 #17478b,
+    -1px -1px 0 #17478b,
+    3px 0 0 #17478b,
+    -2px 0 0 #17478b,
+    0 3px 0 #17478b,
+    0 -2px 0 #17478b;
+} */
+.game-z-desc {
+  font-family: var(--font-text) !important;
+}
+.winx {
+  -webkit-text-stroke-width: 1.8px;
+  -webkit-text-stroke-color: #17478b;
+}
 h1,
 h2,
 h3,
