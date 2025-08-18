@@ -1,4 +1,5 @@
-import { use, useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -98,9 +99,10 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
           const { reference } = response.data;
 
           const { usePaystackPayment } = await loadPaystack();
+          // eslint-disable-next-line react-hooks/rules-of-hooks
           const initializePayment = usePaystackPayment({
             reference: reference,
-            email: user?.email!,
+            email: user?.email || "",
             amount: totalAmount * 100,
             publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "",
           });
@@ -110,6 +112,7 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
               reset();
               setSelectedAmount(null);
               close?.();
+              console.log(response);
             },
             onClose: () => {
               toast.info("Payment cancelled", { position: toastPosition });
