@@ -48,7 +48,7 @@ function Page() {
         </div>
         {/* body  */}
         <div className="w-full">
-          {numberGuess.gameStatus === "START" && <StartPage />}
+          s{numberGuess.gameStatus === "START" && <StartPage />}
           {numberGuess.gameStatus === "STAKE" && <StartPage />}
           {numberGuess.gameStatus === "INPROGRESS" && <StartPage />}
           {numberGuess.gameStatus === "ENDED" && <StartPage />}
