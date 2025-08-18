@@ -75,22 +75,6 @@ const WalletApi = {
       dispatch
     );
   },
-
-  verifyAccount(data: {
-    email: string;
-    accountNumber: string;
-    bankCode: string;
-  }): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(`verifyAccount`, { ...data });
-  },
-  listBanks(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("listBanks", {});
-  },
-  fetchDedicatedAccount(data: { email: string }): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(`fetchDedicatedAccount`, {
-      ...data,
-    });
-  },
   createWithdrawalPin(data: { pin: string }): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
       `users/pin/set-up`,

@@ -1,3 +1,4 @@
+import { Gamepad2 } from "lucide-react";
 import {
   CupIcon,
   HomeIcon,
@@ -8,6 +9,38 @@ import {
   WalletIcon,
 } from "../icons/icons";
 
+export const navSidebar = [
+  {
+    icon: <HomeIcon />,
+    path: "/home",
+    name: "Home",
+  },
+  {
+    icon: <WalletIcon />,
+    path: "/wallet",
+    name: "Wallet",
+  },
+  {
+    icon: <Gamepad2 />,
+    path: "/game-zone",
+    name: "Game Zone",
+  },
+  {
+    icon: <StoreIcon />,
+    path: "/store",
+    name: "Store",
+  },
+  {
+    icon: <CupIcon />,
+    path: "/leaderboard",
+    name: "Leaderboard",
+  },
+  {
+    icon: <SettingIcon />,
+    path: "/settings",
+    name: "Settings",
+  },
+];
 export const navs = [
   {
     icon: <HomeIcon />,

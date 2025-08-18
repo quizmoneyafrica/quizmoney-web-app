@@ -88,7 +88,7 @@ function GameCard() {
               </Heading>
               <Heading
                 as="h1"
-                className="text-primary-900 !text-5xl !font-black"
+                className="text-primary-900 !text-[2.7rem] !font-black"
               >
                 {formatNaira(nextGameData?.prize)}
               </Heading>
