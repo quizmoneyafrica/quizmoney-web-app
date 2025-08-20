@@ -4,6 +4,17 @@ import { ApiResponse } from "./interface";
 import { callWithSessionToken } from "./parse/callWithSessionToken";
 
 const WalletApi = {
+  verifyAccount(
+    email: string,
+    accountNumber: string,
+    bankCode: string
+  ): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(``, {
+      email,
+      accountNumber,
+      bankCode,
+    });
+  },
   verifyBVN(
     accountNumber: string,
     bvn: string,
@@ -93,12 +104,12 @@ const WalletApi = {
   ): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("withdraw", { ...data }, dispatch);
   },
-  initializePaystack(
-    data:{
-   amount:number
-}
-  ): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("wallets/initialize/payment", { ...data }, store.dispatch);
+  initializePaystack(data: { amount: number }): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      "wallets/initialize/payment",
+      { ...data },
+      store.dispatch
+    );
   },
 
   forgotPin(data: { email: string }): Promise<ApiResponse> {

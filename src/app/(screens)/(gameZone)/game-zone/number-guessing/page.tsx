@@ -48,10 +48,10 @@ function Page() {
         </div>
         {/* body  */}
         <div className="w-full">
-          s{numberGuess.gameStatus === "START" && <StartPage />}
-          {numberGuess.gameStatus === "STAKE" && <StartPage />}
-          {numberGuess.gameStatus === "INPROGRESS" && <StartPage />}
-          {numberGuess.gameStatus === "ENDED" && <StartPage />}
+          {numberGuess.gameStatus === "START" && <StartPage />}
+          {numberGuess.gameStatus === "STAKE" && <p>Stake SCreen</p>}
+          {numberGuess.gameStatus === "INPROGRESS" && <p>Game in progress</p>}
+          {numberGuess.gameStatus === "ENDED" && <p>Game Ended</p>}
         </div>
       </div>
     </motion.div>
