@@ -69,7 +69,7 @@ function Page() {
     try {
       const response = await UserAPI.forgotPassword(email || "");
       console.log("Forgot Password:", response);
-      toast.success("OTP Reset Successfully", {
+      toast.success("OTP Re-sent Successfully", {
         position: toastPosition,
       });
 

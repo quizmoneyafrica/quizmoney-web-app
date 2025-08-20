@@ -13,7 +13,7 @@ import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { setWallet, useWallet } from "@/app/store/walletSlice";
-import { useAuth } from "@/app/hooks/useAuth";
+// import { useAuth } from "@/app/hooks/useAuth";
 
 const bankFormSchema = z.object({
   accountNumber: z
@@ -45,7 +45,7 @@ export default function AddBankModal({
     resolver: zodResolver(bankFormSchema),
     defaultValues: initialData,
   });
-  const { userEmail } = useAuth();
+  // const { userEmail } = useAuth();
 
   const { banks } = useSelector(useWallet);
   const formattedBanks = banks
@@ -70,17 +70,22 @@ export default function AddBankModal({
   const [isVerifying, setIsVerifying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
+
   const onSubmit = async (data: BankFormData) => {
     try {
       setIsVerifying(true);
 
-      const payload = {
-        email: userEmail || "",
-        accountNumber: data?.accountNumber,
-        bankCode: `${data?.bank}`.trim(),
-        // bankCode: "044",
-      };
-      const response = await WalletApi.verifyAccount(payload);
+      // const payload = {
+      //   email: userEmail || "",
+      //   accountNumber: data?.accountNumber || "",
+      //   bankCode: `${data?.bank}`.trim() || "",
+      //   bankCode: "044",
+      // };
+
+      const response = await WalletApi.confirmAccount(
+        data?.accountNumber,
+        data?.bank.trim()
+      );
       if (response?.status === "success") {
         const { account_name, account_number } = response?.data;
         const bankName =

@@ -170,7 +170,7 @@ export default function WalletBalance() {
                     toast.info("Payout account already listed", {
                       position: "top-right",
                     });
-                    return;
+                    // return;
                   }
                   store.dispatch(setWithdrawalModal(false));
                   store.dispatch(setAddBankModal(true));

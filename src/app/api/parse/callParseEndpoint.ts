@@ -30,8 +30,8 @@ export const callParseEndpoint = async <T>(
 
     // handle invalid session
     if (data.code === 209 && dispatch) {
+      err.message = "Access token expired";
       await handleInvalidSession(dispatch);
-      err.message = "Please login to continue.";
     }
 
     throw err;

@@ -48,6 +48,7 @@ const LoginForm = ({ loading, setLoading }: Props) => {
 
     fetchIP();
   }, []);
+  console.log(token);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,13 +73,14 @@ const LoginForm = ({ loading, setLoading }: Props) => {
     const newValues = {
       username: email.toLowerCase().trim(),
       password: password,
-      deviceToken: token || email.toLowerCase().trim() + password,
+      deviceToken: token || null,
       deviceId: deviceId,
       ipAddress: ipAddress,
     };
     try {
       const res = await UserAPI.login(newValues);
       console.log("RES", res);
+
       const data = await UserAPI.customerProfile(res.data.accessToken);
       console.log("Customer Profile", data);
       if (res.success) {
@@ -96,6 +98,10 @@ const LoginForm = ({ loading, setLoading }: Props) => {
       }
     } catch (err: any) {
       console.log("INVALID", err.raw);
+      if (err.raw.code === "422") {
+        await createPassword(email.toLowerCase().trim());
+      }
+      setLoading(false);
       if (err.message === "Account deactivated") {
         localStorage.setItem("login", JSON.stringify(newValues));
         verifyEmail(email.toLowerCase().trim());
@@ -103,16 +109,31 @@ const LoginForm = ({ loading, setLoading }: Props) => {
         toast.error(`${err.message}`, {
           position: toastPosition,
         });
-        if (err.data.errorList) {
+        if (err.data !== null && err.data?.errorList) {
           toast.error(`${err.data.errorList[0]}`, {
             position: toastPosition,
           });
         }
       }
-      setLoading(false);
     }
   };
 
+  const createPassword = async (email: string) => {
+    try {
+      await UserAPI.resendSignupOtp(email);
+      router.push(
+        `/password-creation?email=${encodeURIComponent(
+          email.toLowerCase().trim()
+        )}`
+      );
+    } catch (err: any) {
+      console.log("ERROR Forgot Password", err);
+      toast.error(`${err.message}`, {
+        position: toastPosition,
+      });
+      setLoading(false);
+    }
+  };
   const verifyEmail = async (email: string) => {
     try {
       await UserAPI.resendSignupOtp(email);
