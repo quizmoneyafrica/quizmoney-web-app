@@ -13,9 +13,11 @@ import {
   NumberGuessingTitle,
   PerfectScoreTitle,
 } from "@/app/icons/icons";
+import { useWallet } from "@/app/store/walletSlice";
 
 function GameZone() {
-  const wallet = useAppSelector((s) => s.wallet);
+  const { wallet: walletData } = useAppSelector(useWallet);
+  const wallet = walletData.find((w) => w.currency === "NGN")! || {};
   const router = useRouter();
 
   const games: gamesObject[] = [
@@ -73,7 +75,7 @@ function GameZone() {
               onClick={() => router.push("/wallet")}
               className="bg-white rounded-full px-4 py-2 text-primary-900 font-medium font-text flex items-center gap-1"
             >
-              {formatNaira(Number(wallet.wallet?.availableBalance || 0), true)}
+              {formatNaira(Number(wallet?.availableBalance || 0), true)}
               <CirclePlus width={18} height={18} />
             </button>
           </div>
