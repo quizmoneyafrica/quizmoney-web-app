@@ -8,10 +8,7 @@ import UserAPI from "@/app/api/userApi";
 import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
 import { useAppDispatch } from "@/app/hooks/useAuth";
-import {
-  setUserCoinTransactions,
-  updateCoinBalance,
-} from "@/app/store/coinSlice";
+import { setUserCoinTransactions } from "@/app/store/coinSlice";
 import QmDrawer from "@/app/components/drawer/drawer";
 import RedeemModal from "./RedeemModal";
 

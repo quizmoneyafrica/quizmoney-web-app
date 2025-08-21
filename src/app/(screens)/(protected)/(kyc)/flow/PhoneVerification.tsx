@@ -22,7 +22,6 @@ export default function PhoneVerification({ onNext }: { onNext: () => void }) {
   const {
     control,
     handleSubmit,
-    watch,
     formState: { errors, isSubmitting },
   } = useForm<PhoneForm>({
     resolver: zodResolver(phoneSchema),
@@ -59,7 +58,7 @@ export default function PhoneVerification({ onNext }: { onNext: () => void }) {
             Verify Phone Number
           </h1>
           <p className="text-gray-600 text-sm leading-relaxed">
-            We'll send you a 6-digit OTP to confirm your number.
+            {"We'll send you a 6-digit OTP to confirm your number."}
           </p>
         </div>
 
