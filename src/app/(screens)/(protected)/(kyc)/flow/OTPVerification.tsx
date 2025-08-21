@@ -23,10 +23,8 @@ export default function OTPVerification({
   onNext,
 }: {
   phoneNumber?: string;
-  onVerify?: (otp: string) => void;
   onBack: () => void;
   onNext: () => void;
-  onResendCode?: () => void;
 }) {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [timeLeft, setTimeLeft] = React.useState(82);
@@ -36,7 +34,7 @@ export default function OTPVerification({
     setValue,
     getValues,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
     reset,
     trigger,
   } = useForm<OTPForm>({
@@ -45,7 +43,6 @@ export default function OTPVerification({
     defaultValues: { otp: "" },
   });
 
-  // Timer countdown
   useEffect(() => {
     if (timeLeft > 0) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
@@ -61,44 +58,37 @@ export default function OTPVerification({
       .padStart(2, "0")}`;
   };
 
-  // Split OTP string into array for display
   const otpValue = getValues("otp");
   const otpDigits = Array.from({ length: 6 }, (_, i) => otpValue[i] || "");
 
-  // Handle input change for each digit
   const handleInputChange = (index: number, value: string) => {
     if (value.length > 1) return;
     let newOtp = otpDigits.slice();
     newOtp[index] = value;
-    // Only keep digits
     newOtp = newOtp.map((d) => (/\d/.test(d) ? d : ""));
     setValue("otp", newOtp.join(""));
     trigger("otp");
-    // Auto-focus next input
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
   };
 
-  // Handle backspace navigation
   const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
     if (e.key === "Backspace" && !otpDigits[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
   };
 
-  // Handle paste event
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
     const pastedData = e.clipboardData.getData("text").replace(/\D/g, "");
     const digits = pastedData.slice(0, 6).split("");
-    let newOtp = otpDigits.slice();
+    const newOtp = otpDigits.slice();
     digits.forEach((digit, index) => {
       if (index < 6) newOtp[index] = digit;
     });
     setValue("otp", newOtp.join(""));
     trigger("otp");
-    // Focus next empty input or last one
     const nextEmptyIndex = newOtp.findIndex((digit, idx) => !digit && idx < 6);
     const focusIndex =
       nextEmptyIndex !== -1 ? nextEmptyIndex : Math.min(digits.length, 5);
@@ -107,23 +97,17 @@ export default function OTPVerification({
 
   const [successModal, setSuccessModal] = React.useState(false);
 
-  // Submit handler
-  const onSubmit = (data: OTPForm) => {
+  const onSubmit = () => {
     setSuccessModal(true);
   };
 
-  // Resend handler
   const handleResend = () => {
     reset();
     inputRefs.current[0]?.focus();
-
-    // resend code
   };
 
-  // Mask phone number: show country code and last 4 digits, mask the rest
   const maskPhoneNumber = (num: string) => {
     if (!num) return "";
-    // Find country code (assume starts with '+')
     const match = num.match(/^(\+\d{1,3})(\d{0,})$/);
     if (!match) return num;
     const country = match[1];
@@ -137,7 +121,6 @@ export default function OTPVerification({
   return (
     <Fragment>
       <div className="w-full flex-1">
-        {/* Header */}
         <div className="mb-8 flex flex-col gap-2 md:items-center">
           <h1 className="text-2xl font-bold text-gray-900">Verify OTP</h1>
           <p className="text-black text-sm">
@@ -145,7 +128,6 @@ export default function OTPVerification({
           </p>
         </div>
 
-        {/* OTP Input */}
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-8 w-full flex flex-col gap-2 md:items-center ">
             <label className=" text-sm font-semibold text-black">
@@ -179,13 +161,11 @@ export default function OTPVerification({
                     "aspect-square w-10 h-10 md:w-12 md:h-12 text-center text-lg font-semibold border-1 rounded focus:border-primary-900 focus:outline-none transition-colors",
                     errors.otp ? "border-red-500" : "border-primary-900"
                   )}
-                  // Remove {...(index === 0 ? register("otp") : {})}
                 />
               ))}
             </div>
           </div>
 
-          {/* Verify Button */}
           <div className="pt-4 w-full flex justify-between gap-2">
             <CustomButton
               type="button"
@@ -211,10 +191,9 @@ export default function OTPVerification({
           </div>
         </form>
 
-        {/* Resend Code */}
         <div className="md:text-center text-start mt-6">
           <p className="text-sm text-black">
-            Didn't get code?{" "}
+            Didn&apos;t get code?{" "}
             {timeLeft > 0 ? (
               <span className="text-gray-500">
                 Resend Code • {formatTime(timeLeft)}
@@ -239,7 +218,6 @@ export default function OTPVerification({
         titleLeft
         heightClass="h-[75%] md:h-[45%] lg:h-[65%]"
       >
-        {/* Provide valid children here */}
         <div className=" flex-col flex gap-2 items-center pt-2">
           <CustomImage alt="succ" src={"/icons/success_bg.svg"} />
           <p className="font-bold text-xl text-[#3B3B3B] text-center">

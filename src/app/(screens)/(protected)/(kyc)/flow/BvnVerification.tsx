@@ -18,12 +18,7 @@ const bvnSchema = z.object({
 
 type BvnForm = z.infer<typeof bvnSchema>;
 
-export default function BvnVerification({
-  onBack,
-}: {
-  onNext: () => void;
-  onBack: () => void;
-}) {
+export default function BvnVerification({ onBack }: { onBack: () => void }) {
   const [successModal, setSuccessModal] = React.useState(false);
   const router = useRouter();
 
@@ -41,10 +36,12 @@ export default function BvnVerification({
   const onSubmit = async (data: BvnForm) => {
     try {
       setSuccessModal(true);
+      console.log(data);
     } catch (error) {
       console.error("BVN verification failed:", error);
     }
   };
+
   const backToDashboard = () => {
     setSuccessModal(false);
     router.back();
@@ -54,7 +51,6 @@ export default function BvnVerification({
     <Fragment>
       <div className="w-full">
         <div className="w-full">
-          {/* Header */}
           <div className="w-full mb-8">
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Add BVN</h1>
             <p className="text-gray-600 text-sm leading-relaxed">
@@ -82,7 +78,6 @@ export default function BvnVerification({
               )}
             </div>
 
-            {/* Why we need BVN section */}
             <div className="bg-[#DEF2FF] p-5 rounded-lg">
               <div className="flex items-center mb-3">
                 <h3 className="text-sm font-semibold text-gray-900">
@@ -151,7 +146,6 @@ export default function BvnVerification({
         titleLeft
         heightClass="h-[75%] md:h-[45%] lg:h-[65%]"
       >
-        {/* Provide valid children here */}
         <div className=" flex-col flex gap-2 items-center pt-2">
           <CustomImage alt="succ" src={"/icons/success_bg.svg"} />
           <div className="flex flex-col gap-2">

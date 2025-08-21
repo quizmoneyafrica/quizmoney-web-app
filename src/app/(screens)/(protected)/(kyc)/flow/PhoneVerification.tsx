@@ -34,8 +34,6 @@ export default function PhoneVerification({ onNext }: { onNext: () => void }) {
 
   const onSubmit = async (data: PhoneForm) => {
     try {
-      // Your verification logic here
-      // API call would go here
       setState(data.phoneNumber);
       // onNext();
     } catch (error) {
@@ -51,13 +49,11 @@ export default function PhoneVerification({ onNext }: { onNext: () => void }) {
         phoneNumber={state}
       />
     );
-    // OTP has been sent
   }
 
   return (
     <div className="w-full">
       <div className="w-full">
-        {/* Header */}
         <div className=" w-full mb-8">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Verify Phone Number
@@ -80,7 +76,6 @@ export default function PhoneVerification({ onNext }: { onNext: () => void }) {
                   countrySelectProps={{
                     style: {
                       backgroundColor: "#f9f9f9",
-                      // Add any styles you need for the country select here
                     },
                   }}
                   {...field}
