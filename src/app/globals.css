@@ -680,3 +680,37 @@ input[type="date"]::-moz-focus-inner {
 }
 
 /* Radix Css  */
+.phone-input .PhoneInputInput {
+          border: 1px solid #3A3A3A80;
+          border-radius: 0.75rem;
+          padding: 0.75rem 1rem;
+          font-size: 0.875rem;
+          transition: all 0.2s;
+          outline: none;
+          width: 100%;
+        }
+
+        .phone-input .PhoneInputInput:focus {
+          outline: none;
+        }
+
+        .phone-input .PhoneInputCountry {
+          border: 1px solid #3A3A3A80;
+          border-radius: 0.75rem;
+          padding-left: 0.75rem;
+          padding-right: 0.75rem;
+          margin-right: 0.5rem;
+          background: white;
+          transition: all 0.2s;
+        }
+      
+
+        .phone-input .PhoneInputCountrySelect:focus {
+          outline: none;
+          border: 2px solid #3A3A3A80;
+          box-shadow: none;
+        }
+
+        .phone-input .PhoneInputCountrySelectArrow {
+          color: #3A3A3A80;
+        }

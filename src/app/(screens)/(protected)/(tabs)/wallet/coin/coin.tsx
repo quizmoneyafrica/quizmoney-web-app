@@ -8,10 +8,7 @@ import UserAPI from "@/app/api/userApi";
 import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
 import { useAppDispatch } from "@/app/hooks/useAuth";
-import {
-  setUserCoinTransactions,
-  updateCoinBalance,
-} from "@/app/store/coinSlice";
+import { setUserCoinTransactions } from "@/app/store/coinSlice";
 import QmDrawer from "@/app/components/drawer/drawer";
 import RedeemModal from "./RedeemModal";
 
@@ -19,15 +16,15 @@ function Coin() {
   const [openRedeem, setOpenRedeem] = useState(false);
   const dispatch = useAppDispatch();
   useEffect(() => {
-    const fetchUserCoin = async () => {
-      try {
-        const res = await UserAPI.fetchUserCoinAccount();
-        console.log("Coin Balance", res.coinAccount.balance);
-        dispatch(updateCoinBalance(res.coinAccount.balance));
-      } catch (err: any) {
-        toast.error(`${err.message}`, { position: toastPosition });
-      }
-    };
+    // const fetchUserCoin = async () => {
+    //   try {
+    //     const res = await UserAPI.fetchUserCoinAccount();
+    //     console.log("Coin Balance", res.coinAccount.balance);
+    //     dispatch(updateCoinBalance(res.coinAccount.balance));
+    //   } catch (err: any) {
+    //     toast.error(`${err.message}`, { position: toastPosition });
+    //   }
+    // };
     const fetchUserCoinTransactions = async () => {
       try {
         const res = await UserAPI.fetchCoinTransactions();
@@ -38,7 +35,7 @@ function Coin() {
       }
     };
 
-    fetchUserCoin();
+    // fetchUserCoin();
     fetchUserCoinTransactions();
   }, [dispatch]);
   return (

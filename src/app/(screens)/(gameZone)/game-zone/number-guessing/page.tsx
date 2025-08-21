@@ -6,11 +6,13 @@ import { useAppSelector } from "@/app/hooks/useAuth";
 import { formatNaira } from "@/app/utils/utils";
 import { useRouter } from "next/navigation";
 import StartPage from "./cmp/StartPage";
+import { useWallet } from "@/app/store/walletSlice";
 
 function Page() {
   const numberGuess = useAppSelector((s) => s.numberGuess);
-  const wallet = useAppSelector((s) => s.wallet);
+  const { wallet: walletData } = useAppSelector(useWallet);
   const router = useRouter();
+  const wallet = walletData.find((w) => w.currency === "NGN")! || {};
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -41,7 +43,7 @@ function Page() {
               onClick={() => router.push("/wallet")}
               className="bg-white rounded-full px-4 py-2 text-primary-900 font-medium font-text flex items-center gap-1"
             >
-              {formatNaira(Number(wallet.wallet?.availableBalance || 0), true)}
+              {formatNaira(Number(wallet?.availableBalance || 0), true)}
               <CirclePlus width={18} height={18} />
             </button>
           </div>

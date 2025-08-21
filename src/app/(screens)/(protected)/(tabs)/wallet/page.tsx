@@ -31,21 +31,21 @@ function Page() {
   const tab = searchParams.get("tab");
   const initialSlide = tab === "coin" ? 1 : 0;
 
-  useEffect(() => {
-    const fetchWallet = async () => {
-      if (wallet === undefined)
-        try {
-          dispatch(setWalletLoading(true));
-          const res = await WalletApi.fetchCustomerWallet();
-          if (res?.data) {
-            dispatch(setWallet(res?.data));
-          }
-        } catch (error) {
-          console.log(error, "Wallet Error");
-        } finally {
-          dispatch(setWalletLoading(false));
+  const fetchWallet = async () => {
+    if (wallet === undefined)
+      try {
+        dispatch(setWalletLoading(true));
+        const res = await WalletApi.fetchCustomerWallet();
+        if (res?.data) {
+          dispatch(setWallet(res?.data));
         }
-    };
+      } catch (error) {
+        console.log(error, "Wallet Error");
+      } finally {
+        dispatch(setWalletLoading(false));
+      }
+  };
+  useEffect(() => {
     const fetchPayoutAccounts = async () => {
       if (payoutBanks === undefined)
         try {
@@ -78,50 +78,6 @@ function Page() {
         }
     };
 
-    // SET LIST OF BANKS
-    // const fetchBankList = async () => {
-    //   if (banks.length <= 0) {
-    //     try {
-    //       const response = await WalletApi.fetchBanks();
-    //       if (response?.data) {
-    //         dispatch(setBanks(response.data));
-    //       }
-    //     } catch (error) {
-    //       console.error("ERROR FETCHING BANKS", error);
-    //     }
-    //   }
-    // };
-    // if (banks.length <= 0) {
-    //   (async () => {
-    //     try {
-    //       const response = await WalletApi.listBanks();
-    //       if (response?.data) {
-    //         dispatch(setBanks(response?.data));
-    //       }
-    //     } catch (error) {
-    //       console.log(error, "ERROR FETCHING BANKS");
-    //     }
-    //   })();
-    // }
-    // (async () => {
-    //   try {
-    //     const { email } = getAuthUser();
-    //     const response = await WalletApi.fetchDedicatedAccount({
-    //       email,
-    //     });
-    //     if (response?.data) {
-    //       console.log(
-    //         "============fetchDedicatedAccount========================"
-    //       );
-    //       console.log(JSON.stringify(response.data, null, 2));
-    //       console.log(
-    //         "==========fetchDedicatedAccount=========================="
-    //       );
-    //     }
-    //   } catch (error) {
-    //     console.log(error, "ERROR FETCHING BANKS");
-    //   }
-    // })();
     fetchWallet();
     fetchTransactions();
     fetchPayoutAccounts();
