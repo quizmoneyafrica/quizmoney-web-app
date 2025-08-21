@@ -18,7 +18,7 @@ const otpSchema = z.object({
 type OTPForm = z.infer<typeof otpSchema>;
 
 export default function OTPVerification({
-  phoneNumber = "+2349012345678",
+  phoneNumber = "",
   onBack,
   onNext,
 }: {
