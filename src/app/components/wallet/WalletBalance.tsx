@@ -37,11 +37,13 @@ export default function WalletBalance() {
   // const [isMobile, setIsMobile] = useState(false);
   const {
     payoutBanks,
-    wallet,
+    wallet: walletData,
     isWalletLoading,
     withdrawalModal,
     withdrawalPinModal,
   } = useSelector(useWallet);
+
+  const wallet = walletData.find((w) => w.currency === "NGN")! || {};
 
   // useEffect(() => {
   //   const checkIfMobile = () => {
@@ -76,7 +78,7 @@ export default function WalletBalance() {
                 {isBalanceHidden
                   ? "****"
                   : `${formatNaira(
-                      wallet?.availableBalance ? wallet?.availableBalance : "0",
+                      wallet.availableBalance ? wallet.availableBalance : "0",
                       true
                     )}`}
               </span>

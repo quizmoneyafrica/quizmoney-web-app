@@ -10,7 +10,7 @@ type WithdrawalData = {
 };
 interface WalletState {
   withdrawalData: WithdrawalData | null;
-  wallet: Wallet | undefined;
+  wallet: Wallet[];
   withdrawalModal: boolean;
   withdrawalPinModal: boolean;
   addBankAccountModal: boolean;
@@ -40,7 +40,7 @@ const initialState: WalletState = {
   virtualAccount: undefined,
   withdrawalPinModal: false,
   addBankAccountModal: false,
-  wallet: undefined,
+  wallet: [],
   transactions: [],
   banks: [],
   payoutBanks: undefined,
@@ -58,17 +58,15 @@ export type BankAccount = {
   bankName: string;
   accountName: string;
 };
-export interface Wallet {
+export type Wallet = {
   id: string;
-  bookBalance: number;
   availableBalance: number;
   pendingBalance: number;
-  currency: string;
+  currency: 'NGN' | 'QMC';
   walletAccountNumber: string;
   walletAccountName: string;
   bankName: string;
-  pin?: string;
-}
+};
 // export type Wallet = {
 //   user: {
 //     __type: "Pointer";
@@ -113,7 +111,7 @@ const walletSlice = createSlice({
   name: "wallet",
   initialState,
   reducers: {
-    setWallet(state, action: PayloadAction<Wallet | undefined>) {
+    setWallet(state, action: PayloadAction<Wallet[]>) {
       state.wallet = action.payload;
     },
     setVirtualAccount(
@@ -130,7 +128,15 @@ const walletSlice = createSlice({
     },
     setWalletBalance(state, action: PayloadAction<number>) {
       if (state.wallet) {
-        state.wallet.availableBalance = action.payload;
+        const wallet = state.wallet.map((w) =>{
+          if (w.currency === 'NGN') {
+            w.availableBalance = action.payload;
+          }
+          return w;
+        });
+        if (wallet) {
+          state.wallet = wallet;
+        }
       }
     },
     setTransactions(
