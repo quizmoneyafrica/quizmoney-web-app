@@ -40,7 +40,7 @@ export default function BvnVerification({
 
   const onSubmit = async (data: BvnForm) => {
     try {
-      setSuccessModal;
+      setSuccessModal(true);
     } catch (error) {
       console.error("BVN verification failed:", error);
     }
