@@ -1,12 +1,10 @@
 "use client";
 import { useAppSelector } from "@/app/hooks/useAuth";
 import { BankIcon } from "@/app/icons/icons";
-import { useWallet } from "@/app/store/walletSlice";
 import CustomButton from "@/app/utils/CustomBtn";
 import { formatNaira } from "@/app/utils/utils";
 import { LucideCopy } from "lucide-react";
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
 import { toast } from "sonner";
 
 export type VirtualDetailsProps = { amount?: number };
