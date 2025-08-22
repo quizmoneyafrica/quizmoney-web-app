@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import WalletLayout from "@/app/components/wallet/WalletLayout";
 import {
@@ -36,7 +36,7 @@ function Page() {
   const tab = searchParams.get("tab");
   const initialSlide = tab === "coin" ? 1 : 0;
 
-  const fetchWallet = async () => {
+  const fetchWallet = useCallback(async () => {
     // if (wallet === undefined)
     try {
       dispatch(setWalletLoading(true));
@@ -49,7 +49,7 @@ function Page() {
     } finally {
       dispatch(setWalletLoading(false));
     }
-  };
+  }, [dispatch]);
   useEffect(() => {
     const fetchPayoutAccounts = async () => {
       if (payoutBanks === undefined)
@@ -86,7 +86,7 @@ function Page() {
     fetchWallet();
     fetchTransactions();
     fetchPayoutAccounts();
-  }, [banks.length, dispatch, transactions.length, wallet, payoutBanks]);
+  }, [dispatch, fetchWallet, payoutBanks, transactions.length]);
 
   return (
     <motion.div
