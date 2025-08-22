@@ -25,7 +25,8 @@ export default function ProtectedRoute({
     };
   }, [rehydrated, isAuthenticated, router]);
 
-  if (!rehydrated || checking) {
+  if (!rehydrated) {
+    console.log(checking);
     return (
       <div className="h-screen flex items-center justify-center bg-white">
         <div
