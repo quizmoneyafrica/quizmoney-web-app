@@ -1,4 +1,5 @@
 "use client";
+import { useAppSelector } from "@/app/hooks/useAuth";
 import { BankIcon } from "@/app/icons/icons";
 import { useWallet } from "@/app/store/walletSlice";
 import CustomButton from "@/app/utils/CustomBtn";
@@ -10,7 +11,8 @@ import { toast } from "sonner";
 
 export type VirtualDetailsProps = { amount?: number };
 function VirtualDetails({ amount = 1000 }: VirtualDetailsProps) {
-  const { wallet } = useSelector(useWallet);
+  const { wallet: walletData } = useAppSelector((state) => state.wallet);
+  const wallet = walletData.find((w) => w.currency === "NGN")! || {};
 
   const handleCopyAll = async () => {
     const details = `Account Number: ${
