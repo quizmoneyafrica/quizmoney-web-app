@@ -1,4 +1,6 @@
 import { useAppDispatch } from "@/app/hooks/useAuth";
+import { StartGameBtn } from "@/app/icons/icons";
+import { setGameStatus } from "@/app/store/numberGuessGameSlice";
 import React from "react";
 
 function StakePage() {
@@ -14,6 +16,15 @@ function StakePage() {
             Number Guessing
           </h2>
         </div>
+      </div>
+
+      <div className="flex items-center justify-center">
+        <button
+          onClick={() => dispatch(setGameStatus("INPROGRESS"))}
+          className=""
+        >
+          <StartGameBtn className="justify-center" />
+        </button>
       </div>
     </div>
   );

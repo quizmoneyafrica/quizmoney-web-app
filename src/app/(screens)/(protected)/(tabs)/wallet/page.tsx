@@ -37,18 +37,18 @@ function Page() {
   const initialSlide = tab === "coin" ? 1 : 0;
 
   const fetchWallet = async () => {
-    if (wallet === undefined)
-      try {
-        dispatch(setWalletLoading(true));
-        const res = await WalletApi.fetchCustomerWallet();
-        if (res?.data) {
-          dispatch(setWallet(res?.data));
-        }
-      } catch (error) {
-        console.log(error, "Wallet Error");
-      } finally {
-        dispatch(setWalletLoading(false));
+    // if (wallet === undefined)
+    try {
+      dispatch(setWalletLoading(true));
+      const res = await WalletApi.fetchCustomerWallet();
+      if (res?.data) {
+        dispatch(setWallet(res?.data));
       }
+    } catch (error) {
+      console.log(error, "Wallet Error");
+    } finally {
+      dispatch(setWalletLoading(false));
+    }
   };
   useEffect(() => {
     const fetchPayoutAccounts = async () => {
