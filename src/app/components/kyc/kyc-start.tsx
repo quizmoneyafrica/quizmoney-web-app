@@ -2,6 +2,7 @@
 import { IdCard } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import CustomImage from "../wallet/CustomImage";
 import CustomButton from "@/app/utils/CustomBtn";
 
@@ -36,31 +37,45 @@ function KycStart() {
           </button>
         </div>
       </div>
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex bg-white items-center flex-col mx-auto px-5 overflow-y-auto justify-center h-screen">
-          <CustomImage className="mb-4" src={"/icons/kyc.svg"} alt="kyc-icon" />
-          <div className="bg-white max-w-md w-full text-center">
-            <h2 className="text-2xl font-bold mb-4 text-primary-900">
-              Verify Your Identity
-            </h2>
-            <p className="mb-6">
-              Complete KYC to unlock withdrawals, bigger rewards, and a secure
-              gaming experience. Note: One Time Charge of ₦100
-            </p>
-            <div className=" py-3 flex-col flex w-full gap-3">
-              <CustomButton onClick={() => router.push("/kyc")}>
-                Start Verification
-              </CustomButton>
-              <button
-                className=" text-black underline  px-4 py-2 rounded"
-                onClick={() => setShowModal(false)}
-              >
-                Skip for later
-              </button>
-            </div>
+      <AnimatePresence>
+        {showModal && (
+          <div className="fixed inset-0 z-50 flex items-center h-screen justify-center bg-white bg-opacity-90">
+            <motion.div
+              className="flex flex-col mx-auto px-5 overflow-y-auto h-screen w-full items-center justify-center"
+              initial={{ y: "100%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: "100%", opacity: 0 }}
+              transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+            >
+              <CustomImage
+                className="mb-4"
+                src={"/icons/kyc.svg"}
+                alt="kyc-icon"
+              />
+              <div className="bg-white max-w-md w-full text-center">
+                <h2 className="text-2xl font-bold mb-4 text-primary-900">
+                  Verify Your Identity
+                </h2>
+                <p className="mb-6">
+                  Complete KYC to unlock withdrawals, bigger rewards, and a
+                  secure gaming experience. Note: One Time Charge of ₦100
+                </p>
+                <div className=" py-3 flex-col flex w-full gap-3">
+                  <CustomButton onClick={() => router.push("/kyc")}>
+                    Start Verification
+                  </CustomButton>
+                  <button
+                    className=" text-black underline  px-4 py-2 rounded"
+                    onClick={() => setShowModal(false)}
+                  >
+                    Skip for later
+                  </button>
+                </div>
+              </div>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </>
   );
 }
