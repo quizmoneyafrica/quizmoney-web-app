@@ -39,6 +39,8 @@ export default function OtpVerificationModal({
   const hasPin = !!wallet?.pin;
   const router = useRouter();
 
+  console.log(wallet);
+
   useEffect(() => {
     if (open) {
       setOtpValues(["", "", "", ""]);
