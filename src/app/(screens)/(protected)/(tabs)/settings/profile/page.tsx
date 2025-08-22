@@ -2,11 +2,11 @@
 "use client";
 import userApi, { getAuthUser } from "@/app/api/userApi";
 import ImagePickerModal from "@/app/components/modal/ImagePickerModal";
-import { useAuth } from "@/app/hooks/useAuth";
+import { useAppDispatch, useAuth } from "@/app/hooks/useAuth";
 import { MailIcon, PersonIcon } from "@/app/icons/icons";
 import CustomButton from "@/app/utils/CustomBtn";
 import CustomTextField from "@/app/utils/CustomTextField";
-import { formatDateTime } from "@/app/utils/utils";
+import { formatDateTime, toastPosition } from "@/app/utils/utils";
 import { CalendarIcon, Pencil1Icon } from "@radix-ui/react-icons";
 import {
   FaFacebook,
@@ -15,11 +15,13 @@ import {
   FaTwitter,
   FaWhatsapp,
 } from "react-icons/fa";
-import { Flex, Grid } from "@radix-ui/themes";
+import { Avatar, Flex, Grid } from "@radix-ui/themes";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import React, { useState } from "react";
 import { toast } from "sonner";
+import { CameraIcon } from "lucide-react";
+import { updateUser, UserObject } from "@/app/store/authSlice";
 
 const initialForm = {
   firstName: "",
@@ -36,6 +38,7 @@ const initialForm = {
 };
 
 const Page = () => {
+  const dispatch = useAppDispatch();
   const { user } = useAuth();
   const [formData, setFormData] = useState({
     ...initialForm,
@@ -59,41 +62,49 @@ const Page = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const updateUser = async () => {
+  const updateUserInfo = async () => {
     setIsUpdating(true);
-
-    await userApi
-      .updateProfile({
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        dob: formData.dob,
-        facebook: formData.facebookHandle ? formData.facebookHandle.trim() : "",
-        instagram: formData.instagramHandle
-          ? formData.instagramHandle.trim()
-          : "",
-        twitter: formData.twitterHandle ? formData.twitterHandle.trim() : "",
-        whatsapp: formData.whatsappContact
-          ? formData.whatsappContact.trim()
-          : "",
-        tiktok: formData.tiktokHandle ? formData.tiktokHandle.trim() : "",
-        avatarUrl: user?.avatarUrl ? user?.avatarUrl : "",
-      })
-      .then((res) => {
-        toast.success("Profile updated successfully", {
-          position: "top-center",
-        });
-
-        const userData = res.updatedUser;
-        console.log(userData);
-
-        setIsEditing(false);
-      })
-      .catch((err: any) => {
-        toast.error(err.message);
-      })
-      .finally(() => {
-        setIsUpdating(false);
+    const payload = {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      facebook: formData.facebookHandle ? formData.facebookHandle.trim() : "",
+      instagram: formData.instagramHandle
+        ? formData.instagramHandle.trim()
+        : "",
+      twitter: formData.twitterHandle ? formData.twitterHandle.trim() : "",
+      whatsapp: formData.whatsappContact ? formData.whatsappContact.trim() : "",
+      tiktok: formData.tiktokHandle ? formData.tiktokHandle.trim() : "",
+    };
+    try {
+      await userApi.updateProfile(payload);
+      toast.success("Profile updated successfully", {
+        position: "top-center",
       });
+      setIsEditing(false);
+      dispatch(
+        updateUser({
+          facebookHandle: formData.facebookHandle
+            ? formData.facebookHandle.trim()
+            : "",
+          instagramHandle: formData.instagramHandle
+            ? formData.instagramHandle.trim()
+            : "",
+          twitterHandle: formData.twitterHandle
+            ? formData.twitterHandle.trim()
+            : "",
+          whatsappContact: formData.whatsappContact
+            ? formData.whatsappContact.trim()
+            : "",
+          tiktokHandle: formData.tiktokHandle
+            ? formData.tiktokHandle.trim()
+            : "",
+        })
+      );
+    } catch (err: any) {
+      toast.error(err.message, { position: toastPosition });
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   return (
@@ -121,20 +132,24 @@ const Page = () => {
                 onClick={() => setIsImageModalOpen(true)}
                 className="cursor-pointer sm:w-[100px] sm:h-[100px] w-[80px] h-[80px] rounded-full  border-2 border-primary-400  z-10 bg-white/50 backdrop-blur-sm"
               >
-                <div className="w-full h-full flex items-center justify-center relative">
-                  <Image
+                <div className="w-full h-full flex items-center overflow-hidden justify-center relative">
+                  {/* <Image
                     src={user?.avatarUrl ?? "/assets/images/profile.png"}
                     alt="profile"
                     width={100}
                     height={100}
                     className="w-full h-full object-cover rounded-full"
+                  /> */}
+                  <Avatar
+                    src={user?.avatarUrl ?? "/assets/images/profile.png"}
+                    fallback={user?.firstName?.charAt(0).toUpperCase() || ""}
+                    radius="full"
+                    className="bg-primary-50 w-full object-cover"
+                    size="7"
                   />
-                  <Image
-                    src={"/icons/camera.svg"}
-                    alt="profile"
-                    width={100}
-                    height={100}
-                    className="w-6 h-6 absolute bottom-0 right-0 text-black fill-black z-40 bg-white"
+                  <CameraIcon
+                    fill="#fff"
+                    className="absolute bottom-0 right-0 text-primary-900"
                   />
                 </div>
               </div>
@@ -339,7 +354,7 @@ const Page = () => {
 
                   {isEditing && (
                     <CustomButton
-                      onClick={updateUser}
+                      onClick={updateUserInfo}
                       loader={isUpdating}
                       disabled={isUpdating}
                     >

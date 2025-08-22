@@ -5,26 +5,26 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 // };
 
 export interface UserObject {
-  email: string;
-  firstName: string;
-  lastName: string;
-  phone: string;
-  gender: string;
-  dob: string;
-  avatarUrl: string;
-  createdAt: string;
-  country: string;
-  pinSetup: boolean;
-  gameEraserCount: number;
-  facebookHandle: string;
-  twitterHandle: string;
-  instagramHandle: string;
-  tiktokHandle: string;
-  whatsappContact: string;
-  referralCode: string;
-  referralEarnings: number;
-  totalReferral: number;
-  phoneVerified: boolean;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  gender?: string;
+  dob?: string;
+  avatarUrl?: string;
+  createdAt?: string;
+  country?: string;
+  pinSetup?: boolean;
+  gameEraserCount?: number;
+  facebookHandle?: string;
+  twitterHandle?: string;
+  instagramHandle?: string;
+  tiktokHandle?: string;
+  whatsappContact?: string;
+  referralCode?: string;
+  referralEarnings?: number;
+  totalReferral?: number;
+  phoneVerified?: boolean;
 }
 interface AuthState {
   isAuthenticated: boolean;

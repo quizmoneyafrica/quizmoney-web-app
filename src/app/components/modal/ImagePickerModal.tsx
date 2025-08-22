@@ -1,12 +1,13 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
-import { toast } from "sonner";
-import Image from "next/image";
 import { CheckIcon } from "@radix-ui/react-icons";
 import UserAPI from "@/app/api/userApi";
 import CustomButton from "@/app/utils/CustomBtn";
-import { useAppSelector } from "@/app/hooks/useAuth";
+import { useAppDispatch, useAuth } from "@/app/hooks/useAuth";
 import QmDrawer from "../drawer/drawer";
+import { toast } from "sonner";
+import { updateUser, UserObject } from "@/app/store/authSlice";
 
 interface IAvatar {
   avatarUrl: string;
@@ -20,6 +21,7 @@ const ImagePickerModal = ({
   open: boolean;
   setOpen: (open: boolean) => void;
 }) => {
+  const dispatch = useAppDispatch();
   const [showAvatar, setShowAvatar] = useState(false);
   const [avatars, setAvatars] = useState<IAvatar[]>([]);
   const [selectedImage, setSelectedImage] = useState<IAvatar>();
@@ -29,7 +31,7 @@ const ImagePickerModal = ({
   //   });
   // };
   // const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
-  const user = useAppSelector((state) => state.auth);
+  const user = useAuth();
   const [isUpdating, setIsUpdating] = useState(false);
 
   const handleSelectAvatar = (image: IAvatar) => {
@@ -56,54 +58,29 @@ const ImagePickerModal = ({
     }
   }, [open]);
 
-  const updateUser = async () => {
+  const updateUserAvatar = async () => {
     setIsUpdating(true);
-    console.log(user);
-
-    // await UserAPI.updateUser({
-    //   firstName: user?.firstName,
-    //   lastName: user?.lastName,
-    //   dob: user?.dob?.iso,
-    //   gender: user?.gender,
-    //   country: user?.country,
-    //   facebook: user?.facebook,
-    //   instagram: user?.instagram,
-    //   twitter: user?.twitter,
-    //   whatsapp: user?.whatsapp,
-    //   avatar: selectedImage?.url ? selectedImage?.url : user?.avatar,
-    //   promotionalMails: user?.promotionalMails ?? false,
-    // })
-    //   .then((res) => {
-    //     toast.success("Profile updated successfully", {
-    //       position: "top-center",
-    //     });
-    //     console.log(res);
-
-    //     const userData = res.updatedUser;
-    //     const encryptedUser = encryptData(userData);
-    //     console.log("Encrypted: ", encryptedUser);
-
-    //     // ✅ Dispatch to Redux
-    //     loginUser(encryptedUser);
-    //     setOpen(false);
-    //   })
-    //   .catch((err: AxiosError) => {
-    //     toast.error(
-    //       (err.response?.data as unknown as { error: string }).error ||
-    //         "Failed to update profile. Please try again later.",
-    //       {
-    //         position: "top-center",
-    //       }
-    //     );
-    //   })
-    //   .finally(() => {
-    //     setIsUpdating(false);
-    //   });
+    const payload: UserObject = {
+      firstName: user.user?.firstName,
+      lastName: user.user?.lastName,
+      avatarUrl: selectedImage?.avatarUrl || "",
+    };
+    try {
+      const res = await UserAPI.updateUser(payload);
+      console.log(res);
+      dispatch(updateUser({ avatarUrl: selectedImage?.avatarUrl }));
+      // setOpen(false);
+    } catch (err: any) {
+      toast.error(err.message, { position: "top-right" });
+    } finally {
+      setIsUpdating(false);
+    }
   };
+  console.log(avatars);
 
   return (
     <>
-      <QmDrawer title="" open={open} onOpenChange={setOpen}>
+      <QmDrawer title="Select Avatar" open={open} onOpenChange={setOpen}>
         {!showAvatar ? (
           <div className="mt-5 md:pt-10 flex flex-col gap-4">
             <div
@@ -125,48 +102,55 @@ const ImagePickerModal = ({
             </div> */}
           </div>
         ) : (
-          <div className="flex flex-col gap-2 mt-4">
-            <p className="text-base md:text-lg font-medium">Pick an Avatar</p>
+          <div className="grid gap-4">
+            {/* <p className="text-base md:text-lg font-medium">Pick an Avatar</p> */}
             <div className=" bg-zinc-800 rounded-3xl w-full h-full p-4 md:p-10">
-              <div className="grid grid-cols-4 place-items-center gap-4">
-                {avatars.map((image) => (
-                  <div
-                    key={image.id}
-                    onClick={() => handleSelectAvatar(image)}
-                    className={`cursor-pointer w-[60px] h-[60px] md:w-20 md:h-20 bg-zinc-700 rounded-full relative ${
-                      selectedImage?.id === image.id
-                        ? "border-2 border-primary-500"
-                        : ""
-                    }`}
-                  >
-                    <Image
-                      src={image.avatarUrl}
-                      alt="avatar"
-                      width={100}
-                      height={100}
-                      className="w-full h-full object-cover rounded-full"
-                      quality={100}
-                    />
+              {avatars.length > 0 ? (
+                <div className="grid grid-cols-4 place-items-center gap-4">
+                  {avatars.map((image) => (
+                    <div
+                      key={image.id}
+                      onClick={() => handleSelectAvatar(image)}
+                      className={`cursor-pointer w-[60px] h-[60px] md:w-20 md:h-20 bg-zinc-700 rounded-full relative ${
+                        selectedImage?.id === image.id
+                          ? "border-2 border-primary-500"
+                          : ""
+                      }`}
+                    >
+                      <img
+                        src={image.avatarUrl}
+                        alt="avatar"
+                        className="w-full h-full object-cover rounded-full"
+                        loading="lazy"
+                      />
 
-                    {selectedImage?.id === image.id && (
-                      <div className="absolute bottom-0 right-1 md:right-4 bg-primary-400 rounded-full flex items-center justify-center">
-                        <div className="text-white text-2xl font-bold">
-                          <CheckIcon className="w-4 h-4" />
+                      {selectedImage?.id === image.id && (
+                        <div className="absolute bottom-0 right-1 md:right-4 bg-primary-400 rounded-full flex items-center justify-center">
+                          <div className="text-white text-2xl font-bold">
+                            <CheckIcon className="w-4 h-4" />
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div></div>
+              )}
             </div>
-            <CustomButton
-              loader={isUpdating}
-              disabled={selectedImage === null || selectedImage === undefined}
-              className="w-fit"
-              onClick={updateUser}
-            >
-              Select Avatar
-            </CustomButton>
+            {!isUpdating ? (
+              <CustomButton
+                loader={isUpdating}
+                disabled={selectedImage === null || selectedImage === undefined}
+                onClick={updateUserAvatar}
+              >
+                Select Avatar
+              </CustomButton>
+            ) : (
+              <CustomButton size="md" width="inline" loader disabled>
+                Updating..
+              </CustomButton>
+            )}
           </div>
         )}
       </QmDrawer>
