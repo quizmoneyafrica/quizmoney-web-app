@@ -1,9 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import LogoutDialog from "@/app/components/logout/logout";
 import { useAuth } from "@/app/hooks/useAuth";
 import { SupportIcon } from "@/app/icons/icons";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
-import { Flex, Grid } from "@radix-ui/themes";
+import { Avatar, Flex, Grid } from "@radix-ui/themes";
 import { motion } from "framer-motion";
 import { Smartphone } from "lucide-react";
 import Image from "next/image";
@@ -28,12 +29,19 @@ function Page() {
           className="bg-white rounded-2xl sm:rounded-xl p-4 cursor-pointer"
         >
           <Flex gap="10px">
-            <div className="w-[60px] h-[60px] rounded-full overflow-hidden border border-zinc-200">
-              <Image
+            <div className="w-[60px] h-[60px] rounded-full overflow-hidden border border-zinc-200 grid place-items-center ">
+              {/* <Image
                 src={user?.avatarUrl ?? "/assets/images/profile.png"}
                 alt="profile"
                 width={100}
                 height={100}
+              /> */}
+              <Avatar
+                src={user?.avatarUrl ?? "/assets/images/profile.png"}
+                fallback={user?.firstName?.charAt(0).toUpperCase() || ""}
+                radius="full"
+                className="bg-primary-50 w-full object-cover"
+                size="5"
               />
             </div>
             <Flex direction="column">

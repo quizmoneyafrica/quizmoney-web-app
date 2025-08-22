@@ -19,6 +19,11 @@ function Page() {
   const prevOpenRef = useRef<boolean>(false);
 
   useEffect(() => {
+    const fetchNotifications = () => {};
+
+    fetchNotifications();
+  }, []);
+  useEffect(() => {
     // When the drawer was previously open and now closed
     if (
       prevOpenRef.current &&
@@ -37,6 +42,7 @@ function Page() {
     // update previous value
     prevOpenRef.current = openNotification;
   }, [openNotification, passedNotification]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
