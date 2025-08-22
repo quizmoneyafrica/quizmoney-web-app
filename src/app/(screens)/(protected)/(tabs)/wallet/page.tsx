@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import WalletLayout from "@/app/components/wallet/WalletLayout";
 import {
@@ -11,7 +11,7 @@ import {
   setPayoutBanks,
 } from "@/app/store/walletSlice";
 import WalletApi from "@/app/api/wallet";
-import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
+import { useAppDispatch } from "@/app/hooks/useAuth";
 import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
@@ -23,35 +23,33 @@ import { useSearchParams } from "next/navigation";
 
 function Page() {
   const dispatch = useAppDispatch();
-  const {
-    wallet: walletData,
-    transactions,
-    banks,
-    payoutBanks,
-  } = useAppSelector((state) => state.wallet);
+  // const {
+  //   wallet: walletData,
+  // } = useAppSelector((state) => state.wallet);
 
-  const wallet = walletData.find((w) => w.currency === "NGN")! || {};
+  // const wallet = walletData.find((w) => w.currency === "NGN")! || {};
   const swiperRef = useRef<any>(null);
   const searchParams = useSearchParams();
   const tab = searchParams.get("tab");
   const initialSlide = tab === "coin" ? 1 : 0;
 
-  const fetchWallet = async () => {
+  const fetchWallet = useCallback(async () => {
     try {
       dispatch(setWalletLoading(true));
       const res = await WalletApi.fetchCustomerWallet();
       if (res?.data) {
         dispatch(setWallet(res?.data));
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.log("Error", error.raw);
     } finally {
       dispatch(setWalletLoading(false));
     }
-  };
+  }, [dispatch]);
 
   useEffect(() => {
     fetchWallet();
-  }, [dispatch]);
+  }, [fetchWallet]);
 
   useEffect(() => {
     const fetchPayoutAccounts = async () => {
