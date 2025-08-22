@@ -23,9 +23,14 @@ import { useSearchParams } from "next/navigation";
 
 function Page() {
   const dispatch = useAppDispatch();
-  const { wallet, transactions, banks, payoutBanks } = useAppSelector(
-    (state) => state.wallet
-  );
+  const {
+    wallet: walletData,
+    transactions,
+    banks,
+    payoutBanks,
+  } = useAppSelector((state) => state.wallet);
+
+  const wallet = walletData.find((w) => w.currency === "NGN")! || {};
   const swiperRef = useRef<any>(null);
   const searchParams = useSearchParams();
   const tab = searchParams.get("tab");

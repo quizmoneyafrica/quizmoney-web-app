@@ -52,7 +52,8 @@ function SocialLinksDrawer() {
   const [showUpdateDrawer, setShowUpdateDrawer] = useState(false);
   const { user } = useAuth();
   const dispatch = useAppDispatch();
-  const { wallet } = useAppSelector((state) => state.wallet);
+  const { wallet: walletData } = useAppSelector((state) => state.wallet);
+  const wallet = walletData.find((w) => w.currency === "NGN")! || {};
 
   const [socialInputs, setSocialInputs] = useState<SocialInput[]>([
     { platform: "InstagramHandle", username: "" },

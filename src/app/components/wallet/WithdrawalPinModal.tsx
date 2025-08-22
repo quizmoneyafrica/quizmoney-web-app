@@ -34,9 +34,12 @@ export default function OtpVerificationModal({
 }: OtpVerificationModalProps) {
   const [otpValues, setOtpValues] = useState<string[]>(["", "", "", ""]);
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
-  const { wallet, withdrawalData } = useSelector(useWallet);
-  const hasPin = Boolean(wallet?.pin);
+  const { wallet: walletData, withdrawalData } = useSelector(useWallet);
+  const wallet = walletData.find((w) => w.currency === "NGN");
+  const hasPin = !!wallet?.pin;
   const router = useRouter();
+
+  console.log(wallet);
 
   useEffect(() => {
     if (open) {

@@ -25,7 +25,10 @@ import { useRouter } from "next/navigation";
 function HomeTab() {
   const { user } = useAuth();
   const dispatch = useAppDispatch();
-  const { wallet, transactions } = useAppSelector((state) => state.wallet);
+  const { wallet: walletData, transactions } = useAppSelector(
+    (state) => state.wallet
+  );
+  const wallet = walletData.find((w) => w.currency === "NGN")! || {};
   const router = useRouter();
 
   const fetchWallet = useCallback(async () => {
