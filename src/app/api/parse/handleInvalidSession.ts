@@ -5,7 +5,7 @@ import { setTransactions, setWallet } from "@/app/store/walletSlice";
 
 export const handleInvalidSession = async (dispatch: any) => {
   dispatch(logout());
-  dispatch(setWallet(undefined));
+  dispatch(setWallet([]));
   dispatch(setTransactions([]));
   await persistor.purge();
 };

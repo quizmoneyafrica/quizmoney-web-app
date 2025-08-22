@@ -64,6 +64,7 @@ export type Wallet = {
   pendingBalance: number;
   currency: 'NGN' | 'QMC';
   walletAccountNumber: string;
+  pin?: string;
   walletAccountName: string;
   bankName: string;
 };
