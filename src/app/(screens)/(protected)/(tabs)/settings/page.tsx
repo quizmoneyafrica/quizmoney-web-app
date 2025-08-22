@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 import LogoutDialog from "@/app/components/logout/logout";
 import { useAuth } from "@/app/hooks/useAuth";

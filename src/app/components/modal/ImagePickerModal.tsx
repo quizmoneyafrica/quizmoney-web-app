@@ -69,7 +69,7 @@ const ImagePickerModal = ({
       const res = await UserAPI.updateUser(payload);
       console.log(res);
       dispatch(updateUser({ avatarUrl: selectedImage?.avatarUrl }));
-      // setOpen(false);
+      setOpen(false);
     } catch (err: any) {
       toast.error(err.message, { position: "top-right" });
     } finally {

@@ -21,7 +21,7 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { CameraIcon } from "lucide-react";
-import { updateUser, UserObject } from "@/app/store/authSlice";
+import { updateUser } from "@/app/store/authSlice";
 
 const initialForm = {
   firstName: "",

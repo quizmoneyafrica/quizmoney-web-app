@@ -53,7 +53,6 @@ function SocialLinksDrawer() {
   const { user } = useAuth();
   const dispatch = useAppDispatch();
   const { wallet: walletData } = useAppSelector((state) => state.wallet);
-  const wallet = walletData.find((w) => w.currency === "NGN")! || {};
 
   const [socialInputs, setSocialInputs] = useState<SocialInput[]>([
     { platform: "InstagramHandle", username: "" },
@@ -62,37 +61,9 @@ function SocialLinksDrawer() {
   const [initialized, setInitialized] = useState(false);
   console.log("USER", user);
 
-  // useEffect(() => {
-  //   // if (!user || !wallet) return;
-  //   if (!user) return;
-  //   // if (initialized) return;
-
-  //   const initialLinks: SocialInput[] = [];
-
-  //   Object.entries(socialPlatforms).forEach(([key]) => {
-  //     const username = cleanValue(
-  //       user?.[key.toLowerCase() as keyof typeof user]
-  //     );
-  //     console.log("username", username);
-
-  //     if (username) {
-  //       initialLinks.push({ platform: key as Platform, username });
-  //     }
-  //   });
-
-  //   setSocialInputs(initialLinks);
-  //   const filledCount = initialLinks.length;
-
-  //   setInitialized(true);
-
-  //   if (wallet && Number(wallet?.availableBalance) > 0 && filledCount < 2) {
-  //     setShowUpdateDrawer(true);
-  //   } else {
-  //     setShowUpdateDrawer(true);
-  //   }
-  // }, [user, wallet, initialized]);
-
   useEffect(() => {
+    const wallet = walletData.find((w) => w.currency === "NGN")! || {};
+
     if (!user && !wallet) return;
     if (initialized) return;
 
@@ -122,7 +93,7 @@ function SocialLinksDrawer() {
     } else {
       setShowUpdateDrawer(false);
     }
-  }, [user, wallet, initialized]);
+  }, [user, initialized, walletData]);
 
   const handleChange = (
     index: number,
@@ -276,7 +247,7 @@ function SocialLinksDrawer() {
               <input
                 type="text"
                 className="flex-1 p-2 py-[10px] outline-none text-sm"
-                placeholder="EnterUsername"
+                placeholder="quizmoney_ng"
                 value={input.username}
                 onChange={(e) =>
                   handleChange(index, "username", e.target.value)
