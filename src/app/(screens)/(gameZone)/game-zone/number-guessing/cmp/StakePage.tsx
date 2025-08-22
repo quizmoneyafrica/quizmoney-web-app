@@ -1,9 +1,22 @@
-import React from 'react'
+import { useAppDispatch } from "@/app/hooks/useAuth";
+import React from "react";
 
 function StakePage() {
+  const dispatch = useAppDispatch();
   return (
-    <div>StakePage</div>
-  )
+    <div className="w-full max-w-lg mx-auto space-y-10">
+      <div className="space-y-4">
+        <div>
+          <div className="text-primary-900 bg-transparent rounded-full h-14 w-14 border-4 border-primary-800 grid place-items-center mx-auto">
+            {/* <Gamepad2 /> */}
+          </div>
+          <h2 className="text-center text-[2.3em] text-primary-50">
+            Number Guessing
+          </h2>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-export default StakePage
+export default StakePage;

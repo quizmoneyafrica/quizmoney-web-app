@@ -7,6 +7,9 @@ import { formatNaira } from "@/app/utils/utils";
 import { useRouter } from "next/navigation";
 import StartPage from "./cmp/StartPage";
 import { useWallet } from "@/app/store/walletSlice";
+import StakePage from "./cmp/StakePage";
+import InProgress from "./cmp/InProgress";
+import ResultScreen from "./cmp/ResultScreen";
 
 function Page() {
   const numberGuess = useAppSelector((s) => s.numberGuess);
@@ -51,9 +54,9 @@ function Page() {
         {/* body  */}
         <div className="w-full">
           {numberGuess.gameStatus === "START" && <StartPage />}
-          {numberGuess.gameStatus === "STAKE" && <p>Stake SCreen</p>}
-          {numberGuess.gameStatus === "INPROGRESS" && <p>Game in progress</p>}
-          {numberGuess.gameStatus === "ENDED" && <p>Game Ended</p>}
+          {numberGuess.gameStatus === "STAKE" && <StakePage />}
+          {numberGuess.gameStatus === "INPROGRESS" && <InProgress />}
+          {numberGuess.gameStatus === "ENDED" && <ResultScreen />}
         </div>
       </div>
     </motion.div>
