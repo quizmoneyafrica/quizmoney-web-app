@@ -75,7 +75,7 @@ export default function WithdrawalAccounts() {
                   </span>
                   <div className="flex items-center space-x-2">
                     <span className="font-bold capitalize">
-                      {getMaskedBankCode(payoutBanks.accountName)}
+                      {payoutBanks?.accountName || ""}
                     </span>
                     <button
                       onClick={toggleBankCodeVisibility}
