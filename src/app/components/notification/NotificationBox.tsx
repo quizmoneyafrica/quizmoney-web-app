@@ -1,12 +1,12 @@
-import { ApiResponse } from "@/app/api/interface";
-import { formatDateTime, truncateWords } from "@/app/utils/utils";
+import { Content } from "@/app/store/notificationSlice";
+import { truncateWords } from "@/app/utils/utils";
 import { Flex, Grid } from "@radix-ui/themes";
 import React from "react";
 
 type Props = {
-  notification: ApiResponse;
+  notification: Content;
   setOpenNotification: React.Dispatch<React.SetStateAction<boolean>>;
-  setPassedNotification: React.Dispatch<React.SetStateAction<ApiResponse>>;
+  setPassedNotification: React.Dispatch<React.SetStateAction<Content>>;
 };
 
 export const NotificationBox = ({
@@ -14,12 +14,13 @@ export const NotificationBox = ({
   setPassedNotification,
   setOpenNotification,
 }: Props) => {
-  const { time, fullDate } = formatDateTime(notification.createdAt);
-
   const handleViewNotification = async () => {
     setOpenNotification(true);
     setPassedNotification(notification);
   };
+
+  console.log("Passed Notification", notification);
+
   return (
     <>
       <button
@@ -46,7 +47,7 @@ export const NotificationBox = ({
                 {notification.message}
               </p>
               <span className="text-xs text-neutral-600">
-                {truncateWords(notification.mainText)}
+                {truncateWords(notification.body)}
               </span>
             </Grid>
           </div>
@@ -58,17 +59,13 @@ export const NotificationBox = ({
               justify="end"
               className="text-neutral-600 text-xs"
             >
-              <span>{time}</span>
-              <Flex align="center" gap="1">
-                <span>{fullDate}</span>
-                {!notification.read && (
+              {!notification.opened && (
+                <Flex align="center" gap="1">
                   <div className="h-[8px] w-[8px] bg-positive-900 rounded-full " />
-                )}
-              </Flex>
+                  <p className="text-xs text-neutral-400 text-right">Unread</p>
+                </Flex>
+              )}
             </Flex>
-            {!notification.read && (
-              <p className="text-xs text-neutral-400 text-right">Unread</p>
-            )}
           </Grid>
         </Grid>
       </button>

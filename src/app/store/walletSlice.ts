@@ -33,6 +33,7 @@ export interface PayoutBank {
   bankName: string;
   bankCode: string;
   status: "ACTIVE" | "INACTIVE" | string;
+  accountName: string;
 }
 const initialState: WalletState = {
   withdrawalModal: false,
@@ -62,7 +63,7 @@ export type Wallet = {
   id: string;
   availableBalance: number;
   pendingBalance: number;
-  currency: 'NGN' | 'QMC';
+  currency: "NGN" | "QMC";
   walletAccountNumber: string;
   pin?: string;
   walletAccountName: string;
@@ -129,8 +130,8 @@ const walletSlice = createSlice({
     },
     setWalletBalance(state, action: PayloadAction<number>) {
       if (state.wallet) {
-        const wallet = state.wallet.map((w) =>{
-          if (w.currency === 'NGN') {
+        const wallet = state.wallet.map((w) => {
+          if (w.currency === "NGN") {
             w.availableBalance = action.payload;
           }
           return w;
@@ -140,10 +141,7 @@ const walletSlice = createSlice({
         }
       }
     },
-    setTransactions(
-      state,
-      action: PayloadAction<Transaction[] | []>
-    ) {
+    setTransactions(state, action: PayloadAction<Transaction[] | []>) {
       state.transactions = action.payload;
     },
     setBanks(state, action: PayloadAction<Bank[] | []>) {

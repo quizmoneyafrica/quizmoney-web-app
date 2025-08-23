@@ -1,8 +1,22 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ApiResponse } from "../api/interface";
 
+interface NotificationObject {
+  content: Content[];
+  pageNo: number;
+  pageSize: number;
+  totalElements: number;
+  totalPages: number;
+  last: boolean;
+}
+
+export interface Content {
+  body: string;
+  opened: boolean;
+  message: string;
+  id: string;
+}
 interface NotificationState {
-  notifications: ApiResponse["result"] | null;
+  notifications: NotificationObject | null;
   notificationCount: number;
 }
 const initialState: NotificationState = {
@@ -14,30 +28,34 @@ const notificationSlice = createSlice({
   name: "notifications",
   initialState,
   reducers: {
-    setNotifications(state, action: PayloadAction<ApiResponse["result"]>) {
+    setNotifications(state, action: PayloadAction<NotificationObject>) {
       state.notifications = action.payload;
+    },
+    appendNotifications(state, action: PayloadAction<NotificationObject>) {
+      const incoming = action.payload;
+      if (!state.notifications) {
+        state.notifications = incoming;
+        return;
+      }
+      const existing = state.notifications;
+
+      const seen = new Set(existing.content.map((n) => n.id));
+      const merged = [
+        ...existing.content,
+        ...incoming.content.filter((n) => !seen.has(n.id)),
+      ];
+
+      state.notifications = {
+        content: merged,
+        pageNo: incoming.pageNo,
+        pageSize: incoming.pageSize,
+        totalElements: incoming.totalElements,
+        totalPages: incoming.totalPages,
+        last: incoming.last,
+      };
     },
     setNotificationsCount(state, action: PayloadAction<number>) {
       state.notificationCount = action.payload;
-    },
-    addNotification(
-      state,
-      action: PayloadAction<ApiResponse["result"][number]>
-    ) {
-      if (state.notifications) {
-        state.notifications.unshift(action.payload);
-      } else {
-        state.notifications = [action.payload];
-      }
-    },
-    markAsRead(state, action: PayloadAction<string>) {
-      if (!state.notifications) return;
-      const index = state.notifications.findIndex(
-        (n: ApiResponse) => n.objectId === action.payload
-      );
-      if (index !== -1) {
-        state.notifications[index].read = true;
-      }
     },
     clearNotifications(state) {
       state.notifications = null;
@@ -47,8 +65,7 @@ const notificationSlice = createSlice({
 
 export const {
   setNotifications,
-  addNotification,
-  markAsRead,
+  appendNotifications,
   clearNotifications,
   setNotificationsCount,
 } = notificationSlice.actions;

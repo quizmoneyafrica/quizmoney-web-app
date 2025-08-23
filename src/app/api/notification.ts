@@ -10,9 +10,9 @@ const NotificationApi = {
       "GET"
     );
   },
-  fetchNotifications(): Promise<ApiResponse> {
+  fetchNotifications(page = 0, count = 10): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
-      "notifications?page=0&count=10",
+      `notifications?page=${page}&count=${count}`,
       {},
       {},
       "GET"
