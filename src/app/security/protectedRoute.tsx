@@ -2,7 +2,7 @@
 
 import { useAppSelector } from "@/app/hooks/useAuth";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
 export default function ProtectedRoute({
   children,
@@ -10,32 +10,16 @@ export default function ProtectedRoute({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { isAuthenticated, rehydrated } = useAppSelector((s) => s.auth);
-  const [checking, setChecking] = useState(true);
+  const { accessToken } = useAppSelector((s) => s.auth);
 
   useEffect(() => {
-    let isMounted = true;
-    if (rehydrated && isAuthenticated && isMounted) {
-      setChecking(false);
-    } else if (rehydrated && !isAuthenticated && isMounted) {
+    if (!accessToken) {
       router.replace("/login");
     }
-    return () => {
-      isMounted = false;
-    };
-  }, [rehydrated, isAuthenticated, router]);
+  }, [accessToken, router]);
 
-  if (!rehydrated) {
-    console.log(checking);
-    return (
-      <div className="h-screen flex items-center justify-center bg-white">
-        <div
-          className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"
-          aria-label="Loading"
-        />
-        <p className="sr-only">Loading, please wait...</p>
-      </div>
-    );
+  if (!accessToken) {
+    return null;
   }
 
   return <>{children}</>;
