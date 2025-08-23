@@ -29,10 +29,10 @@ export default function WithdrawalAccounts() {
     return `${firstTwo}${middleStars}${lastTwo}`;
   };
 
-  const getMaskedBankCode = (bankCode: string) => {
-    if (!isBankCodeMasked) return bankCode;
-    return "*".repeat(bankCode.length);
-  };
+  // const getMaskedBankCode = (bankCode: string) => {
+  //   if (!isBankCodeMasked) return bankCode;
+  //   return "*".repeat(bankCode.length);
+  // };
 
   return (
     <>
@@ -66,7 +66,9 @@ export default function WithdrawalAccounts() {
 
                 <div className="flex justify-between items-center">
                   <span className="font-medium text-gray-600">Bank Name:</span>
-                  <span className="font-bold">{payoutBanks.bankName}</span>
+                  <span className="font-bold">
+                    {payoutBanks?.bankName || ""}
+                  </span>
                 </div>
 
                 <div className="flex justify-between items-center">
