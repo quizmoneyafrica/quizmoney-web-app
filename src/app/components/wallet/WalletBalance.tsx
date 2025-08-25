@@ -56,7 +56,7 @@ export default function WalletBalance() {
 
   //   return () => window.removeEventListener("resize", checkIfMobile);
   // }, []);
-  const [activeDot, setActiveDot] = useState(0);
+  // const [activeDot, setActiveDot] = useState(0);
 
   const [isBalanceHidden, setIsBalanceHidden] = useState(false);
 
@@ -95,20 +95,20 @@ export default function WalletBalance() {
               </button>
             </h1>
           )}
-          <div className="flex justify-center  gap-2 my-2">
+          {/* <div className="flex justify-center  gap-2 my-2">
             <button
-              onClick={() => setActiveDot(0)}
+              onClick={() => router.push(`wallet`)}
               className={`h-2 w-2 rounded-full ${
                 activeDot === 0 ? "bg-white" : "bg-white/40"
               }`}
             />
             <button
-              onClick={() => setActiveDot(1)}
+              onClick={() => router.push(`wallet?tab=coin`)}
               className={`h-2 w-2 rounded-full ${
                 activeDot === 1 ? "bg-white" : "bg-white/40"
               }`}
             />
-          </div>
+          </div> */}
 
           <div className="flex gap-1 md:gap-4 mt-6 px-2 md:px-0 justify-center">
             <QmDrawer

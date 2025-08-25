@@ -1,12 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import CustomButton from "@/app/utils/CustomBtn";
 import React, { useRef, useEffect, Fragment } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { cn } from "@/app/utils/utils";
+import { cn, toastPosition } from "@/app/utils/utils";
 import { ArrowLeft, Loader } from "lucide-react";
 import QmDrawer from "@/app/components/drawer/drawer";
 import CustomImage from "@/app/components/wallet/CustomImage";
+import { toast } from "sonner";
+import KycAPI from "@/app/api/kycApi";
+import { useAppDispatch } from "@/app/hooks/useAuth";
+import { updateUser } from "@/app/store/authSlice";
 
 const otpSchema = z.object({
   otp: z
@@ -26,6 +31,7 @@ export default function OTPVerification({
   onBack: () => void;
   onNext: () => void;
 }) {
+  const dispatch = useAppDispatch();
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [timeLeft, setTimeLeft] = React.useState(82);
 
@@ -97,8 +103,15 @@ export default function OTPVerification({
 
   const [successModal, setSuccessModal] = React.useState(false);
 
-  const onSubmit = () => {
-    setSuccessModal(true);
+  const onSubmit = async () => {
+    try {
+      const res = await KycAPI.phoneOtpVerify(otpValue);
+      console.log(res);
+      dispatch(updateUser({ phoneVerified: true }));
+      setSuccessModal(true);
+    } catch (err: any) {
+      toast.error(err.message, { position: toastPosition });
+    }
   };
 
   const handleResend = () => {

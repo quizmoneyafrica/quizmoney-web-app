@@ -95,14 +95,17 @@ const WalletApi = {
     );
   },
   requestWithdrawal(
-    data: {
-      amount: string;
-      pin: string;
-      purpose?: string;
-    },
+    amount: number,
+    pin: string,
+    purpose?: string,
+
     dispatch?: any
   ): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("withdraw", { ...data }, dispatch);
+    return callWithSessionToken<ApiResponse>(
+      "wallets/withdraw",
+      { amount, pin, purpose },
+      dispatch
+    );
   },
   initializePaystack(data: { amount: number }): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(

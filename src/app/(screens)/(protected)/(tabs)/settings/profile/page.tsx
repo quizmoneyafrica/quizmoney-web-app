@@ -132,7 +132,7 @@ const Page = () => {
                 onClick={() => setIsImageModalOpen(true)}
                 className="cursor-pointer sm:w-[100px] sm:h-[100px] w-[80px] h-[80px] rounded-full  border-2 border-primary-400  z-10 bg-white/50 backdrop-blur-sm"
               >
-                <div className="w-full h-full flex items-center overflow-hidden justify-center relative">
+                <div className="w-full h-full flex items-center !overflow-clip justify-center relative">
                   {/* <Image
                     src={user?.avatarUrl ?? "/assets/images/profile.png"}
                     alt="profile"

@@ -34,17 +34,20 @@ function Coin() {
     fetchUserCoinTransactions();
   }, [dispatch]);
   return (
-    <div className="min-h-[100dvh] space-y-6">
-      <QmDrawer
-        title="Confirm Redemption"
-        open={openRedeem}
-        onOpenChange={setOpenRedeem}
-        titleLeft
-        trigger={<CoinCard setOpenRedeem={setOpenRedeem} />}
-      >
-        <RedeemModal setOpenRedeem={setOpenRedeem} />
-      </QmDrawer>
-      <CoinTarget />
+    <div className="min-h-[100dvh] space-y-6 w-full">
+      <div className="space-y-6 lg:grid lg:grid-cols-2 lg:gap-4">
+        <QmDrawer
+          title="Confirm Redemption"
+          open={openRedeem}
+          onOpenChange={setOpenRedeem}
+          titleLeft
+          trigger={<CoinCard setOpenRedeem={setOpenRedeem} />}
+        >
+          <RedeemModal setOpenRedeem={setOpenRedeem} />
+        </QmDrawer>
+        <CoinTarget />
+      </div>
+
       <CoinTransactions />
     </div>
   );

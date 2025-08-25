@@ -155,14 +155,11 @@ export const WithdrawalPinForm = ({
     if (!withdrawalData) {
       return;
     }
+
     try {
       const response = await WalletApi.requestWithdrawal(
-        {
-          amount: withdrawalData?.amount.toString(),
-          pin,
-          purpose: "Withdrawal request",
-        },
-        store.dispatch
+        Number(withdrawalData?.amount),
+        pin
       );
       if (response) {
         toast.success(response.message, {

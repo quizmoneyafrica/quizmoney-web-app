@@ -22,6 +22,7 @@ const UserAPI = {
   login(form: LoginForm): Promise<ApiResponse> {
     return callParseEndpoint<ApiResponse>("auth/login", form);
   },
+
   customerProfile(accessToken: string): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
       "customers/profile",
