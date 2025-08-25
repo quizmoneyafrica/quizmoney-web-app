@@ -81,11 +81,6 @@ const authSlice = createSlice({
         state.accessToken = action.payload;
       }
     },
-    // updateUser(state, action: PayloadAction<UpdateUserFieldPayload>) {
-    //   if (state.user) {
-    //     state.user[action.payload.key] = action.payload.value;
-    //   }
-    // },
   },
 });
 
