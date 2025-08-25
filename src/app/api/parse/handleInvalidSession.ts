@@ -1,9 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { logout, updateAccessToken } from "@/app/store/authSlice";
-import { persistor } from "@/app/store/store";
+import { AppDispatch, persistor } from "@/app/store/store";
 import { setTransactions, setWallet } from "@/app/store/walletSlice";
 
-export const handleInvalidSession = async (dispatch: any) => {
+export const handleInvalidSession = async (
+  dispatch: AppDispatch
+): Promise<string> => {
   try {
     const res = await fetch("/auth/refresh", {
       method: "POST",
@@ -16,8 +17,7 @@ export const handleInvalidSession = async (dispatch: any) => {
     const newToken = data.accessToken;
     if (!newToken) throw new Error("No accessToken in refresh response");
 
-    // update Redux
-    dispatch(updateAccessToken({ accessToken: newToken }));
+    dispatch(updateAccessToken(newToken));
 
     return newToken;
   } catch (err) {
