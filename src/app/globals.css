@@ -681,36 +681,81 @@ input[type="date"]::-moz-focus-inner {
 
 /* Radix Css  */
 .phone-input .PhoneInputInput {
-          border: 1px solid #3A3A3A80;
-          border-radius: 0.75rem;
-          padding: 0.75rem 1rem;
-          font-size: 0.875rem;
-          transition: all 0.2s;
-          outline: none;
-          width: 100%;
-        }
+  border: 1px solid #3a3a3a80;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+  outline: none;
+  width: 100%;
+}
 
-        .phone-input .PhoneInputInput:focus {
-          outline: none;
-        }
+.phone-input .PhoneInputInput:focus {
+  outline: none;
+}
 
-        .phone-input .PhoneInputCountry {
-          border: 1px solid #3A3A3A80;
-          border-radius: 0.75rem;
-          padding-left: 0.75rem;
-          padding-right: 0.75rem;
-          margin-right: 0.5rem;
-          background: white;
-          transition: all 0.2s;
-        }
-      
+.phone-input .PhoneInputCountry {
+  border: 1px solid #3a3a3a80;
+  border-radius: 0.75rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  margin-right: 0.5rem;
+  background: white;
+  transition: all 0.2s;
+}
 
-        .phone-input .PhoneInputCountrySelect:focus {
-          outline: none;
-          border: 2px solid #3A3A3A80;
-          box-shadow: none;
-        }
+.phone-input .PhoneInputCountrySelect:focus {
+  outline: none;
+  border: 2px solid #3a3a3a80;
+  box-shadow: none;
+}
 
-        .phone-input .PhoneInputCountrySelectArrow {
-          color: #3A3A3A80;
-        }
+.phone-input .PhoneInputCountrySelectArrow {
+  color: #3a3a3a80;
+}
+
+/* Hamburger menu  */
+.menu {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  padding: 0;
+}
+.line {
+  fill: none;
+  stroke: black;
+  stroke-width: 6;
+  transition:
+    stroke-dasharray 600ms cubic-bezier(0.4, 0, 0.2, 1),
+    stroke-dashoffset 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.line1 {
+  stroke-dasharray: 60 207;
+  stroke-width: 6;
+}
+.line2 {
+  stroke-dasharray: 60 60;
+  stroke-width: 6;
+}
+.line3 {
+  stroke-dasharray: 60 207;
+  stroke-width: 6;
+}
+.opened .line1 {
+  stroke-dasharray: 90 207;
+  stroke-dashoffset: -134;
+  stroke-width: 6;
+}
+.opened .line2 {
+  stroke-dasharray: 1 60;
+  stroke-dashoffset: -30;
+  stroke-width: 6;
+}
+.opened .line3 {
+  stroke-dasharray: 90 207;
+  stroke-dashoffset: -134;
+  stroke-width: 6;
+}
+
+/* Hamburger menu  */

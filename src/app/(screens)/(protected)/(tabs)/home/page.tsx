@@ -1,5 +1,5 @@
 "use client";
-import { useAppDispatch, useAppSelector, useAuth } from "@/app/hooks/useAuth";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import React, { useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import GameCard from "@/app/components/home/GameCard";
@@ -23,7 +23,10 @@ import { GameZoneTitle } from "@/app/icons/icons";
 import { useRouter } from "next/navigation";
 
 function HomeTab() {
-  const { user } = useAuth();
+  const { customerKyc } = useAppSelector((s) => s.kyc);
+  const phoneStep = customerKyc.find((s) => s.step === "PHONE");
+  const bvnStep = customerKyc.find((s) => s.step === "BVN");
+
   const dispatch = useAppDispatch();
   const { wallet: walletData, transactions } = useAppSelector(
     (state) => state.wallet
@@ -82,7 +85,12 @@ function HomeTab() {
       transition={{ duration: 0.25, ease: "easeInOut" }}
       className="space-y-4"
     >
-      {!user?.phoneVerified ? <KycStart /> : <KycContinue />}
+      {customerKyc.length < 1 ? (
+        <KycStart />
+      ) : phoneStep?.status !== "COMPLETED" ||
+        bvnStep?.status !== "COMPLETED" ? (
+        <KycContinue />
+      ) : null}
       <Grid columns={{ initial: "1", lg: "2" }} gap="4">
         <div>
           <Grid gap="4">

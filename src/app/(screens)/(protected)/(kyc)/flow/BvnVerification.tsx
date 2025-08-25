@@ -1,12 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { Fragment } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import CustomButton from "@/app/utils/CustomBtn";
-import { ArrowLeft, CircleCheck, Info, Loader } from "lucide-react";
+import { CircleCheck, Info, Loader } from "lucide-react";
 import QmDrawer from "@/app/components/drawer/drawer";
 import CustomImage from "@/app/components/wallet/CustomImage";
 import { useRouter } from "next/navigation";
+import KycAPI from "@/app/api/kycApi";
+import { toast } from "sonner";
+import { toastPosition } from "@/app/utils/utils";
 
 const bvnSchema = z.object({
   bvn: z
@@ -18,7 +22,7 @@ const bvnSchema = z.object({
 
 type BvnForm = z.infer<typeof bvnSchema>;
 
-export default function BvnVerification({ onBack }: { onBack: () => void }) {
+export default function BvnVerification({ onNext }: { onNext: () => void }) {
   const [successModal, setSuccessModal] = React.useState(false);
   const router = useRouter();
 
@@ -35,16 +39,19 @@ export default function BvnVerification({ onBack }: { onBack: () => void }) {
 
   const onSubmit = async (data: BvnForm) => {
     try {
+      const res = await KycAPI.bvnVerify(data.bvn);
+      console.log(res);
       setSuccessModal(true);
       console.log(data);
-    } catch (error) {
-      console.error("BVN verification failed:", error);
+    } catch (err: any) {
+      toast.error(err.message, { position: toastPosition });
     }
   };
 
   const backToDashboard = () => {
+    onNext();
     setSuccessModal(false);
-    router.back();
+    router.replace("/home");
   };
 
   return (
@@ -54,8 +61,7 @@ export default function BvnVerification({ onBack }: { onBack: () => void }) {
           <div className="w-full mb-8">
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Add BVN</h1>
             <p className="text-gray-600 text-sm leading-relaxed">
-              We use our BVN to ensure security and that your account belongs to
-              you
+              We use BVN to ensure security and that your account belongs to you
             </p>
           </div>
 
@@ -114,7 +120,7 @@ export default function BvnVerification({ onBack }: { onBack: () => void }) {
               </div>
             </div>
             <div className="pt-4 w-full flex justify-between gap-2">
-              <CustomButton
+              {/* <CustomButton
                 onClick={() => {
                   setSuccessModal(false);
                   onBack?.();
@@ -124,7 +130,7 @@ export default function BvnVerification({ onBack }: { onBack: () => void }) {
               >
                 <ArrowLeft className="text-primary-900" />
                 <span className="text-primary-900">Back</span>
-              </CustomButton>
+              </CustomButton> */}
               <CustomButton
                 loaderComponent={
                   <Loader className="animate-spin size-5 text-white" />

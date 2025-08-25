@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import KycAPI from "@/app/api/kycApi";
 import UserAPI from "@/app/api/userApi";
 import NLRC from "@/app/components/follow/nlrc";
 import SocialFollow from "@/app/components/follow/socialFollow";
-import { useAuth } from "@/app/hooks/useAuth";
+import { useAppDispatch, useAuth } from "@/app/hooks/useAuth";
 import useFcmToken from "@/app/hooks/useFcmToken";
 import { EyeIcon, EyeSlash, MailIcon } from "@/app/icons/icons";
 import getDeviceId from "@/app/pwa/deviceId";
+import { setCustomerKyc } from "@/app/store/kycSlice";
 import { decryptData } from "@/app/utils/crypto";
 import CustomButton from "@/app/utils/CustomBtn";
 import CustomTextField from "@/app/utils/CustomTextField";
@@ -27,6 +29,7 @@ type Props = {
 };
 
 const LoginForm = ({ loading, setLoading }: Props) => {
+  const dispatch = useAppDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -82,11 +85,13 @@ const LoginForm = ({ loading, setLoading }: Props) => {
       console.log("RES", res);
 
       const data = await UserAPI.customerProfile(res.data.accessToken);
-      console.log("Customer Profile", data);
+
       if (res.success) {
         loginUser(res.data);
+
         if (data.data) {
           updateCustomer(data.data);
+          checkCustomerKyc();
           router.replace("/home");
           toast.success(
             `Welcome Back ${capitalizeFirstLetter(res.data.user.firstName)}`,
@@ -115,6 +120,16 @@ const LoginForm = ({ loading, setLoading }: Props) => {
           });
         }
       }
+    }
+  };
+
+  const checkCustomerKyc = async () => {
+    try {
+      const kycData = await KycAPI.getCustomerKyc();
+      dispatch(setCustomerKyc(kycData.data));
+      console.log("Customer kycData", kycData.data);
+    } catch (err: any) {
+      toast.error(err.message, { position: toastPosition });
     }
   };
 

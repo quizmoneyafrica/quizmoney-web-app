@@ -76,6 +76,11 @@ const authSlice = createSlice({
         };
       }
     },
+    updateAccessToken(state, action: PayloadAction<string>) {
+      if (state.accessToken) {
+        state.accessToken = action.payload;
+      }
+    },
     // updateUser(state, action: PayloadAction<UpdateUserFieldPayload>) {
     //   if (state.user) {
     //     state.user[action.payload.key] = action.payload.value;
@@ -84,5 +89,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { login, logout, setRehydrated, updateUser } = authSlice.actions;
+export const { login, logout, setRehydrated, updateUser, updateAccessToken } =
+  authSlice.actions;
 export default authSlice.reducer;

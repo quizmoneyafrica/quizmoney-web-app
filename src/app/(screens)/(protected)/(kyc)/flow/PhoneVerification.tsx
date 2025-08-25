@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
@@ -6,6 +7,9 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import CustomButton from "@/app/utils/CustomBtn";
 import OTPVerification from "./OTPVerification";
+import KycAPI from "@/app/api/kycApi";
+import { toast } from "sonner";
+import { toastPosition } from "@/app/utils/utils";
 
 const phoneSchema = z.object({
   phoneNumber: z
@@ -35,8 +39,11 @@ export default function PhoneVerification({ onNext }: { onNext: () => void }) {
     try {
       setState(data.phoneNumber);
       // onNext();
-    } catch (error) {
+      const res = await KycAPI.phoneVerify(data.phoneNumber);
+      console.log(res);
+    } catch (error: any) {
       console.error("Verification failed:", error);
+      toast.error(error.message, { position: toastPosition });
     }
   };
 
@@ -80,13 +87,17 @@ export default function PhoneVerification({ onNext }: { onNext: () => void }) {
                   {...field}
                   placeholder="Enter phone number"
                   defaultCountry="NG"
-                  international
+                  countries={["NG"]}
+                  addInternationalOption={false}
                   countryCallingCodeEditable={false}
+                  international
                   className="phone-input"
-                  style={{
-                    "--PhoneInputCountryFlag-height": "1.5em",
-                    "--PhoneInput-color--focus": "#3A3A3A80",
-                  }}
+                  style={
+                    {
+                      "--PhoneInputCountryFlag-height": "1.5em",
+                      "--PhoneInput-color--focus": "#3A3A3A80",
+                    } as React.CSSProperties
+                  }
                 />
               )}
             />

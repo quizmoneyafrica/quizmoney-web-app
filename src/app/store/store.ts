@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./authSlice";
+import kycReducer from "./kycSlice";
 import walletReducer from "./walletSlice";
 import gameReducer from "./gameSlice";
 import demoReducer from "./demoSlice";
@@ -32,6 +33,11 @@ const authPersistConfig = {
   storage: localForage,
   transforms: [authTransform],
 };
+const customerKycPersistConfig = {
+  key: "kyc",
+  storage: localForage,
+  transforms: [authTransform],
+};
 const walletPersistConfig = {
   key: "wallet",
   storage: localForage,
@@ -39,6 +45,10 @@ const walletPersistConfig = {
 };
 
 const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
+const persistedKycReducer = persistReducer(
+  customerKycPersistConfig,
+  kycReducer
+);
 const persistedWalletReducer = persistReducer(
   walletPersistConfig,
   walletReducer
@@ -56,6 +66,7 @@ export const store = configureStore({
     coin: coinReducer,
     stompSub: stompSub,
     numberGuess: numberGuessGameSlice,
+    kyc: persistedKycReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

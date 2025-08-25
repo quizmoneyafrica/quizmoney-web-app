@@ -19,6 +19,7 @@ import LogoutDialog from "../components/logout/logout";
 import { useDispatch } from "react-redux";
 import NotificationApi from "../api/notification";
 import { setNotificationsCount } from "../store/notificationSlice";
+import { MenuIcon } from "lucide-react";
 // import Parse, { liveQueryClient } from "@/app/api/parse/parseClient";
 
 function AppHeader() {
@@ -78,7 +79,7 @@ function AppHeader() {
                   <CircleArrowLeft />
                 </button>
               ))}
-            <span className=" lg:flex">
+            <span className="hidden lg:flex">
               {lastSegment === "Home"
                 ? `Welcome, ${user?.firstName || ""} 👋`
                 : isVerifyOtp()
@@ -87,6 +88,9 @@ function AppHeader() {
                 ? " Reset Pin"
                 : lastSegment}
             </span>
+            <button className="bg-primary-50 rounded text-gray-500 lg:hidden">
+              <MenuIcon className="m-1" />
+            </button>
           </div>
 
           {/* <span className="lg:hidden">{lastSegment}</span> */}
@@ -192,9 +196,15 @@ function AppHeader() {
       </Flex>
       {lastSegment === "Home" && (
         <>
-          {/* <Heading size={{ initial: "4", lg: "5" }} className="lg:hidden">
-						Hello <span className="capitalize">{user?.firstName}</span> 👋
-					</Heading> */}
+          <span className="flex capitalize font-bold lg:hidden">
+            {lastSegment === "Home"
+              ? `Welcome, ${user?.firstName || ""} 👋`
+              : isVerifyOtp()
+              ? " Reset Pin"
+              : isPin()
+              ? " Reset Pin"
+              : lastSegment}
+          </span>
           <Text className="text-sm lg:text-base">
             Let&apos;s see what you&apos;ve got
           </Text>
