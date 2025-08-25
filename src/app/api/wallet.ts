@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { FilterType } from "../components/transactions/FilterBar";
 import { store } from "../store/store";
 import { ApiResponse } from "./interface";
 import { callWithSessionToken } from "./parse/callWithSessionToken";
@@ -54,9 +55,20 @@ const WalletApi = {
       "GET"
     );
   },
-  fetchTransactions(): Promise<ApiResponse> {
+  fetchTransactions({transactionStatus, searchText, page}: {transactionStatus?: FilterType, searchText?: string, page?: number}): Promise<ApiResponse> {
+    const params = [];
+    if (transactionStatus !== undefined && transactionStatus !== null) {
+      params.push(`transactionStatus=${transactionStatus.toUpperCase()}`);
+    }
+    if (searchText !== undefined && searchText !== null && searchText !== "") {
+      params.push(`searchText=${encodeURIComponent(searchText)}`);
+    }
+    if (page !== undefined && page !== null) {
+      params.push(`page=${page}`);
+    }
+    const queryString = params.length ? `?${params.join("&")}` : "";
     return callWithSessionToken<ApiResponse>(
-      `wallet-transactions`,
+      `wallet-transactions${queryString}`,
       {},
       {},
       "GET"

@@ -33,15 +33,13 @@ const RedeemModal = ({ setOpenRedeem }: Props) => {
   return (
     <div className="space-y-4">
       <p className="-mt-3 text-sm">
-        You&apos;re about to redeem your QM Coins for real money.
+        You&apos;re about to redeem your QMC for real money.
       </p>
       <div className="space-y-12">
         <div className="space-y-4">
           <div className="bg-primary-50 border border-primary-400 flex items-center justify-center gap-2 py-5 rounded-[10px]">
             <QMCoin />
-            <p className="text-primary-900 font-bold text-base">
-              1,500 QM Coin
-            </p>
+            <p className="text-primary-900 font-bold text-base">1,500 QMC</p>
           </div>
           <div className="h-8 w-8 border border-primary-900 rounded-full mx-auto grid place-items-center">
             <ArrowRightLeft
@@ -69,7 +67,7 @@ const RedeemModal = ({ setOpenRedeem }: Props) => {
             No, Cancel
           </CustomButton>
           <CustomButton size="lg" width="full" onClick={handleRedeem}>
-            Yes, Redeem QM coin
+            Yes, Redeem QMC
           </CustomButton>
         </div>
       </div>

@@ -8,39 +8,26 @@ import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { cn } from "@/app/utils/utils";
 
 export enum FilterType {
-  COMPLETED = "completed",
   PENDING = "pending",
-  ALL = "all",
+  SUCCESSFUL = "successful",
+  FAILED = "failed",
 }
 
 export function FilterBar({
   setSelectedFilter,
   selectedFilter,
+  searchTransaction,
 }: {
   setSelectedFilter: (filter: FilterType) => void;
   selectedFilter: FilterType;
+  searchTransaction: (query: string) => void;
 }): React.ReactElement {
-  const handleFilter = async (query: string) => {
-    // Implement filter logic here
-    try {
-      const response = await WalletApi.searchTransactions({
-        query,
-      });
-
-      if (response?.groupedTransactions) {
-        store.dispatch(setTransactions(response?.groupedTransactions));
-      }
-    } catch (error) {
-      console.log(error, "ERROR FETCHING TRANSACTIONS");
-    }
-  };
-
   return (
     <div className="mb-6 flex items-center gap-3 justify-between">
       <div className="border flex-1 bg-white border-[#E4E3E3] rounded-lg px-5 flex items-center">
         <CustomImage alt="" src={"/icons/search-normal.svg"} />
         <input
-          onChange={(e) => handleFilter(e.target.value)}
+          onChange={(e) => searchTransaction(e.target.value)}
           type="search"
           name="search"
           id="search"
@@ -53,12 +40,7 @@ export function FilterBar({
         />
       </div>
 
-      <Select.Root
-        value={selectedFilter}
-        onValueChange={(value: string) =>
-          setSelectedFilter(value as FilterType)
-        }
-      >
+      <Select.Root value={selectedFilter} onValueChange={setSelectedFilter}>
         <Select.Trigger className="border border-[#E4E3E3] outline-none focus:ring-transparent cursor-pointer bg-white rounded-lg px-4 py-2 text-sm flex items-center gap-2">
           <CustomImage className="" alt="" src={"/icons/switch-icon.svg"} />
           <Select.Value placeholder="Filter By" className="hidden md:block" />
