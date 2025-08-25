@@ -22,7 +22,7 @@ const KycAPI = {
   bvnVerify(bvn: string): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
       "customer-kyc/bvn/verify",
-      { bvn },
+      { bvn, subjectConsent: true },
       {},
       "POST"
     );

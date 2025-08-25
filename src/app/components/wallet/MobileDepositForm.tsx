@@ -29,7 +29,7 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
     "bankTransfer" | "card" | ""
-  >("card");
+  >("bankTransfer");
   const user = getAuthUser();
   const [showVirtual, setShowVirtual] = useState(false);
   const [virtualAmount, setVirtualAmount] = useState<number | null>(null);

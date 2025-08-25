@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
 import { CirclePlus, MoveLeft } from "lucide-react";
 import { useAppSelector } from "@/app/hooks/useAuth";
-import { formatNaira } from "@/app/utils/utils";
+import { formatNaira, toastPosition } from "@/app/utils/utils";
 import { useRouter } from "next/navigation";
 import GameZoneCardTemp, {
   gamesObject,
@@ -14,11 +15,14 @@ import {
   PerfectScoreTitle,
 } from "@/app/icons/icons";
 import { useWallet } from "@/app/store/walletSlice";
+import { toast } from "sonner";
+import GameZoneAPI from "@/app/api/gameZoneApi";
 
 function GameZone() {
   const { wallet: walletData } = useAppSelector(useWallet);
   const wallet = walletData.find((w) => w.currency === "NGN")! || {};
   const router = useRouter();
+  let loading = false;
 
   const games: gamesObject[] = [
     {
@@ -53,6 +57,17 @@ function GameZone() {
       variant: "green",
     },
   ];
+
+  const testEndpoints = async () => {
+    loading = true;
+    try {
+      await GameZoneAPI.getAllGames();
+    } catch (err: any) {
+      toast.error(err.message, { position: toastPosition });
+    } finally {
+      loading = false;
+    }
+  };
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -80,7 +95,12 @@ function GameZone() {
             </button>
           </div>
         </div>
-
+        <button
+          onClick={testEndpoints}
+          className="bg-white px-4 py-2 rounded font-medium"
+        >
+          {loading ? "Loading..." : "Test Endpoints"}
+        </button>
         {/* games */}
         <div className="grid md:grid-cols-2 gap-4">
           {games.map((game, index) => {
