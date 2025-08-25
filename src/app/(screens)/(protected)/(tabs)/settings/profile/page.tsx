@@ -22,6 +22,7 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 import { CameraIcon } from "lucide-react";
 import { updateUser } from "@/app/store/authSlice";
+import { useKycStep } from "@/app/hooks/useKycStep";
 
 const initialForm = {
   firstName: "",
@@ -40,6 +41,9 @@ const initialForm = {
 const Page = () => {
   const dispatch = useAppDispatch();
   const { user } = useAuth();
+  const { customerKyc } = useKycStep();
+  const bvnStep = customerKyc.find((s) => s.step === "BVN");
+
   const [formData, setFormData] = useState({
     ...initialForm,
     ...user,
@@ -98,6 +102,8 @@ const Page = () => {
           tiktokHandle: formData.tiktokHandle
             ? formData.tiktokHandle.trim()
             : "",
+          firstName: formData.firstName,
+          lastName: formData.lastName,
         })
       );
     } catch (err: any) {
@@ -201,11 +207,14 @@ const Page = () => {
                   autoComplete="first-name"
                   placeholder="Enter your first name"
                   onChange={onChange}
-                  disabled
                   icon={<PersonIcon className="text-[#A6ABC4]" />}
                   required
                   className="capitalize"
+                  disabled={
+                    !isEditing || (bvnStep && bvnStep?.status === "COMPLETED")
+                  }
                 />
+
                 <CustomTextField
                   label="Last Name"
                   name="lastName"
@@ -214,10 +223,12 @@ const Page = () => {
                   autoComplete="family-name"
                   placeholder="Enter your last name"
                   onChange={onChange}
-                  disabled
                   icon={<PersonIcon className="text-[#A6ABC4]" />}
                   required
                   className="capitalize"
+                  disabled={
+                    !isEditing || (bvnStep && bvnStep?.status === "COMPLETED")
+                  }
                 />
                 <CustomTextField
                   label="Email"

@@ -10,6 +10,7 @@ import leaderboardReducer from "./leaderboardSlice";
 import storeReducer from "./storeSlice";
 import stompSub from "./stompSlice";
 import numberGuessGameSlice from "./numberGuessGameSlice";
+import gameZoneSlice from "./gameZoneSlice";
 
 import { createFilter } from "redux-persist-transform-filter";
 
@@ -64,9 +65,10 @@ export const store = configureStore({
     leaderboard: leaderboardReducer,
     store: storeReducer,
     coin: coinReducer,
-    stompSub: stompSub,
-    numberGuess: numberGuessGameSlice,
     kyc: persistedKycReducer,
+    stompSub: stompSub,
+    gameZone: gameZoneSlice,
+    numberGuess: numberGuessGameSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
