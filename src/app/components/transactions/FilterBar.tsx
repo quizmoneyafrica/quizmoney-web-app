@@ -1,8 +1,5 @@
 import React from "react";
 import CustomImage from "../wallet/CustomImage";
-import WalletApi from "@/app/api/wallet";
-import { setTransactions } from "@/app/store/walletSlice";
-import { store } from "@/app/store/store";
 import * as Select from "@radix-ui/react-select";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { cn } from "@/app/utils/utils";

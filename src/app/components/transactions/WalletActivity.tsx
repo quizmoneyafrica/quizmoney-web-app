@@ -69,6 +69,8 @@ export default function WalletActivity(): React.ReactElement {
         setTotalPages(1);
       }
     } catch (error) {
+      console.log(error);
+
       dispatch(setTransactions([]));
       setTotalPages(1);
     } finally {
