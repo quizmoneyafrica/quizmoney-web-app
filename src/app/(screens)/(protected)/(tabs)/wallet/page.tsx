@@ -71,7 +71,7 @@ function Page() {
     const fetchTransactions = async () => {
       try {
         dispatch(setTransactionsLoading(true));
-        const res = await WalletApi.fetchTransactions();
+        const res = await WalletApi.fetchTransactions({});
         if (res?.data?.content) {
           dispatch(setTransactions(res?.data.content ?? []));
         }
