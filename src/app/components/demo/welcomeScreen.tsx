@@ -7,9 +7,9 @@ import CustomButton from "@/app/utils/CustomBtn";
 import { Grid, Heading, Text } from "@radix-ui/themes";
 import Image from "next/image";
 import { useDispatch } from "react-redux";
-import DemoApi from "@/app/api/demo";
 import { setDemoData } from "@/app/store/demoSlice";
 import { playAudio, setPhase } from "@/app/store/gameSlice";
+import { useQuestions } from "@/app/hooks/useDemoQuestions";
 
 type RouterType = ReturnType<typeof useRouter>;
 type Props = {
@@ -20,17 +20,22 @@ type Props = {
 };
 export default function WelcomeScreen({ loading, setLoading, router }: Props) {
   const dispatch = useDispatch();
+  const { data } = useQuestions();
+
+  // if (err) return <p>Error: {err}</p>;
+  // if (!data?.length) return <p>No questions</p>;
 
   const handleFetchDemoData = async () => {
     setLoading(true);
     dispatch(setDemoData({}));
     try {
-      const res: ApiResponse = await DemoApi.fetchDemoGame();
-      const demoData = res;
-      console.log(res);
+      // const res: ApiResponse = await DemoApi.fetchDemoGame();
+      // const demoData = res;
+      // console.log(res);
 
-      dispatch(setDemoData(demoData));
-      sessionStorage.setItem("quizmoney_demoData", JSON.stringify(demoData));
+      // dispatch(setDemoData(demoData));
+      dispatch(setDemoData(data || []));
+      sessionStorage.setItem("quizmoney_demoData", JSON.stringify(data));
       sessionStorage.setItem("quizmoney_demoData_d", "0");
       const objectId = "practice";
       //Play Song

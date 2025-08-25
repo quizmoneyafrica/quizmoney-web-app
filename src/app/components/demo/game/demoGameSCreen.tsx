@@ -9,8 +9,7 @@ import { Avatar, Flex } from "@radix-ui/themes";
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
-import { useAppSelector } from "@/app/hooks/useAuth";
-import { decryptData } from "@/app/utils/crypto";
+import { useAuth } from "@/app/hooks/useAuth";
 import DemoResult from "../result/demoResult";
 import { motion } from "framer-motion";
 import LoadingState from "./loadingState";
@@ -26,8 +25,7 @@ const formatTime = (ms: number) => {
 };
 
 function DemoGameSCreen() {
-  const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
-  const user = encrypted ? decryptData(encrypted) : null;
+  const user = useAuth();
   const reduxDemoData = useSelector((state: RootState) => state.demo.data);
   const [demoData, setDemoData] = useState(reduxDemoData);
   const initialCount = Number(sessionStorage.getItem("quizmoney_demoData_d"));
@@ -153,10 +151,12 @@ function DemoGameSCreen() {
                   }}
                 </CountdownCircleTimer>
               </div>
-              <div className="mt-6 text-gray-500 text-sm flex items-center justify-end">
+              <div className="mt-6 text-gray-500 text-sm flex items-center justify-center">
                 <Avatar
-                  src={user?.avatar}
-                  fallback={user?.firstName?.charAt(0).toUpperCase()}
+                  src={user?.user?.avatarUrl}
+                  fallback={
+                    user?.user?.firstName?.charAt(0).toUpperCase() || "QM"
+                  }
                   radius="full"
                   className="bg-primary-50"
                 />
