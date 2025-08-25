@@ -96,7 +96,8 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
         console.log(response.data);
 
         if (response.success || response.data?.reference) {
-          const { reference } = response.data;
+          const reference = response.data.accessCode;
+          console.log("PAYSTACK RES", response.data);
 
           const { usePaystackPayment } = await loadPaystack();
           // eslint-disable-next-line react-hooks/rules-of-hooks
