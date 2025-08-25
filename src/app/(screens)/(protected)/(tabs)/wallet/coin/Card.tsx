@@ -23,7 +23,7 @@ const CoinCard = ({ setOpenRedeem }: Props) => {
           {Number(wallet.availableBalance ?? 0).toLocaleString()}
         </h1>
         <CustomButton onClick={handleRedeemCoin} width="full" variant="coin">
-          Redeem QMC
+          Redeem QM Coin
         </CustomButton>
       </div>
     </div>
