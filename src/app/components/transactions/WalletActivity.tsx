@@ -123,7 +123,7 @@ export default function WalletActivity(): React.ReactElement {
   };
 
   const handleSearchTransaction = async (query: string) => {
-    setPage(1); // Reset to first page when searching
+    setPage(0); // Reset to first page when searching
     await fetchTransactions({ searchText: query });
   };
 
