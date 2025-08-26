@@ -17,7 +17,7 @@ const LogoutDialog = ({ open, onOpenChange }: Props) => {
   const [loading, setLoading] = useState(false);
 
   const handleLogout = async () => {
-    clearWalletState();
+    dispatch(clearWalletState());
     setLoading(true);
 
     handleInvalidSession(dispatch);
