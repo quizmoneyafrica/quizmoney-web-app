@@ -4,6 +4,7 @@ import { useAppDispatch } from "@/app/hooks/useAuth";
 import React, { useState } from "react";
 import Modal from "../game/modal/ModalWindow";
 import { handleInvalidSession } from "@/app/api/parse/handleInvalidSession";
+import { clearWalletState } from "@/app/store/walletSlice";
 
 type Props = {
   open: boolean;
@@ -16,6 +17,7 @@ const LogoutDialog = ({ open, onOpenChange }: Props) => {
   const [loading, setLoading] = useState(false);
 
   const handleLogout = async () => {
+    clearWalletState();
     setLoading(true);
 
     handleInvalidSession(dispatch);

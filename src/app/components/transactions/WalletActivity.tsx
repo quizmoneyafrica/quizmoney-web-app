@@ -48,8 +48,9 @@ export default function WalletActivity(): React.ReactElement {
   );
 
   const dispatch = useDispatch();
-  const { transactions, isTransactionsLoading } = useSelector(useWallet);
-
+  const { transactions: transactionList, isTransactionsLoading } =
+    useSelector(useWallet);
+  const transactions = transactionList.filter((tx) => tx.currency === "NGN");
   const fetchTransactions = async (
     params: {
       searchText?: string;

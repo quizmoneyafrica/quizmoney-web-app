@@ -56,7 +56,6 @@ function Page() {
       try {
         dispatch(setWalletLoading(true));
         const res = await WalletApi.fetchPayoutBanks();
-        // console.log(res.data, "Payout Accounts");
 
         if (res?.data) {
           dispatch(setPayoutBanks(res.data));
@@ -72,6 +71,8 @@ function Page() {
       try {
         dispatch(setTransactionsLoading(true));
         const res = await WalletApi.fetchTransactions({});
+        console.log(res, "Transactions");
+
         if (res?.data?.content) {
           dispatch(setTransactions(res?.data.content ?? []));
         }
