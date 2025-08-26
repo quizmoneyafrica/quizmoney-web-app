@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { FilterType } from "../components/transactions/FilterBar";
 import { store } from "../store/store";
 import { ApiResponse } from "./interface";
 import { callWithSessionToken } from "./parse/callWithSessionToken";
@@ -40,6 +41,9 @@ const WalletApi = {
   fetchBanks(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("banks", {}, {}, "GET");
   },
+  fetchVirtualWallet(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("wallet-accounts", {}, {}, "GET");
+  },
   fetchPayoutBanks(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("payout-accounts", {}, {}, "GET");
   },
@@ -54,14 +58,27 @@ const WalletApi = {
       "GET"
     );
   },
-  fetchTransactions(): Promise<ApiResponse> {
+  fetchTransactions({transactionStatus, searchText, page}: {transactionStatus?: FilterType, searchText?: string, page?: number}): Promise<ApiResponse> {
+    const params = [];
+    if (transactionStatus !== undefined && transactionStatus !== null) {
+      params.push(`transactionStatus=${transactionStatus.toUpperCase()}`);
+    }
+    if (searchText !== undefined && searchText !== null && searchText !== "") {
+      params.push(`searchText=${encodeURIComponent(searchText)}`);
+    }
+    if (page !== undefined && page !== null) {
+      params.push(`page=${page}`);
+    }
+    const queryString = params.length ? `?${params.join("&")}` : "";
     return callWithSessionToken<ApiResponse>(
-      `wallet-transactions`,
+      `wallet-transactions${queryString}`,
       {},
       {},
       "GET"
     );
   },
+
+  
 
   getCheckoutLink(data: { amount: string }): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(`getCheckoutLink`, { ...data });
