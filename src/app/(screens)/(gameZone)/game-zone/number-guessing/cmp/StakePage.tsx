@@ -12,7 +12,8 @@ import { motion } from "framer-motion";
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { gameRules } from "./gameRules";
-// import GameZoneAPI from "@/app/api/gameZoneApi";
+import GameZoneAPI from "@/app/api/gameZoneApi";
+import { setPhase } from "@/app/store/gameSlice";
 
 const preStakeAmounts = [
   { value: 1000 },
@@ -45,8 +46,10 @@ function StakePage() {
       // );
 
       dispatch(setGameStatus("INPROGRESS"));
+      dispatch(setPhase("playing"));
     } catch (err: any) {
       toast.error(err.message, { position: toastPosition });
+      setConfirmStakeModal(false);
     }
   };
   const handlePreStakeBtn = (amount: number) => {
