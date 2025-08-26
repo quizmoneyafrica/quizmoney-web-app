@@ -8,6 +8,7 @@ interface GameState {
 
 const initialState: GameState = {
   gameStatus: "START",
+
 };
 
 const numberGuessGameSlice = createSlice({
@@ -17,6 +18,7 @@ const numberGuessGameSlice = createSlice({
     setGameStatus: (state, action: PayloadAction<GameStatus>) => {
       state.gameStatus = action.payload;
     },
+    
   },
 });
 

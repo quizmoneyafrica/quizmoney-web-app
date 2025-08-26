@@ -97,7 +97,7 @@ function GameZone() {
         </div>
         <button
           onClick={testEndpoints}
-          className="bg-white px-4 py-2 rounded font-medium"
+          className="bg-white px-4 py-2 rounded font-medium hidden"
         >
           {loading ? "Loading..." : "Test Endpoints"}
         </button>

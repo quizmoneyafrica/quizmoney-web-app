@@ -15,11 +15,22 @@ interface Config {
 }
 
 export interface GameZoneGames {
-  data: GameZoneGamesObject[];
+  allGamesData: GameZoneGamesObject[];
+  currentGameData: GameZoneGamesObject;
 }
 
 const initialState: GameZoneGames = {
-  data: [],
+  allGamesData: [],
+  currentGameData: {
+    gameId: "",
+    name: "",
+    description: "",
+    type: "NUMBER_GUESSER",
+    config: {
+      minimumStake: 1000,
+      maximumStake: 1000000,
+    },
+  },
 };
 
 const gameZoneSlice = createSlice({
@@ -27,10 +38,13 @@ const gameZoneSlice = createSlice({
   initialState,
   reducers: {
     setGameZoneGames(state, action: PayloadAction<GameZoneGamesObject[]>) {
-      state.data = action.payload;
+      state.allGamesData = action.payload;
+    },
+    setCurrentGameData: (state, action: PayloadAction<GameZoneGamesObject>) => {
+      state.currentGameData = action.payload;
     },
   },
 });
 
-export const { setGameZoneGames } = gameZoneSlice.actions;
+export const { setGameZoneGames, setCurrentGameData } = gameZoneSlice.actions;
 export default gameZoneSlice.reducer;
