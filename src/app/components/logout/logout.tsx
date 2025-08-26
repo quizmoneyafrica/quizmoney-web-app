@@ -24,7 +24,6 @@ const LogoutDialog = ({ open, onOpenChange }: Props) => {
 
     setLoading(false);
     onOpenChange(false);
-
     router.replace("/login");
   };
 
