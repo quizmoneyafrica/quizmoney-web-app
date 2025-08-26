@@ -7,7 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import WalletApi from "@/app/api/wallet";
 import { store } from "@/app/store/store";
 import {
-  setWallet,
   setWithdrawalPinModal,
   setWithdrawalModal,
   useWallet,
@@ -119,7 +118,7 @@ export const WithdrawalPinForm = ({
       prevInput?.focus();
     }
   };
-  const { loginUser, updateCustomer, accessToken } = useAuth();
+  const { updateCustomer, accessToken } = useAuth();
   const createPin = async (pin: string) => {
     setIsCreatingPin(true);
 

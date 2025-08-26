@@ -11,7 +11,6 @@ import VirtualDetails from "./VirtualDetails";
 import { getAuthUser } from "@/app/api/userApi";
 import { useKycStep } from "@/app/hooks/useKycStep";
 import { setWalletLoading, setWallet } from "@/app/store/walletSlice";
-import { store } from "@/app/store/store";
 import { useDispatch } from "react-redux";
 
 const depositFormSchema = z.object({

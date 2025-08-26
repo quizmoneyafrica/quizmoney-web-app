@@ -1,6 +1,5 @@
 import React from "react";
 import { CoinEarned, CoinRedeemed, QMCoin } from "@/app/icons/icons";
-import { CoinTransactions } from "@/app/store/coinSlice";
 import { formatDateTime } from "@/app/utils/utils";
 import { Transaction } from "@/app/store/walletSlice";
 

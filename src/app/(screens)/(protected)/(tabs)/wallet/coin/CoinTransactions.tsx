@@ -1,13 +1,11 @@
 import React from "react";
 import TransacTemp from "./transacTemp";
-import { useAppSelector } from "@/app/hooks/useAuth";
 import CustomImage from "@/app/components/wallet/CustomImage";
 import { useWallet } from "@/app/store/walletSlice";
 import { useSelector } from "react-redux";
 
 function CoinTransactions() {
-  const { transactions: transactionList, isTransactionsLoading } =
-    useSelector(useWallet);
+  const { transactions: transactionList } = useSelector(useWallet);
   const userCoinTransactions = transactionList?.filter(
     (tx) => tx?.currency === "QMC"
   );
