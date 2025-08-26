@@ -41,7 +41,7 @@ function VirtualDetails({
       const result = await WalletApi.fetchVirtualWallet();
       console.log(
         "Fetched virtual account details:",
-        JSON.stringify(result, null, 2)
+        JSON.stringify(result ?? "=======no data=======", null, 2)
       );
       console.log("Virtual account details:", result);
     } catch (error) {
