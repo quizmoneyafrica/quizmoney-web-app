@@ -110,7 +110,7 @@ export function TransactionDetailsModal({
                             : "text-red-600"
                         }`}
                       >
-                        {transaction.direction === "CREDIT" ? " " : "- "}
+                        {transaction.direction === "CREDIT" ? "+  " : "- "}
                         {formatAmount(transaction.amount)}
                       </span>
                     </div>
