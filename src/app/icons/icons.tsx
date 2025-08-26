@@ -1,109 +1,82 @@
-export const StartGameBtn: React.FC<React.SVGProps<SVGElement>> = () => (
+export const StartGameBtn: React.FC<
+  React.SVGProps<SVGSVGElement> & { text?: string; full?: boolean }
+> = ({ text, full = false, ...props }) => (
   <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="372"
-    height="66"
-    fill="none"
-    viewBox="0 0 372 66"
-  >
-    <g filter="url(#filter0_d_9656_58875)">
-      <rect width="366" height="60" x="4" y="2" fill="#3386CE" rx="30"></rect>
-      <rect
-        width="368"
-        height="62"
-        x="3"
-        y="1"
-        stroke="#fff"
-        strokeWidth="2"
-        rx="31"
-      ></rect>
-    </g>
-    <rect
-      width="366"
-      height="53.75"
-      x="4"
-      y="2"
-      fill="#2A75BC"
-      rx="26.875"
-    ></rect>
-    <path
-      fill="#2A75BC"
-      d="M250.776 55.75H30.875C16.032 55.75 4 43.718 4 28.875S16.032 2 30.875 2H134.98z"
-      opacity="0.5"
-    ></path>
-    <path
-      fill="#fff"
-      d="M118.632 38c-.365 0-.728-.047-1.08-.142a4.2 4.2 0 0 1-2.91-5.108l1.748-6.63a4.16 4.16 0 0 1 1.942-2.573 4.07 4.07 0 0 1 3.113-.405 4.14 4.14 0 0 1 2.58 2.108h1.95a4.11 4.11 0 0 1 2.58-2.108 4.07 4.07 0 0 1 3.112.406 4.17 4.17 0 0 1 1.943 2.557l1.747 6.645a4.2 4.2 0 0 1-2.917 5.123 4.08 4.08 0 0 1-3.113-.405 4.15 4.15 0 0 1-1.942-2.558l-.135-.66h-4.5l-.173.645a4.17 4.17 0 0 1-1.942 2.557c-.61.352-1.299.54-2.003.548m1.74-13.5c-.452.002-.897.12-1.29.345a2.7 2.7 0 0 0-1.245 1.643l-1.747 6.63a2.7 2.7 0 0 0 1.86 3.292 2.57 2.57 0 0 0 1.965-.255 2.66 2.66 0 0 0 1.245-1.642l.465-1.763h6.75l.457 1.763a2.68 2.68 0 0 0 1.245 1.642 2.6 2.6 0 0 0 1.973.255 2.686 2.686 0 0 0 1.852-3.292l-1.747-6.63a2.67 2.67 0 0 0-1.238-1.643 2.6 2.6 0 0 0-1.972-.255 2.66 2.66 0 0 0-1.778 1.665l-.18.495h-3.975l-.18-.495a2.68 2.68 0 0 0-1.785-1.665 2.6 2.6 0 0 0-.675-.09"
-    ></path>
-    <path
-      fill="#fff"
-      d="M120.5 30.5a1.5 1.5 0 0 1-1.386-.926 1.503 1.503 0 0 1 1.093-2.045 1.5 1.5 0 1 1 .293 2.971M129.5 28.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5M129.5 31.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5M128 29.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5M131 29.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5"
-    ></path>
-    <g filter="url(#filter1_d_9656_58875)">
+      xmlns="http://www.w3.org/2000/svg"
+      // 👇 if full, take 100% width. Else default to 372px.
+      width={full ? "100%" : 372}
+      height={full ? "auto" : 66}
+      viewBox="0 0 372 66"
+      fill="none"
+      preserveAspectRatio="xMidYMid meet"
+      {...props}
+    >
+      <g filter="url(#filter0_d)">
+        <rect width="366" height="60" x="4" y="2" fill="#3386CE" rx="30" />
+        <rect
+          width="368"
+          height="62"
+          x="3"
+          y="1"
+          stroke="#fff"
+          strokeWidth="2"
+          rx="31"
+        />
+      </g>
+      <rect width="366" height="53.75" x="4" y="2" fill="#2A75BC" rx="26.875" />
       <path
-        fill="#fff"
-        d="M142.7 40v-5.372l-2.607-10.956h3.238l.909 5.53.909-5.53h3.228l-2.597 10.956V40zm7.263 0V23.672h6.531v3.154h-3.21v3.182h3.08v3.071h-3.08v3.739h3.424V40zm12.468.148q-2.236 0-3.228-1.113-.984-1.113-.984-3.544v-1.596h3.229v2.041q0 .567.167.891.175.316.603.316.446 0 .612-.26.177-.26.176-.854 0-.75-.148-1.252a2.7 2.7 0 0 0-.52-.965 10 10 0 0 0-1.011-1.076l-1.466-1.392q-1.642-1.55-1.642-3.544 0-2.087.965-3.182.974-1.095 2.811-1.095 2.246 0 3.182 1.197.947 1.197.947 3.637h-3.322v-1.123q0-.334-.195-.52-.184-.185-.51-.185-.39 0-.575.223-.176.213-.176.557 0 .343.185.742.186.399.733.918l1.883 1.81q.566.537 1.04 1.14.473.594.76 1.392.288.789.288 1.93 0 2.3-.854 3.609-.844 1.298-2.95 1.298M173.303 40V23.672h3.265v13.545h3.359V40zm8.311 0V25.527h6.532v3.155h-3.21v2.393h3.08v3.071h-3.08v2.672h3.423V40zm9.991 0V28.663h-1.939v-3.136h7.144v3.136h-1.939V40zm7.18-9.519.613-2.189h-1.179v-2.765h3.47v2.682l-.946 2.272zm8.748 9.667q-2.236 0-3.228-1.113-.984-1.113-.984-3.544v-.529h3.229v.974q0 .567.167.891.175.316.603.316.445 0 .612-.232.177-.242.176-.696 0-.603-.408-1.02-.399-.418-1.327-1.133l-1.41-1.094q-.9-.696-1.271-1.54t-.371-2.05q0-1.883.965-2.942.974-1.057 2.811-1.057 2.246 0 3.182 1.169.947 1.169.947 3.433h-3.313v-.798q0-.798-.742-.798-.371 0-.547.222-.176.214-.176.557t.157.65q.167.296.761.779l1.883 1.53q1.03.836 1.559 1.754.53.918.529 2.384 0 1.02-.371 1.911a3.07 3.07 0 0 1-1.197 1.438q-.835.539-2.236.538M218.405 40V23.672h4.314q1.354 0 2.143.603.798.603 1.141 1.716t.343 2.654q0 1.484-.288 2.588-.286 1.095-1.029 1.698-.734.603-2.088.603h-1.326V40zm3.21-9.398h.185q.909 0 1.113-.51.205-.51.205-1.503 0-.928-.205-1.429-.194-.51-.937-.51h-.361zm6.53 9.398V25.527h3.266v11.69h3.358V40zm7.867 0 1.577-14.473h5.538L244.677 40h-3.09l-.213-2.635h-2.004L239.184 40zm4.23-11.875-.603 6.633h1.429l-.677-6.633zM247.969 40v-5.372l-2.607-9.1h3.238l.909 5.538.91-5.539h3.228l-2.598 9.101V40z"
-      ></path>
-    </g>
-    <defs>
-      <filter
-        id="filter0_d_9656_58875"
-        width="370"
-        height="66"
-        x="2"
-        y="0"
-        colorInterpolationFilters="sRGB"
-        filterUnits="userSpaceOnUse"
-      >
-        <feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
-        <feColorMatrix
-          in="SourceAlpha"
-          result="hardAlpha"
-          values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-        ></feColorMatrix>
-        <feOffset dy="2"></feOffset>
-        <feComposite in2="hardAlpha" operator="out"></feComposite>
-        <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0"></feColorMatrix>
-        <feBlend
-          in2="BackgroundImageFix"
-          result="effect1_dropShadow_9656_58875"
-        ></feBlend>
-        <feBlend
-          in="SourceGraphic"
-          in2="effect1_dropShadow_9656_58875"
-          result="shape"
-        ></feBlend>
-      </filter>
-      <filter
-        id="filter1_d_9656_58875"
-        width="113.555"
-        height="17.625"
-        x="140.093"
-        y="23.523"
-        colorInterpolationFilters="sRGB"
-        filterUnits="userSpaceOnUse"
-      >
-        <feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
-        <feColorMatrix
-          in="SourceAlpha"
-          result="hardAlpha"
-          values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-        ></feColorMatrix>
-        <feOffset dy="1"></feOffset>
-        <feComposite in2="hardAlpha" operator="out"></feComposite>
-        <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0"></feColorMatrix>
-        <feBlend
-          in2="BackgroundImageFix"
-          result="effect1_dropShadow_9656_58875"
-        ></feBlend>
-        <feBlend
-          in="SourceGraphic"
-          in2="effect1_dropShadow_9656_58875"
-          result="shape"
-        ></feBlend>
-      </filter>
-    </defs>
-  </svg>
+        fill="#2A75BC"
+        d="M250.776 55.75H30.875C16.032 55.75 4 43.718 4 28.875S16.032 2 30.875 2H134.98z"
+        opacity="0.5"
+      />
+
+      {/* If text is provided, render centered text */}
+      {text && (
+        <text
+          x="50%"
+          y="50%"
+          dominantBaseline="middle"
+          textAnchor="middle"
+          fill="white"
+          fontSize="20"
+          fontWeight="bold"
+          fontFamily="sans-serif"
+        >
+          {text}
+        </text>
+      )}
+
+      {/* (Optional) fallback graphics if no text */}
+      {!text && (
+        <g fill="#fff">
+          {/* put your default paths here */}
+        </g>
+      )}
+
+      <defs>
+        <filter
+          id="filter0_d"
+          width="370"
+          height="66"
+          x="2"
+          y="0"
+          colorInterpolationFilters="sRGB"
+          filterUnits="userSpaceOnUse"
+        >
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
+          <feColorMatrix
+            in="SourceAlpha"
+            result="hardAlpha"
+            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+          />
+          <feOffset dy="2" />
+          <feComposite in2="hardAlpha" operator="out" />
+          <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0" />
+          <feBlend in2="BackgroundImageFix" result="effect1_dropShadow" />
+          <feBlend in="SourceGraphic" in2="effect1_dropShadow" result="shape" />
+        </filter>
+      </defs>
+    </svg>
 );
 
 // Icons

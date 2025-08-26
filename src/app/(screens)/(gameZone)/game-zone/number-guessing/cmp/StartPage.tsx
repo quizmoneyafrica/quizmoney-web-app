@@ -1,16 +1,19 @@
 import { useAppDispatch } from "@/app/hooks/useAuth";
+import { useGameZone } from "@/app/hooks/useGameZone";
 import {
   ClockSvg,
   MoneyWings,
   OneTwoThree,
-  StartGameBtn,
+  // StartGameBtn,
 } from "@/app/icons/icons";
 import { setGameStatus } from "@/app/store/numberGuessGameSlice";
+import { GameButton } from "@/app/utils/GameButton";
 import { Gamepad2, Info } from "lucide-react";
 import React from "react";
 
 function StartPage() {
   const dispatch = useAppDispatch();
+  const { fetchCurrentGameData } = useGameZone("NUMBER_GUESSER");
   return (
     <div className="w-full max-w-lg mx-auto space-y-10">
       <div className="space-y-4">
@@ -78,9 +81,23 @@ function StartPage() {
         </div>
       </div>
       <div className="flex items-center justify-center">
-        <button onClick={() => dispatch(setGameStatus("STAKE"))} className="">
+        <GameButton
+          onClick={() => {
+            fetchCurrentGameData();
+            dispatch(setGameStatus("STAKE"));
+          }}
+          text="Yes Start Game"
+          type="submit"
+        />
+        {/* <button
+          onClick={() => {
+            fetchCurrentGameData();
+            dispatch(setGameStatus("STAKE"));
+          }}
+          className=""
+        >
           <StartGameBtn className="justify-center" />
-        </button>
+        </button> */}
       </div>
     </div>
   );
@@ -102,7 +119,7 @@ const howToPlay = [
     variant: "green",
   },
   {
-    topic: "Win up to 3× your stake",
+    topic: "Win up to 2× your stake",
     desc: "Higher rewards for correct guesses",
     svg: <MoneyWings />,
     variant: "yellow",

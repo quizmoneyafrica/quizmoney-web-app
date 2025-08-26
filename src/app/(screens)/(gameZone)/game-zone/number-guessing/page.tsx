@@ -2,7 +2,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { CirclePlus, MoveLeft } from "lucide-react";
-import { useAppSelector } from "@/app/hooks/useAuth";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import { formatNaira } from "@/app/utils/utils";
 import { useRouter } from "next/navigation";
 import StartPage from "./cmp/StartPage";
@@ -10,12 +10,27 @@ import { useWallet } from "@/app/store/walletSlice";
 import StakePage from "./cmp/StakePage";
 import InProgress from "./cmp/InProgress";
 import ResultScreen from "./cmp/ResultScreen";
+import { setGameStatus } from "@/app/store/numberGuessGameSlice";
 
 function Page() {
   const numberGuess = useAppSelector((s) => s.numberGuess);
   const { wallet: walletData } = useAppSelector(useWallet);
   const router = useRouter();
   const wallet = walletData.find((w) => w.currency === "NGN")! || {};
+  const dispatch = useAppDispatch();
+
+  const handleBack = () => {
+    if (numberGuess.gameStatus === "START") {
+      router.back();
+    } else if (numberGuess.gameStatus === "STAKE") {
+      dispatch(setGameStatus("START"));
+    } else if (numberGuess.gameStatus === "INPROGRESS") {
+      dispatch(setGameStatus("STAKE"));
+      // return;
+    } else if (numberGuess.gameStatus === "ENDED") {
+      dispatch(setGameStatus("START"));
+    }
+  };
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -33,7 +48,7 @@ function Page() {
         <div className="grid grid-cols-2">
           <button
             type="button"
-            onClick={() => router.back()}
+            onClick={handleBack}
             className={`${
               numberGuess.gameStatus === "START" ? "text-white" : "text-black"
             } font-bold flex items-center gap-1`}
