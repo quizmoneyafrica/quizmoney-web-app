@@ -41,8 +41,8 @@ export function renderEmptyState(): JSX.Element {
 }
 
 export default function WalletActivity(): React.ReactElement {
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState<number>(0);
   const [selectedFilter, setSelectedFilter] = useState<FilterType>(
     FilterType.PENDING
   );
@@ -57,8 +57,17 @@ export default function WalletActivity(): React.ReactElement {
     } = {}
   ) => {
     try {
+      let res;
+      if (Object.keys(params).length > 0) {
+        res = await WalletApi.fetchTransactions({ page, ...params });
+      } else {
+        res = await WalletApi.fetchTransactions({ page });
+      }
       dispatch(setTransactionsLoading(true));
-      const res = await WalletApi.fetchTransactions({ page, ...params });
+      console.log(
+        JSON.stringify(res, null, 2),
+        "=============list of transactions from api======="
+      );
 
       if (res?.success && res?.data) {
         dispatch(setTransactions(res.data.content || []));
@@ -99,7 +108,8 @@ export default function WalletActivity(): React.ReactElement {
       const date = parseISO(
         transaction?.transactionDate ?? new Date().toISOString()
       );
-
+      // Debug: log grouping
+      console.log("Grouping transaction:", transaction, "Parsed date:", date);
       if (isToday(date)) {
         grouped.today.push(transaction);
       } else if (isYesterday(date)) {
@@ -118,7 +128,7 @@ export default function WalletActivity(): React.ReactElement {
   };
 
   const handleFilterChange = async (filter: FilterType) => {
-    setPage(1); // Reset to first page when filtering
+    setPage(0); // Reset to first page when filtering
     setSelectedFilter(filter);
     await fetchTransactions({ transactionStatus: filter });
   };
@@ -190,7 +200,9 @@ export default function WalletActivity(): React.ReactElement {
               "Yesterday",
               groupedTransactions.yesterday
             )}
-            {renderTransactionSection("Earlier", groupedTransactions.other)}
+            {/* Always render 'Earlier' if any transaction exists */}
+            {(groupedTransactions.other.length > 0 || hasTransactions) &&
+              renderTransactionSection("Earlier", groupedTransactions.other)}
           </>
         )}
       </div>

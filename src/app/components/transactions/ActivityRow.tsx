@@ -58,7 +58,7 @@ export const ActivityRow = ({
                   : "Withdrawal made")}
             </p>
             <p className="text-xs md:text-sm text-gray-500">
-              {transaction.transactionType}
+              {transaction.direction}
             </p>
           </div>
         </div>
