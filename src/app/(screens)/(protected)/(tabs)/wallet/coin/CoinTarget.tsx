@@ -11,7 +11,7 @@ function CoinTarget() {
   const progress = ((balance - prevTarget) / targetStep) * 100;
   return (
     <div className="bg-white p-4 rounded-[20px] w-full space-y-4">
-      <p className="font-medium text-base text-left">Next QMC Target</p>
+      <p className="font-medium text-base text-left">Next QM Coin Target</p>
       <div className="w-full h-3 bg-[#F2F2F2] rounded-full overflow-hidden">
         <motion.div
           className="h-full bg-[#0BC502]"
