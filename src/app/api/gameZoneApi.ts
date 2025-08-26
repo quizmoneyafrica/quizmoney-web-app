@@ -7,8 +7,8 @@ const GameZoneAPI = {
   },
   getAGame(gameType: string): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
-      "qm-games/play",
-      { "game-type": gameType },
+      `qm-games/game?game-type=${gameType}`,
+      {},
       {},
       "GET"
     );
@@ -17,15 +17,13 @@ const GameZoneAPI = {
   stakeInGame(
     gameId: string,
     gameType: string,
-    customerId: string,
     stake: number
   ): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
-      "qm-games/game",
+      "qm-games/play",
       {
         gameId,
         gameType,
-        customerId,
         stake,
       },
       {},
