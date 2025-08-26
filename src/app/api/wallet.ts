@@ -41,6 +41,9 @@ const WalletApi = {
   fetchBanks(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("banks", {}, {}, "GET");
   },
+  fetchVirtualWallet(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("wallet-accounts", {}, {}, "GET");
+  },
   fetchPayoutBanks(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("payout-accounts", {}, {}, "GET");
   },
@@ -74,6 +77,8 @@ const WalletApi = {
       "GET"
     );
   },
+
+  
 
   getCheckoutLink(data: { amount: string }): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(`getCheckoutLink`, { ...data });

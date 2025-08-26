@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import Link from "next/link";
 import { useAuth } from "@/app/hooks/useAuth";
+import UserAPI from "@/app/api/userApi";
 
 // Define schema for PIN validation with Zod
 const pinFormSchema = z.object({
@@ -118,7 +119,7 @@ export const WithdrawalPinForm = ({
       prevInput?.focus();
     }
   };
-
+  const { loginUser, updateCustomer, accessToken } = useAuth();
   const createPin = async (pin: string) => {
     setIsCreatingPin(true);
 
@@ -130,13 +131,10 @@ export const WithdrawalPinForm = ({
         toast.success(response?.message, {
           position: toastPosition,
         });
-
-        // Fetch updated wallet data
-        const res = await WalletApi.fetchCustomerWallet();
-        if (res.wallet) {
-          store.dispatch(setWallet(res.wallet));
+        const data = await UserAPI.customerProfile(accessToken || "");
+        if (data?.data) {
+          updateCustomer(data?.data);
         }
-
         store.dispatch(setWithdrawalPinModal(false));
         store.dispatch(setWithdrawalModal(true));
       }

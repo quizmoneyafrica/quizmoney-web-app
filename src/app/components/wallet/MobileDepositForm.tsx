@@ -9,6 +9,7 @@ import { toastPosition } from "@/app/utils/utils";
 import CustomButton from "@/app/utils/CustomBtn";
 import VirtualDetails from "./VirtualDetails";
 import { getAuthUser } from "@/app/api/userApi";
+import { useKycStep } from "@/app/hooks/useKycStep";
 
 const depositFormSchema = z.object({
   amount: z
@@ -64,6 +65,10 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
   const handleCustomAmountChange = () => {
     setSelectedAmount(null);
   };
+
+  const { customerKyc } = useKycStep();
+  const bvnStep = customerKyc.find((s) => s.step === "BVN");
+  const isBvnCompleted = bvnStep?.status === "COMPLETED";
 
   const loadPaystack = async () => {
     const paystackModule = await import("react-paystack");
@@ -228,7 +233,10 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
           </form>
         </div>
       ) : (
-        <VirtualDetails amount={virtualAmount || 0} />
+        <VirtualDetails
+          isBvnCompleted={isBvnCompleted}
+          amount={virtualAmount || 0}
+        />
       )}
     </>
   );
