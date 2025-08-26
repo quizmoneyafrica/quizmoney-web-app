@@ -38,7 +38,7 @@ export interface TransactionGroup {
 export default function TransactionHistory(): React.JSX.Element {
   const { transactions: transactionList, isTransactionsLoading } =
     useSelector(useWallet);
-  const transactions = transactionList.filter((tx) => tx.currency === "NGN");
+  const transactions = transactionList?.filter((tx) => tx.currency === "NGN");
   const [selectedTransaction, setSelectedTransaction] =
     useState<WalletTransaction | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);

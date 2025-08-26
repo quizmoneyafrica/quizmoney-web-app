@@ -129,7 +129,7 @@ export default function WalletBalance() {
                 </button>
               }
             >
-              <MobileDepositForm />
+              <MobileDepositForm close={() => setOpen(false)} />
             </QmDrawer>
 
             <QmDrawer

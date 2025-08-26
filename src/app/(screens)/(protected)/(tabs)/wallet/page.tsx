@@ -37,6 +37,9 @@ function Page() {
     try {
       dispatch(setWalletLoading(true));
       const res = await WalletApi.fetchCustomerWallet();
+
+      console.log(JSON.stringify(res, null, 2), "WALLET RES");
+
       if (res?.data) {
         dispatch(setWallet(res?.data));
       }

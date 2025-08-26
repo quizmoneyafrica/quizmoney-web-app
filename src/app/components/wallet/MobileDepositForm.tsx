@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,6 +10,9 @@ import CustomButton from "@/app/utils/CustomBtn";
 import VirtualDetails from "./VirtualDetails";
 import { getAuthUser } from "@/app/api/userApi";
 import { useKycStep } from "@/app/hooks/useKycStep";
+import { setWalletLoading, setWallet } from "@/app/store/walletSlice";
+import { store } from "@/app/store/store";
+import { useDispatch } from "react-redux";
 
 const depositFormSchema = z.object({
   amount: z
@@ -75,6 +78,21 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
     return paystackModule;
   };
 
+  const dispatch = useDispatch();
+  const fetchWallet = useCallback(async () => {
+    try {
+      dispatch(setWalletLoading(true));
+      const res = await WalletApi.fetchCustomerWallet();
+      if (res?.data) {
+        dispatch(setWallet(res?.data));
+      }
+    } catch (error: any) {
+      console.log("Error", error.raw);
+    } finally {
+      dispatch(setWalletLoading(false));
+    }
+  }, [dispatch]);
+
   const onFormSubmit = async (data: DepositFormData) => {
     if (!selectedAmount && !data.amount) {
       toast.error("Please select an amount.");
@@ -112,8 +130,11 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
             amount: totalAmount * 100,
             publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "",
           });
+          close?.();
           initializePayment({
             onSuccess: (response: any) => {
+              fetchWallet();
+
               toast.success("Payment successful!", { position: toastPosition });
               reset();
               setSelectedAmount(null);
