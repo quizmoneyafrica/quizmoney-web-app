@@ -34,27 +34,6 @@ function VirtualDetails({
     }
   };
 
-  const getVirtualAccountDetails = async () => {
-    // Fetch virtual account details logic
-
-    try {
-      const result = await WalletApi.fetchVirtualWallet();
-      console.log(
-        "Fetched virtual account details:",
-        JSON.stringify(result ?? "=======no data=======", null, 2)
-      );
-      console.log("Virtual account details:", result);
-    } catch (error) {
-      console.error("Failed to fetch virtual account details:", error);
-    }
-  };
-
-  useEffect(() => {
-    // if (!isBvnCompleted) {
-    getVirtualAccountDetails();
-    // }
-  }, [isBvnCompleted]);
-
   return (
     <div className="space-y-4 pt-3 border-t border-neutral-100">
       {isBvnCompleted && (
