@@ -1,11 +1,10 @@
 "use client";
-import WalletApi from "@/app/api/wallet";
 import { useAppSelector } from "@/app/hooks/useAuth";
 import { BankIcon } from "@/app/icons/icons";
 import CustomButton from "@/app/utils/CustomBtn";
 import { formatNaira } from "@/app/utils/utils";
 import { LucideCopy } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { toast } from "sonner";
 
 export type VirtualDetailsProps = { amount?: number; isBvnCompleted: boolean };
