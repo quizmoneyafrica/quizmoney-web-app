@@ -9,7 +9,7 @@ function CoinTransactions() {
   const { transactions: transactionList, isTransactionsLoading } =
     useSelector(useWallet);
   const userCoinTransactions = transactionList?.filter(
-    (tx) => tx.currency === "QMC"
+    (tx) => tx?.currency === "QMC"
   );
   return (
     <div className="space-y-3">
