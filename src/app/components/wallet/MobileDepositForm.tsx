@@ -29,7 +29,7 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
     "bankTransfer" | "card" | ""
-  >("card");
+  >("bankTransfer");
   const user = getAuthUser();
   const [showVirtual, setShowVirtual] = useState(false);
   const [virtualAmount, setVirtualAmount] = useState<number | null>(null);
@@ -96,7 +96,8 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
         console.log(response.data);
 
         if (response.success || response.data?.reference) {
-          const { reference } = response.data;
+          const reference = response.data.accessCode;
+          console.log("PAYSTACK RES", response.data);
 
           const { usePaystackPayment } = await loadPaystack();
           // eslint-disable-next-line react-hooks/rules-of-hooks
