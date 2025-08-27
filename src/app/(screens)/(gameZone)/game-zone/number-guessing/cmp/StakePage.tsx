@@ -3,7 +3,10 @@
 import QmDrawer from "@/app/components/drawer/drawer";
 import { useAppDispatch } from "@/app/hooks/useAuth";
 import { useGameZone } from "@/app/hooks/useGameZone";
-import { setGameStatus } from "@/app/store/numberGuessGameSlice";
+import {
+  setGameSettings,
+  setGameStatus,
+} from "@/app/store/numberGuessGameSlice";
 import CustomTextField from "@/app/utils/CustomTextField";
 import { GameButton } from "@/app/utils/GameButton";
 import { formatNaira, toastPosition } from "@/app/utils/utils";
@@ -12,7 +15,8 @@ import { motion } from "framer-motion";
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { gameRules } from "./gameRules";
-// import GameZoneAPI from "@/app/api/gameZoneApi";
+import GameZoneAPI from "@/app/api/gameZoneApi";
+import { setPhase } from "@/app/store/gameSlice";
 
 const preStakeAmounts = [
   { value: 1000 },
@@ -38,15 +42,17 @@ function StakePage() {
   const handleStakeInGame = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // const res = await GameZoneAPI.stakeInGame(
-      //   currentGameData.gameId,
-      //   currentGameData.type,
-      //   stake
-      // );
-
+      const res = await GameZoneAPI.stakeInGame(
+        currentGameData.gameId,
+        currentGameData.type,
+        stake
+      );
+      dispatch(setGameSettings(res.data));
       dispatch(setGameStatus("INPROGRESS"));
+      dispatch(setPhase("playing"));
     } catch (err: any) {
       toast.error(err.message, { position: toastPosition });
+      setConfirmStakeModal(false);
     }
   };
   const handlePreStakeBtn = (amount: number) => {

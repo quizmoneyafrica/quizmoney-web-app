@@ -30,6 +30,34 @@ const GameZoneAPI = {
       "POST"
     );
   },
+
+  // number guesser
+  leaveNumberGuessGame(sessionId: string): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      "number-guesser/leave",
+      {
+        sessionId,
+      },
+      {},
+      "POST"
+    );
+  },
+  submitGuess(
+    guess: number,
+    gameSessionId: string,
+    timeInMillis: number
+  ): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      "number-guesser/guess",
+      {
+        guess,
+        gameSessionId,
+        timeInMillis,
+      },
+      {},
+      "POST"
+    );
+  },
 };
 
 export default GameZoneAPI;

@@ -2,7 +2,7 @@ import { PlusIcon } from "@/app/icons/icons";
 import CustomTextField from "@/app/utils/CustomTextField";
 import { GameButton } from "@/app/utils/GameButton";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import QmDrawer from "@/app/components/drawer/drawer";
 
@@ -20,6 +20,15 @@ function InProgress() {
   const [won, setWon] = useState(false);
 
   const [openBuyModal, setOpenBuyModal] = useState(false);
+
+  //Sounds
+  const correctSoundRef = useRef<HTMLAudioElement | null>(null);
+  const wrongSoundRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    correctSoundRef.current = new Audio("/sounds/correct-answer.mp3");
+    wrongSoundRef.current = new Audio("/sounds/wrong-answer.mp3");
+  }, []);
 
   const handleSubmitGuess = (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,11 +65,17 @@ function InProgress() {
           Guess the Number {hiddenNumber}
         </h2>
         <div className="flex items-center">
-          <div className="bg-[#2364AA] shadow-[0px_3px_0px_0px_rgba(81,162,224,1.00)] flex items-center justify-center text-white font-bold text-sm w-15 h-12 rounded-full  border-[3px] border-white">
+          <div className="animate-bounce  bg-[#2364AA] shadow-[0px_3px_0px_0px_rgba(81,162,224,1.00)] flex items-center justify-center text-white font-bold text-sm w-15 h-12 rounded-full  border-[3px] border-white">
             <span>{min}</span>
           </div>
-          <div className="border-t border-dashed flex-1 border-[#2364AA]" />
-          <div className="bg-[#2364AA] shadow-[0px_3px_0px_0px_rgba(81,162,224,1.00)] flex items-center justify-center text-white font-bold text-sm w-15 h-12  rounded-full  border-[3px] border-white">
+          <div className="border-t border-dashed flex-1 border-[#2364AA] relative">
+            <div className="absolute -top-0.5 inset-0 z-[2] flex items-center justify-center">
+              <span className="text-primary-900 bg-primary-50 font-bold px-3.5">
+                Number Range
+              </span>
+            </div>
+          </div>
+          <div className="animate-bounce [animation-delay:-.3s] bg-[#2364AA] shadow-[0px_3px_0px_0px_rgba(81,162,224,1.00)] flex items-center justify-center text-white font-bold text-sm w-15 h-12  rounded-full  border-[3px] border-white">
             <span>{max}</span>
           </div>
         </div>
