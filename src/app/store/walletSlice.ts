@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "./store";
+
 type WithdrawalData = {
   amount: number;
   bankAccount: {
@@ -8,6 +9,7 @@ type WithdrawalData = {
     accountName: string;
   };
 };
+
 interface WalletState {
   withdrawalData: WithdrawalData | null;
   wallet: Wallet[];
@@ -21,6 +23,7 @@ interface WalletState {
   banks: Bank[];
   payoutBanks: PayoutBank | undefined;
 }
+
 export interface Bank {
   id: number;
   code: string;
@@ -35,6 +38,7 @@ export interface PayoutBank {
   status: "ACTIVE" | "INACTIVE" | string;
   accountName: string;
 }
+
 const initialState: WalletState = {
   withdrawalModal: false,
   withdrawalData: null,
@@ -48,17 +52,20 @@ const initialState: WalletState = {
   isTransactionsLoading: false,
   isWalletLoading: false,
 };
+
 export interface ParsePointer {
   __type: "Pointer";
   className: string;
   objectId: string;
 }
+
 export type BankAccount = {
   id?: number;
   accountNumber: string;
   bankName: string;
   accountName: string;
 };
+
 export type Wallet = {
   id: string;
   availableBalance: number;
@@ -69,25 +76,7 @@ export type Wallet = {
   walletAccountName: string;
   bankName: string;
 };
-// export type Wallet = {
-//   user: {
-//     __type: "Pointer";
-//     className: "_User";
-//     objectId: string;
-//   };
-//   balance: string;
-//   lastPaymentDate: {
-//     __type: "Date";
-//     iso: string;
-//   };
-//   createdAt: string;
-//   updatedAt: string;
-//   bankAccounts: BankAccount[];
-//   pin: string;
-//   objectId: string;
-//   __type: "Object";
-//   className: "Wallet";
-// };
+
 type VirtualAccount = {
   accountName: string;
   accountNumber: string;
@@ -97,16 +86,18 @@ type VirtualAccount = {
   paymentProviderName: string;
   walletId: string;
 };
+
 export type TransactionType = "deposit" | "withdrawal" | "transfer" | string;
 
 export interface Transaction {
   id: string;
   transactionDate: string; // ISO 8601 date string
-  transactionStatus: "SUCCESSFUL" | "FAILED" | "PENDING" | string; // Adjust based on possible statuses
-  transactionType: "FUNDING" | string; // Adjust based on possible types
+  transactionStatus: "SUCCESSFUL" | "FAILED" | "PENDING" | string;
+  transactionType: "FUNDING" | string;
   narration: string;
   amount: number;
-  direction: "CREDIT" | "DEBIT" | string; // Adjust based on possible directions
+  currency: "NGN" | "QMC";
+  direction: "CREDIT" | "DEBIT" | string;
 }
 
 const walletSlice = createSlice({
@@ -162,6 +153,10 @@ const walletSlice = createSlice({
     setWithdrawalData(state, action: PayloadAction<WithdrawalData | null>) {
       state.withdrawalData = action.payload;
     },
+    // Clear wallet state on logout
+    clearWalletState() {
+      return initialState;
+    },
   },
 });
 
@@ -178,6 +173,8 @@ export const {
   setWithdrawalPinModal,
   setWithdrawalData,
   setWalletBalance,
+  clearWalletState,
 } = walletSlice.actions;
+
 export default walletSlice.reducer;
 export const useWallet = (state: RootState) => state?.wallet;

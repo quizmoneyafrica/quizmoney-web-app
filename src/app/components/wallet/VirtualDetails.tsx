@@ -7,8 +7,11 @@ import { LucideCopy } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "sonner";
 
-export type VirtualDetailsProps = { amount?: number };
-function VirtualDetails({ amount = 1000 }: VirtualDetailsProps) {
+export type VirtualDetailsProps = { amount?: number; isBvnCompleted: boolean };
+function VirtualDetails({
+  amount = 1000,
+  isBvnCompleted,
+}: VirtualDetailsProps) {
   const { wallet: walletData } = useAppSelector((state) => state.wallet);
   const wallet = walletData.find((w) => w.currency === "NGN")! || {};
 
@@ -32,17 +35,32 @@ function VirtualDetails({ amount = 1000 }: VirtualDetailsProps) {
 
   return (
     <div className="space-y-4 pt-3 border-t border-neutral-100">
-      <div className="bg-primary-50 p-4 rounded-[10px] space-y-6">
-        <CardCopy
-          title="Account Number"
-          value={wallet?.walletAccountNumber as string}
-        />
-        <CardCopy title="Bank Name" value={wallet?.bankName as string} />
-        <CardCopy title="Amount" value={`${formatNaira(amount, true)}`} />
-        <CustomButton width="full" onClick={handleCopyAll}>
-          Copy account details
-        </CustomButton>
-      </div>
+      {isBvnCompleted && (
+        <div className="bg-primary-50 p-4 rounded-[10px] space-y-6">
+          <CardCopy
+            title="Account Number"
+            value={wallet?.walletAccountNumber as string}
+          />
+          <CardCopy title="Bank Name" value={wallet?.bankName as string} />
+          <CardCopy title="Amount" value={`${formatNaira(amount, true)}`} />
+          <CustomButton width="full" onClick={handleCopyAll}>
+            Copy account details
+          </CustomButton>
+        </div>
+      )}
+      {!isBvnCompleted && (
+        <div className="bg-primary-50 p-4 rounded-[10px] space-y-6">
+          <CardCopy
+            title="Account Number"
+            value={wallet?.walletAccountNumber as string}
+          />
+          <CardCopy title="Bank Name" value={wallet?.bankName as string} />
+          <CardCopy title="Amount" value={`${formatNaira(amount, true)}`} />
+          <CustomButton width="full" onClick={handleCopyAll}>
+            Copy account details
+          </CustomButton>
+        </div>
+      )}
       <div className="bg-warning-50 p-4 rounded-[10px] border border-warning-500 flex gap-2 items-start">
         <div>⚠</div>
         <div>

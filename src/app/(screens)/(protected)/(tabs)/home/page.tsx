@@ -55,7 +55,7 @@ function HomeTab() {
     if (transactions.length <= 0)
       try {
         dispatch(setTransactionsLoading(true));
-        const res = await WalletApi.fetchTransactions();
+        const res = await WalletApi.fetchTransactions({});
         if (res?.data?.content) {
           dispatch(setTransactions(res?.data.content ?? []));
         }

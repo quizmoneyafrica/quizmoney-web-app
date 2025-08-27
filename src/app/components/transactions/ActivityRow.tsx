@@ -7,8 +7,7 @@ import { TransactionDetailsModal } from "./TransactionDetailModal";
 import { formatNaira } from "@/app/utils/utils";
 
 export function formatAmount(amount: number): string {
-  const sign = amount > 0 ? "+" : "-";
-  return `${sign} ${formatNaira(Number(amount), true)}`;
+  return `${formatNaira(Number(amount), true)}`;
 }
 
 export const ActivityRow = ({
@@ -58,7 +57,7 @@ export const ActivityRow = ({
                   : "Withdrawal made")}
             </p>
             <p className="text-xs md:text-sm text-gray-500">
-              {transaction.transactionType}
+              {transaction.direction}
             </p>
           </div>
         </div>

@@ -37,6 +37,9 @@ function Page() {
     try {
       dispatch(setWalletLoading(true));
       const res = await WalletApi.fetchCustomerWallet();
+
+      console.log(JSON.stringify(res, null, 2), "WALLET RES");
+
       if (res?.data) {
         dispatch(setWallet(res?.data));
       }
@@ -56,7 +59,6 @@ function Page() {
       try {
         dispatch(setWalletLoading(true));
         const res = await WalletApi.fetchPayoutBanks();
-        // console.log(res.data, "Payout Accounts");
 
         if (res?.data) {
           dispatch(setPayoutBanks(res.data));
@@ -71,7 +73,9 @@ function Page() {
     const fetchTransactions = async () => {
       try {
         dispatch(setTransactionsLoading(true));
-        const res = await WalletApi.fetchTransactions();
+        const res = await WalletApi.fetchTransactions({});
+        console.log(res, "Transactions");
+
         if (res?.data?.content) {
           dispatch(setTransactions(res?.data.content ?? []));
         }

@@ -1,8 +1,13 @@
 "use client";
 import React, { JSX, useEffect, useState } from "react";
+import { parseISO, isToday, isYesterday } from "date-fns";
+import { useDispatch, useSelector } from "react-redux";
+import { Skeleton } from "@radix-ui/themes";
+
 import FilterBar, { FilterType } from "./FilterBar";
 import Pagination from "./Pagination";
-import { useDispatch, useSelector } from "react-redux";
+import CustomImage from "../wallet/CustomImage";
+import { ActivityRow } from "./ActivityRow";
 import {
   setTransactions,
   setTransactionsLoading,
@@ -16,74 +21,74 @@ interface WalletTransactionGroup {
   yesterday: Transaction[];
   other: Transaction[];
 }
-import { parseISO, isToday, isYesterday } from "date-fns";
-import CustomImage from "../wallet/CustomImage";
-import { ActivityRow } from "./ActivityRow";
-import { Skeleton } from "@radix-ui/themes";
 
-// const PAGE_SIZE = 15;
+export function renderEmptyState(): JSX.Element {
+  return (
+    <div className="flex flex-col items-center justify-center py-44 px-4 bg-white rounded-lg">
+      <div>
+        <CustomImage
+          alt="empty-transactions"
+          src="/icons/empty-state.svg"
+          className="w-16 h-16 mb-4"
+        />
+      </div>
+      <p className="text-gray-500 text-center text-sm md:text-base">
+        {"You've not made any recent"} <br />
+        transactions yet
+      </p>
+    </div>
+  );
+}
 
 export default function WalletActivity(): React.ReactElement {
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [selectedFilter, setSelectedFilter] = React.useState<FilterType>(
-    FilterType.ALL
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [selectedFilter, setSelectedFilter] = useState<FilterType>(
+    FilterType.PENDING
   );
-  const [filteredTransactions, setFilteredTransactions] = useState<
-    Transaction[]
-  >([]);
+
   const dispatch = useDispatch();
-  const { transactions, isTransactionsLoading } = useSelector(useWallet);
+  const { transactions: transactionList, isTransactionsLoading } =
+    useSelector(useWallet);
+  const transactions = transactionList.filter((tx) => tx.currency === "NGN");
+  const fetchTransactions = async (
+    params: {
+      searchText?: string;
+      transactionStatus?: FilterType;
+    } = {}
+  ) => {
+    try {
+      let res;
+      if (Object.keys(params).length > 0) {
+        res = await WalletApi.fetchTransactions({ page, ...params });
+      } else {
+        res = await WalletApi.fetchTransactions({ page });
+      }
+      dispatch(setTransactionsLoading(true));
+      console.log(
+        JSON.stringify(res, null, 2),
+        "=============list of transactions from api======="
+      );
 
-  useEffect(() => {
-    if (
-      !transactions ||
-      !Array.isArray(transactions) ||
-      transactions.length === 0
-    )
-      return;
-
-    // For ALL filter type, return all transactions without filtering
-    if (selectedFilter === FilterType.ALL) {
-      setFilteredTransactions([...transactions]);
-      return;
-    }
-
-    // For COMPLETED and PENDING, filter the transactions directly
-    const filtered = transactions.filter((transaction) =>
-      selectedFilter === FilterType.COMPLETED
-        ? transaction.transactionStatus?.toLowerCase() === "successful"
-        : transaction.transactionStatus?.toLowerCase() === "pending"
-    );
-
-    setFilteredTransactions(filtered);
-  }, [selectedFilter, transactions]);
-
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        dispatch(setTransactionsLoading(true));
-        const res = await WalletApi.fetchTransactions();
-        const data = res;
-        console.log("=================TRANSACTIONS===================");
-        console.log(JSON.stringify(res, null, 2));
-        console.log("=================TRANSACTIONS===================");
-
-        if (data?.data?.content) {
-          dispatch(setTransactions(data?.data?.content));
-          setTotalPages(data?.totalPages || 1);
-        } else {
-          dispatch(setTransactions([]));
-          setTotalPages(1);
-        }
-      } catch (error) {
-        console.error("Transaction Error:", error);
+      if (res?.success && res?.data) {
+        dispatch(setTransactions(res.data.content || []));
+        setTotalPages(res.data.totalPages || 1);
+        console.log("Transactions fetched:", res.data.content?.length || 0);
+      } else {
         dispatch(setTransactions([]));
         setTotalPages(1);
-      } finally {
-        dispatch(setTransactionsLoading(false));
       }
-    };
+    } catch (error) {
+      console.log(error);
+
+      dispatch(setTransactions([]));
+      setTotalPages(1);
+    } finally {
+      dispatch(setTransactionsLoading(false));
+    }
+  };
+
+  useEffect(() => {
     fetchTransactions();
   }, [page, dispatch]);
 
@@ -93,33 +98,50 @@ export default function WalletActivity(): React.ReactElement {
     }
   };
 
-  const groupedTransactions: WalletTransactionGroup = {
-    today: [],
-    yesterday: [],
-    other: [],
+  const groupTransactions = (): WalletTransactionGroup => {
+    const grouped: WalletTransactionGroup = {
+      today: [],
+      yesterday: [],
+      other: [],
+    };
+
+    (transactions || []).forEach((transaction: Transaction) => {
+      const date = parseISO(
+        transaction?.transactionDate ?? new Date().toISOString()
+      );
+      // Debug: log grouping
+      console.log("Grouping transaction:", transaction, "Parsed date:", date);
+      if (isToday(date)) {
+        grouped.today.push(transaction);
+      } else if (isYesterday(date)) {
+        grouped.yesterday.push(transaction);
+      } else {
+        grouped.other.push(transaction);
+      }
+    });
+
+    return grouped;
   };
 
-  // Process transactions directly since they're now an array of Transaction
-  filteredTransactions.forEach((transaction: Transaction) => {
-    const date = parseISO(
-      transaction?.transactionDate ?? new Date().toISOString()
-    );
-    if (isToday(date)) {
-      groupedTransactions.today.push(transaction);
-    } else if (isYesterday(date)) {
-      groupedTransactions.yesterday.push(transaction);
-    } else {
-      groupedTransactions.other.push(transaction);
-    }
-  });
+  const handleSearchTransaction = async (query: string) => {
+    setPage(0); // Reset to first page when searching
+    await fetchTransactions({ searchText: query });
+  };
+
+  const handleFilterChange = async (filter: FilterType) => {
+    setPage(0); // Reset to first page when filtering
+    setSelectedFilter(filter);
+    await fetchTransactions({ transactionStatus: filter });
+  };
 
   const renderTransactionSection = (
     title: string,
     transactions: Transaction[]
   ): JSX.Element | null => {
     if (transactions.length === 0) return null;
+
     return (
-      <div className="space-y-2 md:space-y-3 py-5  md:bg-white rounded-2xl mt-3 md:mt-5">
+      <div className="space-y-2 md:space-y-3 py-5 md:bg-white rounded-2xl mt-3 md:mt-5">
         <div className="px-3 md:px-4">
           <h2 className="text-sm md:text-base font-semibold text-[#3B3B3B]">
             {title}
@@ -127,7 +149,7 @@ export default function WalletActivity(): React.ReactElement {
         </div>
         {transactions.map((transaction, index) => (
           <ActivityRow
-            isLast={transactions.length == index + 1}
+            isLast={transactions.length === index + 1}
             transaction={transaction}
             key={transaction.id || index.toString()}
           />
@@ -141,7 +163,7 @@ export default function WalletActivity(): React.ReactElement {
       {[...Array(5)].map((_, index) => (
         <div
           key={index}
-          className="flex justify-between items-center  pb-3 mb-3"
+          className="flex justify-between items-center pb-3 mb-3"
         >
           <div className="flex items-center gap-3">
             <Skeleton width="40px" height="40px" />
@@ -156,53 +178,43 @@ export default function WalletActivity(): React.ReactElement {
     </div>
   );
 
+  const groupedTransactions = groupTransactions();
+  const hasTransactions = (transactions || []).length > 0;
+
   return (
     <div className="py-5">
       <FilterBar
-        setSelectedFilter={setSelectedFilter}
+        searchTransaction={handleSearchTransaction}
+        setSelectedFilter={handleFilterChange}
         selectedFilter={selectedFilter}
       />
+
       <div className="w-full gap-4 md:gap-8 flex flex-col">
         {isTransactionsLoading ? (
           renderSkeletonLoader()
-        ) : filteredTransactions.length === 0 ? (
+        ) : !hasTransactions ? (
           renderEmptyState()
         ) : (
-          <React.Fragment>
+          <>
             {renderTransactionSection("Today", groupedTransactions.today)}
             {renderTransactionSection(
               "Yesterday",
               groupedTransactions.yesterday
             )}
-            {renderTransactionSection("Earlier", groupedTransactions.other)}
-          </React.Fragment>
+            {/* Always render 'Earlier' if any transaction exists */}
+            {(groupedTransactions.other.length > 0 || hasTransactions) &&
+              renderTransactionSection("Earlier", groupedTransactions.other)}
+          </>
         )}
       </div>
-      {transactions &&
-        Array.isArray(transactions) &&
-        transactions.length > 0 && (
-          <Pagination
-            page={page}
-            pageCount={totalPages}
-            onPageChange={handlePageChange}
-          />
-        )}
+
+      {hasTransactions && (
+        <Pagination
+          page={page}
+          pageCount={totalPages}
+          onPageChange={handlePageChange}
+        />
+      )}
     </div>
   );
 }
-
-export const renderEmptyState = (): JSX.Element => (
-  <div className="flex flex-col items-center justify-center py-44 px-4 bg-white rounded-lg">
-    <div>
-      <CustomImage
-        alt="empty-transactions"
-        src="/icons/empty-state.svg"
-        className="w-16 h-16 mb-4"
-      />
-    </div>
-    <p className="text-gray-500 text-center text-sm md:text-base">
-      {"You've not made any recent"} <br />
-      transactions yet
-    </p>
-  </div>
-);

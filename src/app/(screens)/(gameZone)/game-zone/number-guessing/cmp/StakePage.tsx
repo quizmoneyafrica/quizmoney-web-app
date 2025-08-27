@@ -3,7 +3,10 @@
 import QmDrawer from "@/app/components/drawer/drawer";
 import { useAppDispatch } from "@/app/hooks/useAuth";
 import { useGameZone } from "@/app/hooks/useGameZone";
-import { setGameStatus } from "@/app/store/numberGuessGameSlice";
+import {
+  setGameSettings,
+  setGameStatus,
+} from "@/app/store/numberGuessGameSlice";
 import CustomTextField from "@/app/utils/CustomTextField";
 import { GameButton } from "@/app/utils/GameButton";
 import { formatNaira, toastPosition } from "@/app/utils/utils";
@@ -39,12 +42,12 @@ function StakePage() {
   const handleStakeInGame = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // const res = await GameZoneAPI.stakeInGame(
-      //   currentGameData.gameId,
-      //   currentGameData.type,
-      //   stake
-      // );
-
+      const res = await GameZoneAPI.stakeInGame(
+        currentGameData.gameId,
+        currentGameData.type,
+        stake
+      );
+      dispatch(setGameSettings(res.data));
       dispatch(setGameStatus("INPROGRESS"));
       dispatch(setPhase("playing"));
     } catch (err: any) {
