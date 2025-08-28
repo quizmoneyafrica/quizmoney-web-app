@@ -1,12 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
-// import Splash from "./components/splashScreen/splash";
-
 import Image from "next/image";
 
 export default function Home() {
   return (
     <main className="relative h-[100dvh] w-full">
-      {/* <Splash /> */}
       <img
         src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExMWpsM2YzYWdkZ3Z5dm44cmdpbzU0cWVoY21lYmtsZnBjaHB4aXQ3dyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/WTO8QA0mX2Cfw5vhkp/giphy.gif"
         alt="Server Upgrade"
