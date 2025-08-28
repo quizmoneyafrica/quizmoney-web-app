@@ -15,7 +15,7 @@ This is the frontend codebase for the QuizMoney trivia platform where users comp
 - 🎯 Smooth onboarding with Swiper.js 
 
 --- 
-
+ 
 ## 🛠️ Tech Stack
 
 | Layer         | Technology                     |
