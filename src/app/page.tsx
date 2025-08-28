@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 // import Splash from "./components/splashScreen/splash";
 
 import Image from "next/image";

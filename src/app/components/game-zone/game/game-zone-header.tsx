@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, PlusCircle } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { motion } from "framer-motion";
@@ -10,10 +10,7 @@ interface GameZoneHeaderProps {
   onTopUp?: () => void;
 }
 
-export default function GameZoneHeader({
-  balance,
-  onTopUp,
-}: GameZoneHeaderProps) {
+export default function GameZoneHeader({}: GameZoneHeaderProps) {
   const router = useRouter();
 
   return (
@@ -40,7 +37,7 @@ export default function GameZoneHeader({
       </motion.button>
 
       {/* Right - Balance Button */}
-{/*       <motion.button
+      {/*       <motion.button
         onClick={onTopUp}
         className="bg-white text-[#17478B] rounded-full px-4 py-2 flex items-center gap-2 text-sm font-semibold"
         aria-label="Top up balance"
