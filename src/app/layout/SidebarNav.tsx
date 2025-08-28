@@ -46,6 +46,7 @@ function SidebarNav() {
               <motion.button
                 layout
                 key={index}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => handleTabRoute(`${nav.path}`)}
                 // className={`relative cursor-pointer transition text-sm py-4 ${
                 //   isActive ? "text-white font-semibold" : "text-primary-300"
@@ -109,13 +110,14 @@ function SidebarNav() {
               </Flex>
             );
             return isLogout ? (
-              <button
+              <motion.button
+                whileTap={{ scale: 0.95 }}
                 key={index.toString()}
                 onClick={() => setOpenLogout(true)}
                 className="relative  hover:bg-error-900 opacity-70 rounded-[8px] cursor-pointer transition text-sm py-4"
               >
                 {buttonContent}
-              </button>
+              </motion.button>
             ) : (
               <button
                 key={index}

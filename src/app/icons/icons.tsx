@@ -2,85 +2,97 @@ export const StartGameBtn: React.FC<
   React.SVGProps<SVGSVGElement> & { text?: string; full?: boolean }
 > = ({ text, full = false, ...props }) => (
   <svg
-      xmlns="http://www.w3.org/2000/svg"
-      // 👇 if full, take 100% width. Else default to 372px.
-      width={full ? "100%" : 372}
-      height={full ? "auto" : 66}
-      viewBox="0 0 372 66"
-      fill="none"
-      preserveAspectRatio="xMidYMid meet"
-      {...props}
-    >
-      <g filter="url(#filter0_d)">
-        <rect width="366" height="60" x="4" y="2" fill="#3386CE" rx="30" />
-        <rect
-          width="368"
-          height="62"
-          x="3"
-          y="1"
-          stroke="#fff"
-          strokeWidth="2"
-          rx="31"
-        />
-      </g>
-      <rect width="366" height="53.75" x="4" y="2" fill="#2A75BC" rx="26.875" />
-      <path
-        fill="#2A75BC"
-        d="M250.776 55.75H30.875C16.032 55.75 4 43.718 4 28.875S16.032 2 30.875 2H134.98z"
-        opacity="0.5"
+    xmlns="http://www.w3.org/2000/svg"
+    // 👇 if full, take 100% width. Else default to 372px.
+    width={full ? "100%" : 372}
+    height={full ? "auto" : 66}
+    viewBox="0 0 372 66"
+    fill="none"
+    preserveAspectRatio="xMidYMid meet"
+    {...props}
+  >
+    <g filter="url(#filter0_d)">
+      <rect width="366" height="60" x="4" y="2" fill="#3386CE" rx="30" />
+      <rect
+        width="368"
+        height="62"
+        x="3"
+        y="1"
+        stroke="#fff"
+        strokeWidth="2"
+        rx="31"
       />
+    </g>
+    <rect width="366" height="53.75" x="4" y="2" fill="#2A75BC" rx="26.875" />
+    <path
+      fill="#2A75BC"
+      d="M250.776 55.75H30.875C16.032 55.75 4 43.718 4 28.875S16.032 2 30.875 2H134.98z"
+      opacity="0.5"
+    />
 
-      {/* If text is provided, render centered text */}
-      {text && (
-        <text
-          x="50%"
-          y="50%"
-          dominantBaseline="middle"
-          textAnchor="middle"
-          fill="white"
-          fontSize="20"
-          fontWeight="bold"
-          fontFamily="sans-serif"
-        >
-          {text}
-        </text>
-      )}
+    {/* If text is provided, render centered text */}
+    {text && (
+      <text
+        x="50%"
+        y="50%"
+        dominantBaseline="middle"
+        textAnchor="middle"
+        fill="white"
+        fontSize="20"
+        fontWeight="bold"
+        fontFamily="sans-serif"
+      >
+        {text}
+      </text>
+    )}
 
-      {/* (Optional) fallback graphics if no text */}
-      {!text && (
-        <g fill="#fff">
-          {/* put your default paths here */}
-        </g>
-      )}
+    {/* (Optional) fallback graphics if no text */}
+    {!text && <g fill="#fff">{/* put your default paths here */}</g>}
 
-      <defs>
-        <filter
-          id="filter0_d"
-          width="370"
-          height="66"
-          x="2"
-          y="0"
-          colorInterpolationFilters="sRGB"
-          filterUnits="userSpaceOnUse"
-        >
-          <feFlood floodOpacity="0" result="BackgroundImageFix" />
-          <feColorMatrix
-            in="SourceAlpha"
-            result="hardAlpha"
-            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-          />
-          <feOffset dy="2" />
-          <feComposite in2="hardAlpha" operator="out" />
-          <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0" />
-          <feBlend in2="BackgroundImageFix" result="effect1_dropShadow" />
-          <feBlend in="SourceGraphic" in2="effect1_dropShadow" result="shape" />
-        </filter>
-      </defs>
-    </svg>
+    <defs>
+      <filter
+        id="filter0_d"
+        width="370"
+        height="66"
+        x="2"
+        y="0"
+        colorInterpolationFilters="sRGB"
+        filterUnits="userSpaceOnUse"
+      >
+        <feFlood floodOpacity="0" result="BackgroundImageFix" />
+        <feColorMatrix
+          in="SourceAlpha"
+          result="hardAlpha"
+          values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+        />
+        <feOffset dy="2" />
+        <feComposite in2="hardAlpha" operator="out" />
+        <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0" />
+        <feBlend in2="BackgroundImageFix" result="effect1_dropShadow" />
+        <feBlend in="SourceGraphic" in2="effect1_dropShadow" result="shape" />
+      </filter>
+    </defs>
+  </svg>
 );
 
 // Icons
-
+export const VerifiedBadge: React.FC<React.SVGProps<SVGSVGElement>> = (
+  props
+) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="18"
+    height="18"
+    fill="none"
+    viewBox="0 0 18 18"
+    {...props}
+  >
+    <path
+      fill="currentColor"
+      d="M16.645 7.033c-.294-.308-.599-.625-.714-.904-.106-.256-.112-.679-.118-1.09-.012-.762-.025-1.626-.626-2.226-.6-.601-1.464-.614-2.227-.626-.41-.006-.833-.012-1.089-.118-.278-.115-.596-.42-.904-.714C10.428.837 9.816.25 9 .25S7.573.837 7.033 1.355c-.308.294-.625.599-.904.714-.254.106-.679.112-1.09.119-.762.011-1.626.024-2.226.624-.601.601-.61 1.465-.626 2.228-.006.41-.012.833-.118 1.089-.115.278-.42.596-.714.904C.837 7.572.25 8.184.25 9s.587 1.427 1.105 1.967c.294.308.599.625.714.904.106.256.112.679.119 1.09.011.762.024 1.626.624 2.226.601.601 1.465.614 2.228.626.41.006.833.012 1.089.118.278.115.596.42.904.714.539.518 1.151 1.105 1.967 1.105s1.427-.587 1.967-1.105c.308-.294.625-.599.904-.714.256-.106.679-.112 1.09-.118.762-.012 1.626-.025 2.226-.626.601-.6.614-1.464.626-2.227.006-.41.012-.833.118-1.089.115-.278.42-.596.714-.904.518-.539 1.105-1.151 1.105-1.967s-.587-1.427-1.105-1.967m-4.078.534-4.375 4.375a.626.626 0 0 1-.884 0l-1.875-1.875a.626.626 0 0 1 .884-.884l1.433 1.433 3.933-3.933a.626.626 0 0 1 .884.884"
+    ></path>
+  </svg>
+);
 export const GoogleIcon: React.FC<React.SVGProps<SVGSVGElement>> = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"

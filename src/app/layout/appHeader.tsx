@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { EraserIcon, QuestionMarkCircledIcon } from "@radix-ui/react-icons";
 import { Avatar, Container, Flex, Heading, Text } from "@radix-ui/themes";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ArrowDownFillIcon,
   BellIcon,
@@ -20,7 +21,39 @@ import { useDispatch } from "react-redux";
 import NotificationApi from "../api/notification";
 import { setNotificationsCount } from "../store/notificationSlice";
 import { MenuIcon } from "lucide-react";
-// import Parse, { liveQueryClient } from "@/app/api/parse/parseClient";
+import { MenuToggle } from "./MenuToggle";
+import { motion, useCycle } from "framer-motion";
+
+const useDimensions = (ref: any) => {
+  const dimensions = useRef({ width: 0, height: 0 });
+
+  useEffect(() => {
+    dimensions.current.width = ref.current.offsetWidth;
+    dimensions.current.height = ref.current.offsetHeight;
+  }, [ref]);
+
+  return dimensions.current;
+};
+
+const sidebarOptions = {
+  open: (height = 1000) => ({
+    clipPath: `circle(${height * 2 + 200}px at 40px 40px)`,
+    transition: {
+      type: "spring",
+      stiffness: 20,
+      restDelta: 2,
+    },
+  }),
+  closed: {
+    clipPath: "circle(30px at 40px 40px)",
+    transition: {
+      delay: 0.5,
+      type: "spring",
+      stiffness: 400,
+      damping: 40,
+    },
+  },
+};
 
 function AppHeader() {
   const dispatch = useDispatch();
@@ -32,6 +65,12 @@ function AppHeader() {
   const { notificationCount } = useAppSelector((state) => state.notifications);
   const { user } = useAuth();
   console.log("User", user);
+
+  //Mobile Menu
+  const [isOpen, toggleOpen] = useCycle(false, true);
+  const containerRef = useRef(null);
+  const { height } = useDimensions(containerRef);
+  //Mobile Menu
 
   const fetchNotifications = useCallback(async () => {
     try {
@@ -91,6 +130,22 @@ function AppHeader() {
             <button className="bg-primary-50 rounded text-gray-500 lg:hidden">
               <MenuIcon className="m-1" />
             </button>
+            <motion.nav
+              initial={false}
+              animate={isOpen ? "open" : "closed"}
+              custom={height}
+              ref={containerRef}
+              className="bg-primary-50"
+            >
+              {/* <motion.div
+                className="background bg-primary-900 w-[80%]"
+                variants={sidebarOptions}
+              /> */}
+               <motion.div className="absolute">
+
+               </motion.div>
+              <MenuToggle toggle={() => toggleOpen()} />
+            </motion.nav>
           </div>
 
           {/* <span className="lg:hidden">{lastSegment}</span> */}
@@ -211,6 +266,8 @@ function AppHeader() {
         </>
       )}
       <LogoutDialog open={openLogout} onOpenChange={setOpenLogout} />
+
+      {/* <MobileSideBar /> */}
     </div>
   );
 }

@@ -42,14 +42,17 @@ function StakePage() {
   const handleStakeInGame = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await GameZoneAPI.stakeInGame(
-        currentGameData.gameId,
-        currentGameData.type,
-        stake
+      await GameZoneAPI.leaveNumberGuessGame(
+        "81459d38-05ff-42ad-8d7e-ef2395c15e09"
       );
-      dispatch(setGameSettings(res.data));
-      dispatch(setGameStatus("INPROGRESS"));
-      dispatch(setPhase("playing"));
+      // const res = await GameZoneAPI.stakeInGame(
+      //   currentGameData.gameId,
+      //   currentGameData.type,
+      //   stake
+      // );
+      // dispatch(setGameSettings(res.data));
+      // dispatch(setGameStatus("INPROGRESS"));
+      // dispatch(setPhase("playing"));
     } catch (err: any) {
       toast.error(err.message, { position: toastPosition });
       setConfirmStakeModal(false);
