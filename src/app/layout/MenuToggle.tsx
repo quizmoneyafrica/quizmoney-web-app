@@ -5,8 +5,10 @@ import { motion } from "framer-motion";
 const Path = (props: any) => (
   <motion.path
     fill="transparent"
-    strokeWidth="3"
-    stroke="hsl(0, 0%, 18%)"
+    strokeWidth="2"
+    // stroke="hsl(233.33333333333334, 87.0967741935484%, 30.392156862745097%)"
+    // stroke="#2364aa"
+    stroke="#fff"
     strokeLinecap="round"
     {...props}
   />
@@ -15,8 +17,12 @@ interface Prop {
   toggle: () => void;
 }
 export const MenuToggle = ({ toggle }: Prop) => (
-  <button onClick={toggle}>
-    <svg width="23" height="23" viewBox="0 0 23 23">
+  <motion.button
+    whileTap={{ scale: 0.95 }}
+    onClick={toggle}
+    className="bg-primaryy-50 absolute top-6 left-5.5 z-50 grid place-items-center rounded-md"
+  >
+    <svg width="20" height="20" viewBox="0 0 23 23" className="m-2 mb-1">
       <Path
         variants={{
           closed: { d: "M 2 2.5 L 20 2.5" },
@@ -38,5 +44,5 @@ export const MenuToggle = ({ toggle }: Prop) => (
         }}
       />
     </svg>
-  </button>
+  </motion.button>
 );

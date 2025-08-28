@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import QmDrawer from "@/app/components/drawer/drawer";
-import { useAppDispatch } from "@/app/hooks/useAuth";
+// import { useAppDispatch } from "@/app/hooks/useAuth";
 import { useGameZone } from "@/app/hooks/useGameZone";
-import {
-  setGameSettings,
-  setGameStatus,
-} from "@/app/store/numberGuessGameSlice";
+// import {
+//   setGameSettings,
+//   setGameStatus,
+// } from "@/app/store/numberGuessGameSlice";
 import CustomTextField from "@/app/utils/CustomTextField";
 import { GameButton } from "@/app/utils/GameButton";
 import { formatNaira, toastPosition } from "@/app/utils/utils";
@@ -16,7 +16,7 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 import { gameRules } from "./gameRules";
 import GameZoneAPI from "@/app/api/gameZoneApi";
-import { setPhase } from "@/app/store/gameSlice";
+// import { setPhase } from "@/app/store/gameSlice";
 
 const preStakeAmounts = [
   { value: 1000 },
@@ -25,7 +25,7 @@ const preStakeAmounts = [
   { value: 20000 },
 ];
 function StakePage() {
-  const dispatch = useAppDispatch();
+  // const dispatch = useAppDispatch();
   const { isFetching, currentGameData } = useGameZone("NUMBER_GUESSER");
   const [confirmStakeModal, setConfirmStakeModal] = useState(false);
 

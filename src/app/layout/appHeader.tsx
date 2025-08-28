@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { EraserIcon, QuestionMarkCircledIcon } from "@radix-ui/react-icons";
-import { Avatar, Container, Flex, Heading, Text } from "@radix-ui/themes";
+import { Avatar, Container, Flex, Heading, } from "@radix-ui/themes";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -13,6 +13,7 @@ import {
   PersonIcon,
   QMCoin,
   SupportIcon,
+  VerifiedBadge,
 } from "../icons/icons";
 import { useAppSelector, useAuth } from "../hooks/useAuth";
 import { DropdownMenu } from "radix-ui";
@@ -20,9 +21,9 @@ import LogoutDialog from "../components/logout/logout";
 import { useDispatch } from "react-redux";
 import NotificationApi from "../api/notification";
 import { setNotificationsCount } from "../store/notificationSlice";
-import { MenuIcon } from "lucide-react";
-import { MenuToggle } from "./MenuToggle";
 import { motion, useCycle } from "framer-motion";
+import MobileSideBar from "./mobileSideBar";
+import { useKycStep } from "../hooks/useKycStep";
 
 const useDimensions = (ref: any) => {
   const dimensions = useRef({ width: 0, height: 0 });
@@ -35,26 +36,6 @@ const useDimensions = (ref: any) => {
   return dimensions.current;
 };
 
-const sidebarOptions = {
-  open: (height = 1000) => ({
-    clipPath: `circle(${height * 2 + 200}px at 40px 40px)`,
-    transition: {
-      type: "spring",
-      stiffness: 20,
-      restDelta: 2,
-    },
-  }),
-  closed: {
-    clipPath: "circle(30px at 40px 40px)",
-    transition: {
-      delay: 0.5,
-      type: "spring",
-      stiffness: 400,
-      damping: 40,
-    },
-  },
-};
-
 function AppHeader() {
   const dispatch = useDispatch();
   const { balance } = useAppSelector((state) => state.coin);
@@ -64,7 +45,8 @@ function AppHeader() {
   const [openLogout, setOpenLogout] = useState(false);
   const { notificationCount } = useAppSelector((state) => state.notifications);
   const { user } = useAuth();
-  console.log("User", user);
+  const { customerKyc } = useKycStep();
+  const bvnStep = customerKyc.find((s) => s.step === "BVN");
 
   //Mobile Menu
   const [isOpen, toggleOpen] = useCycle(false, true);
@@ -78,7 +60,6 @@ function AppHeader() {
       console.log("Notify", res);
 
       dispatch(setNotificationsCount(res.data.count));
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.log(err.message);
     }
@@ -118,33 +99,34 @@ function AppHeader() {
                   <CircleArrowLeft />
                 </button>
               ))}
-            <span className="hidden lg:flex">
-              {lastSegment === "Home"
-                ? `Welcome, ${user?.firstName || ""} 👋`
-                : isVerifyOtp()
-                ? " Reset Pin"
-                : isPin()
-                ? " Reset Pin"
-                : lastSegment}
-            </span>
-            <button className="bg-primary-50 rounded text-gray-500 lg:hidden">
-              <MenuIcon className="m-1" />
-            </button>
+
+            <div className="hidden lg:block">
+              {lastSegment === "Home" ? (
+                <span className="flex items-center gap-1 capitalize font-bold">
+                  Welcome, {user?.firstName || ""}
+                  {bvnStep && bvnStep?.status === "COMPLETED" ? (
+                    <VerifiedBadge className="text-primary-900" />
+                  ) : (
+                    "👋"
+                  )}
+                </span>
+              ) : isVerifyOtp() || isPin() ? (
+                <span className="flex capitalize font-bold ">Reset Pin</span>
+              ) : (
+                <span className="flex capitalize font-bold ">
+                  {lastSegment}
+                </span>
+              )}
+            </div>
+
             <motion.nav
               initial={false}
               animate={isOpen ? "open" : "closed"}
               custom={height}
               ref={containerRef}
-              className="bg-primary-50"
+              className="lg:hidden"
             >
-              {/* <motion.div
-                className="background bg-primary-900 w-[80%]"
-                variants={sidebarOptions}
-              /> */}
-               <motion.div className="absolute">
-
-               </motion.div>
-              <MenuToggle toggle={() => toggleOpen()} />
+              <MobileSideBar isOpen={isOpen} toggle={() => toggleOpen()} />
             </motion.nav>
           </div>
 
@@ -249,25 +231,29 @@ function AppHeader() {
           </DropdownMenu.Root>
         </Flex>
       </Flex>
-      {lastSegment === "Home" && (
-        <>
-          <span className="flex capitalize font-bold lg:hidden">
-            {lastSegment === "Home"
-              ? `Welcome, ${user?.firstName || ""} 👋`
-              : isVerifyOtp()
-              ? " Reset Pin"
-              : isPin()
-              ? " Reset Pin"
-              : lastSegment}
+      <div className="lg:hidden">
+        {lastSegment === "Home" ? (
+          <span className="flex items-center gap-1 capitalize font-bold">
+            Welcome, {user?.firstName || ""}
+            {bvnStep && bvnStep?.status === "COMPLETED" ? (
+              <VerifiedBadge className="text-primary-900" />
+            ) : (
+              "👋"
+            )}
           </span>
-          <Text className="text-sm lg:text-base">
-            Let&apos;s see what you&apos;ve got
-          </Text>
-        </>
-      )}
-      <LogoutDialog open={openLogout} onOpenChange={setOpenLogout} />
+        ) : isVerifyOtp() || isPin() ? (
+          <span className="flex capitalize font-bold ">Reset Pin</span>
+        ) : (
+          <span className="flex capitalize font-bold ">{lastSegment}</span>
+        )}
+      </div>
+      {/* {lastSegment === "Home" && (
+        <Text className="text-sm lg:text-base">
+          Let&apos;s see what you&apos;ve got
+        </Text>
+      )} */}
 
-      {/* <MobileSideBar /> */}
+      <LogoutDialog open={openLogout} onOpenChange={setOpenLogout} />
     </div>
   );
 }
