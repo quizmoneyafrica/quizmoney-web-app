@@ -5,7 +5,7 @@ export const gameRules = [
   },
   {
     title: "No going back",
-    description: "Once you proceed, your stake will be debited",
+    description: "Once you proceed, your stake will be deducted",
   },
   {
     title: "Purchase trials",

@@ -1,5 +1,5 @@
 "use client";
-import React, { JSX, useEffect, useState } from "react";
+import React, { JSX, useCallback, useEffect, useState } from "react";
 import { parseISO, isToday, isYesterday } from "date-fns";
 import { useDispatch, useSelector } from "react-redux";
 import { Skeleton } from "@radix-ui/themes";
@@ -51,46 +51,49 @@ export default function WalletActivity(): React.ReactElement {
   const { transactions: transactionList, isTransactionsLoading } =
     useSelector(useWallet);
   const transactions = transactionList.filter((tx) => tx.currency === "NGN");
-  const fetchTransactions = async (
-    params: {
-      searchText?: string;
-      transactionStatus?: FilterType;
-    } = {}
-  ) => {
-    try {
-      let res;
-      if (Object.keys(params).length > 0) {
-        res = await WalletApi.fetchTransactions({ page, ...params });
-      } else {
-        res = await WalletApi.fetchTransactions({ page });
-      }
-      dispatch(setTransactionsLoading(true));
-      console.log(
-        JSON.stringify(res, null, 2),
-        "=============list of transactions from api======="
-      );
+  const fetchTransactions = useCallback(
+    async (
+      params: {
+        searchText?: string;
+        transactionStatus?: FilterType;
+      } = {}
+    ) => {
+      try {
+        let res;
+        if (Object.keys(params).length > 0) {
+          res = await WalletApi.fetchTransactions({ page, ...params });
+        } else {
+          res = await WalletApi.fetchTransactions({ page });
+        }
+        dispatch(setTransactionsLoading(true));
+        console.log(
+          JSON.stringify(res, null, 2),
+          "=============list of transactions from api======="
+        );
 
-      if (res?.success && res?.data) {
-        dispatch(setTransactions(res.data.content || []));
-        setTotalPages(res.data.totalPages || 1);
-        console.log("Transactions fetched:", res.data.content?.length || 0);
-      } else {
+        if (res?.success && res?.data) {
+          dispatch(setTransactions(res.data.content || []));
+          setTotalPages(res.data.totalPages || 1);
+          console.log("Transactions fetched:", res.data.content?.length || 0);
+        } else {
+          dispatch(setTransactions([]));
+          setTotalPages(1);
+        }
+      } catch (error) {
+        console.log(error);
+
         dispatch(setTransactions([]));
         setTotalPages(1);
+      } finally {
+        dispatch(setTransactionsLoading(false));
       }
-    } catch (error) {
-      console.log(error);
-
-      dispatch(setTransactions([]));
-      setTotalPages(1);
-    } finally {
-      dispatch(setTransactionsLoading(false));
-    }
-  };
+    },
+    []
+  );
 
   useEffect(() => {
     fetchTransactions();
-  }, [page, dispatch]);
+  }, [page, dispatch, fetchTransactions]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {

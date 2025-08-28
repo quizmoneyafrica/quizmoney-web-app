@@ -13,6 +13,7 @@ import JoinGameBtn from "./JoinGameBtn";
 import { differenceInSeconds } from "date-fns";
 import CustomButton from "@/app/utils/CustomBtn";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { QMCoin } from "@/app/icons/icons";
 
 function GameCard() {
   const dispatch = useAppDispatch();
@@ -86,12 +87,18 @@ function GameCard() {
               <Heading as="h3" size="5" className="text-primary-900 font-bold">
                 Game Prize
               </Heading>
-              <Heading
-                as="h1"
-                className="text-primary-900 !text-[2.7rem] !font-black"
-              >
-                {formatNaira(nextGameData?.prize)}
-              </Heading>
+              <Flex direction="column" align="center" justify="center">
+                <Heading
+                  as="h1"
+                  className="text-primary-900 !text-[2.7rem] !font-black"
+                >
+                  {formatNaira(nextGameData?.prize)}
+                </Heading>
+                <span className="text-center text-2xl text-primary-900">+</span>
+                <div className="flex items-center gap-1 text-primary-900 font-bold text-xl">
+                  <QMCoin /> <span>2,500 QM Coins</span>
+                </div>
+              </Flex>
               <Flex direction="column" gap="2" align="center" justify="center">
                 {nextGameData && nextGameData.status === "INPROGRESS" && (
                   <div className="flex items-center gap-1">
