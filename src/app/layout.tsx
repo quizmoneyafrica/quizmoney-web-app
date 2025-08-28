@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, DM_Sans } from "next/font/google";
 import "./globals.css";
-import AppSetup from "./appSetup";
+// import AppSetup from "./appSetup";
 import "@radix-ui/themes/styles.css";
-import BodyWrapper from "./bodyWrapper";
-import InstallAppButton from "./pwa/install";
+// import BodyWrapper from "./bodyWrapper";
+// import InstallAppButton from "./pwa/install";
 import Script from "next/script";
 
 const spacegrotesk = Space_Grotesk({
@@ -99,10 +99,12 @@ export default function RootLayout({
       <body
         className={`${spacegrotesk.variable} ${dmsans.variable} antialiased`}
       >
-        <BodyWrapper>
-          <AppSetup>{children}</AppSetup>
-        </BodyWrapper>
-        <InstallAppButton />
+        {/* <BodyWrapper> */}
+        {/* <AppSetup> */}
+        {children}
+        {/* </AppSetup> */}
+        {/* </BodyWrapper> */}
+        {/* <InstallAppButton /> */}
       </body>
     </html>
   );
