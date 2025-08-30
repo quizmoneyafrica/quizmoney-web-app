@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { EraserIcon, QuestionMarkCircledIcon } from "@radix-ui/react-icons";
-import { Avatar, Container, Flex, Heading, } from "@radix-ui/themes";
+import { Avatar, Container, Flex, Heading } from "@radix-ui/themes";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -38,7 +38,7 @@ const useDimensions = (ref: any) => {
 
 function AppHeader() {
   const dispatch = useDispatch();
-  const { balance } = useAppSelector((state) => state.coin);
+  const { wallet } = useAppSelector((state) => state.wallet);
   const pathname = usePathname();
   const excludedPaths = ["/practice-game"];
   const router = useRouter();
@@ -47,6 +47,7 @@ function AppHeader() {
   const { user } = useAuth();
   const { customerKyc } = useKycStep();
   const bvnStep = customerKyc.find((s) => s.step === "BVN");
+  const coin = wallet.find((w) => w.currency === "QMC")! || {};
 
   //Mobile Menu
   const [isOpen, toggleOpen] = useCycle(false, true);
@@ -82,13 +83,24 @@ function AppHeader() {
   const isVerifyOtp = () =>
     pathname.includes("wallet") && pathname.includes("verify-otp");
   return (
-    <div className="pb-4">
+    <div className="pb-4 relative">
+      <motion.nav
+        initial={false}
+        animate={isOpen ? "open" : "closed"}
+        custom={height}
+        ref={containerRef}
+        className={`lg:hidden relative bg-green-100 -top-4 -left-5 ${
+          !isOpen && "-ml-1 w-screen"
+        }`}
+      >
+        <MobileSideBar isOpen={isOpen} toggle={() => toggleOpen()} />
+      </motion.nav>
       <Flex align="center" justify="between" gap="2">
         <Heading
           size={{ initial: "4", lg: "5" }}
           className="capitalize flex items-center flex-wrap overflow-hidden text-ellipsis whitespace-nowrap max-w-[200px] sm:max-w-none"
         >
-          <div className=" flex-row flex items-center gap-2">
+          <div className="relative flex-row flex items-center gap-2">
             {pathname.split("/").length > 2 ||
               pathname.includes("notification") ||
               (pathname.includes("kyc") && (
@@ -118,20 +130,11 @@ function AppHeader() {
                 </span>
               )}
             </div>
-
-            <motion.nav
-              initial={false}
-              animate={isOpen ? "open" : "closed"}
-              custom={height}
-              ref={containerRef}
-              className="lg:hidden"
-            >
-              <MobileSideBar isOpen={isOpen} toggle={() => toggleOpen()} />
-            </motion.nav>
           </div>
 
           {/* <span className="lg:hidden">{lastSegment}</span> */}
         </Heading>
+
         <Flex align="center" gap={{ initial: "1", lg: "6" }}>
           <Link href="/wallet?tab=coin">
             <Flex
@@ -140,7 +143,7 @@ function AppHeader() {
               className="rounded-full text-xs border-2 py-1 px-2 border-neutral-400 text-neutral-500 hover:border-primary-500 hover:text-primary-900 cursor-pointer"
             >
               <QMCoin width={15} height={15} />
-              <span>{balance}</span>
+              <span>{coin.availableBalance | 0}</span>
             </Flex>
           </Link>
           <Link href="/store">

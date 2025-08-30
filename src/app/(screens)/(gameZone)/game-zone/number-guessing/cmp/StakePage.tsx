@@ -87,6 +87,8 @@ function StakePage() {
               name="stake"
               value={stake ? stake.toLocaleString() : ""}
               type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               onChange={(e) => {
                 const raw = e.target.value.replace(/,/g, "");
                 setStake(Number(raw));

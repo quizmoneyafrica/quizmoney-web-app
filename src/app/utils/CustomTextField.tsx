@@ -18,7 +18,7 @@ type CustomTextFieldProps = {
   pattern?: string;
   readOnly?: boolean;
   maxLength?: number;
-};
+} & React.InputHTMLAttributes<HTMLInputElement>;
 
 export default function CustomTextField({
   label,
@@ -35,6 +35,7 @@ export default function CustomTextField({
   readOnly = false,
   maxLength,
   pattern,
+  ...props
 }: CustomTextFieldProps) {
   return (
     <div className="w-full space-y-1">
@@ -65,6 +66,7 @@ export default function CustomTextField({
           )}
           max={maxLength}
           pattern={pattern}
+          {...props}
         />
 
         {icon && (

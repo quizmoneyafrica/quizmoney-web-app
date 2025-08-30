@@ -221,7 +221,7 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
                     onChange={() => setSelectedPaymentMethod("bankTransfer")}
                     className="accent-[#17478B] size-5"
                   />
-                  Pay with Bank Transfer
+                  Pay with Virtual Account
                 </label>
 
                 <label className="flex items-center gap-2 text-sm bg-white border border-neutral-300 checked:border-primary-900 p-4 rounded-[10px]">

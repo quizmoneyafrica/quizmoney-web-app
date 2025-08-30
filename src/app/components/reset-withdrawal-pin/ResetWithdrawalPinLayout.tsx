@@ -10,6 +10,7 @@ import WalletApi from "@/app/api/wallet";
 import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
 import CustomButton from "@/app/utils/CustomBtn";
+import { useAuth } from "@/app/hooks/useAuth";
 
 const emailSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -19,6 +20,7 @@ type EmailForm = z.infer<typeof emailSchema>;
 
 export default function ResetWithdrawalPinLayout() {
   const route = useRouter();
+  const { user } = useAuth();
   const {
     register,
     handleSubmit,
@@ -34,15 +36,13 @@ export default function ResetWithdrawalPinLayout() {
     setLoading(true);
     console.log("Send OTP to:", data.email);
     try {
-      const response = await WalletApi.forgotPin({ email: data.email });
+      await WalletApi.resetPin();
+      localStorage.setItem("wallet-reset-email", data.email);
+      toast.success("Check email for OTP", {
+        position: toastPosition,
+      });
+      route.push(`/wallet/reset-pin/verify-otp`);
 
-      if (response.data) {
-        localStorage.setItem("wallet-reset-email", data.email);
-        toast.success(response?.message, {
-          position: toastPosition,
-        });
-        route.push(`/wallet/reset-pin/verify-otp`);
-      }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(`${err.message}`, {
@@ -63,8 +63,8 @@ export default function ResetWithdrawalPinLayout() {
       >
         <h1 className="text-3xl font-bold mb-2 text-[#3B3B3B]">Reset pin</h1>
         <p className="text-sm text-[#6D6D6D] mb-8">
-          Enter the email linked to your account. We&apos;ll send you a 6-digit
-          verification code.
+          We&apos;ll send you a 6-digit verification code to the email below.
+          Click reset pin.
         </p>
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <div className="mb-4">
@@ -72,7 +72,7 @@ export default function ResetWithdrawalPinLayout() {
               htmlFor="email"
               className="block font-semibold mb-2 text-black"
             >
-              Enter Email Address
+              Your Email Address
             </label>
             <motion.input
               id="email"
@@ -87,6 +87,8 @@ export default function ResetWithdrawalPinLayout() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
+              value={user?.email}
+              disabled
             />
             {errors.email && (
               <p className="text-red-500 text-sm mt-2">
@@ -101,7 +103,7 @@ export default function ResetWithdrawalPinLayout() {
             disabled={loading}
             loader={loading}
           >
-            Send OTP
+            Reset Pin
           </CustomButton>
         </form>
       </motion.div>

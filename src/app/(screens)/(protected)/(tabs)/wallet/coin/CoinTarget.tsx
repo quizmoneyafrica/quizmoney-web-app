@@ -3,7 +3,10 @@ import { useAppSelector } from "@/app/hooks/useAuth";
 import { motion } from "framer-motion";
 
 function CoinTarget() {
-  const { balance } = useAppSelector((state) => state.coin);
+  const { wallet: coinData } = useAppSelector((state) => state.wallet);
+  const coin = coinData.find((c) => c.currency === "QMC")! || {};
+  const balance = coin.availableBalance | 0;
+
   const targetStep = 1500;
   const nextTarget =
     balance > 0 ? Math.ceil(balance / targetStep) * targetStep : targetStep;
