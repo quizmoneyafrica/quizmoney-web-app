@@ -26,7 +26,7 @@ function GameZoneCardTemp(props: gamesObject) {
 
   return (
     <div
-      className={`relative grid grid-cols-3 rounded-[20px] px-4 pb-4 pt-6 ${styles.container} ${className} overflow-clip`}
+      className={`${data.btnText === "Coming soon" && "opacity-45"} relative grid grid-cols-3 rounded-[20px] px-4 pb-4 pt-6 ${styles.container} ${className} overflow-clip`}
     >
       <div className={`z-[2] ${!showBadge && "hidden"} absolute -top-[2.9px]`}>
         <Bookmark fill="#F8B93C" width={54.5} height={33.75} stroke="#F8B93C" />

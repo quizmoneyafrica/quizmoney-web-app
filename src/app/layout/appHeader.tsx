@@ -38,7 +38,7 @@ const useDimensions = (ref: any) => {
 
 function AppHeader() {
   const dispatch = useDispatch();
-  const { balance } = useAppSelector((state) => state.coin);
+  const { wallet } = useAppSelector((state) => state.wallet);
   const pathname = usePathname();
   const excludedPaths = ["/practice-game"];
   const router = useRouter();
@@ -47,6 +47,7 @@ function AppHeader() {
   const { user } = useAuth();
   const { customerKyc } = useKycStep();
   const bvnStep = customerKyc.find((s) => s.step === "BVN");
+  const coin = wallet.find((w) => w.currency === "QMC")! || {};
 
   //Mobile Menu
   const [isOpen, toggleOpen] = useCycle(false, true);
@@ -142,7 +143,7 @@ function AppHeader() {
               className="rounded-full text-xs border-2 py-1 px-2 border-neutral-400 text-neutral-500 hover:border-primary-500 hover:text-primary-900 cursor-pointer"
             >
               <QMCoin width={15} height={15} />
-              <span>{balance}</span>
+              <span>{coin.availableBalance | 0}</span>
             </Flex>
           </Link>
           <Link href="/store">

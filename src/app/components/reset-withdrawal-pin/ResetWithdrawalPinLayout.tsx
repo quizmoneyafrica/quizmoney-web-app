@@ -36,15 +36,13 @@ export default function ResetWithdrawalPinLayout() {
     setLoading(true);
     console.log("Send OTP to:", data.email);
     try {
-      const response = await WalletApi.forgotPin();
+      await WalletApi.resetPin();
+      localStorage.setItem("wallet-reset-email", data.email);
+      toast.success("Check email for OTP", {
+        position: toastPosition,
+      });
+      route.push(`/wallet/reset-pin/verify-otp`);
 
-      if (response.data) {
-        localStorage.setItem("wallet-reset-email", data.email);
-        toast.success("Check email for OTP", {
-          position: toastPosition,
-        });
-        route.push(`/wallet/reset-pin/verify-otp`);
-      }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(`${err.message}`, {

@@ -138,8 +138,19 @@ const WalletApi = {
     );
   },
 
-  forgotPin(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("/pin/forgot", {}, {}, "POST");
+  forgotPin(data: { email: string }): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(`forgotPin`, { ...data });
+  },
+  resetPin(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(`pin/forgot`, {}, {}, "POST");
+  },
+  setNewPin(otp: string, pin: string): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      `pin/forgot`,
+      { otp, pin },
+      {},
+      "POST"
+    );
   },
   verifyPinOtp(data: { otp: string; email: string }): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(`verifyPinOtp`, { ...data });
