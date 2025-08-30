@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { EraserIcon, QuestionMarkCircledIcon } from "@radix-ui/react-icons";
-import { Avatar, Container, Flex, Heading, } from "@radix-ui/themes";
+import { Avatar, Container, Flex, Heading } from "@radix-ui/themes";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -82,13 +82,24 @@ function AppHeader() {
   const isVerifyOtp = () =>
     pathname.includes("wallet") && pathname.includes("verify-otp");
   return (
-    <div className="pb-4">
+    <div className="pb-4 relative">
+      <motion.nav
+        initial={false}
+        animate={isOpen ? "open" : "closed"}
+        custom={height}
+        ref={containerRef}
+        className={`lg:hidden relative bg-green-100 -top-4 -left-5 ${
+          !isOpen && "-ml-1 w-screen"
+        }`}
+      >
+        <MobileSideBar isOpen={isOpen} toggle={() => toggleOpen()} />
+      </motion.nav>
       <Flex align="center" justify="between" gap="2">
         <Heading
           size={{ initial: "4", lg: "5" }}
           className="capitalize flex items-center flex-wrap overflow-hidden text-ellipsis whitespace-nowrap max-w-[200px] sm:max-w-none"
         >
-          <div className=" flex-row flex items-center gap-2">
+          <div className="relative flex-row flex items-center gap-2">
             {pathname.split("/").length > 2 ||
               pathname.includes("notification") ||
               (pathname.includes("kyc") && (
@@ -118,20 +129,11 @@ function AppHeader() {
                 </span>
               )}
             </div>
-
-            <motion.nav
-              initial={false}
-              animate={isOpen ? "open" : "closed"}
-              custom={height}
-              ref={containerRef}
-              className="lg:hidden"
-            >
-              <MobileSideBar isOpen={isOpen} toggle={() => toggleOpen()} />
-            </motion.nav>
           </div>
 
           {/* <span className="lg:hidden">{lastSegment}</span> */}
         </Heading>
+
         <Flex align="center" gap={{ initial: "1", lg: "6" }}>
           <Link href="/wallet?tab=coin">
             <Flex

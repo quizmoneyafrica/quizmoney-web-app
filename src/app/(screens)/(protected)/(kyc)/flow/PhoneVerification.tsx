@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
+import React, { useState } from "react";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { useForm, Controller } from "react-hook-form";
@@ -10,6 +10,7 @@ import OTPVerification from "./OTPVerification";
 import KycAPI from "@/app/api/kycApi";
 import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
+import Modal from "@/app/components/game/modal/ModalWindow";
 
 const phoneSchema = z.object({
   phoneNumber: z
@@ -33,26 +34,37 @@ export default function PhoneVerification({ onNext }: { onNext: () => void }) {
       phoneNumber: "",
     },
   });
-  const [state, setState] = React.useState<string | undefined>();
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [openModal, setOpenModal] = useState(false);
+  const [showOtpVerification, setShowOtpVerification] = useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
-  const onSubmit = async (data: PhoneForm) => {
+  const verifyPhone = async () => {
+    setIsLoading(true);
     try {
-      setState(data.phoneNumber);
-      // onNext();
-      const res = await KycAPI.phoneVerify(data.phoneNumber);
+      const res = await KycAPI.phoneVerify(phoneNumber);
       console.log(res);
+      setOpenModal(false);
+      setShowOtpVerification(true);
     } catch (error: any) {
       console.error("Verification failed:", error);
       toast.error(error.message, { position: toastPosition });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  if (state) {
+  const onSubmit = async (data: PhoneForm) => {
+    setPhoneNumber(data.phoneNumber);
+    setOpenModal(true);
+  };
+
+  if (showOtpVerification) {
     return (
       <OTPVerification
         onNext={onNext}
-        onBack={() => setState(undefined)}
-        phoneNumber={state}
+        onBack={() => setShowOtpVerification(false)}
+        phoneNumber={phoneNumber}
       />
     );
   }
@@ -65,7 +77,7 @@ export default function PhoneVerification({ onNext }: { onNext: () => void }) {
             Verify Phone Number
           </h1>
           <p className="text-gray-600 text-sm leading-relaxed">
-            {"We'll send you a 6-digit OTP to confirm your number."}
+            We&apos;ll send you a 6-digit OTP to confirm your number.
           </p>
         </div>
 
@@ -113,7 +125,7 @@ export default function PhoneVerification({ onNext }: { onNext: () => void }) {
               className=" rounded w-full"
               onClick={handleSubmit(onSubmit)}
             >
-              Verify
+              Verify {control._defaultValues.phoneNumber}
             </CustomButton>
           </div>
           <div className="text-center">
@@ -125,6 +137,24 @@ export default function PhoneVerification({ onNext }: { onNext: () => void }) {
           </div>
         </form>
       </div>
+
+      <Modal
+        open={openModal}
+        handleClose={setOpenModal}
+        title="Confirm Phone Number"
+        actionBtnText="Yes, Proceed"
+        showCloseIcon={false}
+        actionOnClick={verifyPhone}
+        redTitle
+        actionLoader={isLoading}
+      >
+        <div>
+          <p>
+            Confirm <span className="font-bold">{phoneNumber}</span> is correct.
+            You&apos;ll be charged ₦100 per verification.
+          </p>
+        </div>
+      </Modal>
     </div>
   );
 }

@@ -58,7 +58,15 @@ const WalletApi = {
       "GET"
     );
   },
-  fetchTransactions({transactionStatus, searchText, page}: {transactionStatus?: FilterType, searchText?: string, page?: number}): Promise<ApiResponse> {
+  fetchTransactions({
+    transactionStatus,
+    searchText,
+    page,
+  }: {
+    transactionStatus?: FilterType;
+    searchText?: string;
+    page?: number;
+  }): Promise<ApiResponse> {
     const params = [];
     if (transactionStatus !== undefined && transactionStatus !== null) {
       params.push(`transactionStatus=${transactionStatus.toUpperCase()}`);
@@ -77,8 +85,6 @@ const WalletApi = {
       "GET"
     );
   },
-
-  
 
   getCheckoutLink(data: { amount: string }): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(`getCheckoutLink`, { ...data });
@@ -132,8 +138,8 @@ const WalletApi = {
     );
   },
 
-  forgotPin(data: { email: string }): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(`forgotPin`, { ...data });
+  forgotPin(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("/pin/forgot", {}, {}, "POST");
   },
   verifyPinOtp(data: { otp: string; email: string }): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(`verifyPinOtp`, { ...data });

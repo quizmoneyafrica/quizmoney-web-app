@@ -9,6 +9,25 @@ import { VerifiedBadge } from "../icons/icons";
 import { MenuToggle } from "./MenuToggle";
 import { useKycStep } from "../hooks/useKycStep";
 
+// const sidebarOptions = {
+//   open: (height = 1000) => ({
+//     clipPath: `circle(${height * 2 + 200}px at 40px 40px)`,
+//     transition: {
+//       type: "spring",
+//       stiffness: 20,
+//       restDelta: 2,
+//     },
+//   }),
+//   closed: {
+//     clipPath: "circle(20px at 40px 40px)",
+//     transition: {
+//       delay: 0.5,
+//       type: "spring",
+//       stiffness: 400,
+//       damping: 40,
+//     },
+//   },
+// };
 const sidebarOptions = {
   open: (height = 1000) => ({
     clipPath: `circle(${height * 2 + 200}px at 40px 40px)`,
@@ -65,7 +84,8 @@ const MobileSideBar = ({ isOpen, toggle }: Prop) => {
   return (
     <motion.nav
       variants={sidebarOptions}
-      className="w-full bg-black/50 fixed inset-0 z-40"
+      // className="w-full bg-black/50 fixed inset-0 z-40"
+      className={`w-full bg-black/50 ${isOpen ? "fixed inset-0" : "absolute top-0 right-0"} z-40`}
     >
       <motion.div className="h-screen relative z-50 w-[80%] bg-primary-900 drop-shadow-2xl">
         <MenuToggle toggle={toggle} />
@@ -101,7 +121,9 @@ const MobileSideBar = ({ isOpen, toggle }: Prop) => {
                       <VerifiedBadge />
                     )}
                   </Flex>
-                  <p className="text-xs text-gray-400">{user?.email}</p>
+                  <p className="text-xs text-gray-400 lowercase font-normal">
+                    {user?.email}
+                  </p>
                 </Grid>
               </Flex>
             </motion.div>

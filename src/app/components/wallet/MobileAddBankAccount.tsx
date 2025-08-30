@@ -7,14 +7,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import WalletApi from "@/app/api/wallet";
 import { toastPosition } from "@/app/utils/utils";
 import { toast } from "sonner";
-import {
-  setWallet,
-  useWallet,
-  setBanks,
-  setPayoutBanks,
-} from "@/app/store/walletSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useWallet, setBanks, setPayoutBanks } from "@/app/store/walletSlice";
+import { useSelector } from "react-redux";
 import { store } from "@/app/store/store";
+import { useAppDispatch } from "@/app/hooks/useAuth";
 
 // Define bank interface
 export interface Bank {
@@ -39,6 +35,7 @@ const bankAccountSchema = z.object({
 type BankAccountFormData = z.infer<typeof bankAccountSchema>;
 
 export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
+  const dispatch = useAppDispatch();
   const [searchTerm, setSearchTerm] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -67,8 +64,6 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
     };
   }, [showBankList]);
 
-  const dispatch = useDispatch();
-
   const {
     register,
     handleSubmit,
@@ -86,6 +81,9 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
   });
 
   const { banks } = useSelector(useWallet) as { banks: Bank[] };
+  const [accountName, setAccountName] = useState("");
+  const [accountNumber, setAccountNumber] = useState("");
+  const [fetchAccountName, setFetchAccountName] = useState(false);
 
   // Fetch banks if not already loaded
   useEffect(() => {
@@ -132,48 +130,69 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
 
   const selectedBankCode = watch("bankCode");
 
-  const onSubmit = async (data: BankAccountFormData) => {
+  const verifyAccountName = async (data: BankAccountFormData) => {
+    setFetchAccountName(true);
     try {
-      setIsLoading(true);
-
-      // Verify account number with bank code
-      setIsVerifying(true);
-      const verificationResponse = await WalletApi.confirmAccount(
+      const res = await WalletApi.confirmAccount(
         data.accountNumber,
         data.bankCode
       );
+      console.log(res);
 
-      if (verificationResponse?.success || verificationResponse?.data) {
-        const accountNumber =
-          verificationResponse.data?.account_number || data.accountNumber;
+      setAccountName(res.data.account_name);
+    } catch (err: any) {
+      console.log(err);
+      toast.error(err.message, {
+        position: toastPosition,
+      });
+    } finally {
+      setFetchAccountName(false);
+    }
+  };
 
-        const response = await WalletApi.addBankAccount(
-          {
-            accountNumber: accountNumber,
-            bankCode: data.bankCode,
-            bankName: banks.find((item) => item.code === data.bankCode)?.name,
-          },
-          store.dispatch
-        );
-        if (response?.success || response?.data || response.code === 200) {
-          const res = await WalletApi.fetchPayoutBanks();
-          if (res.data || res.success) {
-            dispatch(setPayoutBanks(res.data));
-          }
-          if (res.data) {
-            store.dispatch(setWallet(res.data));
-          }
-          toast.success(response.data?.message, {
-            position: toastPosition,
-          });
-          reset();
-          close?.();
-        }
-      } else {
-        toast.error("Account verification failed", {
-          position: toastPosition,
-        });
-      }
+  const onSubmit = async (data: BankAccountFormData) => {
+    setIsLoading(true);
+    try {
+      const response = await WalletApi.addBankAccount(
+        {
+          accountNumber: accountNumber,
+          bankCode: data.bankCode,
+          bankName: banks.find((item) => item.code === data.bankCode)?.name,
+        },
+        store.dispatch
+      );
+      toast.success(response.data?.message, {
+        position: toastPosition,
+      });
+      console.log("add bank", response);
+
+      fetchPayoutAccount();
+      reset();
+      close?.();
+
+      // if (verificationResponse?.success || verificationResponse?.data) {
+      //   const accountNumber =
+      //     verificationResponse.data?.account_number || data.accountNumber;
+
+      //   if (response?.success || response?.data || response.code === 200) {
+      //     const res = await WalletApi.fetchPayoutBanks();
+      //     if (res.data || res.success) {
+      //       dispatch(setPayoutBanks(res.data));
+      //     }
+      //     if (res.data) {
+      //       store.dispatch(setWallet(res.data));
+      //     }
+      //     toast.success(response.data?.message, {
+      //       position: toastPosition,
+      //     });
+      //     reset();
+      //     close?.();
+      //   }
+      // } else {
+      //   toast.error("Account verification failed", {
+      //     position: toastPosition,
+      //   });
+      // }
     } catch (err: any) {
       toast.error(`${err.message} `, {
         position: toastPosition,
@@ -184,8 +203,20 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
     }
   };
 
+  const fetchPayoutAccount = async () => {
+    try {
+      const res = await WalletApi.fetchPayoutBanks();
+      console.log("payout", res);
+
+      dispatch(setPayoutBanks(res.data));
+    } catch (err: any) {
+      toast.error(`${err.message} `, {
+        position: toastPosition,
+      });
+    }
+  };
   // Get selected bank details
-  const selectedBank = banks.find((bank) => bank.code === selectedBankCode);
+  // const selectedBank = banks.find((bank) => bank.code === selectedBankCode);
 
   const handleBankInputFocus = () => {
     setShowBankList(true);
@@ -194,7 +225,12 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
   const handleBankClick = (bank: Bank) => {
     setValue("bankCode", bank.code, { shouldValidate: true });
     setShowBankList(false);
-    setSearchTerm("");
+    setSearchTerm(bank.name);
+    const payload = {
+      accountNumber: accountNumber,
+      bankCode: bank.code,
+    };
+    verifyAccountName(payload);
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -224,6 +260,7 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
           aria-describedby={
             errors.accountNumber ? "accountNumber-error" : undefined
           }
+          onChange={(e) => setAccountNumber(e.target.value)}
         />
         {errors.accountNumber && (
           <p id="accountNumber-error" className="text-red-500 text-sm mt-1">
@@ -255,11 +292,18 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
             autoComplete="off"
           />
           {/* Show selected bank below input if one is selected */}
-          {selectedBank && !showBankList && (
+          {/* {selectedBank && !showBankList && (
             <div className="mt-2 text-sm text-gray-700">
-              Selected: {selectedBank.name}
+              <span>Selected: {selectedBank.name}</span>
             </div>
-          )}
+          )} */}
+          <div className="mt-2 text-sm text-gray-700">
+            <span
+              className={`capitalize text-xs ${fetchAccountName && "italic"}`}
+            >
+              {fetchAccountName ? "fetching account name..." : accountName}
+            </span>
+          </div>
           {/* Bank list dropdown */}
           {showBankList && (
             <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
@@ -301,7 +345,7 @@ export const MobileAddBankAccount = ({ close }: MobileAddBankAccountProps) => {
 
       <CustomButton
         type="submit"
-        disabled={isLoading || isLoadingBanks || isVerifying}
+        disabled={!accountName || isLoading || isLoadingBanks || isVerifying}
         className={`w-full py-3 rounded-full text-white ${
           !isLoading && !isLoadingBanks && !isVerifying
             ? "bg-positive-800 hover:bg-primary-600"

@@ -88,6 +88,11 @@ function InProgress() {
           name="guess"
           type="text"
           value={guess}
+          inputMode="numeric"
+          pattern="[0-9]*"
+          onInput={(e) => {
+            e.currentTarget.value = e.currentTarget.value.replace(/\D/g, "");
+          }}
           onChange={(e) => setGuess(e.target.value)}
           placeholder={`${min}`}
           className="bg-white border-[#0a0a0a1a] text-primary-800 focus:border-primary-800 placeholder:text-sm"

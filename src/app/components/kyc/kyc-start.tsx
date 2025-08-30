@@ -54,11 +54,13 @@ function KycStart() {
               />
               <div className="bg-white max-w-md w-full text-center">
                 <h2 className="text-2xl font-bold mb-4 text-primary-900">
-                  Verify Your Identity
+                  Complete Your KYC
                 </h2>
                 <p className="mb-6">
-                  Complete KYC to unlock withdrawals, bigger rewards, and a
-                  secure gaming experience. Note: One Time Charge of ₦100
+                  Verify your account today with a quick one-time KYC
+                  process. For just ₦200, you&apos;ll unlock secure access, faster
+                  withdrawals, and all exclusive features-no limits, no repeated
+                  charges.
                 </p>
                 <div className=" py-3 flex-col flex w-full gap-3">
                   <CustomButton onClick={() => router.push("/kyc")}>

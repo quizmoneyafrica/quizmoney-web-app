@@ -30,6 +30,10 @@ const KycAPI = {
   getCustomerKyc(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("customer-kyc", {}, {}, "GET");
   },
+  createCustomerDVA(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("customer-kyc", {}, {}, "POST");
+  },
+  
 };
 
 export default KycAPI;
