@@ -1,8 +1,6 @@
 "use client";
 import React, { useMemo, useState } from "react";
 import WalletBalance from "./WalletBalance";
-import CustomImage from "./CustomImage";
-import classNames from "classnames";
 import MobileList from "./MobileList";
 import { useSelector } from "react-redux";
 import {
@@ -12,11 +10,10 @@ import {
   useWallet,
   Transaction as WalletTransaction,
 } from "@/app/store/walletSlice";
-import { format, parseISO, isToday, isYesterday } from "date-fns";
+import { parseISO, isToday, isYesterday } from "date-fns";
 import Link from "next/link";
 import { renderEmptyState } from "../transactions/WalletActivity";
 import { Skeleton } from "@radix-ui/themes";
-import { formatNaira } from "@/app/utils/utils";
 import { TransactionDetailsModal } from "../transactions/TransactionDetailModal";
 // import { useAppDispatch } from "@/app/hooks/useAuth";
 // import WalletApi from "@/app/api/wallet";
@@ -204,17 +201,17 @@ export default function TransactionHistory(): React.JSX.Element {
     index: number,
     array: WalletTransaction[]
   ): React.JSX.Element => {
-    const date = parseISO(
-      transaction.transactionDate ?? new Date().toISOString()
-    );
-    const dateData = format(date, "MMM d h:mma").toLowerCase();
+    // const date = parseISO(
+    //   transaction.transactionDate ?? new Date().toISOString()
+    // );
+    // const dateData = format(date, "MMM d h:mma").toLowerCase();
     const isLastInGroup = index === array.length - 1;
 
     console.log(transaction.transactionType, "=======");
 
     return (
       <div key={transaction.id || index.toString()}>
-        <div
+        {/* <div
           className={classNames(
             "bg-white px-3 md:px-4 py-3 md:py-4 hidden md:flex justify-between items-center cursor-pointer",
             !isLastInGroup && "border-b border-b-[#D9D9D9]"
@@ -222,7 +219,7 @@ export default function TransactionHistory(): React.JSX.Element {
           onClick={() => handleTransactionClick(transaction)}
         >
           <div className="flex gap-2 md:gap-4 items-center">
-            <div className={`p-1.5 md:p-2 rounded-full `}>
+            <div className={`p-1.5 md:p-2 rounded-full`}>
               <CustomImage
                 alt="arrow-icon"
                 src={
@@ -253,13 +250,13 @@ export default function TransactionHistory(): React.JSX.Element {
               }`}
             >
               {transaction.direction === "CREDIT" ? "+ " : "- "}
-              {/* {transaction.amount.toLocaleString()} */}
               {formatNaira(Number(transaction.amount ?? 0), true)}
             </p>
             <p className="text-xs md:text-sm text-gray-500">{dateData}</p>
           </div>
-        </div>
+        </div> */}
         <MobileList
+          isLastInGroup={isLastInGroup}
           transaction={transaction}
           onClick={() => handleTransactionClick(transaction)}
         />

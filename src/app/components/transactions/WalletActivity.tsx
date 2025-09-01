@@ -88,7 +88,7 @@ export default function WalletActivity(): React.ReactElement {
         dispatch(setTransactionsLoading(false));
       }
     },
-    []
+    [dispatch, page]
   );
 
   useEffect(() => {
