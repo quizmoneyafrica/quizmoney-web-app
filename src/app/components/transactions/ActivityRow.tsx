@@ -1,7 +1,7 @@
 import React, { JSX, useState } from "react";
 import MobileList from "../wallet/MobileList";
-import CustomImage from "../wallet/CustomImage";
-import { format, parseISO } from "date-fns";
+// import CustomImage from "../wallet/CustomImage";
+// import { format, parseISO } from "date-fns";
 import { Transaction } from "@/app/store/walletSlice";
 import { TransactionDetailsModal } from "./TransactionDetailModal";
 import { formatNaira } from "@/app/utils/utils";
@@ -17,10 +17,10 @@ export const ActivityRow = ({
   transaction: Transaction;
   isLast?: boolean;
 }): JSX.Element => {
-  const date = parseISO(
-    transaction.transactionDate ?? new Date().toISOString()
-  );
-  const dateData = format(date, "MMM d h:mma").toLowerCase();
+  // const date = parseISO(
+  //   transaction.transactionDate ?? new Date().toISOString()
+  // );
+  // const dateData = format(date, "MMM d h:mma").toLowerCase();
   const [showModal, setShowModal] = useState(false);
   const handleOpenModal = () => {
     setShowModal(true);
@@ -32,7 +32,7 @@ export const ActivityRow = ({
 
   return (
     <React.Fragment>
-      <div
+      {/* <div
         onClick={handleOpenModal}
         className={`md:flex hidden hover:bg-primary-900/10 items-center   justify-between py-4 cursor-pointer px-3 md:px-4 ${
           isLast ? "" : "border-b border-b-[#D9D9D9]"
@@ -74,9 +74,13 @@ export const ActivityRow = ({
           </p>
           <p className="text-xs md:text-sm text-gray-500">{dateData}</p>
         </div>
-      </div>
+      </div> */}
 
-      <MobileList onClick={handleOpenModal} transaction={transaction} />
+      <MobileList
+        onClick={handleOpenModal}
+        transaction={transaction}
+        isLastInGroup={isLast}
+      />
 
       <TransactionDetailsModal
         transaction={transaction}

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,8 +10,7 @@ import CustomButton from "@/app/utils/CustomBtn";
 import VirtualDetails from "./VirtualDetails";
 import { getAuthUser } from "@/app/api/userApi";
 import { useKycStep } from "@/app/hooks/useKycStep";
-import { setWalletLoading, setWallet } from "@/app/store/walletSlice";
-import { useDispatch } from "react-redux";
+import useWalletHook from "@/app/hooks/useWallet";
 
 const depositFormSchema = z.object({
   amount: z
@@ -29,10 +28,13 @@ const depositFormSchema = z.object({
 type DepositFormData = z.infer<typeof depositFormSchema>;
 
 export const MobileDepositForm = ({ close }: { close?: () => void }) => {
+  const { customerKyc } = useKycStep();
+  const bvnStep = customerKyc.find((s) => s.step === "BVN");
+  const isBvnCompleted = bvnStep?.status === "COMPLETED";
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
     "bankTransfer" | "card" | ""
-  >("bankTransfer");
+  >(isBvnCompleted ? "bankTransfer" : "card");
   const user = getAuthUser();
   const [showVirtual, setShowVirtual] = useState(false);
   const [virtualAmount, setVirtualAmount] = useState<number | null>(null);
@@ -68,29 +70,12 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
     setSelectedAmount(null);
   };
 
-  const { customerKyc } = useKycStep();
-  const bvnStep = customerKyc.find((s) => s.step === "BVN");
-  const isBvnCompleted = bvnStep?.status === "COMPLETED";
-
   const loadPaystack = async () => {
     const paystackModule = await import("react-paystack");
     return paystackModule;
   };
 
-  const dispatch = useDispatch();
-  const fetchWallet = useCallback(async () => {
-    try {
-      dispatch(setWalletLoading(true));
-      const res = await WalletApi.fetchCustomerWallet();
-      if (res?.data) {
-        dispatch(setWallet(res?.data));
-      }
-    } catch (error: any) {
-      console.log("Error", error.raw);
-    } finally {
-      dispatch(setWalletLoading(false));
-    }
-  }, [dispatch]);
+  const { fetchTransactions } = useWalletHook();
 
   const onFormSubmit = async (data: DepositFormData) => {
     if (!selectedAmount && !data.amount) {
@@ -132,8 +117,7 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
           close?.();
           initializePayment({
             onSuccess: (response: any) => {
-              fetchWallet();
-
+              fetchTransactions();
               toast.success("Payment successful!", { position: toastPosition });
               reset();
               setSelectedAmount(null);
@@ -212,17 +196,19 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
             <div className="space-y-4">
               <p className="font-medium">Choose a payment Option</p>
               <div className="space-y-4">
-                <label className="flex items-center gap-2 text-sm bg-white border border-neutral-300 checked:border-primary-900 p-4 rounded-[10px]">
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="bankTransfer"
-                    checked={selectedPaymentMethod === "bankTransfer"}
-                    onChange={() => setSelectedPaymentMethod("bankTransfer")}
-                    className="accent-[#17478B] size-5"
-                  />
-                  Pay with Virtual Account
-                </label>
+                {isBvnCompleted && (
+                  <label className="flex items-center gap-2 text-sm bg-white border border-neutral-300 checked:border-primary-900 p-4 rounded-[10px]">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="bankTransfer"
+                      checked={selectedPaymentMethod === "bankTransfer"}
+                      onChange={() => setSelectedPaymentMethod("bankTransfer")}
+                      className="accent-[#17478B] size-5"
+                    />
+                    Pay with Virtual Account
+                  </label>
+                )}
 
                 <label className="flex items-center gap-2 text-sm bg-white border border-neutral-300 checked:border-primary-900 p-4 rounded-[10px]">
                   <input

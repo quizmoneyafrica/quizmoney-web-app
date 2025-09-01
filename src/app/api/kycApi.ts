@@ -31,9 +31,8 @@ const KycAPI = {
     return callWithSessionToken<ApiResponse>("customer-kyc", {}, {}, "GET");
   },
   createCustomerDVA(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("customer-kyc", {}, {}, "POST");
+    return callWithSessionToken<ApiResponse>("wallet-accounts", {}, {}, "POST");
   },
-  
 };
 
 export default KycAPI;

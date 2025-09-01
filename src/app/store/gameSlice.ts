@@ -19,6 +19,7 @@ interface CurrentGameObj {
   duration: number;
   startTime: string;
   description: string;
+  coinPrize: number;
 }
 
 export interface TopGamersState {

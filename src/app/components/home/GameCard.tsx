@@ -96,7 +96,10 @@ function GameCard() {
                 </Heading>
                 <span className="text-center text-2xl text-primary-900">+</span>
                 <div className="flex items-center gap-1 text-primary-900 font-bold text-xl">
-                  <QMCoin /> <span>2,500 QM Coins</span>
+                  <QMCoin />{" "}
+                  <span>
+                    {nextGameData?.coinPrize.toLocaleString()} QM Coins
+                  </span>
                 </div>
               </Flex>
               <Flex direction="column" gap="2" align="center" justify="center">

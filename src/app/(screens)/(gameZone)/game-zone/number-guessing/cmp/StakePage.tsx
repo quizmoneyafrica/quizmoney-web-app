@@ -18,6 +18,7 @@ import { gameRules } from "./gameRules";
 import GameZoneAPI from "@/app/api/gameZoneApi";
 import { DiceQ } from "@/app/icons/icons";
 import { setPhase } from "@/app/store/gameSlice";
+import useWalletHook from "@/app/hooks/useWallet";
 
 const preStakeAmounts = [
   { value: 1000 },
@@ -27,6 +28,7 @@ const preStakeAmounts = [
 ];
 function StakePage() {
   const dispatch = useAppDispatch();
+  const { fetchWallet } = useWalletHook();
   const { isFetching, currentGameData } = useGameZone("NUMBER_GUESSER");
   const prevSessionId = localStorage.getItem("gameSessionId");
   const [confirmStakeModal, setConfirmStakeModal] = useState(false);
@@ -56,6 +58,7 @@ function StakePage() {
       localStorage.setItem("gameSessionId", res.data.sessionId);
       dispatch(setGameStatus("INPROGRESS"));
       dispatch(setPhase("playing"));
+      fetchWallet();
     } catch (err: any) {
       toast.error(err.message, { position: toastPosition });
       setConfirmStakeModal(false);

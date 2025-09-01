@@ -2,7 +2,7 @@ import AppLiveQueries from "@/app/api/queries/AppLiveQueries";
 import InstallModal from "@/app/components/install-modal/installModal";
 import SocialLinksDrawer from "@/app/components/updateAccount/socialLinksDrawer";
 import AppHeader from "@/app/layout/appHeader";
-import BottomNavigation from "@/app/layout/BottomNavigation";
+// import BottomNavigation from "@/app/layout/BottomNavigation";
 import SidebarNav from "@/app/layout/SidebarNav";
 import ProtectedRoute from "@/app/security/protectedRoute";
 import { isIosPwaInstalled } from "@/app/utils/utils";
@@ -34,7 +34,7 @@ export default function ProtectedLayout({
           </main>
         </div>
 
-        <BottomNavigation />
+        {/* <BottomNavigation /> */}
       </ProtectedRoute>
     </main>
   );
