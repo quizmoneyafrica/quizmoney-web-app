@@ -1,5 +1,5 @@
 "use client";
-import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
+import { useAppSelector } from "@/app/hooks/useAuth";
 import { BankIcon } from "@/app/icons/icons";
 import CustomButton from "@/app/utils/CustomBtn";
 import { formatNaira } from "@/app/utils/utils";
