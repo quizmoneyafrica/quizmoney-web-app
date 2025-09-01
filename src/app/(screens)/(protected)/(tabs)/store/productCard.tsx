@@ -142,7 +142,8 @@ const ProductCard = ({
                   {formatNaira(Number(product?.price))}
                 </p>
                 <span className="font-semibold inline-flex pl-1">
-                  / {product?.quantity} Erasers
+                  / {product?.quantity}{" "}
+                  {product?.quantity === 1 ? "Eraser" : "Erasers"}
                 </span>
               </div>
             </div>

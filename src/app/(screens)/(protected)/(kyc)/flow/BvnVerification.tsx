@@ -52,7 +52,7 @@ export default function BvnVerification({ onNext }: { onNext: () => void }) {
       await KycAPI.bvnVerify(bvn);
       setOpenModal(false);
       setSuccessModal(true);
-
+      router.replace("/home");
       await KycAPI.createCustomerDVA();
       checkCustomerKyc();
     } catch (err: any) {

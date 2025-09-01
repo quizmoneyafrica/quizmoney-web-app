@@ -1,11 +1,14 @@
 "use client";
-import { useAppSelector } from "@/app/hooks/useAuth";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import { BankIcon } from "@/app/icons/icons";
 import CustomButton from "@/app/utils/CustomBtn";
 import { formatNaira } from "@/app/utils/utils";
 import { LucideCopy } from "lucide-react";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { useEffect } from "react";
+import KycAPI from "@/app/api/kycApi";
+import useWalletHook from "@/app/hooks/useWallet";
 
 export type VirtualDetailsProps = { amount?: number; isBvnCompleted: boolean };
 function VirtualDetails({
@@ -14,6 +17,8 @@ function VirtualDetails({
 }: VirtualDetailsProps) {
   const { wallet: walletData } = useAppSelector((state) => state.wallet);
   const wallet = walletData.find((w) => w.currency === "NGN")! || {};
+  const { fetchWallet } = useWalletHook();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleCopyAll = async () => {
     const details = `Account Number: ${
@@ -32,6 +37,39 @@ function VirtualDetails({
       });
     }
   };
+
+  const createCustomerDva = useCallback(async () => {
+    if (!wallet.walletAccountNumber) {
+      setIsLoading(true);
+      try {
+        await KycAPI.createCustomerDVA();
+        fetchWallet();
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  }, [fetchWallet, wallet.walletAccountNumber]);
+
+  useEffect(() => {
+    createCustomerDva();
+  }, [createCustomerDva]);
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-full text-center pt-10 text-primary-900">
+        <p>Fetching virtual Account</p>
+      </div>
+    );
+  }
+  if (!isLoading && !wallet.walletAccountNumber) {
+    return (
+      <div className="w-full h-full text-center pt-10 text-primary-900">
+        <p>Failed to get Virtual account</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4 pt-3 border-t border-neutral-100">
