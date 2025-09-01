@@ -17,7 +17,7 @@ function BottomNavigation() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   return (
-    <div className="lg:hidden fixed z-50 bottom-0 pb-6 left-0 w-full bg-primary-900 py-4 flex items-center">
+    <div className="lg:hidden fixed z-30 bottom-0 pb-6 left-0 w-full bg-primary-900 py-4 flex items-center">
       <div className="w-full">
         <Grid columns="5" align="center" justify="between">
           {navs.map((nav, index) => {

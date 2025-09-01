@@ -6,12 +6,19 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSelector } from "react-redux";
 import {
+  setPayoutBanks,
   setWithdrawalData,
   setWithdrawalModal,
   setWithdrawalPinModal,
   useWallet,
 } from "@/app/store/walletSlice";
 import { store } from "@/app/store/store";
+import { Trash2Icon } from "lucide-react";
+import { motion } from "framer-motion";
+import Modal from "../game/modal/ModalWindow";
+import { useAppDispatch } from "@/app/hooks/useAuth";
+import { toast } from "sonner";
+import { toastPosition } from "@/app/utils/utils";
 
 export type BankAccount = {
   id: number;
@@ -37,16 +44,18 @@ const withdrawFormSchema = z.object({
 type WithdrawFormData = z.infer<typeof withdrawFormSchema>;
 
 export const MobileWithdrawalForm = ({
-  onAddBank,
-} // banks, // Allow override from props or use from wallet
-: {
+  onAddBank, // banks, // Allow override from props or use from wallet
+}: {
   close?: () => void;
   banks?: BankAccount[];
   onAddBank: () => void;
 }) => {
   const { payoutBanks } = useSelector(useWallet);
+  const dispatch = useAppDispatch();
+  const [isLoading, setIsLoading] = useState(false);
   // payoutBanks is now a single object
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
+  const [openModal, setOpenModal] = useState(false);
 
   const amountOptions = [
     { label: "₦5,000", value: 5000 },
@@ -104,6 +113,19 @@ export const MobileWithdrawalForm = ({
     store.dispatch(setWithdrawalPinModal(true));
   };
 
+  const deletePayoutAccount = async () => {
+    setIsLoading(true);
+    try {
+      dispatch(setPayoutBanks(undefined));
+      setOpenModal(false);
+    } catch (err: any) {
+      toast.error(`${err.message}`, {
+        position: toastPosition,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <div className="bg-white rounded-3xl h-full">
       <p className="text-gray-600 mb-8">
@@ -149,7 +171,7 @@ export const MobileWithdrawalForm = ({
         <div className="mb-6">
           <label className="block text-gray-800 mb-3">Bank Account</label>
           {payoutBanks && payoutBanks.accountNumber ? (
-            <div className="border border-gray-300 rounded-lg px-4 py-3 bg-gray-50 flex flex-col gap-1">
+            <div className="relative border border-gray-300 rounded-lg px-4 py-3 bg-gray-50 flex flex-col gap-1">
               <span className="font-medium text-gray-900">
                 {(payoutBanks as any).accountName}
               </span>
@@ -157,11 +179,19 @@ export const MobileWithdrawalForm = ({
               <span className="text-gray-600 text-sm">
                 {payoutBanks.bankName}
               </span>
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.9 }}
+                className="absolute z-[1] right-2 text-error-700 bg-error-50 p-1 rounded "
+                onClick={() => setOpenModal(true)}
+              >
+                <Trash2Icon width={20} height={20} />
+              </motion.button>
             </div>
           ) : (
             <div className="text-gray-600">No bank added yet</div>
           )}
-          <div className="flex items-center mt-2">
+          {!payoutBanks && <div className="flex items-center mt-2">
             <span className="text-primary-900 text-lg font-bold mr-2">+</span>
             <button
               type="button"
@@ -170,7 +200,7 @@ export const MobileWithdrawalForm = ({
             >
               Add New Bank
             </button>
-          </div>
+          </div>}
         </div>
         <CustomButton
           type="submit"
@@ -180,6 +210,20 @@ export const MobileWithdrawalForm = ({
           Proceed
         </CustomButton>
       </form>
+      <Modal
+        open={openModal}
+        handleClose={setOpenModal}
+        title="Delete Payout"
+        actionBtnText="Yes, Delete"
+        showCloseIcon={false}
+        actionOnClick={deletePayoutAccount}
+        redTitle
+        actionLoader={isLoading}
+      >
+        <div>
+          <p>Are you sure you want to delete your payout account?</p>
+        </div>
+      </Modal>
     </div>
   );
 };

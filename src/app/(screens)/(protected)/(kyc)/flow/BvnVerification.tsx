@@ -11,6 +11,10 @@ import { useRouter } from "next/navigation";
 import KycAPI from "@/app/api/kycApi";
 import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
+import Modal from "@/app/components/game/modal/ModalWindow";
+import { useAppDispatch, useAuth } from "@/app/hooks/useAuth";
+import Link from "next/link";
+import { setCustomerKyc } from "@/app/store/kycSlice";
 
 const bvnSchema = z.object({
   bvn: z
@@ -23,8 +27,13 @@ const bvnSchema = z.object({
 type BvnForm = z.infer<typeof bvnSchema>;
 
 export default function BvnVerification({ onNext }: { onNext: () => void }) {
+  const [openModal, setOpenModal] = React.useState(false);
   const [successModal, setSuccessModal] = React.useState(false);
+  const [bvn, setBvn] = React.useState("");
   const router = useRouter();
+  const { user } = useAuth();
+  const [isLoading, setIsLoading] = React.useState(false);
+  const dispatch = useAppDispatch();
 
   const {
     register,
@@ -37,15 +46,33 @@ export default function BvnVerification({ onNext }: { onNext: () => void }) {
     },
   });
 
-  const onSubmit = async (data: BvnForm) => {
+  const verifyBVN = async () => {
+    setIsLoading(true);
     try {
-      const res = await KycAPI.bvnVerify(data.bvn);
-      console.log(res);
+      await KycAPI.bvnVerify(bvn);
+      setOpenModal(false);
       setSuccessModal(true);
-      console.log(data);
+
+      await KycAPI.createCustomerDVA();
+      checkCustomerKyc();
+    } catch (err: any) {
+      toast.error(err.message, { position: toastPosition });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const checkCustomerKyc = async () => {
+    try {
+      const kycData = await KycAPI.getCustomerKyc();
+      dispatch(setCustomerKyc(kycData.data));
+      console.log("Customer kycData", kycData.data);
     } catch (err: any) {
       toast.error(err.message, { position: toastPosition });
     }
+  };
+  const onSubmit = async (data: BvnForm) => {
+    setBvn(data.bvn);
+    setOpenModal(true);
   };
 
   const backToDashboard = () => {
@@ -75,6 +102,14 @@ export default function BvnVerification({ onNext }: { onNext: () => void }) {
                 type="text"
                 placeholder="Input your BVN"
                 maxLength={11}
+                inputMode="numeric"
+                pattern="[0-9]*"
+                onInput={(e) => {
+                  e.currentTarget.value = e.currentTarget.value.replace(
+                    /\D/g,
+                    ""
+                  );
+                }}
                 className="w-full px-4 py-4 border border-[#3A3A3A80] rounded-lg focus:outline-none focus:ring-transparent  text-base"
               />
               {errors.bvn && (
@@ -145,6 +180,36 @@ export default function BvnVerification({ onNext }: { onNext: () => void }) {
           </form>
         </div>
       </div>
+      <Modal
+        open={openModal}
+        handleClose={setOpenModal}
+        title="Confirm BVN"
+        actionBtnText="Yes, Proceed"
+        showCloseIcon={false}
+        actionOnClick={verifyBVN}
+        redTitle
+        actionLoader={isLoading}
+      >
+        <div>
+          <p>
+            Your name{" "}
+            <span className="capitalize">
+              {user?.firstName} {user?.lastName}
+            </span>{" "}
+            must match the name on your BVN. Else update your name{" "}
+            <Link
+              href="/settings/profile"
+              className="text-primary-500 font-medium"
+            >
+              here.
+            </Link>
+          </p>
+          <p>
+            Confirm <span className="font-bold">{bvn}</span> is correct.
+          </p>
+          <p>You&apos;ll be charged ₦100 per verification.</p>
+        </div>
+      </Modal>
       <QmDrawer
         open={successModal}
         onOpenChange={backToDashboard}

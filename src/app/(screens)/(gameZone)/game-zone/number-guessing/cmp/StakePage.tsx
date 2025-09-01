@@ -3,7 +3,10 @@
 import QmDrawer from "@/app/components/drawer/drawer";
 import { useAppDispatch } from "@/app/hooks/useAuth";
 import { useGameZone } from "@/app/hooks/useGameZone";
-import { setGameStatus } from "@/app/store/numberGuessGameSlice";
+import {
+  setGameSettings,
+  setGameStatus,
+} from "@/app/store/numberGuessGameSlice";
 import CustomTextField from "@/app/utils/CustomTextField";
 import { GameButton } from "@/app/utils/GameButton";
 import { formatNaira, toastPosition } from "@/app/utils/utils";
@@ -12,7 +15,9 @@ import { motion } from "framer-motion";
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { gameRules } from "./gameRules";
-// import GameZoneAPI from "@/app/api/gameZoneApi";
+import GameZoneAPI from "@/app/api/gameZoneApi";
+import { DiceQ } from "@/app/icons/icons";
+import { setPhase } from "@/app/store/gameSlice";
 
 const preStakeAmounts = [
   { value: 1000 },
@@ -23,6 +28,7 @@ const preStakeAmounts = [
 function StakePage() {
   const dispatch = useAppDispatch();
   const { isFetching, currentGameData } = useGameZone("NUMBER_GUESSER");
+  const prevSessionId = localStorage.getItem("gameSessionId");
   const [confirmStakeModal, setConfirmStakeModal] = useState(false);
 
   const [stake, setStake] = useState<number>(0);
@@ -38,17 +44,24 @@ function StakePage() {
   const handleStakeInGame = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // const res = await GameZoneAPI.stakeInGame(
-      //   currentGameData.gameId,
-      //   currentGameData.type,
-      //   stake
-      // );
-
+      if (prevSessionId) {
+        await GameZoneAPI.leaveNumberGuessGame(prevSessionId);
+      }
+      const res = await GameZoneAPI.stakeInGame(
+        currentGameData.gameId,
+        currentGameData.type,
+        stake
+      );
+      dispatch(setGameSettings(res.data));
+      localStorage.setItem("gameSessionId", res.data.sessionId);
       dispatch(setGameStatus("INPROGRESS"));
+      dispatch(setPhase("playing"));
     } catch (err: any) {
       toast.error(err.message, { position: toastPosition });
+      setConfirmStakeModal(false);
     }
   };
+
   const handlePreStakeBtn = (amount: number) => {
     setStake(amount);
   };
@@ -59,7 +72,7 @@ function StakePage() {
       <div className="space-y-4">
         <div className="text-center">
           <div className="text-primary-900 bg-transparent rounded-full h-14 w-14 border-4 border-primary-800 grid place-items-center mx-auto">
-            {/* <Gamepad2 /> */}
+            <DiceQ />
           </div>
           <h2 className=" text-[2.3em] text-primary-900">Number Guessing</h2>
           <p>Pick the right number win cash prize!</p>
@@ -78,6 +91,8 @@ function StakePage() {
               name="stake"
               value={stake ? stake.toLocaleString() : ""}
               type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               onChange={(e) => {
                 const raw = e.target.value.replace(/,/g, "");
                 setStake(Number(raw));

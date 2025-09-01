@@ -136,28 +136,19 @@ const Page = () => {
               {/* profile pic */}
               <div
                 onClick={() => setIsImageModalOpen(true)}
-                className="cursor-pointer sm:w-[100px] sm:h-[100px] w-[80px] h-[80px] rounded-full  border-2 border-primary-400  z-10 bg-white/50 backdrop-blur-sm"
+                className="relative inline-block"
               >
-                <div className="w-full h-full flex items-center !overflow-clip justify-center relative">
-                  {/* <Image
-                    src={user?.avatarUrl ?? "/assets/images/profile.png"}
-                    alt="profile"
-                    width={100}
-                    height={100}
-                    className="w-full h-full object-cover rounded-full"
-                  /> */}
-                  <Avatar
-                    src={user?.avatarUrl ?? "/assets/images/profile.png"}
-                    fallback={user?.firstName?.charAt(0).toUpperCase() || ""}
-                    radius="full"
-                    className="bg-primary-50 w-full object-cover"
-                    size="7"
-                  />
-                  <CameraIcon
-                    fill="#fff"
-                    className="absolute bottom-0 right-0 text-primary-900"
-                  />
-                </div>
+                <Avatar
+                  src={user?.avatarUrl ?? "/assets/images/profile.png"}
+                  fallback={user?.firstName?.charAt(0).toUpperCase() || ""}
+                  radius="full"
+                  className="bg-primary-100 w-full object-cover border-2 border-primary-400 backdrop-blur-sm"
+                  size="6"
+                />
+                <CameraIcon
+                  fill="#fff"
+                  className="absolute bottom-0 right-0 text-primary-900"
+                />
               </div>
 
               <Flex justify="between" className="w-full mt-4">

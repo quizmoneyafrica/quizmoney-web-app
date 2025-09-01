@@ -135,7 +135,7 @@ const LoginForm = ({ loading, setLoading }: Props) => {
 
   const createPassword = async (email: string) => {
     try {
-      await UserAPI.resendSignupOtp(email);
+      // await UserAPI.resendSignupOtp(email);
       router.push(
         `/password-creation?email=${encodeURIComponent(
           email.toLowerCase().trim()

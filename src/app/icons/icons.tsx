@@ -2,85 +2,97 @@ export const StartGameBtn: React.FC<
   React.SVGProps<SVGSVGElement> & { text?: string; full?: boolean }
 > = ({ text, full = false, ...props }) => (
   <svg
-      xmlns="http://www.w3.org/2000/svg"
-      // 👇 if full, take 100% width. Else default to 372px.
-      width={full ? "100%" : 372}
-      height={full ? "auto" : 66}
-      viewBox="0 0 372 66"
-      fill="none"
-      preserveAspectRatio="xMidYMid meet"
-      {...props}
-    >
-      <g filter="url(#filter0_d)">
-        <rect width="366" height="60" x="4" y="2" fill="#3386CE" rx="30" />
-        <rect
-          width="368"
-          height="62"
-          x="3"
-          y="1"
-          stroke="#fff"
-          strokeWidth="2"
-          rx="31"
-        />
-      </g>
-      <rect width="366" height="53.75" x="4" y="2" fill="#2A75BC" rx="26.875" />
-      <path
-        fill="#2A75BC"
-        d="M250.776 55.75H30.875C16.032 55.75 4 43.718 4 28.875S16.032 2 30.875 2H134.98z"
-        opacity="0.5"
+    xmlns="http://www.w3.org/2000/svg"
+    // 👇 if full, take 100% width. Else default to 372px.
+    width={full ? "100%" : 372}
+    height={full ? "auto" : 66}
+    viewBox="0 0 372 66"
+    fill="none"
+    preserveAspectRatio="xMidYMid meet"
+    {...props}
+  >
+    <g filter="url(#filter0_d)">
+      <rect width="366" height="60" x="4" y="2" fill="#3386CE" rx="30" />
+      <rect
+        width="368"
+        height="62"
+        x="3"
+        y="1"
+        stroke="#fff"
+        strokeWidth="2"
+        rx="31"
       />
+    </g>
+    <rect width="366" height="53.75" x="4" y="2" fill="#2A75BC" rx="26.875" />
+    <path
+      fill="#2A75BC"
+      d="M250.776 55.75H30.875C16.032 55.75 4 43.718 4 28.875S16.032 2 30.875 2H134.98z"
+      opacity="0.5"
+    />
 
-      {/* If text is provided, render centered text */}
-      {text && (
-        <text
-          x="50%"
-          y="50%"
-          dominantBaseline="middle"
-          textAnchor="middle"
-          fill="white"
-          fontSize="20"
-          fontWeight="bold"
-          fontFamily="sans-serif"
-        >
-          {text}
-        </text>
-      )}
+    {/* If text is provided, render centered text */}
+    {text && (
+      <text
+        x="50%"
+        y="50%"
+        dominantBaseline="middle"
+        textAnchor="middle"
+        fill="white"
+        fontSize="20"
+        fontWeight="bold"
+        fontFamily="sans-serif"
+      >
+        {text}
+      </text>
+    )}
 
-      {/* (Optional) fallback graphics if no text */}
-      {!text && (
-        <g fill="#fff">
-          {/* put your default paths here */}
-        </g>
-      )}
+    {/* (Optional) fallback graphics if no text */}
+    {!text && <g fill="#fff">{/* put your default paths here */}</g>}
 
-      <defs>
-        <filter
-          id="filter0_d"
-          width="370"
-          height="66"
-          x="2"
-          y="0"
-          colorInterpolationFilters="sRGB"
-          filterUnits="userSpaceOnUse"
-        >
-          <feFlood floodOpacity="0" result="BackgroundImageFix" />
-          <feColorMatrix
-            in="SourceAlpha"
-            result="hardAlpha"
-            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-          />
-          <feOffset dy="2" />
-          <feComposite in2="hardAlpha" operator="out" />
-          <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0" />
-          <feBlend in2="BackgroundImageFix" result="effect1_dropShadow" />
-          <feBlend in="SourceGraphic" in2="effect1_dropShadow" result="shape" />
-        </filter>
-      </defs>
-    </svg>
+    <defs>
+      <filter
+        id="filter0_d"
+        width="370"
+        height="66"
+        x="2"
+        y="0"
+        colorInterpolationFilters="sRGB"
+        filterUnits="userSpaceOnUse"
+      >
+        <feFlood floodOpacity="0" result="BackgroundImageFix" />
+        <feColorMatrix
+          in="SourceAlpha"
+          result="hardAlpha"
+          values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+        />
+        <feOffset dy="2" />
+        <feComposite in2="hardAlpha" operator="out" />
+        <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0" />
+        <feBlend in2="BackgroundImageFix" result="effect1_dropShadow" />
+        <feBlend in="SourceGraphic" in2="effect1_dropShadow" result="shape" />
+      </filter>
+    </defs>
+  </svg>
 );
 
 // Icons
-
+export const VerifiedBadge: React.FC<React.SVGProps<SVGSVGElement>> = (
+  props
+) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="18"
+    height="18"
+    fill="none"
+    viewBox="0 0 18 18"
+    {...props}
+  >
+    <path
+      fill="currentColor"
+      d="M16.645 7.033c-.294-.308-.599-.625-.714-.904-.106-.256-.112-.679-.118-1.09-.012-.762-.025-1.626-.626-2.226-.6-.601-1.464-.614-2.227-.626-.41-.006-.833-.012-1.089-.118-.278-.115-.596-.42-.904-.714C10.428.837 9.816.25 9 .25S7.573.837 7.033 1.355c-.308.294-.625.599-.904.714-.254.106-.679.112-1.09.119-.762.011-1.626.024-2.226.624-.601.601-.61 1.465-.626 2.228-.006.41-.012.833-.118 1.089-.115.278-.42.596-.714.904C.837 7.572.25 8.184.25 9s.587 1.427 1.105 1.967c.294.308.599.625.714.904.106.256.112.679.119 1.09.011.762.024 1.626.624 2.226.601.601 1.465.614 2.228.626.41.006.833.012 1.089.118.278.115.596.42.904.714.539.518 1.151 1.105 1.967 1.105s1.427-.587 1.967-1.105c.308-.294.625-.599.904-.714.256-.106.679-.112 1.09-.118.762-.012 1.626-.025 2.226-.626.601-.6.614-1.464.626-2.227.006-.41.012-.833.118-1.089.115-.278.42-.596.714-.904.518-.539 1.105-1.151 1.105-1.967s-.587-1.427-1.105-1.967m-4.078.534-4.375 4.375a.626.626 0 0 1-.884 0l-1.875-1.875a.626.626 0 0 1 .884-.884l1.433 1.433 3.933-3.933a.626.626 0 0 1 .884.884"
+    ></path>
+  </svg>
+);
 export const GoogleIcon: React.FC<React.SVGProps<SVGSVGElement>> = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -1266,5 +1278,21 @@ export const MoneyWings: React.FC<React.SVGProps<SVGElement>> = () => (
         <path fill="#fff" d="M.021 0h28l-.02 28H0z"></path>
       </clipPath>
     </defs>
+  </svg>
+);
+
+export const DiceQ: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="28"
+    height="41"
+    fill="none"
+    viewBox="0 0 38 41"
+    {...props}
+  >
+    <path
+      fill="currentColor"
+      d="M18.977.372c-.603 0-1.206.135-1.674.405L2.386 9.406c-.934.54-.934 1.396 0 1.936l14.917 8.629c.935.54 2.413.54 3.347 0l14.918-8.629c.934-.54.934-1.395 0-1.936L20.65.777c-.467-.27-1.07-.405-1.673-.405m-.08 5.186q1.32.014 2.374.605.72.404.944.922.215.513.025 1.353l-.156.558q-.155.597-.065.86.084.258.414.444l.332.185-3.246 1.819-.36-.202q-.605-.339-.77-.764-.175-.43.057-1.368l.15-.561q.129-.501.025-.822a.86.86 0 0 0-.434-.515q-.516-.29-1.234-.208-.726.078-1.499.51a5.8 5.8 0 0 0-1.323 1.022 6.3 6.3 0 0 0-1.034 1.395l-2.31-1.294q.78-.782 1.531-1.368a12.6 12.6 0 0 1 1.588-1.055q2.194-1.23 4.08-1.462.47-.06.91-.054m4.956 5.537 2.619 1.467-3.246 1.819-2.618-1.467zM1.39 12.977c-.562-.016-.944.423-.944 1.199v15.4c0 1.08.74 2.36 1.674 2.9L16.47 40.76c.934.54 1.674.113 1.674-.966v-15.4c0-1.08-.74-2.36-1.674-2.9L2.12 13.21c-.263-.152-.51-.228-.73-.233m35.232 0c-.22.006-.467.08-.73.233l-14.35 8.286c-.934.54-1.673 1.82-1.673 2.899v15.4c0 1.08.74 1.506 1.674.966l14.349-8.285c.934-.54 1.673-1.82 1.673-2.9v-15.4c0-.776-.381-1.214-.943-1.2M5.22 19.203q.96.2 1.753.49.794.288 1.531.714 1.935 1.119 2.951 2.548 1.016 1.42 1.016 3.03 0 .828-.31 1.306-.31.47-1.055.79l-.507.188q-.54.21-.706.435-.167.216-.167.595v.38l-2.864-1.654v-.413q0-.69.262-1.071.262-.389 1.103-.73l.508-.195q.451-.178.658-.446.214-.264.214-.652 0-.59-.38-1.139-.382-.558-1.064-.951a4.4 4.4 0 0 0-1.388-.515 5 5 0 0 0-1.555-.063zm26.322.84q.224 0 .413.048 1.016.248 1.016 1.86 0 .825-.31 1.662-.309.826-1.055 2.008l-.507.774q-.54.834-.707 1.25a2.1 2.1 0 0 0-.166.788v.38l-2.864 1.653v-.413q0-.692.262-1.374.262-.69 1.103-2.002l.508-.782q.451-.7.658-1.207.214-.51.214-.9 0-.59-.38-.698-.383-.117-1.064.276-.642.37-1.388 1.088a17 17 0 0 0-1.555 1.733v-2.648a27 27 0 0 1 1.753-1.535q.794-.626 1.531-1.052 1.573-.908 2.538-.909m-24.68 9.23 2.864 1.654v3.001l-2.864-1.653zm23.364.787v3.002l-2.864 1.653v-3.001z"
+    ></path>
   </svg>
 );

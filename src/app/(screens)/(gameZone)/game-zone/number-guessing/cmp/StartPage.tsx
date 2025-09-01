@@ -26,7 +26,7 @@ function StartPage() {
           </h2>
         </div>
         <div className="relative pt-8 !space-text ">
-          <div className="w-full z-[2] max-w-3xs py-3 text-center left-[25%] text-white text-md font-bold text bg-[#51A2E0] rounded-full absolute top-0 ">
+          <div className="w-full z-[2] max-w-3xs py-3 text-center text-white text-md font-bold text bg-[#51A2E0] rounded-full absolute top-0 left-1/2 -translate-x-1/2">
             <p>How To Play</p>
           </div>
           <div className="bg-white rounded-[20px] space-y-6 p-6 shadow-md shadow-[#D1D8FF] drop-shadow-lg drop-shadow-black/40">

@@ -151,7 +151,7 @@ function DemoGameSCreen() {
                   }}
                 </CountdownCircleTimer>
               </div>
-              <div className="mt-6 text-gray-500 text-sm flex items-center justify-center">
+              <div className="mt-6 text-gray-500 text-sm flex items-center justify-end">
                 <Avatar
                   src={user?.user?.avatarUrl}
                   fallback={
