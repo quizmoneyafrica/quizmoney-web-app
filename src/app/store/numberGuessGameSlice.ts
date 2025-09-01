@@ -4,6 +4,9 @@ export type GameStatus = "START" | "STAKE" | "INPROGRESS" | "ENDED";
 
 interface GameSettings {
   sessionId: string;
+  upperBound: number;
+  lowerBound: number;
+  range: number;
 }
 interface GameState {
   gameStatus: GameStatus;
@@ -14,6 +17,9 @@ const initialState: GameState = {
   gameStatus: "START",
   gameSettings: {
     sessionId: "",
+    upperBound: 0,
+    lowerBound: 0,
+    range: 0,
   },
 };
 
