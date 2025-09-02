@@ -68,7 +68,10 @@ export default function LeaderBoardTableSection() {
         }
       } catch (error: unknown) {
         console.error("Error fetching leaderboard:", error);
-        if (error instanceof Error && error?.message === "Token expired, please login again") {
+        if (
+          error instanceof Error &&
+          error?.message === "Token expired, please login again"
+        ) {
           redirect("/login");
         }
       } finally {
