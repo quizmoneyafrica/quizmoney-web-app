@@ -66,9 +66,9 @@ export default function LeaderBoardTableSection() {
           const paginatedResponse = response.data;
           store.dispatch(setAllTimeLeaderboard(paginatedResponse));
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("Error fetching leaderboard:", error);
-        if (error?.message === "Token expired, please login again") {
+        if (error instanceof Error && error?.message === "Token expired, please login again") {
           redirect("/login");
         }
       } finally {
@@ -155,7 +155,7 @@ export default function LeaderBoardTableSection() {
                 </Table.Header>
 
                 <Table.Body className="relative gap-2">
-                  {leaderboardData.map((entry, index) => (
+                  {leaderboardData.map((entry) => (
                     <LeaderboardRow
                       key={`${entry.rank}-${entry.firstName}`}
                       entry={entry}
