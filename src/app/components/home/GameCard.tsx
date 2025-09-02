@@ -72,6 +72,7 @@ function GameCard() {
       </div>
     );
 
+  const coinPrize = nextGameData?.coinPrize || 0;
   return (
     <div className="drop-shadow-sm rounded-[20px]">
       <div className="flex flex-col drop-shadow rounded-[20px] overflow-clip">
@@ -96,10 +97,7 @@ function GameCard() {
                 </Heading>
                 <span className="text-center text-2xl text-primary-900">+</span>
                 <div className="flex items-center gap-1 text-primary-900 font-bold text-xl">
-                  <QMCoin />{" "}
-                  <span>
-                    {nextGameData?.coinPrize.toLocaleString()} QM Coins
-                  </span>
+                  <QMCoin /> <span>{coinPrize.toLocaleString()} QM Coins</span>
                 </div>
               </Flex>
               <Flex direction="column" gap="2" align="center" justify="center">

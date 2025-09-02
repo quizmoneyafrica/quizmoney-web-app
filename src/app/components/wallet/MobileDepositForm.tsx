@@ -75,7 +75,7 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
     return paystackModule;
   };
 
-  const { fetchTransactions } = useWalletHook();
+  const { fetchTransactions, fetchWallet } = useWalletHook();
 
   const onFormSubmit = async (data: DepositFormData) => {
     if (!selectedAmount && !data.amount) {
@@ -117,6 +117,7 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
           close?.();
           initializePayment({
             onSuccess: (response: any) => {
+              fetchWallet();
               fetchTransactions();
               toast.success("Payment successful!", { position: toastPosition });
               reset();
