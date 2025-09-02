@@ -1,7 +1,7 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Table, Skeleton } from "@radix-ui/themes";
-import { LeaderboardEntry, LeaderboardType } from "../types";
+import { LeaderboardType } from "../types";
 import LeaderboardTabs from "./LeaderboardTabs";
 import LeaderboardRow from "./LeaderboardRow";
 import LeaderboardPagination from "./LeaderboardPagination";
@@ -159,7 +159,6 @@ export default function LeaderBoardTableSection() {
                     <LeaderboardRow
                       key={`${entry.rank}-${entry.firstName}`}
                       entry={entry}
-                      index={index}
                     />
                   ))}
                 </Table.Body>

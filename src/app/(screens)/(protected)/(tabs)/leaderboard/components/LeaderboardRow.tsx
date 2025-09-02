@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { Table } from "@radix-ui/themes";
 import { LeaderboardEntry } from "../types";
 
 interface LeaderboardRowProps {
   entry: LeaderboardEntry;
-  index: number;
 }
 
 const getRankMedal = (rank: number) => {
@@ -28,7 +27,7 @@ const getRankMedal = (rank: number) => {
   }
 };
 
-export default function LeaderboardRow({ entry, index }: LeaderboardRowProps) {
+export default function LeaderboardRow({ entry }: LeaderboardRowProps) {
   const { avatarUrl, firstName, rank, amount = 5000 } = entry;
   const [imageError, setImageError] = useState(false);
 
