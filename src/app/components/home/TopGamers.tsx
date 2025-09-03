@@ -122,7 +122,7 @@ function TopGamers() {
                       </div>
                     </Flex>
                     <Flex direction="column" align="center" justify="center">
-                      <p>Prize</p>
+                      <p>Score</p>
                       <div className="flex h-auto w-auto items-center justify-center font-semibold text-primary-800  p-2">
                         {/* {formatNaira(Number(gamerInfo.amount! ?? 0))} */}
                         {gamerInfo.score}

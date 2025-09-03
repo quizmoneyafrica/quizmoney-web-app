@@ -28,7 +28,7 @@ const getRankMedal = (rank: number) => {
 };
 
 export default function LeaderboardRow({ entry }: LeaderboardRowProps) {
-  const { avatarUrl, firstName, rank, amount = 5000, score = 0 } = entry;
+  const { avatarUrl, firstName, rank, score = 0 } = entry;
   const [imageError, setImageError] = useState(false);
 
   return (

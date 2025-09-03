@@ -41,9 +41,9 @@ export default function QmDrawer({
           aria-describedby="Drawer Content"
           className={`${
             background ? background : "bg-white"
-          } md:bg-transparent flex flex-col rounded-t-[10px] fixed bottom-0 left-0 right-0 outline-none ${heightClass} max-h-[90dvh] md:max-h-screen 
-          md:top-1/2 md:left-1/2 md:translate-x-[-50%] md:translate-y-[-50%] 
-          md:rounded-[10px] md:max-w-xl 
+          } md:bg-transparent flex flex-col rounded-t-[10px] fixed bottom-0 left-0 right-0 outline-none ${heightClass} max-h-[90dvh] md:max-h-screen
+          md:top-1/2 md:left-1/2 md:translate-x-[-50%] md:translate-y-[-50%]
+          md:rounded-[10px] md:max-w-xl
           ${!open ? "md:translate-y-[70%]" : ""}`}
         >
           <div

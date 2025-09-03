@@ -115,7 +115,7 @@ export default function LeaderBoardTableSection() {
                   <Table.ColumnHeaderCell>Rank</Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell>Username</Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell align="right">
-                    Amount
+                    Score
                   </Table.ColumnHeaderCell>
                 </Table.Row>
               </Table.Header>
