@@ -4,31 +4,29 @@ import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import QmDrawer from "../drawer/drawer";
 import Image from "next/image";
-import Link from "next/link";
-import { FacebookIcon, InstagramIcon, XIcon } from "@/app/icons/icons";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
-import { initialTopGamers, TopGamersState } from "@/app/store/gameSlice";
-import { cleanValue } from "../updateAccount/socialLinksDrawer";
-import { removeAtSymbol } from "@/app/(screens)/(protected)/(tabs)/leaderboard/PlayerCard";
+import { setTopGamers } from "@/app/store/gameSlice";
+import LeaderboardAPI from "@/app/api/leaderboardApi";
+import { LeaderboardEntry } from "@/app/(screens)/(protected)/(tabs)/leaderboard/types";
 
 const avatarColors = ["#F2F2F2", "#AFF0FF", "#C4FBD2", "#FFCBD2", "#FFF6C5"];
 function TopGamers() {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const [gamerInfo, setGamerInfo] = useState<TopGamersState>(initialTopGamers);
+  const [gamerInfo, setGamerInfo] = useState<LeaderboardEntry | null>(null);
   const { topGamers } = useAppSelector((state) => state.game);
 
   useEffect(() => {
     const fetchTopGamers = async () => {
-      if (topGamers !== null) return null;
       setLoading(true);
       try {
-        // const res = await UserAPI.topGamersOfToday();
-        // console.log(res.data.result.weekendLeaderboard);
-        // console.log(res);
-        // setTopGamers(res.data.result.monthlyLeaderboard);
-        // dispatch(setTopGamers(res.weekendLeaderboard));
+        const response = await LeaderboardAPI.getAllTimeLeaderboard();
+        const paginatedResponse = response.data;
+        console.log("===============paginatedResponse=====================");
+        console.log(paginatedResponse.content);
+        console.log("===============paginatedResponse=====================");
+        dispatch(setTopGamers(paginatedResponse.content));
         setLoading(false);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
@@ -37,9 +35,9 @@ function TopGamers() {
       }
     };
     fetchTopGamers();
-  }, [dispatch, topGamers]);
+  }, [dispatch]);
 
-  const handleViewGamer = (gamer: TopGamersState) => {
+  const handleViewGamer = (gamer: LeaderboardEntry) => {
     setGamerInfo(gamer);
     setOpen(true);
     console.log(gamer);
@@ -79,7 +77,7 @@ function TopGamers() {
             title="Player Stats"
             trigger={
               <div className="flex gap-4 ">
-                {topGamers?.map((gamer: TopGamersState, index) => (
+                {topGamers?.map((gamer, index) => (
                   <Gamers
                     key={index}
                     gamer={gamer}
@@ -89,99 +87,50 @@ function TopGamers() {
               </div>
             }
           >
-            <div className="grid place-items-center gap-3 max-w-lg mx-auto">
-              <div className="flex items-center justify-center bg-primary-100 h-[90px] w-[90px] rounded-full overflow-clip">
-                <Image
-                  src={gamerInfo.avatar}
-                  alt={gamerInfo.firstName}
-                  width={70}
-                  height={70}
-                  className="rounded-full"
-                />
-              </div>
-              <p className="text-center capitalize text-primary-700 text-xl sm:text-2xl font-semibold">
-                {gamerInfo.firstName}
-              </p>
+            {gamerInfo && (
+              <div className="grid place-items-center gap-3 max-w-lg mx-auto">
+                <div className="flex items-center justify-center bg-primary-100 h-[90px] w-[90px] rounded-full overflow-clip">
+                  <Image
+                    src={gamerInfo.avatarUrl}
+                    alt={gamerInfo.firstName}
+                    width={70}
+                    height={70}
+                    className="rounded-full"
+                  />
+                </div>
+                <p className="text-center capitalize text-primary-700 text-xl sm:text-2xl font-semibold">
+                  {gamerInfo.firstName}
+                </p>
 
-              <div className="flex flex-col gap-2 w-full md:w-[80%]">
-                {/* <p className="text-sm font-semibold">Player Stats</p> */}
-                <Grid
-                  columns="3"
-                  className="bg-primary-50 rounded-xl p-4 w-full"
-                >
-                  <Flex direction="column" align="center" justify="center">
-                    <p>Rank</p>
-                    <div className="flex min-h-10 min-w-10 h-auto w-auto items-center text-sm text-primary-800 justify-center gap-2 border-2 border-primary-800 rounded-full p-2">
-                      {formatRank(gamerInfo.overallRank)}
-                    </div>
-                  </Flex>
+                <div className="flex flex-col gap-2 w-full md:w-[80%]">
+                  {/* <p className="text-sm font-semibold">Player Stats</p> */}
+                  <Grid
+                    columns="3"
+                    className="bg-primary-50 rounded-xl p-4 w-full"
+                  >
+                    <Flex direction="column" align="center" justify="center">
+                      <p>Rank</p>
+                      <div className="flex min-h-10 min-w-10 h-auto w-auto items-center text-sm text-primary-800 justify-center gap-2 border-2 border-primary-800 rounded-full p-2">
+                        {formatRank(gamerInfo.rank)}
+                      </div>
+                    </Flex>
 
-                  <Flex direction="column" align="center" justify="center">
-                    <p>Games</p>
-                    <div className="flex min-h-10 min-w-10 h-auto w-auto text-sm items-center text-primary-800 justify-center gap-2 border-2 border-primary-800 rounded-full p-2">
-                      {gamerInfo.noOfGamesPlayed}
-                    </div>
-                  </Flex>
-                  <Flex direction="column" align="center" justify="center">
-                    <p>Prize</p>
-                    <div className="flex h-auto w-auto items-center justify-center font-semibold text-primary-800  p-2">
-                      {formatNaira(Number(gamerInfo.amountWon))}
-                    </div>
-                  </Flex>
-                </Grid>
-              </div>
-
-              <div className="grid place-items-center gap-3 items-center">
-                {(cleanValue(gamerInfo.facebook) ||
-                  cleanValue(gamerInfo.instagram) ||
-                  cleanValue(gamerInfo.twitter)) && (
-                  <p className="text-lg sm:text-xl font-semibold">
-                    Social Links
-                  </p>
-                )}
-                <div className="flex gap-2 text-primary-900">
-                  {cleanValue(gamerInfo.facebook) && (
-                    <Link
-                      href={`https://facebook.com/${removeAtSymbol(
-                        gamerInfo.facebook
-                      )}`}
-                      target="_blank"
-                    >
-                      <div className="h-[40px] w-[40px] rounded-full bg-primary-50 flex justify-center items-center">
-                        {/* <FacebookIcon /> */}
-                        {/* <i className="bi bi-facebook text-lg"></i> */}
-                        <FacebookIcon />
+                    <Flex direction="column" align="center" justify="center">
+                      <p>Games</p>
+                      <div className="flex min-h-10 min-w-10 h-auto w-auto text-sm items-center text-primary-800 justify-center gap-2 border-2 border-primary-800 rounded-full p-2">
+                        {gamerInfo.gamesPlayed}
                       </div>
-                    </Link>
-                  )}
-                  {cleanValue(gamerInfo.instagram) && (
-                    <Link
-                      href={`https://instagram.com/${removeAtSymbol(
-                        gamerInfo.instagram
-                      )}`}
-                      target="_blank"
-                    >
-                      <div className="h-[40px] w-[40px] rounded-full bg-primary-50 flex justify-center items-center">
-                        <InstagramIcon />
+                    </Flex>
+                    <Flex direction="column" align="center" justify="center">
+                      <p>Prize</p>
+                      <div className="flex h-auto w-auto items-center justify-center font-semibold text-primary-800  p-2">
+                        {formatNaira(Number(gamerInfo.amount! ?? 0))}
                       </div>
-                    </Link>
-                  )}
-                  {cleanValue(gamerInfo.twitter) && (
-                    <Link
-                      href={`https://x.com/${removeAtSymbol(
-                        gamerInfo.twitter
-                      )}`}
-                      target="_blank"
-                    >
-                      {" "}
-                      <div className="h-[40px] w-[40px] rounded-full bg-primary-50 flex justify-center items-center">
-                        <XIcon />
-                      </div>
-                    </Link>
-                  )}
+                    </Flex>
+                  </Grid>
                 </div>
               </div>
-            </div>
+            )}
           </QmDrawer>
         ) : (
           <>
@@ -212,19 +161,8 @@ function TopGamers() {
 
 export default TopGamers;
 
-interface GamerProps {
-  amountWon: number;
-  avatar: string;
-  facebook: string;
-  firstName: string;
-  instagram: string;
-  noOfGamesPlayed: number;
-  overallRank: number;
-  twitter: string;
-}
-
 type Props = {
-  gamer: GamerProps;
+  gamer: LeaderboardEntry;
   onClick: () => void;
 };
 const Gamers = ({ gamer, onClick }: Props) => {
@@ -236,7 +174,7 @@ const Gamers = ({ gamer, onClick }: Props) => {
     >
       <Avatar
         radius="full"
-        src={gamer.avatar}
+        src={gamer.avatarUrl}
         fallback={gamer.firstName[0]}
         style={{ backgroundColor: bgColor }}
         size="4"
@@ -246,7 +184,7 @@ const Gamers = ({ gamer, onClick }: Props) => {
           {gamer.firstName}
         </Text>
         <Text size="1" className="text-primary-800">
-          {formatNaira(gamer.amountWon)}
+          {formatNaira(gamer.amount ?? 0)}
         </Text>
       </Flex>
     </div>
