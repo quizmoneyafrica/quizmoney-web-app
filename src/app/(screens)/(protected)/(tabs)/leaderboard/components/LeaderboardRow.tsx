@@ -35,7 +35,7 @@ export default function LeaderboardRow({ entry }: LeaderboardRowProps) {
     <Table.Row className="">
       <Table.Cell>
         <div className="flex flex-col justify-center">
-          <div className=" size-5">🏆</div>
+          <div className=" size-8">🏆</div>
           <span className="text-primary-800 text-base font-semibold">
             {getRankMedal(rank)}
           </span>
