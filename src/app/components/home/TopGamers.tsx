@@ -124,7 +124,8 @@ function TopGamers() {
                     <Flex direction="column" align="center" justify="center">
                       <p>Prize</p>
                       <div className="flex h-auto w-auto items-center justify-center font-semibold text-primary-800  p-2">
-                        {formatNaira(Number(gamerInfo.amount! ?? 0))}
+                        {/* {formatNaira(Number(gamerInfo.amount! ?? 0))} */}
+                        {gamerInfo.score}
                       </div>
                     </Flex>
                   </Grid>
@@ -184,7 +185,8 @@ const Gamers = ({ gamer, onClick }: Props) => {
           {gamer.firstName}
         </Text>
         <Text size="1" className="text-primary-800">
-          {formatNaira(gamer.amount ?? 0)}
+          {/* {formatNaira(gamer.amount ?? 0)} */}
+          {gamer.score}
         </Text>
       </Flex>
     </div>
