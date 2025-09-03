@@ -53,8 +53,8 @@ export default function BvnVerification({ onNext }: { onNext: () => void }) {
       setOpenModal(false);
       setSuccessModal(true);
       router.replace("/home");
-      await KycAPI.createCustomerDVA();
       checkCustomerKyc();
+      await KycAPI.createCustomerDVA();
     } catch (err: any) {
       toast.error(err.message, { position: toastPosition });
     } finally {

@@ -44,18 +44,44 @@ function GameCard() {
     fetchNextGame();
   }, [fetchNextGame]);
 
+  // useEffect(() => {
+  //   const checkGameTime = () => {
+  //     const diff = differenceInSeconds(
+  //       new Date(nextGameData?.startTime || ""),
+  //       new Date()
+  //     );
+  //     if (diff > 0 && diff <= 300) {
+  //       setShowJoinBtn(true);
+  //     } else {
+  //       setShowJoinBtn(false);
+  //     }
+  //   };
+  //   checkGameTime();
+  //   intervalRef.current = setInterval(checkGameTime, 1000);
+
+  //   return () => {
+  //     clearInterval(intervalRef.current!);
+  //   };
+  // }, [nextGameData?.startTime, setShowJoinBtn]);
+
   useEffect(() => {
     const checkGameTime = () => {
+      // const adjustedStartTime = addHours(
+      //   new Date(nextGameData?.startTime || ""),
+      //   1
+      // ); // Nigerian time
       const diff = differenceInSeconds(
         new Date(nextGameData?.startTime || ""),
         new Date()
       );
-      if (diff > 0 && diff <= 300) {
+
+      if (diff > 0 && diff <= 300000000000) {
         setShowJoinBtn(true);
       } else {
         setShowJoinBtn(false);
       }
     };
+
     checkGameTime();
     intervalRef.current = setInterval(checkGameTime, 1000);
 
@@ -71,8 +97,8 @@ function GameCard() {
         <Skeleton width="100%" height="288px" />
       </div>
     );
-
   const coinPrize = nextGameData?.coinPrize || 0;
+
   return (
     <div className="drop-shadow-sm rounded-[20px]">
       <div className="flex flex-col drop-shadow rounded-[20px] overflow-clip">
@@ -153,7 +179,7 @@ function GameCard() {
                 gamePrize={nextGameData?.prize || 0}
                 startDate={nextGameData?.startTime || ""}
               />
-              {/* <JoinGameBtn /> */}
+              <JoinGameBtn />
               <PlayDemoBtn />
             </Flex>
           )}

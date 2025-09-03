@@ -12,10 +12,8 @@ import { LeaveGameModal } from "@/app/components/game/leaveGameModal";
 function LobbyScreen() {
   const dispatch = useAppDispatch();
   const { lobbyTime } = useAppSelector((state) => state.game);
-  // const liveGameData = nextGameData;
-  // const startDate = liveGameData?.startDate.iso;
+
   const startDate = lobbyTime;
-  // const startDate = "2025-06-14T13:05:00.000Z";
   const [secondsLeft, setSecondsLeft] = useState(
     differenceInSeconds(new Date(startDate), new Date())
   );

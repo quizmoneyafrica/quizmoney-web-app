@@ -19,6 +19,7 @@ import Modal from "../game/modal/ModalWindow";
 import { useAppDispatch } from "@/app/hooks/useAuth";
 import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
+import WalletApi from "@/app/api/wallet";
 
 export type BankAccount = {
   id: number;
@@ -113,9 +114,10 @@ export const MobileWithdrawalForm = ({
     store.dispatch(setWithdrawalPinModal(true));
   };
 
-  const deletePayoutAccount = async () => {
+  const deletePayoutAccount = async (id: string) => {
     setIsLoading(true);
     try {
+      await WalletApi.deletePayoutBank(id);
       dispatch(setPayoutBanks(undefined));
       setOpenModal(false);
     } catch (err: any) {
@@ -126,6 +128,7 @@ export const MobileWithdrawalForm = ({
       setIsLoading(false);
     }
   };
+
   return (
     <div className="bg-white rounded-3xl h-full">
       <p className="text-gray-600 mb-8">
@@ -191,16 +194,18 @@ export const MobileWithdrawalForm = ({
           ) : (
             <div className="text-gray-600">No bank added yet</div>
           )}
-          {!payoutBanks && <div className="flex items-center mt-2">
-            <span className="text-primary-900 text-lg font-bold mr-2">+</span>
-            <button
-              type="button"
-              className="text-primary-900 underline text-sm"
-              onClick={onAddBank}
-            >
-              Add New Bank
-            </button>
-          </div>}
+          {!payoutBanks && (
+            <div className="flex items-center mt-2">
+              <span className="text-primary-900 text-lg font-bold mr-2">+</span>
+              <button
+                type="button"
+                className="text-primary-900 underline text-sm"
+                onClick={onAddBank}
+              >
+                Add New Bank
+              </button>
+            </div>
+          )}
         </div>
         <CustomButton
           type="submit"
@@ -216,7 +221,7 @@ export const MobileWithdrawalForm = ({
         title="Delete Payout"
         actionBtnText="Yes, Delete"
         showCloseIcon={false}
-        actionOnClick={deletePayoutAccount}
+        actionOnClick={() => deletePayoutAccount(payoutBanks?.id || "")}
         redTitle
         actionLoader={isLoading}
       >
