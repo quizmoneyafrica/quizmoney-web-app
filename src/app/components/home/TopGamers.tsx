@@ -23,9 +23,6 @@ function TopGamers() {
       try {
         const response = await LeaderboardAPI.getAllTimeLeaderboard();
         const paginatedResponse = response.data;
-        console.log("===============paginatedResponse=====================");
-        console.log(paginatedResponse.content);
-        console.log("===============paginatedResponse=====================");
         dispatch(setTopGamers(paginatedResponse.content));
         setLoading(false);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
