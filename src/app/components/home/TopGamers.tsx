@@ -23,9 +23,6 @@ function TopGamers() {
       try {
         const response = await LeaderboardAPI.getAllTimeLeaderboard();
         const paginatedResponse = response.data;
-        console.log("===============paginatedResponse=====================");
-        console.log(paginatedResponse.content);
-        console.log("===============paginatedResponse=====================");
         dispatch(setTopGamers(paginatedResponse.content));
         setLoading(false);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -122,10 +119,10 @@ function TopGamers() {
                       </div>
                     </Flex>
                     <Flex direction="column" align="center" justify="center">
-                      <p>Score</p>
+                      <p>Amount</p>
                       <div className="flex h-auto w-auto items-center justify-center font-semibold text-primary-800  p-2">
                         {/* {formatNaira(Number(gamerInfo.amount! ?? 0))} */}
-                        {gamerInfo.score}
+                        {gamerInfo.prizeWon}
                       </div>
                     </Flex>
                   </Grid>
@@ -186,7 +183,7 @@ const Gamers = ({ gamer, onClick }: Props) => {
         </Text>
         <Text size="1" className="text-primary-800">
           {/* {formatNaira(gamer.amount ?? 0)} */}
-          {gamer.score}
+          {gamer.prizeWon}
         </Text>
       </Flex>
     </div>
