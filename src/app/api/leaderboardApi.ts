@@ -1,23 +1,32 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ApiResponse } from "./interface";
 import { callWithSessionToken } from "./parse/callWithSessionToken";
 
 const LeaderboardAPI = {
-  getAllTimeLeaderboard(dispatch: any, page?: number): Promise<ApiResponse> {
+  getAllTimeLeaderboard(
+    page: number = 0,
+    size: number = 10
+  ): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
-      "getAllTimeLeaderboard",
-      {
-        page: page ?? 1,
-      },
-      dispatch
+      `games/leaderboard/all-time?page=${page}&size=${size}`,
+      {},
+      {},
+      "GET"
     );
   },
-  getLastGameLeaderboard(dispatch: any): Promise<ApiResponse> {
+  getLastGameLeaderboard(
+    gameId: string,
+    page: number = 0,
+    size: number = 10
+  ): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
-      "getLastGameLeaderboard",
+      `games/${gameId}/leaderboard?page=${page}&size=${size}`,
       {},
-      dispatch
+      {},
+      "GET"
     );
+  },
+  getUserGames(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(`games`, {}, {}, "GET");
   },
 };
 
