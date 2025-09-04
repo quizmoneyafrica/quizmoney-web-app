@@ -28,7 +28,7 @@ const getRankMedal = (rank: number) => {
 };
 
 export default function LeaderboardRow({ entry }: LeaderboardRowProps) {
-  const { avatarUrl, firstName, rank, score = 0 } = entry;
+  const { avatarUrl, firstName, rank, score = 0, prizeWon = 0 } = entry;
   const [imageError, setImageError] = useState(false);
 
   return (
@@ -72,7 +72,7 @@ export default function LeaderboardRow({ entry }: LeaderboardRowProps) {
       <Table.Cell align="right">
         <span className=" bg-[#E4F1FA] py-1 px-3 rounded-full font-semibold text-[#2364AA]">
           {/* ₦{amount.toLocaleString()} */}
-          {score}
+          {prizeWon}
         </span>
       </Table.Cell>
     </Table.Row>
