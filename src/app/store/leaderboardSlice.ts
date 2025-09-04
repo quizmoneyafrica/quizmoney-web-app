@@ -1,5 +1,6 @@
 // store/leaderboardSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { LeaderboardEntry, PaginatedLeaderboardResponse } from "../(screens)/(protected)/(tabs)/leaderboard/types";
 // import { LeaderboardData } from "../(screens)/(protected)/(tabs)/leaderboard/page";
 export interface QuestionResult {
   number: string;
@@ -76,8 +77,24 @@ export interface AllTimeLeaderboardData {
 }
 
 interface LeaderboardState {
-  lastGame?: LeaderboardData;
-  allTime: { [page: number]: AllTimeLeaderboardData };
+  lastGame: LeaderboardEntry[];
+  allTime: LeaderboardEntry[];
+  pagination: {
+    lastGame: {
+      pageNo: number;
+      pageSize: number;
+      totalElements: number;
+      totalPages: number;
+      last: boolean;
+    };
+    allTime: {
+      pageNo: number;
+      pageSize: number;
+      totalElements: number;
+      totalPages: number;
+      last: boolean;
+    };
+  };
   selectedPlayer?: {
     data: LeaderboardRanking | AllTimeLeaderboardUser;
     showSelected: boolean;
@@ -86,8 +103,24 @@ interface LeaderboardState {
 }
 
 const initialState: LeaderboardState = {
-  lastGame: undefined,
-  allTime: {},
+  lastGame: [],
+  allTime: [],
+  pagination: {
+    lastGame: {
+      pageNo: 0,
+      pageSize: 10,
+      totalElements: 0,
+      totalPages: 0,
+      last: true,
+    },
+    allTime: {
+      pageNo: 0,
+      pageSize: 10,
+      totalElements: 0,
+      totalPages: 0,
+      last: true,
+    },
+  },
 };
 export type LeaderboardPlayer = LeaderboardRanking | AllTimeLeaderboardUser;
 
@@ -95,18 +128,49 @@ const leaderboardSlice = createSlice({
   name: "leaderboard",
   initialState,
   reducers: {
-    setLastGameLeaderboard: (state, action: PayloadAction<LeaderboardData>) => {
-      state.lastGame = action.payload;
+    setLastGameLeaderboard: (state, action: PayloadAction<PaginatedLeaderboardResponse>) => {
+      state.lastGame = action.payload.content;
+      state.pagination.lastGame = {
+        pageNo: action.payload.pageNo,
+        pageSize: action.payload.pageSize,
+        totalElements: action.payload.totalElements,
+        totalPages: action.payload.totalPages,
+        last: action.payload.last,
+      };
     },
+  
     setAllTimeLeaderboard: (
       state,
-      action: PayloadAction<{ page: number; data: AllTimeLeaderboardData }>
+      action: PayloadAction<PaginatedLeaderboardResponse>
     ) => {
-      state.allTime[action.payload.page] = action.payload.data;
+      state.allTime = action.payload.content;
+      state.pagination.allTime = {
+        pageNo: action.payload.pageNo,
+        pageSize: action.payload.pageSize,
+        totalElements: action.payload.totalElements,
+        totalPages: action.payload.totalPages,
+        last: action.payload.last,
+      };
     },
     clearLeaderboards: (state) => {
-      state.lastGame = undefined;
-      state.allTime = {};
+      state.lastGame = [];
+      state.allTime = [];
+      state.pagination = {
+        lastGame: {
+          pageNo: 0,
+          pageSize: 10,
+          totalElements: 0,
+          totalPages: 0,
+          last: true,
+        },
+        allTime: {
+          pageNo: 0,
+          pageSize: 10,
+          totalElements: 0,
+          totalPages: 0,
+          last: true,
+        },
+      };
     },
     setSelectedPlayer: (
       state,

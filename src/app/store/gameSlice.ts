@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ApiResponse } from "../api/interface";
+import { LeaderboardEntry } from "../(screens)/(protected)/(tabs)/leaderboard/types";
 
 export type GamePhase =
   | "loading"
@@ -42,7 +43,7 @@ interface GameState {
   showAdsScreen: boolean;
   showResultScreen: boolean;
   openLeaveGame: boolean;
-  topGamers: TopGamersState[] | null;
+  topGamers: LeaderboardEntry[] | [];
   phase: GamePhase;
   lobbyTime: string;
   audioShouldPlay: boolean;
@@ -69,7 +70,7 @@ const initialState: GameState = {
   showAdsScreen: false,
   showResultScreen: false,
   openLeaveGame: false,
-  topGamers: null,
+  topGamers: [],
   phase: "loading",
   audioShouldPlay: false,
   lobbyTime: "",
@@ -106,7 +107,7 @@ const gameSlice = createSlice({
     setOpenLeaveGame(state, action: PayloadAction<boolean>) {
       state.openLeaveGame = action.payload;
     },
-    setTopGamers(state, action: PayloadAction<TopGamersState[]>) {
+    setTopGamers(state, action: PayloadAction<LeaderboardEntry[]>) {
       state.topGamers = action.payload;
     },
     setLobbyTime(state, action: PayloadAction<string>) {

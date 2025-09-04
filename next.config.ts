@@ -45,6 +45,10 @@ const nextConfig: any = {
         hostname: "parsefiles.back4app.com",
         protocol: "https",
       },
+      {
+        hostname: "res.cloudinary.com",
+        protocol: "https",
+      },
     ],
   },
   async headers() {
