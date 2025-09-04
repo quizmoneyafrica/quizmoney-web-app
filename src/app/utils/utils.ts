@@ -82,11 +82,32 @@ export function formatNaira(
 }
 
 //Date
+// export function formatQuizDate(input: string): string {
+//   if (!input) return "";
+//   const date = parseISO(input);
+
+//   if (isNaN(date.getTime())) return "Invalid date";
+//   const time = format(date, "h:mm a");
+
+//   if (isToday(date)) {
+//     return `Today, ${time}`;
+//   } else if (isTomorrow(date)) {
+//     return `Tomorrow, ${time}`;
+//   } else if (!isPast(date)) {
+//     return `${format(date, "EEEE")}, ${time}`;
+//   } else {
+//     // Past date
+//     return `${format(date, "MMM do")}, ${time}`;
+//   }
+// }
+
 export function formatQuizDate(input: string): string {
   if (!input) return "";
-  const date = parseISO(input);
+  const originalDate = parseISO(input);
+  if (isNaN(originalDate.getTime())) return "Invalid date";
 
-  if (isNaN(date.getTime())) return "Invalid date";
+  // const date = addHours(originalDate, 1);
+  const date = originalDate;
   const time = format(date, "h:mm a");
 
   if (isToday(date)) {

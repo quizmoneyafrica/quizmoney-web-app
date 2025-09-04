@@ -47,6 +47,14 @@ const WalletApi = {
   fetchPayoutBanks(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("payout-accounts", {}, {}, "GET");
   },
+  deletePayoutBank(id: string): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      `payout-accounts/${id}`,
+      {},
+      {},
+      "PATCH"
+    );
+  },
   confirmAccount(
     accountNumber: string,
     bankCode: string

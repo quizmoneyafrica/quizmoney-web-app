@@ -1,4 +1,4 @@
-import { formatNaira, formatRank, toastPosition } from "@/app/utils/utils";
+import { formatRank, toastPosition } from "@/app/utils/utils";
 import { Avatar, Flex, Grid, Skeleton, Text } from "@radix-ui/themes";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
