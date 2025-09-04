@@ -22,6 +22,15 @@ interface CurrentGameObj {
   description: string;
   coinPrize: number;
 }
+export interface CurrentLiveQuestionOptionsObj {
+  optionId: string;
+  text: string;
+}
+interface CurrentLiveQuestionObj {
+  id: string;
+  text: string;
+  options: CurrentLiveQuestionOptionsObj[];
+}
 
 export interface TopGamersState {
   amountWon: number;
@@ -47,6 +56,7 @@ interface GameState {
   phase: GamePhase;
   lobbyTime: string;
   audioShouldPlay: boolean;
+  currentLiveQuestion?: CurrentLiveQuestionObj | null;
 }
 
 export const initialTopGamers = {
@@ -74,6 +84,7 @@ const initialState: GameState = {
   phase: "loading",
   audioShouldPlay: false,
   lobbyTime: "",
+  currentLiveQuestion: null,
 };
 
 const gameSlice = createSlice({
@@ -82,6 +93,12 @@ const gameSlice = createSlice({
   reducers: {
     setNextGameData(state, action: PayloadAction<CurrentGameObj>) {
       state.nextGameData = action.payload;
+    },
+    setCurrentLiveQuestion: (
+      state,
+      action: PayloadAction<CurrentLiveQuestionObj>
+    ) => {
+      state.currentLiveQuestion = action.payload;
     },
     setPhase: (state, action: PayloadAction<GamePhase>) => {
       state.phase = action.payload;
@@ -136,5 +153,6 @@ export const {
   playAudio,
   stopAudio,
   setLobbyTime,
+  setCurrentLiveQuestion,
 } = gameSlice.actions;
 export default gameSlice.reducer;

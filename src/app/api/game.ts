@@ -12,14 +12,24 @@ const GameApi = {
     return callWithSessionToken<ApiResponse>(
       "games/join",
       { gameId },
-      dispatch
+      dispatch,
+      "POST"
     );
   },
   removeUserFromGame(gameId: string, dispatch: any): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
       "games/leave",
       { gameId },
-      dispatch
+      dispatch,
+      "POST"
+    );
+  },
+  getCurrentQuestion(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      "/games/questions/current",
+      {},
+      {},
+      "GET"
     );
   },
 
