@@ -22,6 +22,8 @@ export const handleInvalidSession = async (
     return newToken;
   } catch (err) {
     console.error("Token refresh failed", err);
+    localStorage.clear();
+    sessionStorage.clear();
     dispatch(logout());
     dispatch(setWallet([]));
     dispatch(setTransactions([]));

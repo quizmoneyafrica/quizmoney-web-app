@@ -1,31 +1,33 @@
 "use client";
 import { useAppDispatch } from "@/app/hooks/useAuth";
 import { useStompClient } from "@/app/hooks/useStompClient";
-import useWalletHook from "@/app/hooks/useWallet";
 import { addSubscription, removeSubscription } from "@/app/store/stompSlice";
-import { setWalletBalance } from "@/app/store/walletSlice";
 import { IMessage } from "@stomp/stompjs";
 import { useEffect } from "react";
 
-function WalletQueries() {
+function NextGameQueries() {
   const dispatch = useAppDispatch();
-  const { fetchTransactions } = useWalletHook();
 
   const onMessage = (msg: IMessage) => {
-    console.log("💰 Wallet Update:", msg.body);
-    dispatch(setWalletBalance(Number(msg.body)));
-    fetchTransactions();
+    try {
+      const que = JSON.parse(msg.body);
+      console.log("🎲 Next Game Update:", que);
+      // dispatch(setWalletBalance(Number(msg.body)));
+      // fetchTransactions();
+    } catch (err) {
+      console.warn("Fallback: Empty WebSocket payload", err);
+    }
   };
   useStompClient({ onMessage });
 
   useEffect(() => {
-    dispatch(addSubscription(`/user/queue/wallet`));
+    dispatch(addSubscription(`/topic/games/next`));
     return () => {
-      dispatch(removeSubscription(`/user/queue/wallet`));
+      dispatch(removeSubscription(`/topic/games/next`));
     };
   }, [dispatch]);
 
   return null;
 }
 
-export default WalletQueries;
+export default NextGameQueries;

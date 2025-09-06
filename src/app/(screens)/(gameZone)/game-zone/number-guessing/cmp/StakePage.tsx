@@ -78,11 +78,11 @@ function StakePage() {
             <DiceQ />
           </div>
           <h2 className=" text-[2.3em] text-primary-900">Number Guessing</h2>
-          <p>Pick the right number win cash prize!</p>
+          <p>Guess smart, Get rewarded</p>
         </div>
         <div className="border-2 border-[#2364aab7] bg-primary-100 p-4 rounded-[10px] text-center font-bold text-sm">
-          <p>Win up to</p>
-          <p>2x your stake</p>
+          <p>Double Your Money!</p>
+          <p>Win 2× Instantly!</p>
         </div>
       </div>
 

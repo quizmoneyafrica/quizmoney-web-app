@@ -14,10 +14,9 @@ import UserAPI from "@/app/api/userApi";
 import { SuccessIcon } from "@/app/utils/successIcon";
 import useTawkHidden from "@/app/components/tawk/useTawkHidden";
 import { toast } from "sonner";
-import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
+import { useAppSelector } from "@/app/hooks/useAuth";
 const Support = () => {
   useTawkHidden();
-  const dispatch = useAppDispatch();
   const router = useRouter();
   const user = useAppSelector((s) => s.auth.user);
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -35,7 +34,7 @@ const Support = () => {
     };
     try {
       console.log("form", form);
-      const res = await UserAPI.sendFeedback(form, dispatch);
+      const res = await UserAPI.sendFeedback(form);
       console.log(res);
       setSubmittingForm(false);
       setIsSuccess(true);

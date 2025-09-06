@@ -5,7 +5,7 @@ import { cn } from "./utils";
 
 type Option = {
   label: string;
-  value: string;
+  value: string | number;
 };
 
 type CustomSelectProps = {
@@ -20,7 +20,7 @@ type CustomSelectProps = {
   icon?: React.ReactNode;
   disabledOption: string;
   readOnly?: boolean;
-};
+} & React.SelectHTMLAttributes<HTMLSelectElement>;
 
 export default function CustomSelect({
   label,
@@ -34,6 +34,7 @@ export default function CustomSelect({
   icon,
   disabledOption = "Select an option",
   readOnly = false,
+  ...props
 }: CustomSelectProps) {
   return (
     <div className="w-full space-y-1">
@@ -60,6 +61,7 @@ export default function CustomSelect({
             readOnly && "cursor-not-allowed",
             className
           )}
+          {...props}
         >
           <option value="" disabled>
             {disabledOption}

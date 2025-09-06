@@ -1,33 +1,21 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ApiResponse } from "./interface";
 import CryptoJS from "crypto-js";
 import { callWithSessionToken } from "./parse/callWithSessionToken";
 
 const GameApi = {
   fetchNextGame(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("games", {}, {}, "GET");
+    return callWithSessionToken<ApiResponse>("games", {}, "GET");
   },
 
-  registerForGame(gameId: string, dispatch: any): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(
-      "games/join",
-      { gameId },
-      dispatch,
-      "POST"
-    );
+  registerForGame(gameId: string): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("games/join", { gameId }, "POST");
   },
-  removeUserFromGame(gameId: string, dispatch: any): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(
-      "games/leave",
-      { gameId },
-      dispatch,
-      "POST"
-    );
+  removeUserFromGame(gameId: string): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("games/leave", { gameId }, "POST");
   },
   getCurrentQuestion(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
       "/games/questions/current",
-      {},
       {},
       "GET"
     );
