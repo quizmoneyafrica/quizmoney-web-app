@@ -9,7 +9,7 @@ import { formatNaira, formatQuizDate, toastPosition } from "@/app/utils/utils";
 import Link from "next/link";
 import PlayDemoBtn from "./PlayDemo";
 import { toast } from "sonner";
-import JoinGameBtn from "./JoinGameBtn";
+// import JoinGameBtn from "./JoinGameBtn";
 import { differenceInSeconds } from "date-fns";
 import CustomButton from "@/app/utils/CustomBtn";
 import { ReloadIcon } from "@radix-ui/react-icons";
@@ -21,6 +21,7 @@ function GameCard() {
   const [loading, setLoading] = useState(false);
   const [showJoinBtn, setShowJoinBtn] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  console.log(showJoinBtn);
 
   const fetchNextGame = useCallback(async () => {
     if (nextGameData) return null;
@@ -169,7 +170,7 @@ function GameCard() {
         </div>
         <div className="relative z-[2] bg-primary-800 w-full px-4 py-5 rounded-b-[20px]">
           <Flex align="center" justify="center"></Flex>
-          {showJoinBtn ? (
+          {/* {showJoinBtn ? (
             <Flex align="center" justify="center">
               <JoinGameBtn />
             </Flex>
@@ -182,7 +183,16 @@ function GameCard() {
               <JoinGameBtn />
               <PlayDemoBtn />
             </Flex>
-          )}
+          )} */}
+
+          <Flex align="center" justify="between">
+            <ShareBtn
+              gamePrize={nextGameData?.prize || 0}
+              startDate={nextGameData?.startTime || ""}
+            />
+
+            <PlayDemoBtn />
+          </Flex>
         </div>
       </div>
     </div>

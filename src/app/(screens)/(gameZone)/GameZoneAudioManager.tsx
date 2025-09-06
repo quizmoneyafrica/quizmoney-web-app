@@ -28,15 +28,15 @@ export default function GameZoneAudioManager() {
     const soundMap: Record<string, Record<string, string>> = {
       NUMBER_GUESSER: {
         zone: "/sounds/gamezone.mp3",
-        playing: "/sounds/melodiza.mp3",
-        win: "/sounds/melodiza.mp3",
-        lost: "/sounds/melodiza.mp3",
+        playing: "/sounds/numberguess.mp3",
+        win: "/sounds/numberguesswin.mp3",
+        lost: "/sounds/numberguesslost.mp3",
       },
       PERFECT_SCORE: {
         zone: "/sounds/gamezone.mp3",
-        playing: "/sounds/melodiza.mp3",
-        win: "/sounds/melodiza.mp3",
-        lost: "/sounds/melodiza.mp3",
+        playing: "/sounds/numberguess.mp3",
+        win: "/sounds/numberguesswin.mp3",
+        lost: "/sounds/numberguesslost.mp3",
       },
     };
 

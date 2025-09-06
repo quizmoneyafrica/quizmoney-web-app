@@ -11,6 +11,7 @@ import storeReducer from "./storeSlice";
 import stompSub from "./stompSlice";
 import numberGuessGameSlice from "./numberGuessGameSlice";
 import gameZoneSlice from "./gameZoneSlice";
+import withdrawalRequestReducer from "./withdrawalRequestSlice";
 
 import { createFilter } from "redux-persist-transform-filter";
 
@@ -59,6 +60,7 @@ export const store = configureStore({
   reducer: {
     auth: persistedAuthReducer,
     wallet: persistedWalletReducer,
+    withdrawalRequest: withdrawalRequestReducer,
     game: gameReducer,
     demo: demoReducer,
     notifications: notificationReducer,

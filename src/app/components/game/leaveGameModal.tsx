@@ -18,7 +18,7 @@ export const LeaveGameModal = () => {
   const handleLeaveGame = async () => {
     setLoading(true);
     try {
-      await GameApi.removeUserFromGame(nextGameData?.gameId || "", dispatch);
+      await GameApi.removeUserFromGame(nextGameData?.gameId || "");
       router.replace("/home");
       dispatch(setPhase("loading"));
       dispatch(stopAudio());

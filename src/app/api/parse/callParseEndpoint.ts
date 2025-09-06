@@ -50,9 +50,10 @@ export const callParseEndpoint = async <T>(
         await logoutAndRedirect();
         throw new Error("Session expired, please login again.");
       }
-    } else {
-      await logoutAndRedirect();
     }
+    // else {
+    //   await logoutAndRedirect();
+    // }
 
     const err = new Error(data.error || data.message || "Unknown error") as any;
     err.code = data.code;

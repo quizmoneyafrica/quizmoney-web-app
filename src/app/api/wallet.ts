@@ -4,6 +4,13 @@ import { ApiResponse } from "./interface";
 import { callWithSessionToken } from "./parse/callWithSessionToken";
 
 const WalletApi = {
+  fetchWithdrawalRequests(page: number, size: number): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      "wallets/withdrawal-requests",
+      { page: page, size: size },
+      "GET"
+    );
+  },
   fetchCustomerWallet(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>("wallets", {}, "GET");
   },
@@ -21,7 +28,6 @@ const WalletApi = {
     return callWithSessionToken<ApiResponse>(
       `payout-accounts/${id}`,
       {},
-
       "PATCH"
     );
   },

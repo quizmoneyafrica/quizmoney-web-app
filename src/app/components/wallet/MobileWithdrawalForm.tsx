@@ -207,10 +207,15 @@ export const MobileWithdrawalForm = ({
             </div>
           )}
         </div>
+        <p className="text-xs text-error-800 text-center my-4">
+          Withdrawals will be open soon!
+        </p>
         <CustomButton
-          type="submit"
-          className="bg-primary-900 text-white w-full rounded-full py-4 hover:bg-primary-700"
-          disabled={!payoutBanks || !payoutBanks.id}
+          // type="submit"
+          type="button"
+          className="bg-primary-900 text-white w-full rounded-full py-4 hover:bg-primary-700 disabled:cursor-not-allowed"
+          // disabled={!payoutBanks || !payoutBanks.id}
+          disabled
         >
           Proceed
         </CustomButton>

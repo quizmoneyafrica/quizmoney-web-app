@@ -83,7 +83,7 @@ const ProductCard = ({
   const handlePurchase = async () => {
     setIsLoading(true);
     try {
-      const res = await StoreAPI.purchaseItem(product.id, dispatch);
+      const res = await StoreAPI.purchaseItem(product.id);
       console.log(res);
       getGameErasers();
       setIsOpen(false);

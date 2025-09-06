@@ -14,6 +14,7 @@ import {
   setGameSettings,
   setGameStatus,
 } from "@/app/store/numberGuessGameSlice";
+import PurchaseTrials from "./PurchaseTrials";
 interface gameTry {
   guessDirection: "TOO_HIGH" | "TOO_LOW" | "EXACT" | string;
   result: "WON" | "IN_PROGRESS" | string;
@@ -25,7 +26,7 @@ function InProgress() {
   const max = gameSettings.upperBound;
 
   const [guess, setGuess] = useState("");
-  const [trials, setTrials] = useState(3);
+  const [trials, setTrials] = useState<number>(3);
   const [guessResponse, setGuessResponse] = useState<gameTry>({
     guessDirection: "",
     result: "",
@@ -33,7 +34,7 @@ function InProgress() {
   const [isGuessing, setIsGuessing] = useState(false);
   const prevSessionId = localStorage.getItem("gameSessionId");
 
-  const [openBuyModal, setOpenBuyModal] = useState(false);
+  const [openBuyModal, setOpenBuyModal] = useState<boolean>(false);
 
   //Sounds
   const correctSoundRef = useRef<HTMLAudioElement | null>(null);
@@ -127,11 +128,6 @@ function InProgress() {
     // }
   };
 
-  const buyTrials = () => {
-    setTrials((t) => t + 2);
-    // setMessage("2 extra trials!");
-    setOpenBuyModal(false);
-  };
   return (
     <div className="w-full max-w-lg mx-auto space-y-10">
       <div className="space-y-4">
@@ -183,48 +179,29 @@ function InProgress() {
               ⚡ {trials} {trials === 1 ? "Trial" : "Trials"} Remaining
             </p>
             <div>
-              {trials <= 0 && guessResponse.result !== "WON" && (
-                <QmDrawer
-                  open={openBuyModal}
-                  onOpenChange={setOpenBuyModal}
-                  title="Buy Extra Trials"
-                  titleLeft
-                  trigger={
-                    <motion.button
-                      whileTap={{ scale: 0.95 }}
-                      type="button"
-                      // onClick={buyTrials}
-                      className="flex items-center gap-1 bg-white px-4 py-1.5 border border-primary-800 text-primary-800 rounded-[20px] text-sm font-medium "
-                    >
-                      Buy Trials <PlusIcon />
-                    </motion.button>
-                  }
-                >
-                  <div>
-                    <form onSubmit={buyTrials}>
-                      <div>
-                        <div>
-                          <CustomTextField
-                            label="Trial Quantity"
-                            name="guess"
-                            type="text"
-                            value={guess}
-                            onChange={(e) => setGuess(e.target.value)}
-                            placeholder={`${min}`}
-                            className="bg-white border-[#0a0a0a1a] text-primary-800 focus:border-primary-800 placeholder:text-sm"
-                            required
-                          />
-                        </div>
-                        <span>
-                          <span>Note:</span>You can purchase maximum of 2 Trials
-                          only per game session.
-                        </span>
-                      </div>
-                      <GameButton text="Buy Trial" type="submit" />
-                    </form>
-                  </div>
-                </QmDrawer>
-              )}
+              {/* {trials <= 0 && guessResponse.result !== "WON" && ( */}
+              <QmDrawer
+                open={openBuyModal}
+                onOpenChange={setOpenBuyModal}
+                title="Buy Extra Trials"
+                titleLeft
+                trigger={
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    type="button"
+                    // onClick={buyTrials}
+                    className="flex items-center gap-1 bg-white px-4 py-1.5 border border-primary-800 text-primary-800 rounded-[20px] text-sm font-medium "
+                  >
+                    Buy Trials <PlusIcon />
+                  </motion.button>
+                }
+              >
+                <PurchaseTrials
+                  setTrials={setTrials}
+                  setOpenBuyModal={setOpenBuyModal}
+                />
+              </QmDrawer>
+              {/*)}*/}
             </div>
           </div>
           <div className="space-y-2">

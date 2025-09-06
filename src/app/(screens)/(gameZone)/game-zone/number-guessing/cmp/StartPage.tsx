@@ -44,16 +44,18 @@ function StartPage() {
                     }`}
                   >
                     <div className="col-span-2 flex items-center gap-2">
-                      <div
-                        className={`${
-                          item.variant === "blue"
-                            ? "bg-[#2364AA] shadow-[0px_3px_0px_0px_rgba(81,162,224,1.00)]"
-                            : item.variant === "green"
-                            ? "bg-[#23aa3181] shadow-[0px_3px_0px_0px_rgba(35,170,49,0.50)]"
-                            : "bg-[#FFDA43] shadow-[0px_3px_0px_0px_rgba(206,166,0,1.00)]"
-                        } grid place-items-center text-white font-bold text-sm w-8 h-8  rounded-full  border-[3px] border-white`}
-                      >
-                        {index + 1}
+                      <div>
+                        <div
+                          className={`${
+                            item.variant === "blue"
+                              ? "bg-[#2364AA] shadow-[0px_3px_0px_0px_rgba(81,162,224,1.00)]"
+                              : item.variant === "green"
+                              ? "bg-[#23aa3181] shadow-[0px_3px_0px_0px_rgba(35,170,49,0.50)]"
+                              : "bg-[#FFDA43] shadow-[0px_3px_0px_0px_rgba(206,166,0,1.00)]"
+                          } grid place-items-center text-white font-bold text-sm w-8 h-8  rounded-full  border-[3px] border-white`}
+                        >
+                          {index + 1}
+                        </div>
                       </div>
                       <div>
                         <p className="text-sm font-bold">{item.topic}</p>
@@ -108,19 +110,19 @@ export default StartPage;
 const howToPlay = [
   {
     topic: "Guess a number",
-    desc: "Pick a number between 1-100",
+    desc: "Choose your best guess within the given range.",
     svg: <OneTwoThree />,
     variant: "blue",
   },
   {
-    topic: "Limited Tries",
-    desc: "3 attempts to guess correctly ",
+    topic: "Limited Trials",
+    desc: "You have 3 initial attempts to find the hidden number.",
     svg: <ClockSvg />,
     variant: "green",
   },
   {
-    topic: "Win up to 2× your stake",
-    desc: "Higher rewards for correct guesses",
+    topic: "Double Your Stake",
+    desc: "Guess correctly and win up to 2× your entry stake.",
     svg: <MoneyWings />,
     variant: "yellow",
   },

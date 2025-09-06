@@ -6,17 +6,16 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import { formatNaira } from "@/app/utils/utils";
 import { useRouter } from "next/navigation";
 import StartPage from "./cmp/StartPage";
-import { useWallet } from "@/app/store/walletSlice";
 import StakePage from "./cmp/StakePage";
 import InProgress from "./cmp/InProgress";
 import ResultScreen from "./cmp/ResultScreen";
 import { setGameStatus } from "@/app/store/numberGuessGameSlice";
+import { useWalletBalances } from "@/app/hooks/useWallet";
 
 function Page() {
   const numberGuess = useAppSelector((s) => s.numberGuess);
-  const { wallet: walletData } = useAppSelector(useWallet);
+  const { ngnBalance } = useWalletBalances();
   const router = useRouter();
-  const wallet = walletData.find((w) => w.currency === "NGN")! || {};
   const dispatch = useAppDispatch();
 
   const handleBack = () => {
@@ -61,7 +60,7 @@ function Page() {
               onClick={() => router.push("/wallet")}
               className="bg-white rounded-full px-4 py-2 text-primary-900 font-medium font-text flex items-center gap-1"
             >
-              {formatNaira(Number(wallet?.availableBalance || 0), true)}
+              {formatNaira(Number(ngnBalance || 0), true)}
               <CirclePlus width={18} height={18} />
             </button>
           </div>

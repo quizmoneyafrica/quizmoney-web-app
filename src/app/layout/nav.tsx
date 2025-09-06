@@ -7,6 +7,7 @@ import {
   StoreIcon,
   SupportIcon,
   WalletIcon,
+  WithdrawIcon,
 } from "../icons/icons";
 
 export const navSidebar = [
@@ -19,6 +20,11 @@ export const navSidebar = [
     icon: <WalletIcon />,
     path: "/wallet",
     name: "Wallet",
+  },
+  {
+    icon: <WithdrawIcon />,
+    path: "/withdraw-request",
+    name: "Withdraw Request",
   },
   {
     icon: <Gamepad2 />,
@@ -51,6 +57,11 @@ export const navs = [
     icon: <WalletIcon />,
     path: "/wallet",
     name: "Wallet",
+  },
+  {
+    icon: <WithdrawIcon />,
+    path: "/withdraw-request",
+    name: "Withdraw Request",
   },
   {
     icon: <StoreIcon />,
