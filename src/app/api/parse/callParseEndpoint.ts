@@ -11,6 +11,9 @@ export const callParseEndpoint = async <T>(
   accessToken?: string,
   method: string = "POST"
 ): Promise<T> => {
+  console.log('==========dispatch function==========================');
+  console.log(dispatch);
+  console.log('============dispatch function========================');
   const doRequest = async (token: string) => {
     const res = await fetch("/api/parse", {
       method: "POST",
