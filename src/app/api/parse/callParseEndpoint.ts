@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // callParseEndpoint.ts
-import { redirect } from "next/navigation";
-import { handleInvalidSession } from "./handleInvalidSession";
+import { clean, handleInvalidSession } from "./handleInvalidSession";
 import { store } from "@/app/store/store";
 
 export const callParseEndpoint = async <T>(
@@ -11,9 +10,7 @@ export const callParseEndpoint = async <T>(
   accessToken?: string,
   method: string = "POST"
 ): Promise<T> => {
-  console.log('==========dispatch function==========================');
   console.log(dispatch);
-  console.log('============dispatch function========================');
   const doRequest = async (token: string) => {
     const res = await fetch("/api/parse", {
       method: "POST",
@@ -32,10 +29,10 @@ export const callParseEndpoint = async <T>(
     return { res, data };
   };
 
-  const { res, data } = await doRequest(accessToken || "");
+  const {  data } = await doRequest(accessToken || "");
   if (data&&data?.code=== "401" ) {
      if ( String(data.message).toLowerCase() === "session expired") {
-      redirect("/login");
+    clean();
     }
      if (data.message === "Token expired, please login again") {
       const newToken = await handleInvalidSession(store.dispatch);
