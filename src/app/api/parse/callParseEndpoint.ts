@@ -2,6 +2,7 @@
 // callParseEndpoint.ts
 import { redirect } from "next/navigation";
 import { handleInvalidSession } from "./handleInvalidSession";
+import { store } from "@/app/store/store";
 
 export const callParseEndpoint = async <T>(
   endpoint: string,
@@ -29,13 +30,13 @@ export const callParseEndpoint = async <T>(
   };
 
   const { res, data } = await doRequest(accessToken || "");
-
+console.log('============doRequest========================');
+console.log({data});
+console.log('===========doRequest=========================');
   if (data&&data?.code=== "401" ) {
-     if ( String(data.message).toLowerCase() === "session expired") {
-      redirect("/login");
-    }
+   
      if (data.message === "Token expired, please login again") {
-      const newToken = await handleInvalidSession(dispatch);
+      const newToken = await handleInvalidSession(store.dispatch);
       const retry = await doRequest(newToken);
       if (!retry.res.ok || retry.data.success === false) {
         throw new Error(

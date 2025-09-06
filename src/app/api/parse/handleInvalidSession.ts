@@ -1,6 +1,7 @@
 import { logout, updateAccessToken } from "@/app/store/authSlice";
 import { AppDispatch, persistor } from "@/app/store/store";
 import { setTransactions, setWallet } from "@/app/store/walletSlice";
+import { redirect } from "next/navigation";
 
 export const handleInvalidSession = async (
   dispatch: AppDispatch
@@ -13,6 +14,10 @@ export const handleInvalidSession = async (
 
     if (!res.ok) throw new Error("Failed to refresh token");
     const data = await res.json();
+
+      if ( String(data.message).toLowerCase() === "session expired") {
+      redirect("/login");
+    }
 
     const newToken = data.accessToken;
     if (!newToken) throw new Error("No accessToken in refresh response");
