@@ -34,7 +34,9 @@ console.log('============doRequest========================');
 console.log({data});
 console.log('===========doRequest=========================');
   if (data&&data?.code=== "401" ) {
-   
+     if ( String(data.message).toLowerCase() === "session expired") {
+      redirect("/login");
+    }
      if (data.message === "Token expired, please login again") {
       const newToken = await handleInvalidSession(store.dispatch);
       const retry = await doRequest(newToken);
