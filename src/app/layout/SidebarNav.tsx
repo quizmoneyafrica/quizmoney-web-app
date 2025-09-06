@@ -6,11 +6,14 @@ import { bottomNav, navSidebar } from "./nav";
 import { AnimatePresence, motion } from "framer-motion";
 import LogoutDialog from "../components/logout/logout";
 import { useState } from "react";
+import { playZoneAudio, setZonePhase } from "../store/gameZoneSlice";
+import { useAppDispatch } from "../hooks/useAuth";
 
 function SidebarNav() {
   const router = useRouter();
   const pathname = usePathname();
   // const splitName = pathname.split("/");
+  const dispatch = useAppDispatch();
 
   const [openLogout, setOpenLogout] = useState(false);
 
@@ -47,7 +50,13 @@ function SidebarNav() {
                 layout
                 key={index}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => handleTabRoute(`${nav.path}`)}
+                onClick={() => {
+                  handleTabRoute(`${nav.path}`);
+                  if (nav.path === "game-zone") {
+                    dispatch(setZonePhase("zone"));
+                    dispatch(playZoneAudio());
+                  }
+                }}
                 // className={`relative cursor-pointer transition text-sm py-4 ${
                 //   isActive ? "text-white font-semibold" : "text-primary-300"
                 // }`}

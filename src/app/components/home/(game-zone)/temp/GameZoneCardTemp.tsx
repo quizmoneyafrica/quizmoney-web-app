@@ -1,4 +1,6 @@
+import { useAppDispatch } from "@/app/hooks/useAuth";
 import { PlayIcon, WaveLine, WaveLineLarge, WinX } from "@/app/icons/icons";
+import { playZoneAudio, setZonePhase } from "@/app/store/gameZoneSlice";
 import { Bookmark } from "lucide-react";
 import Image from "next/image";
 import React, { ReactElement } from "react";
@@ -23,10 +25,20 @@ export type gamesObject = {
 function GameZoneCardTemp(props: gamesObject) {
   const { data, className = "", variant = "cyan", showBadge = true } = props;
   const styles = variantStyles[variant] || "";
+  const dispatch = useAppDispatch();
 
+  const handleBtn = () => {
+    data.onClick();
+    dispatch(setZonePhase("zone"));
+    dispatch(playZoneAudio());
+  };
   return (
     <div
-      className={`${data.btnText === "Coming soon" && "opacity-45"} relative grid grid-cols-3 rounded-[20px] px-4 pb-4 pt-6 ${styles.container} ${className} overflow-clip`}
+      className={`${
+        data.btnText === "Coming soon" && "opacity-45"
+      } relative grid grid-cols-3 rounded-[20px] px-4 pb-4 pt-6 ${
+        styles.container
+      } ${className} overflow-clip`}
     >
       <div className={`z-[2] ${!showBadge && "hidden"} absolute -top-[2.9px]`}>
         <Bookmark fill="#F8B93C" width={54.5} height={33.75} stroke="#F8B93C" />
@@ -42,7 +54,7 @@ function GameZoneCardTemp(props: gamesObject) {
             <p className={`text-sm game-z-desc`}>{data.description}</p>
           </div>
           <button
-            onClick={data.onClick}
+            onClick={handleBtn}
             disabled={data.btnDisabled}
             className={`${styles.button} text-sm font-medium flex items-center gap-1 py-[0.4em] px-4 rounded-[24px]`}
             type="button"

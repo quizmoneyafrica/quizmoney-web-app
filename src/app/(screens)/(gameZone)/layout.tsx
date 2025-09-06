@@ -2,10 +2,12 @@ import AppLiveQueries from "@/app/api/queries/AppLiveQueries";
 import SidebarNav from "@/app/layout/SidebarNav";
 import ProtectedRoute from "@/app/security/protectedRoute";
 import React from "react";
+import GameZoneAudioManager from "./GameZoneAudioManager";
 
 function Layout({ children }: { children: React.ReactNode }) {
   return (
     <ProtectedRoute>
+      <GameZoneAudioManager />
       <AppLiveQueries />{" "}
       <div
         className="lg:h-screen grid grid-cols-1 lg:grid-cols-[250px_1fr] 

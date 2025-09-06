@@ -1,17 +1,16 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ApiResponse } from "./interface";
 import { callWithSessionToken } from "./parse/callWithSessionToken";
 
 const StoreAPI = {
   getProducts(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("products", {}, {}, "GET");
+    return callWithSessionToken<ApiResponse>("products", {}, "GET");
   },
 
-  purchaseItem(productId: string, dispatch: any): Promise<ApiResponse> {
+  purchaseItem(productId: string): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
       "products/purchase",
       { productId },
-      dispatch,
+
       "POST"
     );
   },

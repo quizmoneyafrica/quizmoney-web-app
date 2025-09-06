@@ -4,10 +4,11 @@ import { motion } from "framer-motion";
 import { Avatar, Flex, Grid, Separator, Text } from "@radix-ui/themes";
 import { navSidebar } from "./nav";
 import { usePathname, useRouter } from "next/navigation";
-import { useAuth } from "../hooks/useAuth";
+import { useAppDispatch, useAuth } from "../hooks/useAuth";
 import { VerifiedBadge } from "../icons/icons";
 import { MenuToggle } from "./MenuToggle";
 import { useKycStep } from "../hooks/useKycStep";
+import { playZoneAudio, setZonePhase } from "../store/gameZoneSlice";
 
 // const sidebarOptions = {
 //   open: (height = 1000) => ({
@@ -72,6 +73,7 @@ const MobileSideBar = ({ isOpen, toggle }: Prop) => {
   const { user } = useAuth();
   const { customerKyc } = useKycStep();
   const bvnStep = customerKyc.find((s) => s.step === "BVN");
+  const dispatch = useAppDispatch();
 
   const handleTabRoute = (path: string) => {
     console.log(path);
@@ -85,7 +87,9 @@ const MobileSideBar = ({ isOpen, toggle }: Prop) => {
     <motion.nav
       variants={sidebarOptions}
       // className="w-full bg-black/50 fixed inset-0 z-40"
-      className={`w-full bg-black/50 ${isOpen ? "fixed inset-0" : "absolute top-0 right-0"} z-40`}
+      className={`w-full bg-black/50 ${
+        isOpen ? "fixed inset-0" : "absolute top-0 right-0"
+      } z-40`}
     >
       <motion.div className="h-screen relative z-50 w-[80%] bg-primary-900 drop-shadow-2xl">
         <MenuToggle toggle={toggle} />
@@ -138,7 +142,13 @@ const MobileSideBar = ({ isOpen, toggle }: Prop) => {
                     layout
                     key={index}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => handleTabRoute(`${nav.path}`)}
+                    onClick={() => {
+                      handleTabRoute(`${nav.path}`);
+                      if (nav.path === "game-zone") {
+                        dispatch(setZonePhase("zone"));
+                        dispatch(playZoneAudio());
+                      }
+                    }}
                     // className={`relative cursor-pointer transition text-sm py-4 ${
                     //   isActive ? "text-white font-semibold" : "text-primary-300"
                     // }`}

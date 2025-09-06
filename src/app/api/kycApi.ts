@@ -6,7 +6,6 @@ const KycAPI = {
     return callWithSessionToken<ApiResponse>(
       "customer-kyc/phone/verify",
       { phoneNumber },
-      {},
       "POST"
     );
   },
@@ -15,7 +14,6 @@ const KycAPI = {
     return callWithSessionToken<ApiResponse>(
       "customer-kyc/otp/verify",
       { otp },
-      {},
       "POST"
     );
   },
@@ -23,15 +21,15 @@ const KycAPI = {
     return callWithSessionToken<ApiResponse>(
       "customer-kyc/bvn/verify",
       { bvn, subjectConsent: true },
-      {},
+
       "POST"
     );
   },
   getCustomerKyc(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("customer-kyc", {}, {}, "GET");
+    return callWithSessionToken<ApiResponse>("customer-kyc", {}, "GET");
   },
   createCustomerDVA(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("wallet-accounts", {}, {}, "POST");
+    return callWithSessionToken<ApiResponse>("wallet-accounts", {}, "POST");
   },
 };
 

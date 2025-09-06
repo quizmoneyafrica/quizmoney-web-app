@@ -1,57 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FilterType } from "../components/transactions/FilterBar";
-import { store } from "../store/store";
 import { ApiResponse } from "./interface";
 import { callWithSessionToken } from "./parse/callWithSessionToken";
 
 const WalletApi = {
-  verifyAccount(
-    email: string,
-    accountNumber: string,
-    bankCode: string
-  ): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(``, {
-      email,
-      accountNumber,
-      bankCode,
-    });
-  },
-  verifyBVN(
-    accountNumber: string,
-    bvn: string,
-    firstName: string,
-    lastName: string,
-    bankCode: string
-  ): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(`verifyBVN`, {
-      accountNumber,
-      bvn,
-      firstName,
-      lastName,
-      bankCode,
-    });
-  },
-  isBVNVerified(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(`isBVNVerified`, {});
-  },
   fetchCustomerWallet(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("wallets", {}, {}, "GET");
+    return callWithSessionToken<ApiResponse>("wallets", {}, "GET");
   },
 
   fetchBanks(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("banks", {}, {}, "GET");
+    return callWithSessionToken<ApiResponse>("banks", {}, "GET");
   },
   fetchVirtualWallet(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("wallet-accounts", {}, {}, "GET");
+    return callWithSessionToken<ApiResponse>("wallet-accounts", {}, "GET");
   },
   fetchPayoutBanks(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("payout-accounts", {}, {}, "GET");
+    return callWithSessionToken<ApiResponse>("payout-accounts", {}, "GET");
   },
   deletePayoutBank(id: string): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
       `payout-accounts/${id}`,
       {},
-      {},
+
       "PATCH"
     );
   },
@@ -62,7 +32,7 @@ const WalletApi = {
     return callWithSessionToken<ApiResponse>(
       `banks/name-inquiry?accountNumber=${accountNumber}&bankCode=${bankCode}`,
       {},
-      {},
+
       "GET"
     );
   },
@@ -89,7 +59,7 @@ const WalletApi = {
     return callWithSessionToken<ApiResponse>(
       `wallet-transactions${queryString}`,
       {},
-      {},
+
       "GET"
     );
   },
@@ -121,42 +91,38 @@ const WalletApi = {
     return callWithSessionToken<ApiResponse>(
       `users/pin/set-up`,
       { pin: data?.pin },
-      {},
+
       "PATCH"
     );
   },
   requestWithdrawal(
     amount: number,
     pin: string,
-    purpose?: string,
-
-    dispatch?: any
+    purpose?: string
   ): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(
-      "wallets/withdraw",
-      { amount, pin, purpose },
-      dispatch
-    );
+    return callWithSessionToken<ApiResponse>("wallets/withdraw", {
+      amount,
+      pin,
+      purpose,
+    });
   },
   initializePaystack(data: { amount: number }): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(
-      "wallets/initialize/payment",
-      { ...data },
-      store.dispatch
-    );
+    return callWithSessionToken<ApiResponse>("wallets/initialize/payment", {
+      ...data,
+    });
   },
 
   forgotPin(data: { email: string }): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(`forgotPin`, { ...data });
   },
   resetPin(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(`pin/forgot`, {}, {}, "POST");
+    return callWithSessionToken<ApiResponse>(`pin/forgot`, {}, "POST");
   },
   setNewPin(otp: string, pin: string): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
       `pin/forgot`,
       { otp, pin },
-      {},
+
       "POST"
     );
   },

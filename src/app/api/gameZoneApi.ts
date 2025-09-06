@@ -3,13 +3,13 @@ import { callWithSessionToken } from "./parse/callWithSessionToken";
 
 const GameZoneAPI = {
   getAllGames(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("qm-games", {}, {}, "GET");
+    return callWithSessionToken<ApiResponse>("qm-games", {}, "GET");
   },
   getAGame(gameType: string): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
       `qm-games/game?game-type=${gameType}`,
       {},
-      {},
+
       "GET"
     );
   },
@@ -26,7 +26,7 @@ const GameZoneAPI = {
         gameType,
         stake,
       },
-      {},
+
       "POST"
     );
   },
@@ -38,7 +38,6 @@ const GameZoneAPI = {
       {
         sessionId,
       },
-      {},
       "POST"
     );
   },
@@ -54,7 +53,6 @@ const GameZoneAPI = {
         gameSessionId,
         timeInMillis,
       },
-      {},
       "POST"
     );
   },
