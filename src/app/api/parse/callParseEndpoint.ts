@@ -30,9 +30,6 @@ export const callParseEndpoint = async <T>(
   };
 
   const { res, data } = await doRequest(accessToken || "");
-console.log('============doRequest========================');
-console.log({data});
-console.log('===========doRequest=========================');
   if (data&&data?.code=== "401" ) {
      if ( String(data.message).toLowerCase() === "session expired") {
       redirect("/login");
