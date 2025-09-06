@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getBaseUrl, getParseHeaders } from "@/lib/parseHeaders";
+import { redirect } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -19,6 +20,11 @@ export async function POST(req: NextRequest) {
     });
 
     const data = await res.json();
+
+   
+
+  
+    
     return NextResponse.json(data, { status: res.status });
   } catch (err: any) {
     console.error("Proxy error:", err);

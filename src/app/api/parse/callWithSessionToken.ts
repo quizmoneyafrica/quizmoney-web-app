@@ -15,5 +15,10 @@ export const callWithSessionToken = async <T>(
     throw new Error("Access token not found");
   }
 
-  return callParseEndpoint<T>(endpoint, body, dispatch, accessToken, method);
+  const data = await callParseEndpoint<T>(endpoint, body, dispatch, accessToken, method);
+    console.log("=========THE USER======",{  data });
+
+
+    
+  return data;
 };
