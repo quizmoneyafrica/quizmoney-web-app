@@ -45,6 +45,7 @@ export const callParseEndpoint = async <T>(
       throw new Error(err.message);
     }
   }
+
   if (!res.ok || data.success === false) {
     const err = new Error(data.error || data.message || "Unknown error") as any;
     err.code = data.code;
