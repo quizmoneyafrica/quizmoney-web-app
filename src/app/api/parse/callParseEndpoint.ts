@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { logoutAndRedirect } from "@/app/logoutAndRedirect";
 import { handleInvalidSession } from "./handleInvalidSession";
 import { store } from "@/app/store/store";
 
@@ -31,19 +30,22 @@ export const callParseEndpoint = async <T>(
 
   let { res, data } = await doRequest(accessToken || "");
 
-  if (data.code === 401 || data.code === 209 || res.status === 401) {
+  if (
+    data.code === "401" &&
+    data.message?.toLowerCase().includes("token expired")
+  ) {
     try {
       const newToken = await handleInvalidSession(dispatch, refreshToken);
       ({ res, data } = await doRequest(newToken));
       if (!res.ok || data.success === false) {
         throw new Error(data.error || "Failed after token refresh.");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      await logoutAndRedirect();
-      throw new Error("Session expired, please login again.");
+      throw new Error(err.message);
     }
   }
+
   if (!res.ok || data.success === false) {
     const err = new Error(data.error || data.message || "Unknown error") as any;
     err.code = data.code;
