@@ -31,8 +31,8 @@ export const callParseEndpoint = async <T>(
   let { res, data } = await doRequest(accessToken || "");
 
   if (
-    data.code === 401 &&
-    data.message === "Token expired, please login again"
+    data.code === "401" &&
+    data.message?.toLowerCase().includes("token expired")
   ) {
     try {
       const newToken = await handleInvalidSession(dispatch, refreshToken);
@@ -45,6 +45,7 @@ export const callParseEndpoint = async <T>(
       throw new Error(err.message);
     }
   }
+
   if (!res.ok || data.success === false) {
     const err = new Error(data.error || data.message || "Unknown error") as any;
     err.code = data.code;
