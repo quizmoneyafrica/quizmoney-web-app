@@ -31,8 +31,8 @@ export const callParseEndpoint = async <T>(
   let { res, data } = await doRequest(accessToken || "");
 
   if (
-    data.code === 401 &&
-    data.message === "Token expired, please login again"
+    data.code === "401" &&
+    data.message?.toLowerCase().includes("token expired")
   ) {
     try {
       const newToken = await handleInvalidSession(dispatch, refreshToken);
