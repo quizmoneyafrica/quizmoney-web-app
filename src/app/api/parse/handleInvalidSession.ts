@@ -42,8 +42,6 @@ export const handleInvalidSession = async (
     return accessToken;
   } catch (err) {
     console.error("Refresh token invalid/expired:", err);
-    localStorage.clear();
-    sessionStorage.clear();
     dispatch(logout());
     dispatch(setWallet([]));
     dispatch(setTransactions([]));
