@@ -30,18 +30,20 @@ export const callParseEndpoint = async <T>(
 
   let { res, data } = await doRequest(accessToken || "");
 
-  if (
-    data.code === "401" &&
-    data.message?.toLowerCase().includes("token expired")
-  ) {
+  const isTokenExpired =
+    (data.code === "401" || data.code === 401) &&
+    data.message?.toLowerCase().includes("token expired");
+
+  if (isTokenExpired) {
     try {
       const newToken = await handleInvalidSession(dispatch, refreshToken);
+      console.log("Retrying with new access token:", newToken);
       ({ res, data } = await doRequest(newToken));
       if (!res.ok || data.success === false) {
         throw new Error(data.error || "Failed after token refresh.");
       }
     } catch (err: any) {
-      console.error(err);
+      console.error("Token refresh & retry failed:", err);
       throw new Error(err.message);
     }
   }

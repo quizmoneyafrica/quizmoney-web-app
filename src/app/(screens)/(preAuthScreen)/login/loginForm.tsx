@@ -102,11 +102,11 @@ const LoginForm = ({ loading, setLoading }: Props) => {
         }
       }
     } catch (err: any) {
+      setLoading(false);
       console.log("INVALID", err.raw);
       if (err.raw.code === "422") {
         await createPassword(email.toLowerCase().trim());
       }
-      setLoading(false);
       if (err.message === "Account deactivated") {
         localStorage.setItem("login", JSON.stringify(newValues));
         verifyEmail(email.toLowerCase().trim());
