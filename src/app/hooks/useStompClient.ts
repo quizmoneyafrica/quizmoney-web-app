@@ -7,7 +7,7 @@ export const useStompClient = ({
 }: {
   onMessage: (msg: IMessage) => void;
 }) => {
-  const { accessToken } = useAuth();
+  const { accessToken, user } = useAuth();
   const subscriptions = useAppSelector((state) => state.stompSub.subscriptions);
   const clientRef = useRef<Client | null>(null);
   const subsRef = useRef<Map<string, StompSubscription>>(new Map());
@@ -20,6 +20,7 @@ export const useStompClient = ({
   }, [subscriptions]);
 
   useEffect(() => {
+    if (!user?.firstName) return;
     const client = new Client({
       brokerURL: "wss://frontoffice.quizmoney.ng/ws",
       connectHeaders: {
@@ -66,7 +67,7 @@ export const useStompClient = ({
     return () => {
       client.deactivate();
     };
-  }, [accessToken, onMessage, subscriptions]);
+  }, [accessToken, onMessage, subscriptions, user?.firstName]);
 
   return {
     isConnected: clientRef.current?.connected ?? false,
