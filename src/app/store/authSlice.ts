@@ -86,6 +86,9 @@ const authSlice = createSlice({
         state.refreshToken = action.payload;
       }
     },
+    updateExpiry(state, action: PayloadAction<number>) {
+      state.expiredAt = action.payload;
+    },
   },
 });
 
@@ -96,5 +99,6 @@ export const {
   updateUser,
   updateAccessToken,
   updateRefreshToken,
+  updateExpiry,
 } = authSlice.actions;
 export default authSlice.reducer;
