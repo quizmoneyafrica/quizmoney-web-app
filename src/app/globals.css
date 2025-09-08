@@ -1,3 +1,5 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -281,7 +283,7 @@
 body {
   background: #f7f7f7;
   color: var(--foreground);
-  font-family: var(--font-text);
+  font-family: "Space Grotesk", sans-serif;
   padding-top: env(safe-area-inset-top);
 
   margin: 0;
@@ -290,10 +292,10 @@ body {
 }
 
 .heading {
-  font-family: var(--dmsans) !important;
+  /* font-family: var(--dmsans) !important; */
 }
 .space-text {
-  font-family: var(--spacegrotesk) !important;
+  /* font-family: "Space Grotesk", sans-serif !important; */
 }
 body.bg-auth {
   background-color: #ffffff;
@@ -365,7 +367,7 @@ body {
     0 -2px 0 #17478b;
 } */
 .game-z-desc {
-  font-family: var(--font-text) !important;
+  /* font-family: var(--font-text) !important; */
 }
 .winx {
   -webkit-text-stroke-width: 1.8px;
@@ -378,7 +380,7 @@ h4,
 h5,
 h6,
 .rt-Heading {
-  font-family: var(--dmsans) !important;
+  /* font-family: var(--dmsans) !important; */
 }
 .prose h1,
 h2,
@@ -542,7 +544,7 @@ input[type="date"]::-moz-focus-inner {
 .DropdownMenuRadioItem,
 .DropdownMenuSubTrigger {
   font-size: 13px;
-  font-family: var(--dmsans) !important;
+  /* font-family: var(--dmsans) !important; */
   line-height: 1;
   border-radius: 3px;
   display: flex;
@@ -602,7 +604,7 @@ input[type="date"]::-moz-focus-inner {
 }
 
 .IconButton {
-  font-family: inherit;
+  /* font-family: inherit; */
   border-radius: 100%;
   height: 35px;
   width: 35px;
