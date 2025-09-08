@@ -1,20 +1,51 @@
 "use client";
+import QmDrawer from "@/app/components/drawer/drawer";
 import LogoutDialog from "@/app/components/logout/logout";
+import DeleteAccountConfirmation from "@/app/components/delete-account/DeleteAccountConfirmation";
 import { useAuth } from "@/app/hooks/useAuth";
 import { SupportIcon } from "@/app/icons/icons";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { Avatar, Flex, Grid } from "@radix-ui/themes";
 import { motion } from "framer-motion";
-import { Smartphone } from "lucide-react";
+import { Smartphone, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import UserAPI from "@/app/api/userApi";
+import { logout } from "@/app/store/authSlice";
 
 function Page() {
   const router = useRouter();
   const [openLogout, setOpenLogout] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const { user } = useAuth();
+
+  const handleDeleteAccount = async (reason: string) => {
+    setDeleteLoading(true);
+    try {
+      console.log("Deleting account with reason:", reason);
+
+      const response = await UserAPI.DeleteMyProfile(
+        reason || "No reason provided"
+      );
+
+      console.log("====================================");
+      console.log(response);
+      console.log("====================================");
+
+      if (response.success || response?.timestamp) {
+        logout();
+        setOpenDelete(false);
+        router.replace("/login");
+      }
+    } catch (error) {
+      console.error("Failed to delete account:", error);
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -201,6 +232,43 @@ function Page() {
               </Flex>
               <ChevronRightIcon height={25} width={25} />
             </Flex>
+            <QmDrawer
+              open={openDelete}
+              onOpenChange={setOpenDelete}
+              title=""
+              titleLeft
+              heightClass="h-fit"
+              trigger={
+                <Flex
+                  onClick={() => {
+                    // TODO: implement account deletion
+                  }}
+                  className="cursor-pointer bg-white p-4 md:p-6 rounded-2xl sm:rounded-xl border border-zinc-200"
+                  align={"center"}
+                  justify={"between"}
+                >
+                  <Flex gap={"3"} align={"center"}>
+                    <div className="h-12 w-12 bg-rose-50 rounded-full flex justify-center items-center">
+                      <Trash2
+                        className=" text-red-500"
+                        height={25}
+                        width={25}
+                      />
+                    </div>
+                    <p className=" text-lg font-semibold ">Delete</p>
+                  </Flex>
+                  <ChevronRightIcon height={25} width={25} />
+                </Flex>
+              }
+            >
+              <div className="w-full">
+                <DeleteAccountConfirmation
+                  onCancel={() => setOpenDelete(false)}
+                  onConfirm={handleDeleteAccount}
+                  isLoading={deleteLoading}
+                />
+              </div>
+            </QmDrawer>
           </Grid>
         </Flex>
       </Flex>

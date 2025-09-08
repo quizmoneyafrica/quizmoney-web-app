@@ -31,8 +31,8 @@ const UserAPI = {
       accessToken
     );
   },
-  DeleteMyProfile(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("customers/profile", {}, "DELETE");
+  DeleteMyProfile(reason: string): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("customers", { reason }, "DELETE");
   },
   signUp(form: SignUpForm): Promise<ApiResponse> {
     return callParseEndpoint<ApiResponse>("auth/register", form);
@@ -43,6 +43,7 @@ const UserAPI = {
   resendSignupOtp(email: string): Promise<ApiResponse> {
     return callParseEndpoint<ApiResponse>("auth/resend", { email });
   },
+  
   forgotPassword(email: string): Promise<ApiResponse> {
     return callParseEndpoint<ApiResponse>("auth/password/forgot", {
       email,

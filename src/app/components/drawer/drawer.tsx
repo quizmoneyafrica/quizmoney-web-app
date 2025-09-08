@@ -1,4 +1,5 @@
 "use client";
+import { DialogTitle } from "@radix-ui/react-dialog";
 import { XIcon } from "lucide-react";
 import * as React from "react";
 import { Drawer } from "vaul";
@@ -37,6 +38,7 @@ export default function QmDrawer({
       <Drawer.Trigger asChild>{trigger}</Drawer.Trigger>
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 bg-black/40" />
+        <DialogTitle />
         <Drawer.Content
           aria-describedby="Drawer Content"
           className={`${
@@ -53,7 +55,7 @@ export default function QmDrawer({
           >
             {/* Scrollable content wrapper */}
             <div className="p-4 overflow-y-auto flex-1">
-              <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 mb-4 " />
+              <div className="mx-auto w-12 h-1.5 flex-shrink-0 md:hidden rounded-full bg-gray-300 mb-4 " />
 
               {title && (
                 <Drawer.Title
