@@ -31,7 +31,7 @@ function Page() {
         reason || "No reason provided"
       );
 
-      if (response.success) {
+      if (response.success || response?.timestamp) {
         logout();
         setOpenDelete(false);
         router.replace("/login");
