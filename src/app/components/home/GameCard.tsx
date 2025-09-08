@@ -35,9 +35,9 @@ function GameCard() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.log(err);
-      toast.error(err.message, {
-        position: toastPosition,
-      });
+      //toast.error(err.message, {
+       // position: toastPosition,
+     // });
       setLoading(false);
     }
   }, [dispatch, nextGameData]);
