@@ -91,7 +91,11 @@ const MobileSideBar = ({ isOpen, toggle }: Prop) => {
         isOpen ? "fixed inset-0" : "absolute top-0 right-0"
       } z-40`}
     >
-      <motion.div className="h-screen relative z-50 w-[80%] bg-primary-900 drop-shadow-2xl">
+      <motion.div
+        className={`${
+          isOpen ? "h-screen" : ""
+        } relative z-50 w-[80%] bg-primary-900 drop-shadow-2xl`}
+      >
         <MenuToggle toggle={toggle} />
         <motion.section
           animate={{ y: isOpen ? 0 : 1500 }}
@@ -118,7 +122,7 @@ const MobileSideBar = ({ isOpen, toggle }: Prop) => {
 
                 <Grid>
                   <Flex align="center" gap="2">
-                    <h2>
+                    <h2 className="capitalize">
                       {user?.firstName} {user?.lastName}
                     </h2>
                     {bvnStep && bvnStep?.status === "COMPLETED" && (

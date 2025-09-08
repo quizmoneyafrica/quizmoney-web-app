@@ -367,9 +367,9 @@ const Page = () => {
               </div>
             </div>
 
-            <section>
+            {/* <section className="mt-4">
               <p>Delete Account</p>
-            </section>
+            </section> */}
           </div>
         </div>
       </div>
