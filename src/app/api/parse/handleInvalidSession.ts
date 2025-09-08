@@ -6,8 +6,6 @@ import {
 } from "@/app/store/authSlice";
 import { AppDispatch } from "@/app/store/store";
 // import { setTransactions, setWallet } from "@/app/store/walletSlice";
-import { toastPosition } from "@/app/utils/utils";
-import { toast } from "sonner";
 
 export const handleInvalidSession = async (
   dispatch: AppDispatch,
@@ -49,9 +47,9 @@ export const handleInvalidSession = async (
     // dispatch(setWallet([]));
     // dispatch(setTransactions([]));
     // await persistor.purge();
-    toast.error("Session expired. Please log in again.", {
-      position: toastPosition,
-    });
+    // toast.error("Session expired. Please log in again.", {
+    //   position: toastPosition,
+    // });
     throw err;
   }
 };

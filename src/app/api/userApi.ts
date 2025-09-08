@@ -31,6 +31,9 @@ const UserAPI = {
       accessToken
     );
   },
+  DeleteMyProfile(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("customers/profile", {}, "DELETE");
+  },
   signUp(form: SignUpForm): Promise<ApiResponse> {
     return callParseEndpoint<ApiResponse>("auth/register", form);
   },
