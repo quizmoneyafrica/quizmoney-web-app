@@ -1,22 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useAppDispatch, useAuth } from "@/app/hooks/useAuth";
-import CustomButton from "@/app/utils/CustomBtn";
-import {
-  Check,
-  Copy,
-  CreditCard,
-  Share2,
-  UserRoundPlusIcon,
-  UsersRoundIcon,
-} from "lucide-react";
-import Image from "next/image";
+
 import React, { useEffect, useState } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import copy from "copy-to-clipboard"; // Import the copy function
 import { toast } from "sonner";
 import UserAPI from "@/app/api/userApi";
-import { formatNaira, toastPosition } from "@/app/utils/utils";
+import { toastPosition } from "@/app/utils/utils";
 import { updateUser } from "@/app/store/authSlice";
 import ReferralBanner from "@/app/components/referral/ReferralBanner";
 import ReferralStats from "@/app/components/referral/ReferralStats";
@@ -29,14 +20,12 @@ const InviteAndEarn = () => {
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopy = () => {
-    // The 'copy' function from the library returns true on success, false on failure
     const success = copy(user?.referralCode ?? "");
 
     if (success) {
       setIsCopied(true);
       toast.success("Referral Code Copied!", { position: "top-center" });
 
-      // Reset feedback message after a short delay
       setTimeout(() => {
         setIsCopied(false);
       }, 2000);

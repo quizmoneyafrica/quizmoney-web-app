@@ -1,6 +1,5 @@
 import React from "react";
 import Image from "next/image";
-import CustomButton from "@/app/utils/CustomBtn";
 import { Check, Copy, Share2 } from "lucide-react";
 
 interface ReferralBannerProps {

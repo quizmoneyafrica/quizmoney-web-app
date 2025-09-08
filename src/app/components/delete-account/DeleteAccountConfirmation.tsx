@@ -2,8 +2,6 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Flex } from "@radix-ui/themes";
-import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -21,11 +19,7 @@ type Props = {
   isLoading?: boolean;
 };
 
-const DeleteAccountConfirmation = ({
-  onCancel,
-  onConfirm,
-  isLoading = false,
-}: Props) => {
+const DeleteAccountConfirmation = ({ onCancel, isLoading = false }: Props) => {
   const {
     register,
     handleSubmit,
