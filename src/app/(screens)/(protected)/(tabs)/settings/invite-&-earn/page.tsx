@@ -3,7 +3,6 @@
 import { useAppDispatch, useAuth } from "@/app/hooks/useAuth";
 
 import React, { useEffect, useState } from "react";
-import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import copy from "copy-to-clipboard"; // Import the copy function
 import { toast } from "sonner";
 import UserAPI from "@/app/api/userApi";
