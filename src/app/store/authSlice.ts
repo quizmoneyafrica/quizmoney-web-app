@@ -81,9 +81,24 @@ const authSlice = createSlice({
         state.accessToken = action.payload;
       }
     },
+    updateRefreshToken(state, action: PayloadAction<string>) {
+      if (state.refreshToken) {
+        state.refreshToken = action.payload;
+      }
+    },
+    updateExpiry(state, action: PayloadAction<number>) {
+      state.expiredAt = action.payload;
+    },
   },
 });
 
-export const { login, logout, setRehydrated, updateUser, updateAccessToken } =
-  authSlice.actions;
+export const {
+  login,
+  logout,
+  setRehydrated,
+  updateUser,
+  updateAccessToken,
+  updateRefreshToken,
+  updateExpiry,
+} = authSlice.actions;
 export default authSlice.reducer;

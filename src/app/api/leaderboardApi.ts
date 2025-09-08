@@ -9,7 +9,6 @@ const LeaderboardAPI = {
     return callWithSessionToken<ApiResponse>(
       `games/leaderboard/all-time?page=${page}&size=${size}`,
       {},
-      {},
       "GET"
     );
   },
@@ -21,12 +20,12 @@ const LeaderboardAPI = {
     return callWithSessionToken<ApiResponse>(
       `games/${gameId}/leaderboard?page=${page}&size=${size}`,
       {},
-      {},
+
       "GET"
     );
   },
   getUserGames(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(`games`, {}, {}, "GET");
+    return callWithSessionToken<ApiResponse>(`games`, {}, "GET");
   },
 };
 

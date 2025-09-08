@@ -21,10 +21,7 @@ function JoinGameBtn() {
   const handleJoinBtn = async () => {
     setLoading(true);
     try {
-      const res = await GameApi.registerForGame(
-        gameData?.gameId || "",
-        dispatch
-      );
+      const res = await GameApi.registerForGame(gameData?.gameId || "");
       const game = res.userData;
       console.log(game);
 

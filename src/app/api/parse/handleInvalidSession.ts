@@ -1,37 +1,55 @@
-import { logout, updateAccessToken } from "@/app/store/authSlice";
-import { AppDispatch, persistor, store } from "@/app/store/store";
-import { setTransactions, setWallet } from "@/app/store/walletSlice";
-import { redirect } from "next/navigation";
+import {
+  // logout,
+  updateAccessToken,
+  updateExpiry,
+  updateRefreshToken,
+} from "@/app/store/authSlice";
+import { AppDispatch } from "@/app/store/store";
+// import { setTransactions, setWallet } from "@/app/store/walletSlice";
 
 export const handleInvalidSession = async (
-  dispatch: AppDispatch
+  dispatch: AppDispatch,
+  refreshToken?: string
 ): Promise<string> => {
   try {
-    const res = await fetch("/auth/refresh", {
+    if (!refreshToken) throw new Error("No refresh token found");
+    const res = await fetch("/api/refresh", {
       method: "POST",
-      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ tokenValue: refreshToken }),
     });
 
-    if (!res.ok) throw new Error("Failed to refresh token");
-    const data = await res.json();
-
-    if ( String(data.message).toLowerCase() === "session expired") {
-      clean();
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`Refresh failed: ${errorText}`);
     }
-    const newToken = data.accessToken;
-    if (!newToken) throw new Error("No accessToken in refresh response");
-    dispatch(updateAccessToken(newToken));
-    return newToken;
+    const response = await res.json();
+    const tokenData = response?.data;
+
+    if (!tokenData?.accessToken || !tokenData?.refreshToken) {
+      throw new Error("Invalid or expired refresh token");
+    }
+
+    const { accessToken, refreshToken: newRefreshToken } = tokenData;
+    // if (!accessToken || !newRefreshToken)
+    //   throw new Error("Incomplete token response");
+
+    dispatch(updateAccessToken(accessToken));
+    dispatch(updateRefreshToken(newRefreshToken));
+    dispatch(updateExpiry(tokenData.expiredAt));
+
+    return accessToken;
   } catch (err) {
-  clean();
+    console.error("Refresh token invalid/expired:", err);
+    // dispatch(logout());
+    // dispatch(setWallet([]));
+    // dispatch(setTransactions([]));
+    // await persistor.purge();
+    // toast.error("Session expired. Please log in again.", {
+    //   position: toastPosition,
+    // });
     throw err;
   }
-};
-export const clean = async () => {
-  const dispatch = store.dispatch;
-  dispatch(logout());
-  dispatch(setWallet([]));
-  dispatch(setTransactions([]));
-  await persistor.purge();
-  redirect("/login");
 };

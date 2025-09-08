@@ -366,6 +366,10 @@ const Page = () => {
                 </Grid>
               </div>
             </div>
+
+            {/* <section className="mt-4">
+              <p>Delete Account</p>
+            </section> */}
           </div>
         </div>
       </div>

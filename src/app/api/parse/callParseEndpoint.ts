@@ -1,16 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// callParseEndpoint.ts
-import { clean, handleInvalidSession } from "./handleInvalidSession";
+import { handleInvalidSession } from "./handleInvalidSession";
 import { store } from "@/app/store/store";
 
 export const callParseEndpoint = async <T>(
   endpoint: string,
   body?: any,
-  dispatch?: any,
   accessToken?: string,
   method: string = "POST"
 ): Promise<T> => {
-  console.log(dispatch);
+  const dispatch = store.dispatch;
+  const refreshToken = store.getState().auth.refreshToken;
   const doRequest = async (token: string) => {
     const res = await fetch("/api/parse", {
       method: "POST",
@@ -29,27 +28,32 @@ export const callParseEndpoint = async <T>(
     return { res, data };
   };
 
-  const {  data } = await doRequest(accessToken || "");
-  if (data&&data?.code=== "401" ) {
-     if ( String(data.message).toLowerCase() === "session expired") {
-    clean();
-    }
-     if (data.message === "Token expired, please login again") {
-      const newToken = await handleInvalidSession(store.dispatch);
-      const retry = await doRequest(newToken);
-      if (!retry.res.ok || retry.data.success === false) {
-        throw new Error(
-          retry.data.error || retry.data.message || "Unknown error"
-        );
-      }
-      return retry.data;
+  let { res, data } = await doRequest(accessToken || "");
 
+  const isTokenExpired =
+    (data.code === "401" || data.code === 401) &&
+    data.message?.toLowerCase().includes("token expired");
+
+  if (isTokenExpired) {
+    try {
+      const newToken = await handleInvalidSession(dispatch, refreshToken);
+      console.log("Retrying with new access token:", newToken);
+      ({ res, data } = await doRequest(newToken));
+      if (!res.ok || data.success === false) {
+        throw new Error(data.error || "Failed after token refresh.");
+      }
+    } catch (err: any) {
+      console.error("Token refresh & retry failed:", err);
+      throw new Error(err.message);
     }
-   
+  }
+
+  if (!res.ok || data.success === false) {
     const err = new Error(data.error || data.message || "Unknown error") as any;
     err.code = data.code;
     err.raw = data;
     throw err;
   }
+
   return data;
 };

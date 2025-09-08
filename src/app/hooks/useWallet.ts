@@ -1,10 +1,11 @@
 import { useCallback } from "react";
-import { useAppDispatch } from "./useAuth";
+import { useAppDispatch, useAppSelector } from "./useAuth";
 import {
   setTransactions,
   setTransactionsLoading,
   setWallet,
   setWalletLoading,
+  Wallet,
 } from "../store/walletSlice";
 import WalletApi from "../api/wallet";
 
@@ -42,3 +43,16 @@ function useWalletHook() {
 }
 
 export default useWalletHook;
+
+export function useWalletBalances() {
+  const wallet = useAppSelector((s) => s.wallet.wallet);
+
+  // Find QMC and NGN wallets
+  const qmcWallet = wallet.find((w: Wallet) => w.currency === "QMC");
+  const ngnWallet = wallet.find((w: Wallet) => w.currency === "NGN");
+
+  return {
+    qmcBalance: qmcWallet?.availableBalance ?? 0,
+    ngnBalance: ngnWallet?.availableBalance ?? 0,
+  };
+}

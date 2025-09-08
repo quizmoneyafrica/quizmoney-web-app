@@ -161,8 +161,7 @@ function SocialLinksDrawer() {
         payload.twitterhandle || "",
         user?.whatsappContact || "",
         payload.instagramhandle || "",
-        payload.tiktokhandle || "",
-        dispatch
+        payload.tiktokhandle || ""
       );
       toast.success("Social handles updated", { position: toastPosition });
       dispatch(

@@ -27,10 +27,12 @@ const UserAPI = {
     return callWithSessionToken<ApiResponse>(
       "customers/profile",
       {},
-      {},
       "GET",
       accessToken
     );
+  },
+  DeleteMyProfile(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("customers/profile", {}, "DELETE");
   },
   signUp(form: SignUpForm): Promise<ApiResponse> {
     return callParseEndpoint<ApiResponse>("auth/register", form);
@@ -54,50 +56,42 @@ const UserAPI = {
     return callWithSessionToken<ApiResponse>(
       "customers/password/change",
       form,
-      {},
       "PATCH"
     );
   },
   updateUser(form: UserObject): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("customers", form, {}, "PATCH");
+    return callWithSessionToken<ApiResponse>("customers", form, "PATCH");
   },
   updateProfile(form: UpdateProfile): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("customers", form, {}, "PATCH");
+    return callWithSessionToken<ApiResponse>("customers", form, "PATCH");
   },
   updateSocialHandles(
     facebook: string,
     twitter: string,
     whatsapp: string,
     instagram: string,
-    tiktok: string,
-    dispatch: any
+    tiktok: string
   ): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
       "socials",
       { facebook, twitter, whatsapp, instagram, tiktok },
-      dispatch,
       "PATCH"
     );
   },
   getGameErasers(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("erasers", {}, {}, "GET");
+    return callWithSessionToken<ApiResponse>("erasers", {}, "GET");
   },
   getAvatars(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("avatars", {}, {}, "GET");
+    return callWithSessionToken<ApiResponse>("avatars", {}, "GET");
   },
   getReferralCode(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("referrals/code", {}, {}, "GET");
+    return callWithSessionToken<ApiResponse>("referrals/code", {}, "GET");
   },
   getReferralSummary(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(
-      "referrals/summary",
-      {},
-      {},
-      "GET"
-    );
+    return callWithSessionToken<ApiResponse>("referrals/summary", {}, "GET");
   },
-  sendFeedback(form: any, dispatch: any): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("sendFeedback", form, dispatch);
+  sendFeedback(form: any): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>("sendFeedback", form);
   },
 
   topGamersOfToday(): Promise<ApiResponse> {

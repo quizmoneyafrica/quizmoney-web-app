@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export type GameTypes = "NUMBER_GUESSER" | "MEMORY_GAME" | "PERFECT_SCORE";
+export type GameTypes = "NUMBER_GUESSER" | "MEMORY_GAME" | "PERFECT_SCORE" | "";
+export type GamePhase = "zone" | "playing" | "win" | "lost" | "";
 export interface GameZoneGamesObject {
   gameId: string;
   name: string;
@@ -17,6 +18,8 @@ interface Config {
 export interface GameZoneGames {
   allGamesData: GameZoneGamesObject[];
   currentGameData: GameZoneGamesObject;
+  audioShouldPlay: boolean;
+  phase: GamePhase;
 }
 
 const initialState: GameZoneGames = {
@@ -25,12 +28,14 @@ const initialState: GameZoneGames = {
     gameId: "",
     name: "",
     description: "",
-    type: "NUMBER_GUESSER",
+    type: "",
     config: {
       minimumStake: 1000,
       maximumStake: 1000000,
     },
   },
+  audioShouldPlay: false,
+  phase: "",
 };
 
 const gameZoneSlice = createSlice({
@@ -43,8 +48,23 @@ const gameZoneSlice = createSlice({
     setCurrentGameData: (state, action: PayloadAction<GameZoneGamesObject>) => {
       state.currentGameData = action.payload;
     },
+    setZonePhase: (state, action: PayloadAction<GamePhase>) => {
+      state.phase = action.payload;
+    },
+    playZoneAudio: (state) => {
+      state.audioShouldPlay = true;
+    },
+    stopZoneAudio: (state) => {
+      state.audioShouldPlay = false;
+    },
   },
 });
 
-export const { setGameZoneGames, setCurrentGameData } = gameZoneSlice.actions;
+export const {
+  setGameZoneGames,
+  setCurrentGameData,
+  setZonePhase,
+  playZoneAudio,
+  stopZoneAudio,
+} = gameZoneSlice.actions;
 export default gameZoneSlice.reducer;

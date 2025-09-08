@@ -24,6 +24,7 @@ import { setNotificationsCount } from "../store/notificationSlice";
 import { motion, useCycle } from "framer-motion";
 import MobileSideBar from "./mobileSideBar";
 import { useKycStep } from "../hooks/useKycStep";
+import { useWalletBalances } from "../hooks/useWallet";
 
 const useDimensions = (ref: any) => {
   const dimensions = useRef({ width: 0, height: 0 });
@@ -38,7 +39,6 @@ const useDimensions = (ref: any) => {
 
 function AppHeader() {
   const dispatch = useDispatch();
-  const { wallet } = useAppSelector((state) => state.wallet);
   const pathname = usePathname();
   const excludedPaths = ["/practice-game"];
   const router = useRouter();
@@ -47,7 +47,7 @@ function AppHeader() {
   const { user } = useAuth();
   const { customerKyc } = useKycStep();
   const bvnStep = customerKyc.find((s) => s.step === "BVN");
-  const coin = wallet.find((w) => w.currency === "QMC")! || {};
+  const { qmcBalance } = useWalletBalances();
 
   //Mobile Menu
   const [isOpen, toggleOpen] = useCycle(false, true);
@@ -143,7 +143,7 @@ function AppHeader() {
               className="rounded-full text-xs border-2 py-1 px-2 border-neutral-400 text-neutral-500 hover:border-primary-500 hover:text-primary-900 cursor-pointer"
             >
               <QMCoin width={15} height={15} />
-              <span>{coin.availableBalance | 0}</span>
+              <span>{qmcBalance | 0}</span>
             </Flex>
           </Link>
           <Link href="/store">
