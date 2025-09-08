@@ -1,8 +1,18 @@
 "use client";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Flex } from "@radix-ui/themes";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+const deleteAccountSchema = z.object({
+  reason: z
+    .string()
+    .min(1, "Please provide a reason for deleting your account"),
+});
+
+type DeleteAccountForm = z.infer<typeof deleteAccountSchema>;
 
 type Props = {
   onCancel?: () => void;
@@ -12,18 +22,29 @@ type Props = {
 
 const DeleteAccountConfirmation = ({
   onCancel,
-
   onConfirm,
   isLoading = false,
 }: Props) => {
-  const [reason, setReason] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<DeleteAccountForm>({
+    resolver: zodResolver(deleteAccountSchema),
+    defaultValues: {
+      reason: "",
+    },
+  });
 
-  const handleConfirm = () => {
-    onConfirm?.(reason);
+  const onSubmit = (data: DeleteAccountForm) => {
+    onConfirm?.(data.reason);
   };
 
   return (
-    <div className="flex flex-col h-full pt-8">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex flex-col h-full pt-8"
+    >
       <div className="flex-1 flex flex-col justify-center text-center px-4">
         <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">
           Are you sure you want to delete your account?
@@ -39,19 +60,21 @@ const DeleteAccountConfirmation = ({
             Tell us the reason why you want to delete your Account
           </label>
           <textarea
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            placeholder="Optional"
+            {...register("reason")}
+            placeholder="Please provide a reason..."
             className="w-full p-4 border border-gray-300 rounded-xl resize-none h-24 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             disabled={isLoading}
           />
+          {errors.reason && (
+            <p className="text-red-500 text-sm mt-1">{errors.reason.message}</p>
+          )}
         </div>
       </div>
 
       {/* Actions */}
       <div className="flex gap-3 pt-4">
         <Button
-          onClick={handleConfirm}
+          type="submit"
           variant="destructive"
           className="flex-1 h-12 text-base font-semibold rounded-full bg-[#C30012] hover:bg-[#C30012]"
           disabled={isLoading}
@@ -59,6 +82,7 @@ const DeleteAccountConfirmation = ({
           {isLoading ? "Deleting..." : "Yes, Delete"}
         </Button>
         <Button
+          type="button"
           onClick={onCancel}
           variant="outline"
           className="flex-1 h-12 text-base font-semibold rounded-full bg-[#17478B] hover:bg-[#17478B] text-white border-[#17478B]"
@@ -67,7 +91,7 @@ const DeleteAccountConfirmation = ({
           No, Cancel
         </Button>
       </div>
-    </div>
+    </form>
   );
 };
 
