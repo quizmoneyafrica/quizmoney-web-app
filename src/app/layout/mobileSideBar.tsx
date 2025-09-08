@@ -93,8 +93,8 @@ const MobileSideBar = ({ isOpen, toggle }: Prop) => {
     >
       <motion.div
         className={`${
-          isOpen ? "h-screen" : ""
-        } relative z-50 w-[80%] bg-primary-900 drop-shadow-2xl`}
+          isOpen ? "" : ""
+        } h-screen relative z-50 w-[80%] bg-primary-900 drop-shadow-2xl`}
       >
         <MenuToggle toggle={toggle} />
         <motion.section
