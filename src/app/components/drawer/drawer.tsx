@@ -1,4 +1,5 @@
 "use client";
+import { DialogTitle } from "@radix-ui/react-dialog";
 import { XIcon } from "lucide-react";
 import * as React from "react";
 import { Drawer } from "vaul";
@@ -37,6 +38,7 @@ export default function QmDrawer({
       <Drawer.Trigger asChild>{trigger}</Drawer.Trigger>
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 bg-black/40" />
+        <DialogTitle />
         <Drawer.Content
           aria-describedby="Drawer Content"
           className={`${

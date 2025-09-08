@@ -31,6 +31,10 @@ function Page() {
         reason || "No reason provided"
       );
 
+      console.log("====================================");
+      console.log(response);
+      console.log("====================================");
+
       if (response.success || response?.timestamp) {
         logout();
         setOpenDelete(false);
