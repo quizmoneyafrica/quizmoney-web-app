@@ -3,7 +3,7 @@ import { callParseEndpoint } from "./callParseEndpoint";
 import { store } from "@/app/store/store";
 import { logoutAndRedirect } from "@/app/logoutAndRedirect";
 
-export type methodType = "POST" | "GET" | "PATCH" | "PUT";
+export type methodType = "POST" | "GET" | "PATCH" | "PUT" | "DELETE";
 export const callWithSessionToken = async <T>(
   endpoint: string,
   body?: any,

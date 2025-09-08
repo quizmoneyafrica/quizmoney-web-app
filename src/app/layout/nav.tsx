@@ -24,7 +24,7 @@ export const navSidebar = [
   {
     icon: <WithdrawIcon />,
     path: "/withdraw-request",
-    name: "Withdraw Request",
+    name: "Withdrawal Request",
   },
   {
     icon: <Gamepad2 />,
@@ -61,7 +61,7 @@ export const navs = [
   {
     icon: <WithdrawIcon />,
     path: "/withdraw-request",
-    name: "Withdraw Request",
+    name: "Withdrawal Request",
   },
   {
     icon: <StoreIcon />,
