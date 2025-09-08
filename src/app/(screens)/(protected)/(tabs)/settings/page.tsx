@@ -7,7 +7,7 @@ import { SupportIcon } from "@/app/icons/icons";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { Avatar, Flex, Grid } from "@radix-ui/themes";
 import { motion } from "framer-motion";
-import { Smartphone, Trash, Trash2 } from "lucide-react";
+import { Smartphone, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
