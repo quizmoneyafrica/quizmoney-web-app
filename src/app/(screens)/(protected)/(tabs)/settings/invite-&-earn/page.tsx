@@ -18,6 +18,10 @@ import { toast } from "sonner";
 import UserAPI from "@/app/api/userApi";
 import { formatNaira, toastPosition } from "@/app/utils/utils";
 import { updateUser } from "@/app/store/authSlice";
+import ReferralBanner from "@/app/components/referral/ReferralBanner";
+import ReferralStats from "@/app/components/referral/ReferralStats";
+import TieredReferralProgram from "@/app/components/referral/TieredReferralProgram";
+import WeeklyReferralChallenge from "@/app/components/referral/WeeklyReferralChallenge";
 
 const InviteAndEarn = () => {
   const dispatch = useAppDispatch();
@@ -95,280 +99,30 @@ const InviteAndEarn = () => {
   }, [dispatch, user?.referralCode]);
 
   return (
-    <div className=" md:bg-white rounded-3xl md:p-4 min-h-screen space-y-6">
-      <div className=" min-h-[205px] md:min-h-[285px] w-full relative bg-primary-800 overflow-clip rounded-3xl z-10">
-        <Image
-          src={"/assets/images/background-desktop.png"}
-          className=" w-full h-full absolute object-cover  z-10 "
-          height={285}
-          width={500}
-          alt="bg"
+    <div className=" w-full bg-white p-0 md:p-3 rounded-2xl space-y-6">
+      <ReferralBanner
+        referralCode={user?.referralCode}
+        isCopied={isCopied}
+        onCopy={handleCopy}
+        onShare={handleShare}
+      />
+      <div className="grid md:grid-cols-2 gap-6">
+        <ReferralStats
+          totalReferral={user?.totalReferral}
+          referralEarnings={user?.referralEarnings}
+          className="md:hidden"
         />
 
-        <div className="grid grid-cols-2 p-4 md:p-8 place-content-center place-items-center z-20  absolute w-full h-full">
-          <div className=" space-y-1 md:space-y-4 w-full">
-            <p className=" font-bold text-lg md:text-3xl text-white">
-              Get Paid for Sharing QuizMoney!
-            </p>
-            <p className=" text-white md:text-base text-xs">
-              Turn your love for trivia into real cash rewards by inviting
-              friends to join the game.
-            </p>
-            <div className="flex items-center gap-3">
-              <CustomButton
-                onClick={handleCopy}
-                className=" bg-white !py-1 flex items-center gap-2"
-              >
-                <p className=" text-primary-800 md:text-2xl text-sm">
-                  {user?.referralCode}
-                </p>
-
-                {isCopied ? (
-                  <Check scale={18} className=" text-emerald-400" />
-                ) : (
-                  <Copy className=" text-primary-800" size={17} />
-                )}
-              </CustomButton>
-
-              <div onClick={handleShare}>
-                <Share2 size={20} className=" text-white " />
-              </div>
-            </div>
-          </div>
-          <div className=" pt-10 h-[285px] relative">
-            <Image
-              src={"/assets/images/referral.png"}
-              height={400}
-              width={400}
-              alt=""
-              className=" h-full object-contain"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="md:hidden grid grid-cols-2 bg-primary-50 border-primary-800 border rounded-2xl">
-          <div className="flex flex-col gap-1 md:gap-3 items-center py-3 md:p-6 border-r border-primary-800">
-            <div className="flex flex-col sm:flex-row  items-center gap-2">
-              <UserRoundPlusIcon size={18} />
-              <p className="font-semibold">Total Referral</p>
-            </div>
-            <p className=" text-xl md:text-3xl text-primary-800 font-bold">
-              {user?.totalReferral}
-            </p>
-          </div>
-          <div className="flex flex-col gap-1 md:gap-3 items-center py-3 md:p-6">
-            <div className="flex flex-col sm:flex-row  items-center gap-2">
-              <CreditCard size={18} />
-              <p className="font-semibold">Referral Earnings</p>
-            </div>
-            <p className=" text-xl md:text-3xl text-primary-800 font-bold">
-              {formatNaira(Number(user?.referralEarnings), true)}
-            </p>
-          </div>
-        </div>
-
-        <div className=" bg-primary-50 rounded-2xl p-4 py-6">
-          <p className=" font-bold text-lg md:text-2xl text-primary-800">
-            Earn Big with Our Tiered Referral program
-          </p>
-
-          <div className=" mt-3 md:mt-10 space-y-4">
-            {/* 1 invite  */}
-            <div className="grid grid-cols-3 bg-white p-4 rounded-xl gap-3">
-              <div className="flex items-center gap-3 col-span-2">
-                <div className="sm:h-[40px] h-[30px] min-w-[30px] md:min-w-[40px] rounded-full justify-center flex items-center bg-primary-50">
-                  <UserRoundPlusIcon className=" text-primary-700" />
-                </div>
-                <div className="">
-                  <p className=" text-sm md:text-base">Invite 1, you earn</p>
-                  <p className="text-lg md:text-xl font-bold text-primary-800">
-                    ₦100
-                  </p>
-                </div>
-              </div>
-
-              {/* <div className="flex items-center justify-end">
-                <div
-                  className={` ${
-                    referralData.referralCount >= 1
-                      ? " opacity-100"
-                      : " opacity-0"
-                  } bg-green-500 rounded-full p-1 text-white w-fit`}
-                >
-                  <Check size={15} />
-                </div>
-              </div> */}
-              <div className="relative flex items-center !justify-end">
-                {user?.totalReferral || 0 >= 1 ? (
-                  <div
-                    className={`bg-green-500 rounded-full p-1 text-white w-fit`}
-                  >
-                    <Check size={15} />
-                  </div>
-                ) : (
-                  <div className="absolute right-0 inline-block h-[50px] w-[50px]">
-                    <CircularProgressbar
-                      value={(user?.totalReferral || 0 / 1) * 100}
-                      text={`${user?.totalReferral || 0}/1`}
-                      className="h-[50px] w-[50px] "
-                      styles={buildStyles({
-                        textSize: "30px",
-                        pathColor: "#00a63e",
-                        textColor: "#000",
-                        trailColor: "#dcfce7",
-                      })}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* 5 people  */}
-            <div
-              className={`grid grid-cols-3 bg-white p-4 rounded-xl gap-3 ${
-                user?.totalReferral || 0 >= 1 ? "opacity-100" : "opacity-60"
-              }`}
-            >
-              <div className="flex items-center gap-3 col-span-2">
-                <div className="sm:h-[40px] h-[30px] min-w-[30px] md:min-w-[40px] rounded-full justify-center flex items-center bg-primary-50">
-                  <UsersRoundIcon className=" text-primary-700" />
-                </div>
-                <div className="">
-                  <p className=" text-sm md:text-base">Invite 5, you earn</p>
-                  <p className="text-lg md:text-xl font-bold text-primary-800">
-                    ₦5,000
-                  </p>
-                </div>
-              </div>
-
-              <div className="relative flex items-center !justify-end">
-                {user?.totalReferral ||
-                  (0 >= 1 && (
-                    <div>
-                      {user?.totalReferral || 0 >= 6 ? (
-                        <div
-                          className={`bg-green-500 rounded-full p-1 text-white w-fit`}
-                        >
-                          <Check size={15} />
-                        </div>
-                      ) : (
-                        <div className="absolute right-0 inline-block h-[50px] w-[50px]">
-                          <CircularProgressbar
-                            value={((user?.totalReferral || 0 - 1) / 5) * 100}
-                            text={`${user?.totalReferral || 0 - 1}/5`}
-                            className="h-[50px] w-[50px] "
-                            styles={buildStyles({
-                              textSize: "30px",
-                              pathColor: "#00a63e",
-                              textColor: "#000",
-                              trailColor: "#dcfce7",
-                            })}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  ))}
-              </div>
-            </div>
-
-            {/* 10 people  */}
-            <div
-              className={`grid grid-cols-3 bg-white p-4 rounded-xl gap-3 ${
-                user?.totalReferral || 0 >= 16 ? "opacity-100" : "opacity-60"
-              }`}
-            >
-              <div className="flex items-center gap-3 col-span-2">
-                <div className="sm:h-[40px] h-[30px] min-w-[30px] md:min-w-[40px] rounded-full justify-center flex items-center bg-primary-50">
-                  <UsersRoundIcon className=" text-primary-700" />
-                </div>
-                <div className="">
-                  <p className=" text-sm md:text-base">Invite 10, you earn</p>
-                  <p className="text-lg md:text-xl font-bold text-primary-800">
-                    ₦10,000
-                  </p>
-                </div>
-              </div>
-
-              <div className="relative flex items-center !justify-end">
-                {user?.totalReferral ||
-                  (0 >= 6 && (
-                    <>
-                      {user?.totalReferral || 0 >= 16 ? (
-                        <div
-                          className={`bg-green-500 rounded-full p-1 text-white w-fit`}
-                        >
-                          <Check size={15} />
-                        </div>
-                      ) : (
-                        <div className="absolute right-0 inline-block h-[50px] w-[50px]">
-                          <CircularProgressbar
-                            value={((user?.totalReferral || 0 - 6) / 5) * 100}
-                            text={`${user?.totalReferral || 0 - 6}/5`}
-                            className="h-[50px] w-[50px] "
-                            styles={buildStyles({
-                              textSize: "30px",
-                              pathColor: "#00a63e",
-                              textColor: "#000",
-                              trailColor: "#dcfce7",
-                            })}
-                          />
-                        </div>
-                      )}
-                    </>
-                  ))}
-              </div>
-            </div>
-          </div>
-        </div>
+        <TieredReferralProgram totalReferral={user?.totalReferral} />
 
         <div className=" space-y-6">
-          <div className=" hidden md:grid grid-cols-2 bg-primary-50 border-primary-800 border rounded-2xl">
-            <div className="flex flex-col gap-3 items-center p-3 md:p-6 border-r border-primary-800">
-              <div className="flex items-center gap-2">
-                <UserRoundPlusIcon size={18} />
-                <p className="font-semibold">Total Referral</p>
-              </div>
-              <p className=" text-xl md:text-3xl text-primary-800 font-bold">
-                {user?.totalReferral}
-              </p>
-            </div>
-            <div className="flex flex-col gap-3 items-center p-3 md:p-6">
-              <div className="flex items-center gap-2">
-                <CreditCard size={18} />
-                <p className="font-semibold">Referral Earnings</p>
-              </div>
-              <p className=" text-xl md:text-3xl text-primary-800 font-bold">
-                {formatNaira(Number(user?.referralEarnings), true)}
-              </p>
-            </div>
-          </div>
+          <ReferralStats
+            totalReferral={user?.totalReferral}
+            referralEarnings={user?.referralEarnings}
+            className="hidden md:grid"
+          />
 
-          <div className=" z-10 bg-primary-800 relative overflow-clip md:min-h-[241px] min-h-[172px] rounded-3xl md:rounded-2xl">
-            <Image
-              src={"/assets/images/background-desktop.png"}
-              className=" w-full h-full absolute object-cover z-10 scale-150"
-              height={285}
-              width={500}
-              alt="bg"
-            />
-            <div className="z-20 text-[100px] absolute right-2 md:right-10 top-[-20px] ">
-              🥇
-            </div>
-            <div className=" w-full absolute h-full flex flex-col justify-center  p-5 space-y-[2%] z-30">
-              <p className=" font-bold md:text-xl text-lg text-white">
-                Join the weekly referral challenge
-              </p>
-              <p className=" font-bold md:text-3xl text-xl text-white">
-                ₦50,000
-              </p>
-              <p className=" text-white md:w-[80%]">
-                Win cash and exclusive Quiz Money merch when you have the
-                highest number of successful referrals
-              </p>
-            </div>
-          </div>
+          <WeeklyReferralChallenge />
         </div>
       </div>
     </div>
