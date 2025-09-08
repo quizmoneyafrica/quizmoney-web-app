@@ -1,5 +1,4 @@
 import React from "react";
-import { CreditCard, UserRoundPlusIcon } from "lucide-react";
 import { formatNaira } from "@/app/utils/utils";
 
 interface ReferralStatsProps {
