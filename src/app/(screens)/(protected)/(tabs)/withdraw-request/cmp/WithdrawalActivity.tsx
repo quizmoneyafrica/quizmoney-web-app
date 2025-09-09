@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { setWithdrawalRequestData } from "@/app/store/withdrawalRequestSlice";
 import { CardRemoveIcon, CardSendIcon } from "@/app/icons/icons";
 import { addHours, parseISO, format } from "date-fns";
+import QMLoader from "@/app/components/splashScreen/QMLoader";
 
 // interface WithdrawTransactionGroup {
 //   today: Transaction[];
@@ -16,7 +17,7 @@ import { addHours, parseISO, format } from "date-fns";
 //   other: Transaction[];
 // }
 
-export function renderEmptyState(): JSX.Element {
+function renderEmptyState(): JSX.Element {
   return (
     <div className="flex flex-col items-center justify-center py-44 px-4 bg-white rounded-lg">
       <div>
@@ -61,14 +62,19 @@ export default function WithdrawalActivity(): React.ReactElement {
   }, [fetchWithdrawalRequest, page]);
 
   if (isFetching) {
-    return <div>Loading...</div>;
+    return (
+      <div className="pt-[10dvh] flex items-center justify-center">
+        <QMLoader />
+      </div>
+    );
   }
 
   return (
     <div className="space-y-4">
       <section className="bg-white rounded-lg p-4 w-full">
         {withdrawData.content.length > 0 ? (
-          <>
+          <div className="space-y-4">
+            <h3>Recent withdrawals</h3>
             {withdrawData.content.map((item, index) => {
               const date = parseISO(item.createdAt ?? new Date().toISOString());
               const nigeriaTime = addHours(date, 1);
@@ -139,9 +145,9 @@ export default function WithdrawalActivity(): React.ReactElement {
                 </div>
               );
             })}
-          </>
+          </div>
         ) : (
-          <div>EMPTY</div>
+          renderEmptyState()
         )}
       </section>
       <PaginationCmp
