@@ -6,6 +6,7 @@ import "@radix-ui/themes/styles.css";
 import BodyWrapper from "./bodyWrapper";
 import InstallAppButton from "./pwa/install";
 import Script from "next/script";
+import type { Viewport } from "next";
 
 const spacegrotesk = Space_Grotesk({
   variable: "--spacegrotesk",
@@ -16,6 +17,13 @@ const dmsans = DM_Sans({
   variable: "--dmsans",
   subsets: ["latin"],
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
 
 export const metadata: Metadata = {
   title: {
