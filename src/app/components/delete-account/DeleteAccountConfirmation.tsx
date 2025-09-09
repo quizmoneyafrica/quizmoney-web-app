@@ -82,7 +82,7 @@ const DeleteAccountConfirmation = ({ onCancel, isLoading = false }: Props) => {
           type="submit"
           variant="destructive"
           className="flex-1 h-12 text-base font-semibold rounded-full bg-[#C30012] hover:bg-[#C30012]"
-          disabled={isLoading}
+          disabled={ isLoading}
         >
           {isLoading ? "Deleting..." : "Yes, Delete"}
         </Button>

@@ -11,7 +11,7 @@ function Page() {
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.25, ease: "easeInOut" }}
     >
-      <main className="w-full">
+      <main className="w-full ">
         <WithdrawalActivity />
       </main>
     </motion.div>

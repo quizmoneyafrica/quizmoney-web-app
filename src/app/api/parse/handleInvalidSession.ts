@@ -1,11 +1,11 @@
 import {
-  // logout,
+  logout,
   updateAccessToken,
   updateExpiry,
   updateRefreshToken,
 } from "@/app/store/authSlice";
-import { AppDispatch } from "@/app/store/store";
-// import { setTransactions, setWallet } from "@/app/store/walletSlice";
+import { AppDispatch, persistor } from "@/app/store/store";
+import { setTransactions, setWallet } from "@/app/store/walletSlice";
 
 export const handleInvalidSession = async (
   dispatch: AppDispatch,
@@ -23,8 +23,17 @@ export const handleInvalidSession = async (
 
     if (!res.ok) {
       const errorText = await res.text();
-      throw new Error(`Refresh failed: ${errorText}`);
+      const err = JSON.parse(errorText || "");
+      console.log("REFRESH CHECK", JSON.parse(errorText || ""));
+      if (err.message === "Session expired") {
+        dispatch(logout());
+        dispatch(setWallet([]));
+        dispatch(setTransactions([]));
+        await persistor.purge();
+        throw new Error(`${err.message}`);
+      }
     }
+
     const response = await res.json();
     const tokenData = response?.data;
 
@@ -43,10 +52,7 @@ export const handleInvalidSession = async (
     return accessToken;
   } catch (err) {
     console.error("Refresh token invalid/expired:", err);
-    // dispatch(logout());
-    // dispatch(setWallet([]));
-    // dispatch(setTransactions([]));
-    // await persistor.purge();
+
     // toast.error("Session expired. Please log in again.", {
     //   position: toastPosition,
     // });

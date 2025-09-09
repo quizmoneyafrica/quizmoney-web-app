@@ -1,5 +1,4 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap");
 @import "tailwindcss";
 
 :root {
@@ -292,10 +291,10 @@ body {
 }
 
 .heading {
-  /* font-family: var(--dmsans) !important; */
+  font-family: var(--dmsans) !important;
 }
 .space-text {
-  /* font-family: "Space Grotesk", sans-serif !important; */
+  font-family: "Space Grotesk", sans-serif !important;
 }
 body.bg-auth {
   background-color: #ffffff;

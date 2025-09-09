@@ -18,7 +18,7 @@ import { motion } from "framer-motion";
 import Modal from "../game/modal/ModalWindow";
 import { useAppDispatch } from "@/app/hooks/useAuth";
 import { toast } from "sonner";
-import { toastPosition } from "@/app/utils/utils";
+import { formatNaira, toastPosition } from "@/app/utils/utils";
 import WalletApi from "@/app/api/wallet";
 
 export type BankAccount = {
@@ -57,6 +57,7 @@ export const MobileWithdrawalForm = ({
   // payoutBanks is now a single object
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [openModal, setOpenModal] = useState(false);
+  const [amountError, setAmountError] = useState("");
 
   const amountOptions = [
     { label: "₦5,000", value: 5000 },
@@ -93,10 +94,16 @@ export const MobileWithdrawalForm = ({
 
   // Form submission handler
   const onFormSubmit = (data: WithdrawFormData) => {
+    setAmountError("");
     const numericAmount =
       selectedAmount || Number(data.amount.replace(/[₦,]/g, ""));
 
     if (!payoutBanks || !payoutBanks.id) return;
+
+    if (numericAmount < 5000) {
+      setAmountError(`Minimum withdrawal is ${formatNaira(5000)}`);
+      return;
+    }
 
     const payload = {
       amount: numericAmount,
@@ -151,6 +158,9 @@ export const MobileWithdrawalForm = ({
               errors.amount ? "border-red-500" : "border-gray-300"
             } rounded-lg px-4 py-2 focus:outline-none focus:ring-transparent `}
           />
+          {amountError && (
+            <p className="text-red-500 text-sm mt-1">{amountError}</p>
+          )}
           {errors.amount && (
             <p className="text-red-500 text-sm mt-1">{errors.amount.message}</p>
           )}
