@@ -19,12 +19,12 @@ export default function ProtectedLayout({
       {!isIosPwaInstalled() && <InstallModal />}
       <ProtectedRoute>
         <div
-          className="lg:h-screen grid grid-cols-1 lg:grid-cols-[250px_1fr] 
+          className="h-full overflow-hidden lg:h-screen grid grid-cols-1 lg:grid-cols-[250px_1fr] 
          lg:grid-rows-1 grid-areas-mobile lg:grid-areas-desktop"
         >
           <SidebarNav />
-          <main className="grid-in-content bg-[#F7F7F7] lg:h-screen w-full max-w-screen lg:max-w-[calc(100vw-250px)]">
-            <div className="h-fulll overflow-y-auto px-6 py-4 ">
+          <main className="grid-in-content bg-[#F7F7F7] min-h-[100dvh] lg:h-screen w-full max-w-screen lg:max-w-[calc(100vw-250px)]">
+            <div className=" px-6 py-4 ">
               <AppHeader />
               {children}
             </div>

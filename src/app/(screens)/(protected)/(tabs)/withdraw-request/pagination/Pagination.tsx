@@ -11,7 +11,7 @@ const PaginationCmp: React.FC<Props> = ({
   currentPage,
   onPageChange,
 }) => {
-  if (totalPages <= 1) return null;
+  if (totalPages < 1) return null;
 
   const goPrev = () => {
     if (currentPage > 1) onPageChange(currentPage - 1);
@@ -25,9 +25,9 @@ const PaginationCmp: React.FC<Props> = ({
       <div className="flex items-center justify-center space-x-2">
         {/* Previous */}
         <button
-          className="bg-primary-700 p-2 rounded disabled:opacity-50"
+          className="bg-primary-900 p-2 rounded disabled:opacity-50"
           onClick={goPrev}
-          disabled={currentPage === 1}
+          disabled={totalPages <= 1 || currentPage === 1}
         >
           <ArrowLeft size={14} className="text-white" />
         </button>
@@ -39,9 +39,9 @@ const PaginationCmp: React.FC<Props> = ({
 
         {/* Next */}
         <button
-          className="bg-primary-700 p-2 rounded disabled:opacity-50"
+          className="bg-primary-900 p-2 rounded disabled:opacity-50"
           onClick={goNext}
-          disabled={currentPage === totalPages}
+          disabled={totalPages <= 1 || currentPage === totalPages}
         >
           <ArrowRight size={14} className="text-white" />
         </button>

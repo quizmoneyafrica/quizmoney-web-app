@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import WalletApi from "@/app/api/wallet";
 import { toast } from "sonner";
-import { toastPosition } from "@/app/utils/utils";
+import { formatNaira, toastPosition } from "@/app/utils/utils";
 import CustomButton from "@/app/utils/CustomBtn";
 import VirtualDetails from "./VirtualDetails";
 import { getAuthUser } from "@/app/api/userApi";
@@ -38,6 +38,7 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
   const user = getAuthUser();
   const [showVirtual, setShowVirtual] = useState(false);
   const [virtualAmount, setVirtualAmount] = useState<number | null>(null);
+  const [amountError, setAmountError] = useState("");
 
   const amountOptions = [
     { label: "₦1,000", value: 1000 },
@@ -78,6 +79,7 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
   const { fetchTransactions, fetchWallet } = useWalletHook();
 
   const onFormSubmit = async (data: DepositFormData) => {
+    setAmountError("");
     if (!selectedAmount && !data.amount) {
       toast.error("Please select an amount.");
       return;
@@ -90,6 +92,11 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
     const baseAmount =
       selectedAmount || Number(data.amount.replace(/[₦,]/g, ""));
     const totalAmount = baseAmount;
+
+    if (totalAmount < 1000) {
+      setAmountError(`Minimum deposit is ${formatNaira(1000)}`);
+      return;
+    }
 
     if (selectedPaymentMethod === "bankTransfer") {
       setVirtualAmount(baseAmount);
@@ -169,6 +176,9 @@ export const MobileDepositForm = ({ close }: { close?: () => void }) => {
                     errors.amount ? "border-red-500" : "border-gray-300"
                   } rounded-lg px-4 py-2 focus:outline-none focus:ring-transparent `}
                 />
+                {amountError && (
+                  <p className="text-red-500 text-sm mt-1">{amountError}</p>
+                )}
                 {errors.amount && (
                   <p className="text-red-500 text-sm mt-1">
                     {errors.amount.message}
