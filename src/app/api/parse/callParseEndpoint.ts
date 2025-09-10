@@ -39,7 +39,7 @@ export const callParseEndpoint = async <T>(
   if (isTokenExpired) {
     try {
       if (!refreshToken) {
-        await logout();
+         logout();
         redirect("/login");
       }
       const newToken = await handleInvalidSession(dispatch, refreshToken);
