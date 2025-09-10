@@ -237,7 +237,8 @@ function Page() {
               onOpenChange={setOpenDelete}
               title=""
               titleLeft
-              heightClass="h-fit"
+              // heightClass="h-fit"
+              heightClass="h-[65%] md:h-[45%] lg:h-[65%]"
               trigger={
                 <Flex
                   onClick={() => {
