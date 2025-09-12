@@ -43,9 +43,12 @@ export default function PhoneVerification({ onNext }: { onNext: () => void }) {
     setIsLoading(true);
     try {
       const res = await KycAPI.phoneVerify(phoneNumber);
+      console.log("==============KycAPI.phoneVerif======================");
+      console.log(JSON.stringify(res, null, 2));
+      console.log("=============KycAPI.phoneVerif=======================");
       console.log(res);
       setOpenModal(false);
-      setShowOtpVerification(true);
+      // setShowOtpVerification(true);
     } catch (error: any) {
       console.error("Verification failed:", error);
       toast.error(error.message, { position: toastPosition });
@@ -55,7 +58,7 @@ export default function PhoneVerification({ onNext }: { onNext: () => void }) {
   };
 
   const onSubmit = async (data: PhoneForm) => {
-    setPhoneNumber(data.phoneNumber);
+    setPhoneNumber(data.phoneNumber.split(" ").join("").trim());
     setOpenModal(true);
   };
 
