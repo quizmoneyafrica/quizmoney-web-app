@@ -44,7 +44,15 @@ const clearUserSession = async (dispatch: AppDispatch): Promise<void> => {
 /**
  * Validates token data response
  */
-const validateTokenData = (tokenData: any): tokenData is TokenData => {
+interface ValidateTokenDataInput {
+  accessToken?: string;
+  refreshToken?: string;
+  expiredAt?: string;
+}
+
+const validateTokenData = (
+  tokenData: ValidateTokenDataInput
+): tokenData is TokenData => {
   return (
     tokenData &&
     typeof tokenData.accessToken === "string" &&
