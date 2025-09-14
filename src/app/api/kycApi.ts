@@ -10,10 +10,10 @@ const KycAPI = {
     );
   },
 
-  phoneOtpVerify(otp: string): Promise<ApiResponse> {
+  phoneOtpVerify(otp: string, phoneNumber: string): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
       "customer-kyc/otp/verify",
-      { otp },
+      { otp, phoneNumber },
       "POST"
     );
   },

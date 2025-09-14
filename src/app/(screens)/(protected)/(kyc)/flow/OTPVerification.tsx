@@ -105,7 +105,7 @@ export default function OTPVerification({
 
   const onSubmit = async () => {
     try {
-      const res = await KycAPI.phoneOtpVerify(otpValue);
+      const res = await KycAPI.phoneOtpVerify(otpValue, phoneNumber);
       console.log(res);
       dispatch(updateUser({ phoneVerified: true }));
       setSuccessModal(true);
