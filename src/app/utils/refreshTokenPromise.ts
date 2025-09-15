@@ -4,3 +4,12 @@ export const getRefreshPromise = () => refreshPromise;
 export const setRefreshPromise = (promise: Promise<string> | null) => {
   refreshPromise = promise;
 };
+
+// {
+//     "success": true,
+//     "code": "200",
+//     "message": "Request processed successfully",
+//     "data": {
+//         "message": "Request processed successfully"
+//     }
+// }
