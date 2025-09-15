@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import GameZoneAPI from "@/app/api/gameZoneApi";
 import QMLoader from "@/app/components/splashScreen/QMLoader";
 import { useWalletBalances } from "@/app/hooks/useWallet";
 import { ArrowDownIcon } from "@/app/icons/icons";
@@ -39,13 +40,17 @@ export default function PurchaseTrials({ setTrials, setOpenBuyModal }: Props) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const buyTrials = () => {
+  const buyTrials = async () => {
     setErrorMessage(null);
     if (selectedTrials > 0) {
       setIsLoading(true);
       try {
+        const response = await GameZoneAPI.buyTrialsNumberGuessGame({
+          sessionId: "string",
+          quantity: selectedTrials,
+        });
         setTrials((t: number) => t + selectedTrials);
-        // setMessage("2 extra trials!");
+
         setOpenBuyModal(false);
         toast.success("You're Back In!", { position: "top-center" });
       } catch (err: any) {
