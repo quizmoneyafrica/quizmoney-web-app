@@ -121,7 +121,7 @@ export default function PurchaseTrials({ setTrials, setOpenBuyModal }: Props) {
           </div>
         </div>
         <GameButton
-          text="Buy Trial"
+          text="Continue playing "
           type="button"
           onClick={buyTrials}
           disabled={isLoading}

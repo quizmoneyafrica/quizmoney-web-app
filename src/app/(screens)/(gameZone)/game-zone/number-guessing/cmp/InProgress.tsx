@@ -184,9 +184,10 @@ function InProgress() {
               <div>
                 {/* {trials <= 0 && guessResponse.result !== "WON" && ( */}
                 <QmDrawer
-                  open={openBuyModal2}
+                  open={openBuyModal}
                   handler={false}
-                  onOpenChange={setOpenBuyModal2}
+                  hideCloseBtn={false}
+                  onOpenChange={setOpenBuyModal}
                   title=""
                   heightClass="h-[100svh] md:h-[45%] lg:h-[65%]"
                   titleLeft
@@ -246,13 +247,8 @@ function InProgress() {
       </div>
 
       <QmDrawer
-        open={openBuyModal}
-        onOpenChange={(open) => {
-          setOpenBuyModal2(open);
-          if (!open) {
-            setOpenBuyModal(open);
-          }
-        }}
+        open={openBuyModal2}
+        onOpenChange={setOpenBuyModal2}
         title="Buy Extra Trials"
         titleLeft
         trigger={<></>}

@@ -97,8 +97,8 @@ export default function OutOfTrialsComponent({
                 }}
                 transition={{
                   duration: 1.2,
-                  repeat: Infinity, // run forever
-                  repeatType: "mirror", // smoothly reverse for a pulsing feel
+                  repeat: Infinity,
+                  repeatType: "mirror",
                   ease: "easeInOut",
                 }}
                 className="w-7 h-7"

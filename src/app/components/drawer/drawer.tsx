@@ -58,7 +58,7 @@ export default function QmDrawer({
             {/* Scrollable content wrapper */}
             <div className="p-4 overflow-y-auto flex-1">
               {handler && (
-                <div className="mx-auto w-12 h-1.5 flex-shrink-0 md:hidden rounded-full bg-gray-300 mb-4 " />
+                <div className="mx-auto w-12 h-1.5 flex-shrink-0 md:hidden rounded-full bg-[#1B1B1B] mb-4 " />
               )}
 
               {title && (
@@ -72,7 +72,10 @@ export default function QmDrawer({
               )}
               {!hideCloseBtn && (
                 <Drawer.Close asChild>
-                  <button className="absolute top-7 right-6 h-10 w-10 hidden hover:bg-neutral-50 md:grid place-items-center rounded-full">
+                  <button
+                    // onClick={() => onOpenChange?.(false)}
+                    className="absolute top-7 right-6 h-10 w-10 hidden hover:bg-neutral-50 md:grid place-items-center rounded-full"
+                  >
                     <XIcon />
                   </button>
                 </Drawer.Close>
