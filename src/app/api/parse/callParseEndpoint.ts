@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { redirect } from "next/navigation";
 import { handleInvalidSession } from "./handleInvalidSession";
 import { store } from "@/app/store/store";
-import { logout } from "@/app/store/authSlice";
 
 export const callParseEndpoint = async <T>(
   endpoint: string,
@@ -32,27 +30,12 @@ export const callParseEndpoint = async <T>(
 
   let { res, data } = await doRequest(accessToken || "");
 
-  console.log("===============doRequest=====================");
-
-  console.log(JSON.stringify(data, null, 2));
-  console.log("============doRequest========================");
-
   const isTokenExpired =
     (data.code === "401" || data.code === 401) &&
     data.message?.toLowerCase().includes("token expired");
 
-//     {
-//   "success": false,
-//   "code": "401",
-//   "message": "Token expired, please login again"
-// }
-
-  if (data.success === false && data.message?.toLowerCase().includes("token expired") && isTokenExpired) {
+  if (isTokenExpired) {
     try {
-      if (!refreshToken) {
-         logout();
-        redirect("/login");
-      }
       const newToken = await handleInvalidSession(dispatch, refreshToken);
       console.log("Retrying with new access token:", newToken);
       ({ res, data } = await doRequest(newToken));
