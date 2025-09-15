@@ -39,20 +39,31 @@ export default function PurchaseTrials({ setTrials, setOpenBuyModal }: Props) {
   const [selectedTrials, setSelectedTrials] = useState<number>(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
+  const sessionId = localStorage.getItem("gameSessionId");
   const buyTrials = async () => {
     setErrorMessage(null);
     if (selectedTrials > 0) {
       setIsLoading(true);
       try {
-        const response = await GameZoneAPI.buyTrialsNumberGuessGame({
-          sessionId: "string",
-          quantity: selectedTrials,
-        });
-        setTrials((t: number) => t + selectedTrials);
+        if (sessionId) {
+          const response = await GameZoneAPI.buyTrialsNumberGuessGame({
+            sessionId: sessionId!,
+            quantity: selectedTrials,
+          });
 
-        setOpenBuyModal(false);
-        toast.success("You're Back In!", { position: "top-center" });
+          console.log(
+            "==============buyTrialsNumberGuessGame======================"
+          );
+          console.log(JSON.stringify(response, null, 2));
+          console.log(
+            "==============buyTrialsNumberGuessGame======================"
+          );
+          setTrials((t: number) => t + selectedTrials);
+          setOpenBuyModal(false);
+          toast.success("You're Back In!", { position: "top-center" });
+        } else {
+          setErrorMessage("Session expired, please start a new game.");
+        }
       } catch (err: any) {
         setErrorMessage(err.message);
       } finally {
