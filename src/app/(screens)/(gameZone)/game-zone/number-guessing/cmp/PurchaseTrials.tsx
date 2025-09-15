@@ -58,7 +58,7 @@ export default function PurchaseTrials({ setTrials, setOpenBuyModal }: Props) {
     }
   };
   return (
-    <div className="relative space-y-6">
+    <div className="relative space-y-6 pt-5">
       <section className="grid grid-cols-2 place-items-center border-2 border-primary-700 rounded p-4">
         <div className="flex gap-2 text-sm w-full">
           <Wallet2Icon className="text-primary-700" />
@@ -80,7 +80,7 @@ export default function PurchaseTrials({ setTrials, setOpenBuyModal }: Props) {
         <div>
           <div className="space-y-4">
             <CustomSelect
-              label="How my trials do you want buy?"
+              label="Select number of Trials?"
               options={SelectOptions}
               disabledOption="Select trials"
               className="border rounded-3xl px-4 py-2 w-full"
