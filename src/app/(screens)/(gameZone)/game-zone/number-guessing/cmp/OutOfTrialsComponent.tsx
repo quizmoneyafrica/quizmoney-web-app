@@ -53,7 +53,7 @@ export default function OutOfTrialsComponent({
 
         <div className=" border-6 border-[#E4F1FA] flex-col flex gap-3 rounded-2xl relative py-20 px-5 mt-[-55px] ">
           <p className="text-gray-800  font-medium mb-12 ">
-            You're just one step away from
+            You&apos;re just one step away from
             <br />
             cracking the number!
           </p>
