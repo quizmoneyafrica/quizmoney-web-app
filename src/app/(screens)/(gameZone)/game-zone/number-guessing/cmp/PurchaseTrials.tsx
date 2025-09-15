@@ -50,17 +50,11 @@ export default function PurchaseTrials({ setTrials, setOpenBuyModal }: Props) {
             sessionId: sessionId!,
             quantity: selectedTrials,
           });
-
-          console.log(
-            "==============buyTrialsNumberGuessGame======================"
-          );
-          console.log(JSON.stringify(response, null, 2));
-          console.log(
-            "==============buyTrialsNumberGuessGame======================"
-          );
-          setTrials((t: number) => t + selectedTrials);
-          setOpenBuyModal(false);
-          toast.success("You're Back In!", { position: "top-center" });
+          if (response.success && response.code === "200") {
+            setTrials((t: number) => t + selectedTrials);
+            setOpenBuyModal(false);
+            toast.success("You're Back In!", { position: "top-center" });
+          }
         } else {
           setErrorMessage("Session expired, please start a new game.");
         }
