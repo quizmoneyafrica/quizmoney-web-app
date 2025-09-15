@@ -70,9 +70,9 @@ export default function OutOfTrialsComponent({
               }}
               whileTap={{ scale: 0.98 }}
               onClick={() => {
-                setOpenBuyModal2(false);
+                setOpenBuyModal(false);
                 setTimeout(() => {
-                  setOpenBuyModal(true);
+                  setOpenBuyModal2(true);
                 }, 300);
               }}
               className="w-full bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all duration-200 transform flex items-center justify-center space-x-3"
@@ -106,10 +106,10 @@ export default function OutOfTrialsComponent({
             </motion.button>
 
             <motion.button
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault();
                 setOpenBuyModal(false);
                 setOpenBuyModal2(false);
-                navigator.vibrate(100);
                 router.back();
               }}
               variants={buttonItem}

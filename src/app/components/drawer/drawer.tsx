@@ -72,10 +72,7 @@ export default function QmDrawer({
               )}
               {!hideCloseBtn && (
                 <Drawer.Close asChild>
-                  <button
-                    // onClick={() => onOpenChange?.(false)}
-                    className="absolute top-7 right-6 h-10 w-10 hidden hover:bg-neutral-50 md:grid place-items-center rounded-full"
-                  >
+                  <button className="absolute top-7 right-6 h-10 w-10 hidden hover:bg-neutral-50 md:grid place-items-center rounded-full">
                     <XIcon />
                   </button>
                 </Drawer.Close>

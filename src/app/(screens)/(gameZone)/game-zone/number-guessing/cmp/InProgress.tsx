@@ -186,7 +186,7 @@ function InProgress() {
                 <QmDrawer
                   open={openBuyModal}
                   handler={false}
-                  hideCloseBtn={false}
+                  hideCloseBtn={true}
                   onOpenChange={setOpenBuyModal}
                   title=""
                   heightClass="h-[100svh] md:h-[45%] lg:h-[65%]"
