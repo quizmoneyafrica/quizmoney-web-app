@@ -48,7 +48,7 @@ export default function PhoneVerification({ onNext }: { onNext: () => void }) {
       console.log("=============KycAPI.phoneVerif=======================");
       console.log(res);
       setOpenModal(false);
-      // setShowOtpVerification(true);
+      setShowOtpVerification(true);
     } catch (error: any) {
       console.error("Verification failed:", error);
       toast.error(error.message, { position: toastPosition });
