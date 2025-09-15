@@ -1,6 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { setGameStatus } from "@/app/store/numberGuessGameSlice";
+import { store } from "@/app/store/store";
 
 interface Props {
   setOpenBuyModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -110,6 +112,7 @@ export default function OutOfTrialsComponent({
                 e.preventDefault();
                 setOpenBuyModal(false);
                 setOpenBuyModal2(false);
+                store.dispatch(setGameStatus("START"));
                 router.back();
               }}
               variants={buttonItem}
