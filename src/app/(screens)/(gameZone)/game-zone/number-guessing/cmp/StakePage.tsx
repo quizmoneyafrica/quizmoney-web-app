@@ -55,6 +55,9 @@ function StakePage() {
         stake
       );
       dispatch(setGameSettings(res.data));
+      console.log("====================================");
+      console.log(res.data);
+      console.log("====================================");
       localStorage.setItem("gameSessionId", res.data.sessionId);
       dispatch(setGameStatus("INPROGRESS"));
       dispatch(setPhase("playing"));
