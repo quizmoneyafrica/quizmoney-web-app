@@ -5,7 +5,6 @@ import { GameButton } from "@/app/utils/GameButton";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import QmDrawer from "@/app/components/drawer/drawer";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import GameZoneAPI from "@/app/api/gameZoneApi";
 import { toast } from "sonner";
@@ -14,8 +13,8 @@ import {
   setGameSettings,
   setGameStatus,
 } from "@/app/store/numberGuessGameSlice";
-import PurchaseTrials from "./PurchaseTrials";
-import OutOfTrialsComponent from "./OutOfTrialsComponent";
+import { decrementTrials, resetTrials } from "@/app/store/numberGuessGameSlice";
+import { store } from "@/app/store/store";
 interface gameTry {
   guessDirection: "TOO_HIGH" | "TOO_LOW" | "EXACT" | string;
   result: "WON" | "IN_PROGRESS" | string;
@@ -27,16 +26,13 @@ function InProgress() {
   const max = gameSettings.upperBound;
 
   const [guess, setGuess] = useState("");
-  const [trials, setTrials] = useState<number>(3);
+  const trials = useAppSelector((s) => s.numberGuess.trials);
   const [guessResponse, setGuessResponse] = useState<gameTry>({
     guessDirection: "",
     result: "",
   });
   const [isGuessing, setIsGuessing] = useState(false);
   const prevSessionId = localStorage.getItem("gameSessionId");
-
-  const [openBuyModal, setOpenBuyModal] = useState<boolean>(false);
-  const [openBuyModal2, setOpenBuyModal2] = useState<boolean>(false);
 
   //Sounds
   const correctSoundRef = useRef<HTMLAudioElement | null>(null);
@@ -64,14 +60,13 @@ function InProgress() {
           gameSettings.sessionId,
           2424
         );
-        setTrials((t) => t - 1);
+        dispatch(decrementTrials());
         setGuessResponse(res.data);
         if (res.data.result === "TOO_LOW" || res.data.result === "TOO_HIGH") {
           wrongSoundRef.current?.play();
         }
         if (res.data.result === "WON") {
           localStorage.removeItem("gameSessionId");
-          dispatch(setGameStatus("ENDED"));
           dispatch(
             setGameSettings({
               sessionId: "",
@@ -80,6 +75,8 @@ function InProgress() {
               range: 0,
             })
           );
+          dispatch(resetTrials(3));
+          store.dispatch(setGameStatus("WON"));
         }
       } catch (err: any) {
         console.log(err);
@@ -106,7 +103,9 @@ function InProgress() {
         toast.error(err.message, { position: toastPosition });
       }
     } else if (guessResponse.result === "WON") {
-      dispatch(setGameStatus("ENDED"));
+      // dispatch(setGameStatus("ENDED"));
+      store.dispatch(setGameStatus("WON"));
+
       dispatch(
         setGameSettings({
           sessionId: "",
@@ -129,6 +128,12 @@ function InProgress() {
     //   setTrials((t) => t - 1);
     // }
   };
+
+  useEffect(() => {
+    if (trials === 0 && guessResponse.result !== "WON") {
+      dispatch(setGameStatus("PURCHASE_TRIAL"));
+    }
+  }, [trials, guessResponse]);
 
   return (
     <Fragment>
@@ -181,41 +186,30 @@ function InProgress() {
               >
                 ⚡ {trials} {trials === 1 ? "Trial" : "Trials"} Remaining
               </p>
-              <div>
-                {/* {trials <= 0 && guessResponse.result !== "WON" && ( */}
-                <QmDrawer
-                  open={openBuyModal}
-                  handler={false}
-                  hideCloseBtn={true}
-                  onOpenChange={setOpenBuyModal}
-                  title=""
-                  heightClass="h-[100svh] md:h-[45%] lg:h-[65%]"
-                  titleLeft
-                  trigger={
-                    <motion.button
-                      whileTap={{ scale: 0.95 }}
-                      type="button"
-                      // onClick={buyTrials}
-                      className="flex items-center gap-1 bg-white px-4 py-1.5 border border-primary-800 text-primary-800 rounded-[20px] text-sm font-medium "
-                    >
-                      Buy Trials <PlusIcon />
-                    </motion.button>
-                  }
-                >
-                  <OutOfTrialsComponent
-                    setOpenBuyModal2={setOpenBuyModal2}
-                    setOpenBuyModal={setOpenBuyModal}
-                  />
-                </QmDrawer>
-                {/*)}*/}
-              </div>
+              {trials < 3 && (
+                <div>
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    type="button"
+                    onClick={
+                      () => store.dispatch(setGameStatus("LOST"))
+
+                      // store.dispatch(setOpenBuyModal(true))
+                    }
+                    className="flex items-center gap-1 bg-white px-4 py-1.5 border border-primary-800 text-primary-800 rounded-[20px] text-sm font-medium "
+                  >
+                    Buy Trials <PlusIcon />
+                  </motion.button>{" "}
+                  {/* {trials <= 0 && guessResponse.result !== "WON" && ( */}
+                </div>
+              )}
             </div>
             <div className="space-y-2">
               <div
                 className={`h-[6em] w-[6em] mx-auto rounded-full border-3 text-lg  ${
                   guessResponse.result === "WON"
                     ? "border-positive-800 text-positive-800"
-                    : trials === 3
+                    : trials === 3 || trials === 2
                     ? "border-[#2364AA] text-[#2364AA]"
                     : "border-[#CF0105] text-[#CF0105]"
                 } bg-white grid place-items-center`}
@@ -245,19 +239,6 @@ function InProgress() {
           </div>
         </form>
       </div>
-
-      <QmDrawer
-        open={openBuyModal2}
-        onOpenChange={setOpenBuyModal2}
-        title="Buy Extra Trials"
-        titleLeft
-        trigger={<></>}
-      >
-        <PurchaseTrials
-          setTrials={setTrials}
-          setOpenBuyModal={setOpenBuyModal2}
-        />
-      </QmDrawer>
     </Fragment>
   );
 }
