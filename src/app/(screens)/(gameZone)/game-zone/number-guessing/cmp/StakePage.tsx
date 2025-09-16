@@ -49,12 +49,18 @@ function StakePage() {
       if (prevSessionId) {
         await GameZoneAPI.leaveNumberGuessGame(prevSessionId);
       }
+      if (!currentGameData) {
+        throw new Error("Game not found");
+      }
       const res = await GameZoneAPI.stakeInGame(
         currentGameData.gameId,
         currentGameData.type,
         stake
       );
       dispatch(setGameSettings(res.data));
+      console.log("====================================");
+      console.log(res.data);
+      console.log("====================================");
       localStorage.setItem("gameSessionId", res.data.sessionId);
       dispatch(setGameStatus("INPROGRESS"));
       dispatch(setPhase("playing"));

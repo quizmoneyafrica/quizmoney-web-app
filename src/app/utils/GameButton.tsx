@@ -28,6 +28,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
 
       {/* Text */}
       <p className="absolute inset-0 z-[2] flex items-center justify-center text-white font-bold gap-1">
+        <img src="/icons/consoleGame.svg" className="w-6 h-6" alt="" />
         {loading ? (
           <div className="w-6 h-6 border-2 border-t-primary-800 border-gray-300 rounded-full animate-spin"></div>
         ) : (

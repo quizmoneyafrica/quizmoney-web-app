@@ -1,8 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import GameZoneAPI from "@/app/api/gameZoneApi";
 import QMLoader from "@/app/components/splashScreen/QMLoader";
+import { useAppSelector } from "@/app/hooks/useAuth";
 import { useWalletBalances } from "@/app/hooks/useWallet";
 import { ArrowDownIcon } from "@/app/icons/icons";
+import {
+  setGameStatus,
+  setOpenBuyModal,
+  setTrials,
+} from "@/app/store/numberGuessGameSlice";
+import { store } from "@/app/store/store";
 import CustomSelect from "@/app/utils/CustomSelect";
 import { GameButton } from "@/app/utils/GameButton";
 import { formatNaira } from "@/app/utils/utils";
@@ -29,17 +36,14 @@ const SelectOptions: Option[] = [
   },
 ];
 
-type Props = {
-  setTrials: React.Dispatch<React.SetStateAction<number>>;
-  setOpenBuyModal: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-export default function PurchaseTrials({ setTrials, setOpenBuyModal }: Props) {
+export default function PurchaseTrials() {
   const { ngnBalance } = useWalletBalances();
   const [selectedTrials, setSelectedTrials] = useState<number>(0);
+  const trials = useAppSelector((s) => s.numberGuess.trials);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const sessionId = localStorage.getItem("gameSessionId");
+
   const buyTrials = async () => {
     setErrorMessage(null);
     if (selectedTrials > 0) {
@@ -51,9 +55,10 @@ export default function PurchaseTrials({ setTrials, setOpenBuyModal }: Props) {
             quantity: selectedTrials,
           });
           if (response.success && response.code === "200") {
-            setTrials((t: number) => t + selectedTrials);
-            setOpenBuyModal(false);
+            store.dispatch(setTrials(trials + selectedTrials));
+            store.dispatch(setOpenBuyModal(false));
             toast.success("You're Back In!", { position: "top-center" });
+            store.dispatch(setGameStatus("INPROGRESS"));
           }
         } else {
           setErrorMessage("Session expired, please start a new game.");

@@ -34,6 +34,9 @@ interface AuthState {
   refreshToken: string;
   user: UserObject | null;
   userEncryptedData: string | null;
+  // UI state for modals and verification flow
+  openModal?: boolean;
+  showOtpVerification?: boolean;
 }
 
 const initialState: AuthState = {
@@ -44,6 +47,8 @@ const initialState: AuthState = {
   refreshToken: "",
   user: null,
   userEncryptedData: null,
+  openModal: false,
+  showOtpVerification: false,
 };
 
 export interface LoginPayload {
@@ -89,6 +94,12 @@ const authSlice = createSlice({
     updateExpiry(state, action: PayloadAction<number>) {
       state.expiredAt = action.payload;
     },
+    setOpenModal(state, action: PayloadAction<boolean>) {
+      state.openModal = action.payload;
+    },
+    setShowOtpVerification(state, action: PayloadAction<boolean>) {
+      state.showOtpVerification = action.payload;
+    },
   },
 });
 
@@ -100,5 +111,7 @@ export const {
   updateAccessToken,
   updateRefreshToken,
   updateExpiry,
+  setOpenModal,
+  setShowOtpVerification,
 } = authSlice.actions;
 export default authSlice.reducer;

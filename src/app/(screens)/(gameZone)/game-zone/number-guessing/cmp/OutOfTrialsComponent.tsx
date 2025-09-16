@@ -1,13 +1,11 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { setGameStatus } from "@/app/store/numberGuessGameSlice";
-import { store } from "@/app/store/store";
-
-interface Props {
-  setOpenBuyModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setOpenBuyModal2: React.Dispatch<React.SetStateAction<boolean>>;
-}
+import {
+  setGameStatus,
+  setOpenBuyModal,
+} from "@/app/store/numberGuessGameSlice";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -26,108 +24,174 @@ const buttonItem = {
   },
 };
 
-export default function OutOfTrialsComponent({
-  setOpenBuyModal,
-  setOpenBuyModal2,
-}: Props) {
-  const router = useRouter();
-  return (
-    <div className=" w-full">
-      <div className="absolute top-0 left-1/2 transform -translate-x-1/2">
-        <div className="flex space-x-16">
-          <div className="w-3 h-32 bg-gradient-to-b from-[#1283C3] to-[#002C44] border-l-3 border-r-3 border-l-[#415E6F] border-r-[#415E6F] rounded-b-lg shadow-md"></div>
-          <div className="w-3 h-32 bg-gradient-to-b from-[#1283C3] to-[#002C44] border-l-3 border-r-3 border-l-[#415E6F] border-r-[#415E6F] rounded-b-lg shadow-md"></div>
-        </div>
-      </div>
+// Enhanced banner roll-down animation
+const bannerVariants = {
+  hidden: {
+    y: -400,
+    rotateX: -90,
+    opacity: 0,
+    scaleY: 0.1,
+  },
+  visible: {
+    y: 0,
+    rotateX: 0,
+    opacity: 1,
+    scaleY: 1,
+    transition: {
+      type: "spring",
+      stiffness: 60,
+      damping: 15,
+      duration: 1.2,
+      ease: [0.25, 0.46, 0.45, 0.94],
+    },
+  },
+};
 
-      <div className="pt-20  pb-8 text-center relative z-10">
-        <div className="relative z-10 px-5">
-          <div className="border-4 border-[#000000] rounded-2xl overflow-hidden ">
-            <div className="bg-[#FBDF63] h-full rounded-xl p-5   border-5 border-[#FFA402]  ">
-              <h1 className="text-3xl font-bold text-[#1B1B1B] tracking-wide font-serif">
-                Out of Trials
-              </h1>
+export default function OutOfTrialsComponent() {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+
+  const openBuyModal = useAppSelector(
+    (s) => s.numberGuess.openBuyModal ?? false
+  );
+
+  const handleSetOpenBuyModal: React.Dispatch<React.SetStateAction<boolean>> = (
+    value
+  ) => {
+    if (typeof value === "function") {
+      const fn = value as (prev: boolean) => boolean;
+      const newVal = fn(openBuyModal);
+      dispatch(setOpenBuyModal(newVal));
+    } else {
+      dispatch(setOpenBuyModal(value));
+    }
+  };
+
+  return (
+    <Fragment>
+      <div className=" w-full ">
+        <div className=" max-w-3xl mx-auto ">
+          <div className=" ">
+            <div className="absolute top-0 left-0 right-0 w-full flex justify-center items-center">
+              <motion.img
+                src="/icons/outOfTrials.svg"
+                alt="Out of Trials"
+                className=" z-20 mx-auto h-[35svh]"
+                variants={bannerVariants}
+                initial="hidden"
+                animate="visible"
+                // Optional: Add the swing animation after roll-down
+                // animate={["visible", "swing"]}
+                style={{
+                  transformOrigin: "top center",
+                  perspective: 1000,
+                  // Optional: Add a subtle shadow for more banner-like effect
+                  filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.1))",
+                }}
+              />
+            </div>
+
+            <div className="pt-20  pb-8 text-center relative z-10">
+              <div className=" border-6 md:border-8 border-[#E4F1FA] flex-col flex gap-3 rounded-2xl md:px-10  relative py-20 px-5 mt-[20%] md:mt-[30%] ">
+                <p className="text-gray-800 text-lg  font-semibold  mb-12 mt-6 ">
+                  You&apos;re just one step away from
+                  <br />
+                  cracking the number!
+                </p>
+
+                <motion.div
+                  className="space-y-5"
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <motion.button
+                    variants={buttonItem}
+                    whileHover={{
+                      scale: 1.03,
+                      boxShadow:
+                        "0 15px 35px rgba(0,0,0,0.2), 0 8px 15px rgba(34, 197, 94, 0.3)",
+                      y: -2,
+                    }}
+                    whileTap={{
+                      scale: 0.98,
+                      boxShadow:
+                        "0 5px 15px rgba(0,0,0,0.15), 0 2px 8px rgba(34, 197, 94, 0.2)",
+                      y: 1,
+                    }}
+                    onClick={() => {
+                      handleSetOpenBuyModal(true);
+                    }}
+                    className="w-full bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white font-bold py-3 px-6 rounded-full transition-all duration-200 transform flex items-center justify-center space-x-3"
+                    style={{
+                      boxShadow:
+                        "0 12px 25px rgba(0,0,0,0.15), 0 6px 12px rgba(34, 197, 94, 0.25), inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -3px 0 rgba(0,0,0,0.15)",
+                    }}
+                  >
+                    <span className="text-xl tracking-wide font-bold">
+                      BUY EXTRA TRIALS
+                    </span>
+                    <motion.img
+                      src="/icons/zap.svg"
+                      alt="zap"
+                      initial={{
+                        opacity: 0.92,
+                        filter: "drop-shadow(0 0 0 rgba(255,223,99,0))",
+                      }}
+                      animate={{
+                        opacity: [0.92, 1, 0.92],
+                        filter: [
+                          "drop-shadow(0 0 0 rgba(255,223,99,0))",
+                          "drop-shadow(0 0 14px rgba(255,223,99,0.55))",
+                          "drop-shadow(0 0 0 rgba(255,223,99,0))",
+                        ],
+                      }}
+                      transition={{
+                        duration: 1.2,
+                        repeat: Infinity,
+                        repeatType: "mirror",
+                        ease: "easeInOut",
+                      }}
+                      className="w-7 h-7"
+                    />
+                  </motion.button>
+
+                  <motion.button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleSetOpenBuyModal(false);
+                      dispatch(setGameStatus("START"));
+                      router.back();
+                    }}
+                    variants={buttonItem}
+                    whileHover={{
+                      scale: 1.03,
+                      boxShadow:
+                        "0 15px 35px rgba(0,0,0,0.2), 0 8px 15px rgba(42, 117, 188, 0.3)",
+                      y: -2,
+                    }}
+                    whileTap={{
+                      scale: 0.98,
+                      boxShadow:
+                        "0 5px 15px rgba(0,0,0,0.15), 0 2px 8px rgba(42, 117, 188, 0.2)",
+                      y: 1,
+                    }}
+                    className="w-full bg-gradient-to-r from-blue-400 to-[#2A75BC] hover:from-[#2A75BC] hover:to-blue-600 text-white font-bold py-3 px-6 rounded-full transition-all duration-200 transform"
+                    style={{
+                      boxShadow:
+                        "0 12px 25px rgba(0,0,0,0.15), 0 6px 12px rgba(42, 117, 188, 0.25), inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -3px 0 rgba(0,0,0,0.15)",
+                    }}
+                  >
+                    <span className="text-xl tracking-wide font-bold">
+                      QUIT GAME
+                    </span>
+                  </motion.button>
+                </motion.div>
+              </div>
             </div>
           </div>
         </div>
-
-        <div className=" border-6 border-[#E4F1FA] flex-col flex gap-3 rounded-2xl relative py-20 px-5 mt-[-55px] ">
-          <p className="text-gray-800  font-medium mb-12 ">
-            You&apos;re just one step away from
-            <br />
-            cracking the number!
-          </p>
-
-          <motion.div
-            className="space-y-5"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <motion.button
-              variants={buttonItem}
-              whileHover={{
-                scale: 1.03,
-                boxShadow: "0 10px 30px rgba(0,0,0,0.12)",
-              }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => {
-                setOpenBuyModal(false);
-                setTimeout(() => {
-                  setOpenBuyModal2(true);
-                }, 300);
-              }}
-              className="w-full bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all duration-200 transform flex items-center justify-center space-x-3"
-            >
-              <span className="text-xl tracking-wide font-bold">
-                BUY EXTRA TRIALS
-              </span>
-              <motion.img
-                src="/icons/zap.svg"
-                alt="zap"
-                initial={{
-                  opacity: 0.92,
-                  filter: "drop-shadow(0 0 0 rgba(255,223,99,0))",
-                }}
-                animate={{
-                  opacity: [0.92, 1, 0.92],
-                  filter: [
-                    "drop-shadow(0 0 0 rgba(255,223,99,0))",
-                    "drop-shadow(0 0 14px rgba(255,223,99,0.55))",
-                    "drop-shadow(0 0 0 rgba(255,223,99,0))",
-                  ],
-                }}
-                transition={{
-                  duration: 1.2,
-                  repeat: Infinity,
-                  repeatType: "mirror",
-                  ease: "easeInOut",
-                }}
-                className="w-7 h-7"
-              />
-            </motion.button>
-
-            <motion.button
-              onClick={(e) => {
-                e.preventDefault();
-                setOpenBuyModal(false);
-                setOpenBuyModal2(false);
-                store.dispatch(setGameStatus("START"));
-                router.back();
-              }}
-              variants={buttonItem}
-              whileHover={{
-                scale: 1.03,
-                boxShadow: "0 10px 30px rgba(0,0,0,0.12)",
-              }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full bg-gradient-to-r from-blue-400 to-[#2A75BC] hover:from-[#2A75BC] hover:to-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all duration-200 transform"
-            >
-              <span className="text-xl tracking-wide font-bold">QUIT GAME</span>
-            </motion.button>
-          </motion.div>
-        </div>
       </div>
-    </div>
+    </Fragment>
   );
 }
