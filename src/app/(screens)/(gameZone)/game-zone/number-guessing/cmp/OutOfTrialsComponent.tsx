@@ -6,13 +6,6 @@ import {
   setOpenBuyModal,
 } from "@/app/store/numberGuessGameSlice";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
-import QmDrawer from "@/app/components/drawer/drawer";
-import PurchaseTrials from "./PurchaseTrials";
-
-interface Props {
-  // setOpenBuyModal: React.Dispatch<React.SetStateAction<boolean>>;
-  // setOpenBuyModal2: React.Dispatch<React.SetStateAction<boolean>>;
-}
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -54,19 +47,7 @@ const bannerVariants = {
   },
 };
 
-// Optional: Add a subtle swing effect after the roll-down
-const swingVariants = {
-  swing: {
-    rotate: [0, 2, -2, 1, -1, 0],
-    transition: {
-      duration: 2,
-      delay: 1.2,
-      ease: "easeInOut",
-    },
-  },
-};
-
-export default function OutOfTrialsComponent({}: Props) {
+export default function OutOfTrialsComponent() {
   const router = useRouter();
   const dispatch = useAppDispatch();
 

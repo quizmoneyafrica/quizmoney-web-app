@@ -1,5 +1,4 @@
 import { useAppDispatch } from "@/app/hooks/useAuth";
-import { useGameZone } from "@/app/hooks/useGameZone";
 import {
   ClockSvg,
   MoneyWings,
@@ -7,14 +6,12 @@ import {
   // StartGameBtn,
 } from "@/app/icons/icons";
 import { setGameStatus } from "@/app/store/numberGuessGameSlice";
-import { store } from "@/app/store/store";
 import { GameButton } from "@/app/utils/GameButton";
 import { Gamepad2, Info } from "lucide-react";
 import React from "react";
 
 function StartPage() {
   const dispatch = useAppDispatch();
-  const { fetchCurrentGameData } = useGameZone("NUMBER_GUESSER");
   return (
     <div className="w-full max-w-lg mx-auto space-y-10">
       <div className="space-y-4">

@@ -12,14 +12,12 @@ import ResultScreen from "./cmp/ResultScreen";
 import {
   setGameStatus,
   setOpenBuyModal,
-  setTrials,
 } from "@/app/store/numberGuessGameSlice";
 import { useWalletBalances } from "@/app/hooks/useWallet";
 import OutOfTrialsComponent from "./cmp/OutOfTrialsComponent";
 import { cn } from "@/lib/utils";
 import QmDrawer from "@/app/components/drawer/drawer";
 import PurchaseTrials from "./cmp/PurchaseTrials";
-import { setOpenModal } from "@/app/store/authSlice";
 import { store } from "@/app/store/store";
 import LostGameComponent from "./cmp/LostGameComponent";
 import WonGameComponent from "./cmp/WonGameComponent";
@@ -49,7 +47,6 @@ function Page() {
       dispatch(setGameStatus("START"));
     }
   };
-  const trials = useAppSelector((s) => s.numberGuess.trials);
 
   return (
     <motion.div

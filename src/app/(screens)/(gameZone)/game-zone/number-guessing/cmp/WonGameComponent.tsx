@@ -23,41 +23,6 @@ const buttonItem = {
   },
 };
 
-// Enhanced banner roll-down animation
-const bannerVariants = {
-  hidden: {
-    y: -400,
-    rotateX: -90,
-    opacity: 0,
-    scaleY: 0.1,
-  },
-  visible: {
-    y: 0,
-    rotateX: 0,
-    opacity: 1,
-    scaleY: 1,
-    transition: {
-      type: "spring",
-      stiffness: 60,
-      damping: 15,
-      duration: 1.2,
-      ease: [0.25, 0.46, 0.45, 0.94],
-    },
-  },
-};
-
-// Optional: Add a subtle swing effect after the roll-down
-const swingVariants = {
-  swing: {
-    rotate: [0, 2, -2, 1, -1, 0],
-    transition: {
-      duration: 2,
-      delay: 1.2,
-      ease: "easeInOut",
-    },
-  },
-};
-
 export default function WonGameComponent() {
   const dispatch = useAppDispatch();
   const [spinning, setSpinning] = useState(false);
