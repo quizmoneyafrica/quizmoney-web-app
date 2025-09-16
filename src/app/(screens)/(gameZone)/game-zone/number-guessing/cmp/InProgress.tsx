@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PlusIcon } from "@/app/icons/icons";
 import CustomTextField from "@/app/utils/CustomTextField";
 import { GameButton } from "@/app/utils/GameButton";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import React, { Fragment, useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import GameZoneAPI from "@/app/api/gameZoneApi";
 import { toast } from "sonner";
@@ -12,7 +10,6 @@ import { toastPosition } from "@/app/utils/utils";
 import {
   setGameSettings,
   setGameStatus,
-  setOpenBuyModal,
 } from "@/app/store/numberGuessGameSlice";
 import { decrementTrials, resetTrials } from "@/app/store/numberGuessGameSlice";
 import { store } from "@/app/store/store";
