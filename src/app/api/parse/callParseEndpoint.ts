@@ -40,7 +40,12 @@ export const callParseEndpoint = async <T>(
       console.log("Retrying with new access token:", newToken);
       ({ res, data } = await doRequest(newToken));
       if (!res.ok || data.success === false) {
-        throw new Error(data.error || "Failed after token refresh.");
+        const err = new Error(
+          data.error || data.message || "Unknown error"
+        ) as any;
+        err.code = data.code;
+        err.raw = data;
+        throw err;
       }
     } catch (err: any) {
       console.error("Token refresh & retry failed:", err);

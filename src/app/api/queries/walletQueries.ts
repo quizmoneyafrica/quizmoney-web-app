@@ -1,6 +1,10 @@
 "use client";
 import { useAppDispatch } from "@/app/hooks/useAuth";
-import { useStompClient } from "@/app/hooks/useStompClient";
+import {
+  registerStompHandler,
+  unregisterStompHandler,
+  useStompClient,
+} from "@/app/hooks/useStompClient";
 import useWalletHook from "@/app/hooks/useWallet";
 import { addSubscription, removeSubscription } from "@/app/store/stompSlice";
 import { setWalletBalance } from "@/app/store/walletSlice";
@@ -10,20 +14,25 @@ import { useEffect } from "react";
 function WalletQueries() {
   const dispatch = useAppDispatch();
   const { fetchTransactions } = useWalletHook();
+  const destination = "/user/queue/wallet";
 
-  const onMessage = (msg: IMessage) => {
-    console.log("💰 Wallet Update:", msg.body);
-    dispatch(setWalletBalance(Number(msg.body)));
-    fetchTransactions();
-  };
-  useStompClient({ onMessage });
+  useStompClient();
 
   useEffect(() => {
-    dispatch(addSubscription(`/user/queue/wallet`));
-    return () => {
-      dispatch(removeSubscription(`/user/queue/wallet`));
+    const handler = (msg: IMessage) => {
+      console.log("💰 Wallet Update:", msg.headers.destination, msg.body);
+      dispatch(setWalletBalance(Number(msg.body)));
+      fetchTransactions();
     };
-  }, [dispatch]);
+
+    registerStompHandler(destination, handler);
+    dispatch(addSubscription(destination));
+
+    return () => {
+      unregisterStompHandler(destination);
+      dispatch(removeSubscription(destination));
+    };
+  }, [dispatch, fetchTransactions]);
 
   return null;
 }

@@ -19,6 +19,7 @@ import GameZoneAPI from "@/app/api/gameZoneApi";
 import { DiceQ } from "@/app/icons/icons";
 import { setPhase } from "@/app/store/gameSlice";
 import useWalletHook from "@/app/hooks/useWallet";
+import QMLoader from "@/app/components/splashScreen/QMLoader";
 
 const preStakeAmounts = [
   { value: 1000 },
@@ -30,15 +31,15 @@ function StakePage() {
   const dispatch = useAppDispatch();
   const { fetchWallet } = useWalletHook();
   const { isFetching, currentGameData } = useGameZone("NUMBER_GUESSER");
-  const prevSessionId = localStorage.getItem("gameSessionId");
+  // const prevSessionId = localStorage.getItem("gameSessionId");
   const [confirmStakeModal, setConfirmStakeModal] = useState(false);
 
   const [stake, setStake] = useState<number>(0);
 
   if (isFetching) {
     return (
-      <div className="pt-[30%] w-full max-w-lg mx-auto space-y-10">
-        <p className="text-center text-primary-900">Game Loading...</p>
+      <div className="w-full h-full grid place-items-center">
+        <QMLoader />
       </div>
     );
   }
@@ -46,10 +47,10 @@ function StakePage() {
   const handleStakeInGame = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      if (prevSessionId) {
-        await GameZoneAPI.leaveNumberGuessGame(prevSessionId);
-      }
-      if (!currentGameData) {
+      // if (prevSessionId) {
+      //   await GameZoneAPI.leaveNumberGuessGame(prevSessionId);
+      // }
+      if (!currentGameData.gameId) {
         throw new Error("Game not found");
       }
       const res = await GameZoneAPI.stakeInGame(

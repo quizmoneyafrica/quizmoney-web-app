@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PlusIcon } from "@/app/icons/icons";
 import CustomTextField from "@/app/utils/CustomTextField";
 import { GameButton } from "@/app/utils/GameButton";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import React, { Fragment, useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import GameZoneAPI from "@/app/api/gameZoneApi";
 import { toast } from "sonner";
@@ -12,7 +10,6 @@ import { toastPosition } from "@/app/utils/utils";
 import {
   setGameSettings,
   setGameStatus,
-  setOpenBuyModal,
 } from "@/app/store/numberGuessGameSlice";
 import { decrementTrials, resetTrials } from "@/app/store/numberGuessGameSlice";
 import { store } from "@/app/store/store";
@@ -134,7 +131,7 @@ function InProgress() {
     if (trials === 0 && guessResponse.result !== "WON") {
       dispatch(setGameStatus("PURCHASE_TRIAL"));
     }
-  }, [trials, guessResponse]);
+  }, [trials, guessResponse, dispatch]);
 
   return (
     <Fragment>
@@ -187,7 +184,7 @@ function InProgress() {
               >
                 ⚡ {trials} {trials === 1 ? "Trial" : "Trials"} Remaining
               </p>
-              {trials < 3 && (
+              {/* {trials < 3 && (
                 <div>
                   <motion.button
                     whileTap={{ scale: 0.95 }}
@@ -201,16 +198,15 @@ function InProgress() {
                   >
                     Buy Trials <PlusIcon />
                   </motion.button>{" "}
-                  {/* {trials <= 0 && guessResponse.result !== "WON" && ( */}
                 </div>
-              )}
+              )} */}
             </div>
             <div className="space-y-2">
               <div
                 className={`h-[6em] w-[6em] mx-auto rounded-full border-3 text-lg  ${
                   guessResponse.result === "WON"
                     ? "border-positive-800 text-positive-800"
-                    : trials === 3 || trials === 2
+                    : trials === 3
                     ? "border-[#2364AA] text-[#2364AA]"
                     : "border-[#CF0105] text-[#CF0105]"
                 } bg-white grid place-items-center`}

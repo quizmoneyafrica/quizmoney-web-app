@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { CirclePlus, MoveLeft } from "lucide-react";
-import { useAppSelector } from "@/app/hooks/useAuth";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import { formatNaira, toastPosition } from "@/app/utils/utils";
 import { useRouter } from "next/navigation";
 import GameZoneCardTemp, {
@@ -17,12 +17,45 @@ import {
 import { useWallet } from "@/app/store/walletSlice";
 import { toast } from "sonner";
 import GameZoneAPI from "@/app/api/gameZoneApi";
+import QMLoader from "@/app/components/splashScreen/QMLoader";
+import { setGameZoneGames } from "@/app/store/gameZoneSlice";
+import { setGameStatus } from "@/app/store/numberGuessGameSlice";
 
 function GameZone() {
+  const dispatch = useAppDispatch();
   const { wallet: walletData } = useAppSelector(useWallet);
   const wallet = walletData.find((w) => w.currency === "NGN")! || {};
   const router = useRouter();
-  let loading = false;
+  const [isLoading, setIsLoading] = useState(true);
+
+  const getAllGames = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const res = await GameZoneAPI.getAllGames();
+      dispatch(setGameZoneGames(res.data));
+    } catch (err: any) {
+      toast.error(err.message, { position: toastPosition });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    getAllGames();
+  }, [getAllGames]);
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-full grid place-items-center">
+        <QMLoader />
+      </div>
+    );
+  }
+
+  const handleEnterGame = (route: string) => {
+    dispatch(setGameStatus("START"));
+    router.push(route);
+  };
 
   const games: gamesObject[] = [
     {
@@ -40,10 +73,10 @@ function GameZone() {
         title: <NumberGuessingTitle />,
         description: "Guess the hidden number within a given range",
         src: "/assets/images/number-guessing.png",
-        onClick: () => router.push("/game-zone/number-guessing"),
-        // btnText: "Play Game",
+        onClick: () => handleEnterGame("/game-zone/number-guessing"),
+        btnText: "Play Game",
         // onClick: () => {},
-        btnText: "Coming soon",
+        // btnText: "Coming soon",
       },
       variant: "blue",
     },
@@ -59,17 +92,6 @@ function GameZone() {
       variant: "green",
     },
   ];
-
-  const testEndpoints = async () => {
-    loading = true;
-    try {
-      await GameZoneAPI.getAllGames();
-    } catch (err: any) {
-      toast.error(err.message, { position: toastPosition });
-    } finally {
-      loading = false;
-    }
-  };
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -97,12 +119,7 @@ function GameZone() {
             </button>
           </div>
         </div>
-        <button
-          onClick={testEndpoints}
-          className="bg-white px-4 py-2 rounded font-medium hidden"
-        >
-          {loading ? "Loading..." : "Test Endpoints"}
-        </button>
+
         {/* games */}
         <div className="grid md:grid-cols-2 gap-4">
           {games.map((game, index) => {

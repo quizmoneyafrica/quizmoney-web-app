@@ -61,11 +61,9 @@ function Page() {
 
           numberGuess.gameStatus === "START"
             ? "bg-primary-900 hero"
-            : "bg-[#E4F1FA]",
-
-          numberGuess.gameStatus === "PURCHASE_TRIAL" ||
-            numberGuess.gameStatus === "LOST" ||
-            numberGuess.gameStatus === "WON"
+            : numberGuess.gameStatus === "PURCHASE_TRIAL" ||
+              numberGuess.gameStatus === "LOST" ||
+              numberGuess.gameStatus === "WON"
             ? "bg-white"
             : "bg-[#E4F1FA]"
         )}
