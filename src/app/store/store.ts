@@ -28,7 +28,7 @@ import {
 // import storage from "redux-persist/lib/storage";
 import localForage from "localforage";
 
-const authTransform = createFilter("auth", ["userEncryptedData"]);
+const authTransform = createFilter("auth", ["userEncryptedData", "openModal", "showOtpVerification"]);
 
 const authPersistConfig = {
   key: "auth",

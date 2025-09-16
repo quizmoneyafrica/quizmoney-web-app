@@ -14,6 +14,7 @@ type VaulDrawerProps = {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   hideCloseBtn?: boolean;
+  handler?: boolean;
   dismissible?: boolean;
 };
 
@@ -27,6 +28,7 @@ export default function QmDrawer({
   titleLeft = false,
   hideCloseBtn = false,
   dismissible = true,
+  handler = true,
   background,
 }: VaulDrawerProps) {
   return (
@@ -43,7 +45,7 @@ export default function QmDrawer({
           aria-describedby="Drawer Content"
           className={`${
             background ? background : "bg-white"
-          } md:bg-transparent flex flex-col rounded-t-[10px] fixed bottom-0 left-0 right-0 outline-none ${heightClass} max-h-[90dvh] md:max-h-screen
+          } md:bg-transparent flex flex-col rounded-t-[10px] fixed bottom-0 left-0 right-0 outline-none ${heightClass} max-h-[100dvh] md:max-h-screen
           md:top-1/2 md:left-1/2 md:translate-x-[-50%] md:translate-y-[-50%]
           md:rounded-[10px] md:max-w-xl
           ${!open ? "md:translate-y-[70%]" : ""}`}
@@ -55,7 +57,9 @@ export default function QmDrawer({
           >
             {/* Scrollable content wrapper */}
             <div className="p-4 overflow-y-auto flex-1">
-              <div className="mx-auto w-12 h-1.5 flex-shrink-0 md:hidden rounded-full bg-gray-300 mb-4 " />
+              {handler && (
+                <div className="mx-auto w-12 h-1.5 flex-shrink-0 md:hidden rounded-full bg-[#1B1B1B] mb-4 " />
+              )}
 
               {title && (
                 <Drawer.Title

@@ -102,15 +102,19 @@ export default function OTPVerification({
   };
 
   const [successModal, setSuccessModal] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const onSubmit = async () => {
     try {
-      const res = await KycAPI.phoneOtpVerify(otpValue);
+      setIsLoading(true);
+      const res = await KycAPI.phoneOtpVerify(otpValue, phoneNumber);
       console.log(res);
       dispatch(updateUser({ phoneVerified: true }));
       setSuccessModal(true);
     } catch (err: any) {
       toast.error(err.message, { position: toastPosition });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -192,9 +196,7 @@ export default function OTPVerification({
               <span className="text-primary-900">Back</span>
             </CustomButton>
             <CustomButton
-              loaderComponent={
-                <Loader className="animate-spin size-5 text-white" />
-              }
+              loader={isLoading}
               type="submit"
               disabled={otpValue.length !== 6 || !!errors.otp}
               className="w-full h-12 flex items-center justify-center  py-4 rounded-full text-white font-semibold text-lg transition-all"

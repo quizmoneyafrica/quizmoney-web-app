@@ -86,6 +86,10 @@ const LoginForm = ({ loading, setLoading }: Props) => {
 
       const data = await UserAPI.customerProfile(res.data.accessToken);
 
+      console.log("=============login=======================");
+      console.log(JSON.stringify(res.data, null, 2));
+      console.log("===========login=========================");
+
       if (res.success) {
         loginUser(res.data);
 
