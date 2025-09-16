@@ -81,7 +81,7 @@ export default function LostGameComponent() {
                   <span className=" text-white text-base md:mt-[14rem] mt-36 pt-8 md:pt-0   text-center ">
                     oops!! <br />
                     <span className="md:text-3xl text-2xl text-shadow-2xs text-shadow-primary-700 font-bold">
-                      You didn't Win
+                      You didn&apos;t Win
                     </span>
                   </span>
                 </div>
@@ -142,37 +142,6 @@ export default function LostGameComponent() {
                       PLAY AGAIN
                     </span>
                   </motion.button>
-
-                  {/* <motion.button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleSetOpenBuyModal(false);
-                      dispatch(setGameStatus("START"));
-                      router.back();
-                    }}
-                    variants={buttonItem}
-                    whileHover={{
-                      scale: 1.03,
-                      boxShadow:
-                        "0 15px 35px rgba(0,0,0,0.2), 0 8px 15px rgba(42, 117, 188, 0.3)",
-                      y: -2,
-                    }}
-                    whileTap={{
-                      scale: 0.98,
-                      boxShadow:
-                        "0 5px 15px rgba(0,0,0,0.15), 0 2px 8px rgba(42, 117, 188, 0.2)",
-                      y: 1,
-                    }}
-                    className="w-full bg-gradient-to-r from-blue-400 to-[#2A75BC] hover:from-[#2A75BC] hover:to-blue-600 text-white font-bold py-3 px-6 rounded-full transition-all duration-200 transform"
-                    style={{
-                      boxShadow:
-                        "0 12px 25px rgba(0,0,0,0.15), 0 6px 12px rgba(42, 117, 188, 0.25), inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -3px 0 rgba(0,0,0,0.15)",
-                    }}
-                  >
-                    <span className="text-xl tracking-wide font-bold">
-                      PLAY AGAIN
-                    </span>
-                  </motion.button> */}
                 </motion.div>
               </div>
             </div>
