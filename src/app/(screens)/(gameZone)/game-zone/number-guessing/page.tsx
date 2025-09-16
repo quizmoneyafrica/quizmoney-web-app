@@ -100,28 +100,28 @@ function Page() {
             </div>
           </div>
         )}
-        {numberGuess.gameStatus === "LOST" ||
-          (numberGuess.gameStatus === "WON" && (
-            <div className="grid grid-cols-2">
+        {(numberGuess.gameStatus === "LOST" ||
+          numberGuess.gameStatus === "WON") && (
+          <div className="grid grid-cols-2">
+            <button
+              type="button"
+              onClick={handleBack}
+              className={"bg-transparent"}
+            >
+              <MoveLeft />
+            </button>
+            <div className="flex items-center justify-end">
               <button
                 type="button"
-                onClick={handleBack}
-                className={"bg-transparent"}
+                onClick={() => router.push("/home")}
+                className=" text-[#2364AA] border border-[#6DB2E4] rounded-full px-4 py-2 bg-[#E4F1FA] font-medium font-text flex items-center gap-1"
               >
-                <MoveLeft />
+                <Home width={18} height={18} />
+                Go to Home
               </button>
-              <div className="flex items-center justify-end">
-                <button
-                  type="button"
-                  onClick={() => router.push("/wallet")}
-                  className=" text-[#2364AA] border border-[#6DB2E4] rounded-full px-4 py-2 bg-[#E4F1FA] font-medium font-text flex items-center gap-1"
-                >
-                  <Home width={18} height={18} />
-                  Go to Home
-                </button>
-              </div>
             </div>
-          ))}
+          </div>
+        )}
         {/* body  */}
         <div className="w-full">
           {numberGuess.gameStatus === "START" && <StartPage />}

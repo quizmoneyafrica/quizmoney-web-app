@@ -12,6 +12,7 @@ import { toastPosition } from "@/app/utils/utils";
 import {
   setGameSettings,
   setGameStatus,
+  setOpenBuyModal,
 } from "@/app/store/numberGuessGameSlice";
 import { decrementTrials, resetTrials } from "@/app/store/numberGuessGameSlice";
 import { store } from "@/app/store/store";
@@ -192,9 +193,9 @@ function InProgress() {
                     whileTap={{ scale: 0.95 }}
                     type="button"
                     onClick={
-                      () => store.dispatch(setGameStatus("LOST"))
+                      // () => store.dispatch(setGameStatus("LOST"))
 
-                      // store.dispatch(setOpenBuyModal(true))
+                      () => store.dispatch(setOpenBuyModal(true))
                     }
                     className="flex items-center gap-1 bg-white px-4 py-1.5 border border-primary-800 text-primary-800 rounded-[20px] text-sm font-medium "
                   >

@@ -104,18 +104,18 @@ export default function LostGameComponent() {
                 }}
               />
 
-              <div className=" flex flex-col top-10  items-center justify-center relative">
+              <div className=" flex flex-col md:top-10 top-5  items-center justify-center relative">
                 <div className=" absolute flex-col flex items-center justify-center  bottom-0">
                   <img
                     src="/icons/animation.svg"
                     alt="stars"
-                    className="  h-15 md:h-20 z-50   "
+                    className="  h-10 md:h-20 z-50   "
                   />
                 </div>
                 <div className=" absolute flex-col flex z-50 items-center justify-center ">
-                  <span className=" text-white text-base mt-[14rem]   text-center ">
+                  <span className=" text-white text-base md:mt-[14rem] mt-36 pt-8 md:pt-0   text-center ">
                     oops!! <br />
-                    <span className="md:text-3xl text-xl text-shadow-2xs text-shadow-primary-700 font-bold">
+                    <span className="md:text-3xl text-2xl text-shadow-2xs text-shadow-primary-700 font-bold">
                       You didn't Win
                     </span>
                   </span>

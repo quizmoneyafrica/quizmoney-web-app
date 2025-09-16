@@ -7,6 +7,7 @@ import {
   // StartGameBtn,
 } from "@/app/icons/icons";
 import { setGameStatus } from "@/app/store/numberGuessGameSlice";
+import { store } from "@/app/store/store";
 import { GameButton } from "@/app/utils/GameButton";
 import { Gamepad2, Info } from "lucide-react";
 import React from "react";
@@ -85,8 +86,9 @@ function StartPage() {
       <div className="flex items-center justify-center">
         <GameButton
           onClick={() => {
-            fetchCurrentGameData();
+            // fetchCurrentGameData();
             dispatch(setGameStatus("STAKE"));
+            // store.dispatch(setGameStatus("LOST"));
           }}
           text="Yes Start Game"
           type="submit"
