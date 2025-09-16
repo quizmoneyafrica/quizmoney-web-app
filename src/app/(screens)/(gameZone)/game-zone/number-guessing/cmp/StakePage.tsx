@@ -49,6 +49,9 @@ function StakePage() {
       if (prevSessionId) {
         await GameZoneAPI.leaveNumberGuessGame(prevSessionId);
       }
+      if (!currentGameData) {
+        throw new Error("Game not found");
+      }
       const res = await GameZoneAPI.stakeInGame(
         currentGameData.gameId,
         currentGameData.type,
