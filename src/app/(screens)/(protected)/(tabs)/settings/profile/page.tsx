@@ -8,19 +8,13 @@ import CustomButton from "@/app/utils/CustomBtn";
 import CustomTextField from "@/app/utils/CustomTextField";
 import { formatDateTime, toastPosition } from "@/app/utils/utils";
 import { CalendarIcon, Pencil1Icon } from "@radix-ui/react-icons";
-import {
-  FaFacebook,
-  FaInstagram,
-  FaTiktok,
-  FaTwitter,
-  FaWhatsapp,
-} from "react-icons/fa";
+import { FaFacebook, FaInstagram, FaTiktok, FaTwitter } from "react-icons/fa";
 import { Avatar, Flex, Grid } from "@radix-ui/themes";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import React, { useState } from "react";
 import { toast } from "sonner";
-import { CameraIcon } from "lucide-react";
+import { CameraIcon, Phone } from "lucide-react";
 import { updateUser } from "@/app/store/authSlice";
 import { useKycStep } from "@/app/hooks/useKycStep";
 
@@ -343,17 +337,17 @@ const Page = () => {
                   />
 
                   <CustomTextField
-                    label="Whatsapp"
-                    name="whatsappContact"
-                    value={formData.whatsappContact}
+                    label="Phone"
+                    name="phone"
+                    value={formData.phone}
                     type="text"
-                    placeholder="Enter your whatsapp number"
+                    placeholder="Phone number"
                     onChange={onChange}
                     disabled={!isEditing}
-                    icon={<FaWhatsapp className="text-[#A6ABC4] text-xl" />}
+                    icon={<Phone className="text-[#A6ABC4] text-xl" />}
                     required
                   />
-
+                  {formData.phone}
                   {isEditing && (
                     <CustomButton
                       onClick={updateUserInfo}

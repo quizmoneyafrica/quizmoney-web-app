@@ -1,26 +1,14 @@
 "use client";
 import { Container, Flex, Grid, Heading, Text } from "@radix-ui/themes";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Onboarding from "../../../components/onboarding/onboarding";
-import { useRouter } from "next/navigation";
-import { useAppSelector } from "@/app/hooks/useAuth";
-import AppLoader from "@/app/components/loader/loader";
 import Image from "next/image";
 import SignupForm from "./signupForm";
 import { CircleArrowLeft } from "@/app/icons/icons";
 
 function SignUpPage() {
-  const router = useRouter();
-  const { isAuthenticated, rehydrated } = useAppSelector((s) => s.auth);
   const [step, setStep] = useState(1);
 
-  useEffect(() => {
-    if (rehydrated && isAuthenticated) {
-      router.replace("/home");
-    }
-  }, [isAuthenticated, rehydrated, router]);
-
-  if (!rehydrated) return <AppLoader />;
   const nextStep = () => setStep((prev) => Math.min(prev + 1, 3));
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
   return (

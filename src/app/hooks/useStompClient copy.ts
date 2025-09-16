@@ -2,21 +2,11 @@ import { Client, IMessage, StompSubscription } from "@stomp/stompjs";
 import { useEffect, useRef } from "react";
 import { useAppSelector, useAuth } from "./useAuth";
 
-type DestinationHandlerMap = Map<string, (msg: IMessage) => void>;
-const handlers: DestinationHandlerMap = new Map();
-
-export const registerStompHandler = (
-  destination: string,
-  handler: (msg: IMessage) => void
-) => {
-  handlers.set(destination, handler);
-};
-
-export const unregisterStompHandler = (destination: string) => {
-  handlers.delete(destination);
-};
-
-export const useStompClient = () => {
+export const useStompClient = ({
+  onMessage,
+}: {
+  onMessage: (msg: IMessage) => void;
+}) => {
   const { accessToken, user } = useAuth();
   const subscriptions = useAppSelector((state) => state.stompSub.subscriptions);
   const clientRef = useRef<Client | null>(null);
@@ -30,7 +20,7 @@ export const useStompClient = () => {
   }, [subscriptions]);
 
   useEffect(() => {
-    if (!user?.firstName || !accessToken) return;
+    if (!user?.firstName) return;
 
     const client = new Client({
       brokerURL: "wss://frontoffice.quizmoney.ng/ws",
@@ -46,17 +36,11 @@ export const useStompClient = () => {
       onConnect: () => {
         console.log("✅ STOMP Connected");
         retryCountRef.current = 0;
-
-        subscriptionsRef.current.forEach((dest) => {
+        subscriptions.forEach((dest) => {
           if (!subsRef.current.has(dest)) {
-            const handler = handlers.get(dest);
-            if (handler) {
-              const sub = client.subscribe(dest, handler);
-              subsRef.current.set(dest, sub);
-              console.log(`📡 Subscribed to ${dest}`);
-            } else {
-              console.warn(`⚠️ No handler registered for ${dest}`);
-            }
+            const sub = client.subscribe(dest, onMessage);
+            subsRef.current.set(dest, sub);
+            console.log(`📡 Subscribed to ${dest}`);
           }
         });
       },
@@ -84,7 +68,7 @@ export const useStompClient = () => {
     return () => {
       client.deactivate();
     };
-  }, [accessToken, subscriptions, user?.firstName]);
+  }, [accessToken, onMessage, subscriptions, user?.firstName]);
 
   return {
     isConnected: clientRef.current?.connected ?? false,
