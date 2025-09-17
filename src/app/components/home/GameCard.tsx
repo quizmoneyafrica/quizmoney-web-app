@@ -204,7 +204,7 @@ function GameCard() {
                 gamePrize={nextGameData?.prize || 0}
                 startDate={nextGameData?.startTime || ""}
               />
-              <JoinGameBtn />
+              {/* <JoinGameBtn /> */}
               <PlayDemoBtn />
             </Flex>
           </div>
