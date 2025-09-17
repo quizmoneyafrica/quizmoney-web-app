@@ -73,10 +73,10 @@ function GameZone() {
         title: <NumberGuessingTitle />,
         description: "Guess the hidden number within a given range",
         src: "/assets/images/number-guessing.png",
-        onClick: () => handleEnterGame("/game-zone/number-guessing"),
-        btnText: "Play Game",
-        // onClick: () => {},
-        // btnText: "Coming soon",
+        // onClick: () => handleEnterGame("/game-zone/number-guessing"),
+        // btnText: "Play Game",
+        onClick: () => {},
+        btnText: "Coming soon",
       },
       variant: "blue",
     },
@@ -99,6 +99,7 @@ function GameZone() {
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.25, ease: "easeInOut" }}
     >
+      <button onClick={() => handleEnterGame("")} className="hidden"></button>
       <div className="min-h-[100dvh] bg-primary-900 hero px-4 lg:px-10 py-6 space-y-6">
         <div className="grid grid-cols-2">
           <button
