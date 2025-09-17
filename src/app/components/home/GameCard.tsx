@@ -9,7 +9,7 @@ import { formatNaira, formatQuizDate } from "@/app/utils/utils";
 import Link from "next/link";
 import PlayDemoBtn from "./PlayDemo";
 //import { toast } from "sonner";
-import JoinGameBtn from "./JoinGameBtn";
+// import JoinGameBtn from "./JoinGameBtn";
 import { differenceInSeconds } from "date-fns";
 import CustomButton from "@/app/utils/CustomBtn";
 import { ReloadIcon } from "@radix-ui/react-icons";
