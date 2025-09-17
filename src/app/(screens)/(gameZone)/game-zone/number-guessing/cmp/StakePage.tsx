@@ -44,23 +44,17 @@ function StakePage() {
     );
   }
 
-  const handleLeaveSession = async () => {
-    if (prevSessionId) {
-      try {
-        await GameZoneAPI.leaveNumberGuessGame(prevSessionId);
-      } catch (err: any) {
-        localStorage.removeItem("gameSessionId");
-        handleStakeInGame();
-        console.log(err);
-      }
-    }
-  };
-
   const handleStakeInGame = async (e?: React.FormEvent) => {
     e?.preventDefault();
     try {
       if (prevSessionId) {
-        handleLeaveSession();
+        try {
+          await GameZoneAPI.leaveNumberGuessGame(prevSessionId);
+        } catch (err: any) {
+          localStorage.removeItem("gameSessionId");
+
+          console.log(err);
+        }
       }
       if (!currentGameData.gameId) {
         throw new Error("Game not found");
