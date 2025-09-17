@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { useForm, Controller } from "react-hook-form";
@@ -11,6 +11,13 @@ import KycAPI from "@/app/api/kycApi";
 import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
 import Modal from "@/app/components/game/modal/ModalWindow";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
+import {
+  setOpenModal,
+  setShowOtpVerification,
+  UserObject,
+} from "@/app/store/authSlice";
+import { getAuthUser } from "@/app/api/userApi";
 
 const phoneSchema = z.object({
   phoneNumber: z
@@ -34,23 +41,39 @@ export default function PhoneVerification({ onNext }: { onNext: () => void }) {
       phoneNumber: "",
     },
   });
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [openModal, setOpenModal] = useState(false);
-  const [showOtpVerification, setShowOtpVerification] = useState(false);
+
+  const { phone } = getAuthUser() as UserObject;
+
+  useEffect(() => {
+    if (phone) {
+      setPhoneNumber(phone);
+    }
+  }, [phone]);
+  const [phoneNumber, setPhoneNumber] = React.useState("");
+  const phoneNumberLocal = localStorage.getItem("phoneNumber");
+
+  const openModal = useAppSelector((s) => s.auth.openModal) ?? false;
+  const showOtpVerification =
+    useAppSelector((s) => s.auth.showOtpVerification) ?? false;
+  const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = React.useState(false);
 
   const verifyPhone = async () => {
     setIsLoading(true);
     try {
-      const res = await KycAPI.phoneVerify(phoneNumber);
-      console.log("==============KycAPI.phoneVerif======================");
-      console.log(JSON.stringify(res, null, 2));
-      console.log("=============KycAPI.phoneVerif=======================");
-      console.log(res);
-      setOpenModal(false);
-      // setShowOtpVerification(true);
+      const res = await KycAPI.phoneVerify(phoneNumber || phoneNumberLocal!);
+      if (res.success) {
+        toast.success("Phone verification initiated", {
+          position: toastPosition,
+        });
+        dispatch(setShowOtpVerification(true));
+        dispatch(setOpenModal(false));
+      } else {
+        toast.error(res.message || "Failed to initiate phone verification", {
+          position: toastPosition,
+        });
+      }
     } catch (error: any) {
-      console.error("Verification failed:", error);
       toast.error(error.message, { position: toastPosition });
     } finally {
       setIsLoading(false);
@@ -58,16 +81,20 @@ export default function PhoneVerification({ onNext }: { onNext: () => void }) {
   };
 
   const onSubmit = async (data: PhoneForm) => {
+    localStorage.setItem(
+      "phoneNumber",
+      data.phoneNumber.split(" ").join("").trim()
+    );
     setPhoneNumber(data.phoneNumber.split(" ").join("").trim());
-    setOpenModal(true);
+    dispatch(setOpenModal(true));
   };
 
   if (showOtpVerification) {
     return (
       <OTPVerification
         onNext={onNext}
-        onBack={() => setShowOtpVerification(false)}
-        phoneNumber={phoneNumber}
+        onBack={() => dispatch(setShowOtpVerification(false))}
+        phoneNumber={phoneNumber || phoneNumberLocal!}
       />
     );
   }
@@ -143,7 +170,7 @@ export default function PhoneVerification({ onNext }: { onNext: () => void }) {
 
       <Modal
         open={openModal}
-        handleClose={setOpenModal}
+        handleClose={(open: boolean) => dispatch(setOpenModal(open))}
         title="Confirm Phone Number"
         actionBtnText="Yes, Proceed"
         showCloseIcon={false}

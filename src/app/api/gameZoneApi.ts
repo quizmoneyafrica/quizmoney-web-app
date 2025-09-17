@@ -41,6 +41,19 @@ const GameZoneAPI = {
       "POST"
     );
   },
+  buyTrialsNumberGuessGame({sessionId, quantity}: {
+  sessionId:string;
+  quantity: number;
+}): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      "number-guesser/trial/purchase",
+      {
+        sessionId,
+        quantity,
+      },
+      "POST"
+    );
+  },
   submitGuess(
     guess: number,
     gameSessionId: string,

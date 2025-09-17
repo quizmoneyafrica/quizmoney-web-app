@@ -1,9 +1,7 @@
 "use client";
 import { Container, Flex, Grid, Heading, Text } from "@radix-ui/themes";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAppSelector } from "@/app/hooks/useAuth";
-import AppLoader from "@/app/components/loader/loader";
 import Image from "next/image";
 import { CircleArrowLeft, MailIcon } from "@/app/icons/icons";
 import CustomButton from "@/app/utils/CustomBtn";
@@ -17,16 +15,9 @@ import LeftSide from "./leftSide";
 function Page() {
   const [emailAddress, setEmailAddress] = useState("");
   const router = useRouter();
-  const { isAuthenticated, rehydrated } = useAppSelector((s) => s.auth);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (rehydrated && isAuthenticated) {
-      router.replace("/home");
-    }
-  }, [isAuthenticated, rehydrated, router]);
-
-  if (!rehydrated) return <AppLoader />;
+ 
 
   const handleForgot = async (e: React.FormEvent) => {
     e.preventDefault();

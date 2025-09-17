@@ -301,7 +301,7 @@ export default function TransactionHistory(): React.JSX.Element {
     <div className="w-full gap-4 md:gap-8 flex flex-col">
       <WalletBalance />
 
-      <div className="md:bg-white bg-inherit rounded-2xl md:rounded-3xl">
+      <div className="md:bg-white bg-inherit rounded-2xl max-h-[60svh] overflow-auto md:rounded-3xl  ">
         <div className="flex p-3 md:p-4 justify-between items-center my-2 md:my-4">
           <h2 className="text-lg md:text-xl font-semibold text-[#2364AA]">
             Recent Transactions

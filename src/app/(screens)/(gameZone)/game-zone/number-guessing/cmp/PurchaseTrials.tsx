@@ -1,7 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import GameZoneAPI from "@/app/api/gameZoneApi";
 import QMLoader from "@/app/components/splashScreen/QMLoader";
+import { useAppSelector } from "@/app/hooks/useAuth";
 import { useWalletBalances } from "@/app/hooks/useWallet";
 import { ArrowDownIcon } from "@/app/icons/icons";
+import {
+  setGameStatus,
+  setOpenBuyModal,
+  setTrials,
+} from "@/app/store/numberGuessGameSlice";
+import { store } from "@/app/store/store";
 import CustomSelect from "@/app/utils/CustomSelect";
 import { GameButton } from "@/app/utils/GameButton";
 import { formatNaira } from "@/app/utils/utils";
@@ -28,26 +36,33 @@ const SelectOptions: Option[] = [
   },
 ];
 
-type Props = {
-  setTrials: React.Dispatch<React.SetStateAction<number>>;
-  setOpenBuyModal: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-export default function PurchaseTrials({ setTrials, setOpenBuyModal }: Props) {
+export default function PurchaseTrials() {
   const { ngnBalance } = useWalletBalances();
   const [selectedTrials, setSelectedTrials] = useState<number>(0);
+  const trials = useAppSelector((s) => s.numberGuess.trials);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const sessionId = localStorage.getItem("gameSessionId");
 
-  const buyTrials = () => {
+  const buyTrials = async () => {
     setErrorMessage(null);
     if (selectedTrials > 0) {
       setIsLoading(true);
       try {
-        setTrials((t: number) => t + selectedTrials);
-        // setMessage("2 extra trials!");
-        setOpenBuyModal(false);
-        toast.success("You're Back In!", { position: "top-center" });
+        if (sessionId) {
+          const response = await GameZoneAPI.buyTrialsNumberGuessGame({
+            sessionId: sessionId!,
+            quantity: selectedTrials,
+          });
+          if (response.success && response.code === "200") {
+            store.dispatch(setTrials(trials + selectedTrials));
+            store.dispatch(setOpenBuyModal(false));
+            toast.success("You're Back In!", { position: "top-center" });
+            store.dispatch(setGameStatus("INPROGRESS"));
+          }
+        } else {
+          setErrorMessage("Session expired, please start a new game.");
+        }
       } catch (err: any) {
         setErrorMessage(err.message);
       } finally {
@@ -58,7 +73,7 @@ export default function PurchaseTrials({ setTrials, setOpenBuyModal }: Props) {
     }
   };
   return (
-    <div className="relative space-y-6">
+    <div className="relative space-y-6 pt-5">
       <section className="grid grid-cols-2 place-items-center border-2 border-primary-700 rounded p-4">
         <div className="flex gap-2 text-sm w-full">
           <Wallet2Icon className="text-primary-700" />
@@ -80,7 +95,7 @@ export default function PurchaseTrials({ setTrials, setOpenBuyModal }: Props) {
         <div>
           <div className="space-y-4">
             <CustomSelect
-              label="How my trials do you want buy?"
+              label="Select number of Trials?"
               options={SelectOptions}
               disabledOption="Select trials"
               className="border rounded-3xl px-4 py-2 w-full"
@@ -121,7 +136,7 @@ export default function PurchaseTrials({ setTrials, setOpenBuyModal }: Props) {
           </div>
         </div>
         <GameButton
-          text="Buy Trial"
+          text="Continue playing "
           type="button"
           onClick={buyTrials}
           disabled={isLoading}
