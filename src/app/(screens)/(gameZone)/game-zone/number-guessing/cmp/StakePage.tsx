@@ -31,7 +31,7 @@ function StakePage() {
   const dispatch = useAppDispatch();
   const { fetchWallet } = useWalletHook();
   const { isFetching, currentGameData } = useGameZone("NUMBER_GUESSER");
-  // const prevSessionId = localStorage.getItem("gameSessionId");
+  const prevSessionId = localStorage.getItem("gameSessionId");
   const [confirmStakeModal, setConfirmStakeModal] = useState(false);
 
   const [stake, setStake] = useState<number>(0);
@@ -44,12 +44,24 @@ function StakePage() {
     );
   }
 
-  const handleStakeInGame = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleLeaveSession = async () => {
+    if (prevSessionId) {
+      try {
+        await GameZoneAPI.leaveNumberGuessGame(prevSessionId);
+      } catch (err: any) {
+        localStorage.removeItem("gameSessionId");
+        handleStakeInGame();
+        console.log(err);
+      }
+    }
+  };
+
+  const handleStakeInGame = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     try {
-      // if (prevSessionId) {
-      //   await GameZoneAPI.leaveNumberGuessGame(prevSessionId);
-      // }
+      if (prevSessionId) {
+        handleLeaveSession();
+      }
       if (!currentGameData.gameId) {
         throw new Error("Game not found");
       }

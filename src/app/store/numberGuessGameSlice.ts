@@ -1,6 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export type GameStatus = "START" | "STAKE" | "INPROGRESS" | "ENDED" | "PURCHASE_TRIAL"|"LOST"|"WON";
+export type GameStatus =
+  | "START"
+  | "STAKE"
+  | "INPROGRESS"
+  | "ENDED"
+  | "PURCHASE_TRIAL"
+  | "LOST"
+  | "WON";
 
 interface GameSettings {
   sessionId: string;
@@ -13,6 +20,7 @@ interface GameState {
   gameSettings: GameSettings;
   trials: number;
   openBuyModal?: boolean;
+  extraTrialBought: number;
 }
 
 const initialState: GameState = {
@@ -25,6 +33,7 @@ const initialState: GameState = {
   },
   trials: 3,
   openBuyModal: false,
+  extraTrialBought: 0,
 };
 
 const numberGuessGameSlice = createSlice({
@@ -49,6 +58,9 @@ const numberGuessGameSlice = createSlice({
     setOpenBuyModal: (state, action: PayloadAction<boolean>) => {
       state.openBuyModal = action.payload;
     },
+    setExtraTrialBought: (state, action: PayloadAction<number>) => {
+      state.extraTrialBought = action.payload;
+    },
   },
 });
 
@@ -59,5 +71,6 @@ export const {
   decrementTrials,
   resetTrials,
   setOpenBuyModal,
+  setExtraTrialBought,
 } = numberGuessGameSlice.actions;
 export default numberGuessGameSlice.reducer;
