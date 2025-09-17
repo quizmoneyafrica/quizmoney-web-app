@@ -1,11 +1,18 @@
-import React, { Fragment } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { Fragment, useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import {
+  setExtraTrialBought,
   setGameStatus,
   setOpenBuyModal,
 } from "@/app/store/numberGuessGameSlice";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
+import { toast } from "sonner";
+import { toastPosition } from "@/app/utils/utils";
+import { setCurrentGameData } from "@/app/store/gameZoneSlice";
+import GameZoneAPI from "@/app/api/gameZoneApi";
+import QMLoader from "@/app/components/splashScreen/QMLoader";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -50,6 +57,8 @@ const bannerVariants = {
 export default function OutOfTrialsComponent() {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const sessionId = useAppSelector((s) => s.numberGuess.gameSettings.sessionId);
+  const [isLoading, setIsLoading] = useState(false);
 
   const openBuyModal = useAppSelector(
     (s) => s.numberGuess.openBuyModal ?? false
@@ -67,6 +76,42 @@ export default function OutOfTrialsComponent() {
     }
   };
 
+  const handleLeaveGame = async () => {
+    dispatch(setGameStatus("START"));
+
+    setIsLoading(true);
+    try {
+      await GameZoneAPI.leaveNumberGuessGame(sessionId);
+      handleSetOpenBuyModal(false);
+      dispatch(setGameStatus("START"));
+      dispatch(setExtraTrialBought(0));
+      dispatch(
+        setCurrentGameData({
+          gameId: "",
+          name: "",
+          description: "",
+          type: "",
+          config: {
+            minimumStake: 1000,
+            maximumStake: 1000000,
+          },
+        })
+      );
+      localStorage.removeItem("gameSessionId");
+      router.back();
+    } catch (error: any) {
+      toast.error(error.message, { position: toastPosition });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  if (isLoading) {
+    return (
+      <div className="w-full h-full grid place-items-center">
+        <QMLoader />
+      </div>
+    );
+  }
   return (
     <Fragment>
       <div className="w-full max-w-lg mx-auto">
@@ -155,12 +200,8 @@ export default function OutOfTrialsComponent() {
               </motion.button>
 
               <motion.button
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleSetOpenBuyModal(false);
-                  dispatch(setGameStatus("START"));
-                  router.back();
-                }}
+                type="button"
+                onClick={() => handleLeaveGame()}
                 variants={buttonItem}
                 whileHover={{
                   scale: 1.03,
