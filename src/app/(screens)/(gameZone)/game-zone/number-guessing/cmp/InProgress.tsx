@@ -19,7 +19,9 @@ interface gameTry {
 }
 function InProgress() {
   const dispatch = useAppDispatch();
-  const { gameSettings } = useAppSelector((s) => s.numberGuess);
+  const { gameSettings, extraTrialBought } = useAppSelector(
+    (s) => s.numberGuess
+  );
   const min = gameSettings.lowerBound;
   const max = gameSettings.upperBound;
 
@@ -128,10 +130,20 @@ function InProgress() {
   };
 
   useEffect(() => {
-    if (trials === 0 && guessResponse.result !== "WON") {
+    if (
+      extraTrialBought < 2 &&
+      trials === 0 &&
+      guessResponse.result !== "WON"
+    ) {
       dispatch(setGameStatus("PURCHASE_TRIAL"));
+    } else if (
+      extraTrialBought === 2 &&
+      trials === 0 &&
+      guessResponse.result !== "WON"
+    ) {
+      dispatch(setGameStatus("LOST"));
     }
-  }, [trials, guessResponse, dispatch]);
+  }, [trials, guessResponse, dispatch, extraTrialBought]);
 
   return (
     <Fragment>

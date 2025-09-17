@@ -5,6 +5,7 @@ import { useAppSelector } from "@/app/hooks/useAuth";
 import { useWalletBalances } from "@/app/hooks/useWallet";
 import { ArrowDownIcon } from "@/app/icons/icons";
 import {
+  setExtraTrialBought,
   setGameStatus,
   setOpenBuyModal,
   setTrials,
@@ -40,6 +41,9 @@ export default function PurchaseTrials() {
   const { ngnBalance } = useWalletBalances();
   const [selectedTrials, setSelectedTrials] = useState<number>(0);
   const trials = useAppSelector((s) => s.numberGuess.trials);
+  const extraTrialBought = useAppSelector(
+    (s) => s.numberGuess.extraTrialBought
+  );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const sessionId = localStorage.getItem("gameSessionId");
@@ -59,6 +63,9 @@ export default function PurchaseTrials() {
             store.dispatch(setOpenBuyModal(false));
             toast.success("You're Back In!", { position: "top-center" });
             store.dispatch(setGameStatus("INPROGRESS"));
+            store.dispatch(
+              setExtraTrialBought(extraTrialBought + selectedTrials)
+            );
           }
         } else {
           setErrorMessage("Session expired, please start a new game.");
