@@ -1,15 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
 import { CirclePlus, Home, MoveLeft } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
-import { formatNaira } from "@/app/utils/utils";
+import { formatNaira, toastPosition } from "@/app/utils/utils";
 import { useRouter } from "next/navigation";
 import StartPage from "./cmp/StartPage";
 import StakePage from "./cmp/StakePage";
 import InProgress from "./cmp/InProgress";
 import ResultScreen from "./cmp/ResultScreen";
 import {
+  setExtraTrialBought,
   setGameStatus,
   setOpenBuyModal,
 } from "@/app/store/numberGuessGameSlice";
@@ -21,6 +23,9 @@ import PurchaseTrials from "./cmp/PurchaseTrials";
 import { store } from "@/app/store/store";
 import LostGameComponent from "./cmp/LostGameComponent";
 import WonGameComponent from "./cmp/WonGameComponent";
+import { setCurrentGameData } from "@/app/store/gameZoneSlice";
+import GameZoneAPI from "@/app/api/gameZoneApi";
+import { toast } from "sonner";
 
 function Page() {
   const numberGuess = useAppSelector((s) => s.numberGuess);
@@ -30,6 +35,7 @@ function Page() {
   const openBuyModal = useAppSelector(
     (s) => s.numberGuess.openBuyModal ?? false
   );
+  const sessionId = useAppSelector((s) => s.numberGuess.gameSettings.sessionId);
 
   const handleBack = () => {
     if (numberGuess.gameStatus === "START") {
@@ -45,6 +51,30 @@ function Page() {
       dispatch(setGameStatus("START"));
     } else if (numberGuess.gameStatus === "WON") {
       dispatch(setGameStatus("START"));
+    }
+  };
+
+  const handleLeaveGame = async () => {
+    try {
+      await GameZoneAPI.leaveNumberGuessGame(sessionId);
+      dispatch(setGameStatus("START"));
+      dispatch(setExtraTrialBought(0));
+      dispatch(
+        setCurrentGameData({
+          gameId: "",
+          name: "",
+          description: "",
+          type: "",
+          config: {
+            minimumStake: 1000,
+            maximumStake: 1000000,
+          },
+        })
+      );
+      localStorage.removeItem("gameSessionId");
+      router.push("/home");
+    } catch (error: any) {
+      toast.error(error.message, { position: toastPosition });
     }
   };
 
@@ -108,7 +138,7 @@ function Page() {
             <div className="flex items-center justify-end">
               <button
                 type="button"
-                onClick={() => router.push("/home")}
+                onClick={() => handleLeaveGame()}
                 className=" text-[#2364AA] border border-[#6DB2E4] rounded-full px-4 py-2 bg-[#E4F1FA] font-medium font-text flex items-center gap-1"
               >
                 <Home width={18} height={18} />

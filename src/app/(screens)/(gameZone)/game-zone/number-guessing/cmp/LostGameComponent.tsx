@@ -7,7 +7,6 @@ import {
 } from "@/app/store/numberGuessGameSlice";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import { RefreshCcw } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { setCurrentGameData } from "@/app/store/gameZoneSlice";
 import GameZoneAPI from "@/app/api/gameZoneApi";
 import { toast } from "sonner";
@@ -33,11 +32,10 @@ const buttonItem = {
 
 export default function LostGameComponent() {
   const dispatch = useAppDispatch();
-  const router = useRouter();
   const sessionId = useAppSelector((s) => s.numberGuess.gameSettings.sessionId);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLeaveGame = async (route?: string) => {
+  const handleLeaveGame = async () => {
     setIsLoading(true);
     try {
       await GameZoneAPI.leaveNumberGuessGame(sessionId);
@@ -56,9 +54,6 @@ export default function LostGameComponent() {
         })
       );
       localStorage.removeItem("gameSessionId");
-      if (route) {
-        router.replace(route);
-      }
     } catch (error: any) {
       toast.error(error.message, { position: toastPosition });
     } finally {
