@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react";
 
 export default function useHighPrecisionTimer(autoStart = false) {
   const [elapsedMs, setElapsedMs] = useState(0);
-  const animationFrameRef = useRef<number>();
-  const startTimeRef = useRef<number>();
+  const animationFrameRef = useRef<number | undefined>(undefined);
+  const startTimeRef = useRef<number | undefined>(undefined);
   const lastUpdateRef = useRef<number>(0);
 
   // Tick function throttled to update only every 100ms
@@ -49,7 +49,7 @@ export default function useHighPrecisionTimer(autoStart = false) {
     return () => {
       stopTimer();
     };
-    // Only run on mount/unmount — do NOT add `startTimer` to deps!
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {
