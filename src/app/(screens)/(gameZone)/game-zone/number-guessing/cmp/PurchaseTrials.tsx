@@ -129,7 +129,7 @@ export default function PurchaseTrials() {
             <div className="border border-primary-300 bg-primary-100 rounded w-full p-4 grid grid-cols-2">
               <p className="text-sm">Amount</p>
               <p className="text-end font-bold text-primary-900">
-                {formatNaira(Number(1000), true)}
+                {formatNaira(Number(1000 * selectedTrials), true)}
               </p>
             </div>
             <div className="flex items-center gap-1">
