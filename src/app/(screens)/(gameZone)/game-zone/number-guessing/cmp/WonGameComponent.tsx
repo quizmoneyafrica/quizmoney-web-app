@@ -1,10 +1,17 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { setGameStatus } from "@/app/store/numberGuessGameSlice";
+import {
+  setExtraTrialBought,
+  setGameStatus,
+  setTrials,
+} from "@/app/store/numberGuessGameSlice";
 import { useAppDispatch } from "@/app/hooks/useAuth";
 import { RefreshCcw } from "lucide-react";
 import { redirect } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { formatNaira } from "@/app/utils/utils";
+import Image from "next/image";
+import { setCurrentGameData, setZonePhase } from "@/app/store/gameZoneSlice";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -46,143 +53,134 @@ export default function WonGameComponent() {
       setSpinning(false);
       timerRef.current = null;
     }, 1500);
-    dispatch(setGameStatus("ENDED"));
+    dispatch(setGameStatus("START"));
+    dispatch(setTrials(3));
+    dispatch(setZonePhase("game"));
+    dispatch(setExtraTrialBought(0));
+    dispatch(
+      setCurrentGameData({
+        gameId: "",
+        name: "",
+        description: "",
+        type: "NUMBER_GUESSER",
+        config: {
+          minimumStake: 1000,
+          maximumStake: 1000000,
+        },
+      })
+    );
   };
 
   return (
     <Fragment>
-      <div className=" w-full ">
-        <div className=" relative max-w-3xl mx-auto ">
-          <div className=" relative ">
-            <motion.div
-              className=" flex-col relative bg-transparent  w-full flex justify-center items-center z-50"
-              initial={{ opacity: 0, y: 14, scale: 0.99 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{
-                type: "spring",
-                stiffness: 56,
-                damping: 14,
-                duration: 0.9,
-              }}
-            >
-              {/* Pulsing blurred ring behind the hero */}
-              <motion.div
-                aria-hidden="true"
-                initial={{ scale: 0.94, opacity: 0.16 }}
-                animate={{
-                  scale: [0.94, 1.18, 0.94],
-                  opacity: [0.16, 0.6, 0.16],
-                }}
-                transition={{
-                  duration: 3.2,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-                style={{
-                  position: "absolute",
-                  left: "50%",
-                  top: "48%",
-                  transform: "translateX(-50%)",
-                  width: "min(520px, 88vw)",
-                  height: "min(520px, 88vw)",
-                  borderRadius: "50%",
-                  background:
-                    "radial-gradient(circle, rgba(255,245,180,0.24) 0%, rgba(255,200,60,0.12) 28%, rgba(34,197,94,0.04) 56%, transparent 72%)",
-                  filter: "blur(36px)",
-                  zIndex: 0,
-                  pointerEvents: "none",
-                }}
+      <div>
+        <div className="space-y-5 pt-[12em]">
+          <div className="relative pb-2">
+            <div className="w-full absolute -top-[7.3em] z-[1]">
+              <Image
+                src="/icons/sunshine.svg"
+                alt="sunshine"
+                className="w-full absolute -top-[7.3em] z-[1]"
+                width={100}
+                height={100}
+                quality={100}
               />
-
-              <div className=" flex flex-col top-20  items-center justify-center relative">
-                <div className=" absolute flex-col flex items-center justify-center  bottom-0">
-                  <img
-                    src="/icons/stars.svg"
-                    alt="stars"
-                    className="  h-32 md:h-44 z-50   "
-                  />
-                </div>
-                <div className=" absolute uppercase flex-col flex z-50 items-center justify-center  bottom-0">
-                  <span className=" text-white text-base mt-5  text-center ">
-                    CONGRATS <br />
-                    <span className="text-xl text-shadow-2xs text-shadow-primary-700 font-bold">
-                      You Won
-                    </span>
-                  </span>
-                </div>
-                <img
-                  src="/icons/sunShine.svg"
-                  alt="sunshine"
-                  className="h-32 md:h-44 relative mb-16 "
-                />
-              </div>
-
-              <img
+            </div>
+            <div className="w-full absolute -top-[6.3em] z-[3]">
+              <Image
+                src="/icons/stars.svg"
+                alt="stars"
+                className="w-full absolute -top-[6.3em] z-[3]"
+                width={100}
+                height={100}
+                quality={100}
+              />
+            </div>
+            <div className="relative">
+              <Image
                 src="/icons/ribon-b.svg"
                 alt="Out of Trials"
-                className=" h-28 md:h-36 z-10"
+                className="w-full absolute -top-24 z-[2]"
+                width={100}
+                height={100}
+                quality={100}
               />
-            </motion.div>
+              <div className="absolute flex flex-col items-center justify-center inset-0 z-[4] uppercase -top-[5em] text-white">
+                <p className="font-bold font-anton text-lg">Congrats</p>
+                <h2 className="font-bold !font-anton stroke-primary-900 stroke-2 drop-shadow text-4xl [text-shadow:_0px_2px_0px_rgb(0_212_252_/_1.00)]">
+                  You won
+                </h2>
+              </div>
+            </div>
 
-            <div className="pt-20  pb-8 text-center relative mx-auto max-w-lg md:w-[40%] w-[80%] bg-transparent  overflow-hidden">
-              <div className=" bg-[#E4F1FA] flex-col flex gap-3  rounded-3xl  h-fit    relative py-20 px-5 -mt-32  ">
-                <div className=" w-full flex-col flex">
-                  <p className="text-[#3386CE] font-bold  mb-12 text-lg md:text-2xl mt-6 ">
-                    You guessed the correct number
-                    <br />
-                    number
+            <div className="px-8 font-anton">
+              <div className="pt-18 pb-10 bg-[#E4F1FA] w-full px-4 rounded-b-3xl">
+                <p className="text-center font-bold text-2xl text-primary-700">
+                  You guessed the <br />
+                  correct number
+                </p>
+                <div className="grid place-items-center gap-1 py-5">
+                  <Image
+                    src="/icons/trophy2.svg"
+                    alt="Trophy"
+                    className=""
+                    width={60}
+                    height={60}
+                    quality={100}
+                  />
+                </div>
+                <div className="hidden">
+                  <p className="text-secondary-600 font-bold text-center uppercase">
+                    reward
                   </p>
-                  <div className=" w-full flex items-center justify-center gap-2 flex-col">
-                    <img src="/icons/trophy2.svg" alt="Trophy" className="" />
-                    <span className="text-[#05B4FF] font-bold text-base md:text-xl">
-                      reward
-                    </span>
-                    <span className="text-primary-800 text-shadow-2xs font-bold text-xl md:text-2xl">
-                      ₦10,000
-                    </span>
-                  </div>
+                  <p className="text-primary-800 text-3xl font-bold text-center">
+                    {formatNaira(Number(5000))}
+                  </p>
                 </div>
               </div>
-              <motion.div
-                className="space-y-5 pt-5"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-              >
-                <motion.button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    dispatch(setGameStatus("START"));
-                    redirect("/wallet");
-                  }}
-                  variants={buttonItem}
-                  className="w-full bg-gradient-to-r from-blue-400 to-[#2A75BC] hover:from-[#2A75BC] hover:to-blue-600 text-white font-bold py-3 px-6 rounded-full transition-all duration-200 transform"
-                >
-                  <span className="text-xl tracking-wide font-bold">
-                    GO TO WALLET
-                  </span>
-                </motion.button>
-                <motion.button
-                  variants={buttonItem}
-                  onClick={() => {
-                    handlePlayAgain();
-                  }}
-                  className="w-full bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white font-bold py-3 px-6 rounded-full transition-all duration-200 transform flex items-center justify-center space-x-3"
-                >
-                  <RefreshCcw
-                    className={cn(
-                      " text-[#ffffff] w-6 h-6",
-                      spinning ? "animate-[spin_1.5s_linear_infinite]" : ""
-                    )}
-                  />
-
-                  <span className="text-xl tracking-wide font-bold">
-                    PLAY AGAIN
-                  </span>
-                </motion.button>
-              </motion.div>
             </div>
           </div>
+          <motion.div
+            className="space-y-5 px-8"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <motion.button
+              onClick={(e) => {
+                e.preventDefault();
+                dispatch(setGameStatus("START"));
+                dispatch(setTrials(3));
+                dispatch(setZonePhase("zone"));
+                dispatch(setExtraTrialBought(0));
+                redirect("/wallet");
+              }}
+              variants={buttonItem}
+              className="w-full bg-gradient-to-r from-blue-400 to-[#2A75BC] hover:from-[#2A75BC] hover:to-blue-600 text-white font-bold py-3 px-6 rounded-full transition-all duration-200 transform"
+            >
+              <span className="text-xl tracking-wide font-bold">
+                GO TO WALLET
+              </span>
+            </motion.button>
+            <motion.button
+              variants={buttonItem}
+              onClick={() => {
+                handlePlayAgain();
+              }}
+              className="w-full bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white font-bold py-3 px-6 rounded-full transition-all duration-200 transform flex items-center justify-center space-x-3"
+            >
+              <RefreshCcw
+                className={cn(
+                  " text-[#ffffff] w-6 h-6",
+                  spinning ? "animate-[spin_1.5s_linear_infinite]" : ""
+                )}
+              />
+
+              <span className="text-xl tracking-wide font-bold">
+                PLAY AGAIN
+              </span>
+            </motion.button>
+          </motion.div>
         </div>
       </div>
     </Fragment>

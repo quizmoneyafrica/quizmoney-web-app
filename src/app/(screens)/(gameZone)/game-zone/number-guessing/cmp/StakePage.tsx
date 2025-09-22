@@ -6,6 +6,7 @@ import { useGameZone } from "@/app/hooks/useGameZone";
 import {
   setGameSettings,
   setGameStatus,
+  setTrials,
 } from "@/app/store/numberGuessGameSlice";
 import CustomTextField from "@/app/utils/CustomTextField";
 import { GameButton } from "@/app/utils/GameButton";
@@ -20,6 +21,7 @@ import { DiceQ } from "@/app/icons/icons";
 import { setPhase } from "@/app/store/gameSlice";
 import useWalletHook from "@/app/hooks/useWallet";
 import QMLoader from "@/app/components/splashScreen/QMLoader";
+import { setZonePhase } from "@/app/store/gameZoneSlice";
 
 const preStakeAmounts = [
   { value: 1000 },
@@ -31,7 +33,7 @@ function StakePage() {
   const dispatch = useAppDispatch();
   const { fetchWallet } = useWalletHook();
   const { isFetching, currentGameData } = useGameZone("NUMBER_GUESSER");
-  // const prevSessionId = localStorage.getItem("gameSessionId");
+  const prevSessionId = localStorage.getItem("gameSessionId");
   const [confirmStakeModal, setConfirmStakeModal] = useState(false);
 
   const [stake, setStake] = useState<number>(0);
@@ -44,12 +46,18 @@ function StakePage() {
     );
   }
 
-  const handleStakeInGame = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleStakeInGame = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     try {
-      // if (prevSessionId) {
-      //   await GameZoneAPI.leaveNumberGuessGame(prevSessionId);
-      // }
+      if (prevSessionId) {
+        try {
+          await GameZoneAPI.leaveNumberGuessGame(prevSessionId);
+        } catch (err: any) {
+          localStorage.removeItem("gameSessionId");
+
+          console.log(err);
+        }
+      }
       if (!currentGameData.gameId) {
         throw new Error("Game not found");
       }
@@ -58,6 +66,7 @@ function StakePage() {
         currentGameData.type,
         stake
       );
+      dispatch(setTrials(3));
       dispatch(setGameSettings(res.data));
       console.log("====================================");
       console.log(res.data);
@@ -65,6 +74,7 @@ function StakePage() {
       localStorage.setItem("gameSessionId", res.data.sessionId);
       dispatch(setGameStatus("INPROGRESS"));
       dispatch(setPhase("playing"));
+      dispatch(setZonePhase("playing"));
       fetchWallet();
     } catch (err: any) {
       toast.error(err.message, { position: toastPosition });

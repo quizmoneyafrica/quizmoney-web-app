@@ -1,8 +1,18 @@
-import React, { Fragment } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { Fragment, useState } from "react";
 import { motion } from "framer-motion";
-import { setGameStatus } from "@/app/store/numberGuessGameSlice";
-import { useAppDispatch } from "@/app/hooks/useAuth";
+import {
+  setExtraTrialBought,
+  setGameStatus,
+  setTrials,
+} from "@/app/store/numberGuessGameSlice";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import { RefreshCcw } from "lucide-react";
+import { setCurrentGameData, setZonePhase } from "@/app/store/gameZoneSlice";
+import GameZoneAPI from "@/app/api/gameZoneApi";
+import { toast } from "sonner";
+import { toastPosition } from "@/app/utils/utils";
+import QMLoader from "@/app/components/splashScreen/QMLoader";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -23,7 +33,44 @@ const buttonItem = {
 
 export default function LostGameComponent() {
   const dispatch = useAppDispatch();
+  const sessionId = useAppSelector((s) => s.numberGuess.gameSettings.sessionId);
+  const [isLoading, setIsLoading] = useState(false);
 
+  const handleLeaveGame = async () => {
+    setIsLoading(true);
+    try {
+      await GameZoneAPI.leaveNumberGuessGame(sessionId);
+      dispatch(setGameStatus("START"));
+      dispatch(setTrials(3));
+      dispatch(setZonePhase("game"));
+      dispatch(setExtraTrialBought(0));
+      dispatch(
+        setCurrentGameData({
+          gameId: "",
+          name: "",
+          description: "",
+          type: "NUMBER_GUESSER",
+          config: {
+            minimumStake: 1000,
+            maximumStake: 1000000,
+          },
+        })
+      );
+      localStorage.removeItem("gameSessionId");
+    } catch (error: any) {
+      toast.error(error.message, { position: toastPosition });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-full grid place-items-center">
+        <QMLoader />
+      </div>
+    );
+  }
   return (
     <Fragment>
       <div className=" w-full ">
@@ -72,16 +119,16 @@ export default function LostGameComponent() {
               <div className=" flex flex-col md:top-10 top-5  items-center justify-center relative">
                 <div className=" absolute flex-col flex items-center justify-center  bottom-0">
                   <img
-                    src="/icons/animation.svg"
+                    src="/assets/gif/lost.gif"
                     alt="stars"
-                    className="  h-10 md:h-20 z-50   "
+                    className="h-10 md:h-20 z-50   "
                   />
                 </div>
                 <div className=" absolute flex-col flex z-50 items-center justify-center ">
                   <span className=" text-white text-base md:mt-[14rem] mt-36 pt-8 md:pt-0   text-center ">
                     oops!! <br />
                     <span className="md:text-3xl text-2xl text-shadow-2xs text-shadow-primary-700 font-bold">
-                      You didn&apos;t Win
+                      You were close!
                     </span>
                   </span>
                 </div>
@@ -101,10 +148,10 @@ export default function LostGameComponent() {
 
             <div className="pt-20  pb-8 text-center relative mx-auto max-w-lg md:w-[40%] w-[80%] bg-transparent  overflow-hidden">
               <div className=" bg-[#E4F1FA] flex-col flex gap-3  rounded-3xl     relative py-20 px-5 -mt-32  ">
-                <p className="text-[#3386CE] font-bold  mb-12 text-lg md:text-2xl mt-6 ">
-                  Better Luck Next
+                <p className="text-primary-600 font-bold  mb-12 text-2xl mt-6 ">
+                  Let&apos;s do this again
                   <br />
-                  Game
+                  You can get it right this time
                 </p>
 
                 <motion.div
@@ -115,9 +162,7 @@ export default function LostGameComponent() {
                 >
                   <motion.button
                     variants={buttonItem}
-                    onClick={() => {
-                      dispatch(setGameStatus("START"));
-                    }}
+                    onClick={() => handleLeaveGame()}
                     whileHover={{
                       scale: 1.03,
                       boxShadow:
