@@ -18,8 +18,12 @@ import { useWallet } from "@/app/store/walletSlice";
 import { toast } from "sonner";
 import GameZoneAPI from "@/app/api/gameZoneApi";
 import QMLoader from "@/app/components/splashScreen/QMLoader";
-import { setGameZoneGames } from "@/app/store/gameZoneSlice";
-import { setGameStatus } from "@/app/store/numberGuessGameSlice";
+import { setGameZoneGames, setZonePhase } from "@/app/store/gameZoneSlice";
+import {
+  setExtraTrialBought,
+  setGameStatus,
+  setTrials,
+} from "@/app/store/numberGuessGameSlice";
 
 function GameZone() {
   const dispatch = useAppDispatch();
@@ -74,7 +78,12 @@ function GameZone() {
         title: <NumberGuessingTitle />,
         description: "Guess the hidden number within a given range",
         src: "/assets/images/number-guessing.png",
-        onClick: () => handleEnterGame("/game-zone/number-guessing"),
+        onClick: () => {
+          handleEnterGame("/game-zone/number-guessing");
+          dispatch(setTrials(3));
+          dispatch(setZonePhase("game"));
+          dispatch(setExtraTrialBought(0));
+        },
         btnText: "Play Game",
         // onClick: () => {},
         // btnText: "Coming soon",

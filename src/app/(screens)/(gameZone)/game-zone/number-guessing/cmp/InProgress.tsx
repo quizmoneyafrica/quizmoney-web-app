@@ -16,10 +16,21 @@ import { store } from "@/app/store/store";
 import { setZonePhase } from "@/app/store/gameZoneSlice";
 import QMLoader from "@/app/components/splashScreen/QMLoader";
 import useHighPrecisionTimer from "@/app/hooks/useHighPrecisionTimer";
+
 interface gameTry {
   guessDirection: "TOO_HIGH" | "TOO_LOW" | "EXACT" | string;
   result: "WON" | "IN_PROGRESS" | string;
 }
+
+const formatTime = (ms: number) => {
+  const minutes = Math.floor(ms / 60000);
+  const seconds = Math.floor((ms % 60000) / 1000);
+  return `${String(minutes).padStart(2, "0")}m:${String(seconds).padStart(
+    2,
+    "0"
+  )}s`;
+};
+
 function InProgress() {
   const { elapsedMs, stopTimer, resetTimer } = useHighPrecisionTimer(true);
 
@@ -158,6 +169,12 @@ function InProgress() {
     <Fragment>
       <div className="w-full max-w-lg mx-auto space-y-10">
         <div className="space-y-4">
+          <p className="absolute top-[2em] text-neutral-600">
+            Time:{" "}
+            <span className="font-bold text-primary-700">
+              {formatTime(elapsedMs)}
+            </span>
+          </p>
           <h2 className="text-center text-[2.3em] text-primary-900">
             Guess the Number
           </h2>
