@@ -26,19 +26,19 @@ import WonGameComponent from "./cmp/WonGameComponent";
 import { setCurrentGameData, setZonePhase } from "@/app/store/gameZoneSlice";
 import GameZoneAPI from "@/app/api/gameZoneApi";
 import { toast } from "sonner";
-import useHighPrecisionTimer from "@/app/hooks/useHighPrecisionTimer";
+// import useHighPrecisionTimer from "@/app/hooks/useHighPrecisionTimer";
 
-const formatTime = (ms: number) => {
-  const minutes = Math.floor(ms / 60000);
-  const seconds = Math.floor((ms % 60000) / 1000);
-  return `${String(minutes).padStart(2, "0")}m:${String(seconds).padStart(
-    2,
-    "0"
-  )}s`;
-};
+// const formatTime = (ms: number) => {
+//   const minutes = Math.floor(ms / 60000);
+//   const seconds = Math.floor((ms % 60000) / 1000);
+//   return `${String(minutes).padStart(2, "0")}m:${String(seconds).padStart(
+//     2,
+//     "0"
+//   )}s`;
+// };
 
 function Page() {
-  const { elapsedMs } = useHighPrecisionTimer();
+  // const { elapsedMs } = useHighPrecisionTimer(true);
   const numberGuess = useAppSelector((s) => s.numberGuess);
   const { ngnBalance } = useWalletBalances();
   const router = useRouter();
@@ -130,12 +130,13 @@ function Page() {
               </button>
             ) : (
               <div>
-                <p className="text-neutral-600">
+                {/* <p className="text-neutral-600">
                   Time:{" "}
                   <span className="font-bold text-primary-700">
                     {formatTime(elapsedMs)}
+                    {elapsedMs}
                   </span>
-                </p>
+                </p> */}
               </div>
             )}
             <div className="flex items-center justify-end">

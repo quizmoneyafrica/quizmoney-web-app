@@ -33,7 +33,6 @@ export default function useHighPrecisionTimer(autoStart = false) {
   // Auto-start
   useEffect(() => {
     if (autoStart) {
-      console.log("Auto-starting timer...");
       startTimer();
     }
 
