@@ -1,43 +1,61 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function useHighPrecisionTimer(autoStart = false) {
   const [elapsedMs, setElapsedMs] = useState(0);
-  const startTimeRef = useRef<number | null>(null);
-  const animationFrameRef = useRef<number | null>(null);
+  const animationFrameRef = useRef<number>();
+  const startTimeRef = useRef<number>();
+  const lastUpdateRef = useRef<number>(0);
 
-  const updateElapsedTime = useCallback((now: number) => {
-    if (startTimeRef.current !== null) {
-      setElapsedMs(now - startTimeRef.current);
-      animationFrameRef.current = requestAnimationFrame(updateElapsedTime);
+  // Tick function throttled to update only every 100ms
+  const tick = () => {
+    const now = performance.now();
+    const start = startTimeRef.current;
+    if (start == null) return;
+
+    // Update only if 100ms have passed since last state update
+    if (now - lastUpdateRef.current >= 100) {
+      setElapsedMs(now - start);
+      lastUpdateRef.current = now;
     }
-  }, []);
 
-  const startTimer = useCallback(() => {
+    animationFrameRef.current = requestAnimationFrame(tick);
+  };
+
+  const startTimer = () => {
+    stopTimer(); // prevent multiple loops
     startTimeRef.current = performance.now();
-    animationFrameRef.current = requestAnimationFrame(updateElapsedTime);
-  }, [updateElapsedTime]);
+    lastUpdateRef.current = performance.now();
+    animationFrameRef.current = requestAnimationFrame(tick);
+  };
 
-  const stopTimer = useCallback(() => {
-    if (animationFrameRef.current !== null) {
+  const stopTimer = () => {
+    if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
-      animationFrameRef.current = null;
+      animationFrameRef.current = undefined;
     }
-  }, []);
+  };
 
-  const resetTimer = useCallback(() => {
+  const resetTimer = () => {
     stopTimer();
+    startTimeRef.current = undefined;
+    lastUpdateRef.current = 0;
     setElapsedMs(0);
-    startTimeRef.current = null;
-  }, [stopTimer]);
+  };
 
-  // Auto-start
   useEffect(() => {
     if (autoStart) {
       startTimer();
     }
+    return () => {
+      stopTimer();
+    };
+    // Only run on mount/unmount — do NOT add `startTimer` to deps!
+  }, []);
 
-    return () => stopTimer();
-  }, [autoStart, startTimer, stopTimer]);
-
-  return { elapsedMs, startTimer, stopTimer, resetTimer };
+  return {
+    elapsedMs: Math.floor(elapsedMs),
+    startTimer,
+    stopTimer,
+    resetTimer,
+  };
 }
