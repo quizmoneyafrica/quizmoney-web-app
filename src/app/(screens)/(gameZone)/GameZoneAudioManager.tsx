@@ -11,14 +11,14 @@ export default function GameZoneAudioManager() {
   useEffect(() => {
     const audio = new Audio();
     audio.volume = 0.1;
-    audio.loop = true;
+    audio.loop = phase !== "win" && phase !== "lost" && true;
     audioRef.current = audio;
 
     return () => {
       audio.pause();
       audioRef.current = null;
     };
-  }, []);
+  }, [phase]);
 
   // Audio source for diff game screens
   useEffect(() => {
@@ -28,24 +28,24 @@ export default function GameZoneAudioManager() {
     const soundMap: Record<string, Record<string, string>> = {
       NUMBER_GUESSER: {
         zone: "/sounds/gamezone.mp3",
+        game: "/sounds/count-sound.mp3",
         playing: "/sounds/numberguess.mp3",
         win: "/sounds/numberguesswin.mp3",
         lost: "/sounds/numberguesslost.mp3",
       },
       PERFECT_SCORE: {
         zone: "/sounds/gamezone.mp3",
+        game: "/sounds/count-sound.mp3",
         playing: "/sounds/numberguess.mp3",
         win: "/sounds/numberguesswin.mp3",
         lost: "/sounds/numberguesslost.mp3",
       },
     };
 
-    let newSrc = "/sounds/gamezone.mp3";
-    if (currentGameData.type && phase) {
-      newSrc =
-        soundMap[currentGameData.type]?.[phase] ?? "/sounds/melodiza.mp3";
-    }
+    const newSrc =
+      soundMap[currentGameData.type]?.[phase] ?? "/sounds/gamezone.mp3";
 
+    console.log("Song Playing ", newSrc, phase);
     // Only update if the src is different to avoid reload flicker
     if (audio.src !== new URL(newSrc, window.location.origin).href) {
       audio.src = newSrc;

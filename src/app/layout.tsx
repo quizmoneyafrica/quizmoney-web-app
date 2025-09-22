@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, DM_Sans } from "next/font/google";
+import { Space_Grotesk, DM_Sans, Anton_SC } from "next/font/google";
 import "./globals.css";
 import AppSetup from "./appSetup";
 import "@radix-ui/themes/styles.css";
@@ -8,14 +8,23 @@ import InstallAppButton from "./pwa/install";
 import Script from "next/script";
 import type { Viewport } from "next";
 
-const spacegrotesk = Space_Grotesk({
-  variable: "--spacegrotesk",
+const dmSans = DM_Sans({
   subsets: ["latin"],
+  variable: "--font-dm-sans",
+  display: "swap",
 });
 
-const dmsans = DM_Sans({
-  variable: "--dmsans",
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
+  variable: "--font-space-grotesk",
+  display: "swap",
+});
+
+const anton = Anton_SC({
+  subsets: ["latin"],
+  weight: ["400"], // Anton_SC only supports 400
+  variable: "--font-anton",
+  display: "swap",
 });
 
 export const viewport: Viewport = {
@@ -105,7 +114,7 @@ export default function RootLayout({
         </Script>
       </head>
       <body
-        className={`${spacegrotesk.variable} ${dmsans.variable} antialiased`}
+        className={`${dmSans.variable} ${spaceGrotesk.variable} ${anton.variable} antialiased`}
       >
         <BodyWrapper>
           <AppSetup>{children}</AppSetup>

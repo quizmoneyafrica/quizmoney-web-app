@@ -66,6 +66,7 @@ function GameZone() {
         onClick: () => {},
         btnText: "Coming soon",
         btnDisabled: true,
+        gameType: "PERFECT_SCORE",
       },
     },
     {
@@ -77,6 +78,7 @@ function GameZone() {
         btnText: "Play Game",
         // onClick: () => {},
         // btnText: "Coming soon",
+        gameType: "NUMBER_GUESSER",
       },
       variant: "blue",
     },
@@ -88,6 +90,7 @@ function GameZone() {
         onClick: () => {},
         btnText: "Coming soon",
         btnDisabled: true,
+        gameType: "MEMORY_GAME",
       },
       variant: "green",
     },

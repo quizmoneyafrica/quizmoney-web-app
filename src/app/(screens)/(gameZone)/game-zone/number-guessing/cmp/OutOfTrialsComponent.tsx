@@ -6,11 +6,12 @@ import {
   setExtraTrialBought,
   setGameStatus,
   setOpenBuyModal,
+  setTrials,
 } from "@/app/store/numberGuessGameSlice";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
-import { setCurrentGameData } from "@/app/store/gameZoneSlice";
+import { setCurrentGameData, setZonePhase } from "@/app/store/gameZoneSlice";
 import GameZoneAPI from "@/app/api/gameZoneApi";
 import QMLoader from "@/app/components/splashScreen/QMLoader";
 
@@ -84,13 +85,15 @@ export default function OutOfTrialsComponent() {
       await GameZoneAPI.leaveNumberGuessGame(sessionId);
       handleSetOpenBuyModal(false);
       dispatch(setGameStatus("START"));
+      dispatch(setTrials(3));
+      dispatch(setZonePhase("game"));
       dispatch(setExtraTrialBought(0));
       dispatch(
         setCurrentGameData({
           gameId: "",
           name: "",
           description: "",
-          type: "",
+          type: "NUMBER_GUESSER",
           config: {
             minimumStake: 1000,
             maximumStake: 1000000,

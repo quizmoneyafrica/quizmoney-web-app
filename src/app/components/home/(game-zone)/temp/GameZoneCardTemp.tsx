@@ -1,6 +1,11 @@
 import { useAppDispatch } from "@/app/hooks/useAuth";
 import { PlayIcon, WaveLine, WaveLineLarge, WinX } from "@/app/icons/icons";
-import { playZoneAudio, setZonePhase } from "@/app/store/gameZoneSlice";
+import {
+  GameTypes,
+  playZoneAudio,
+  setCurrentGameType,
+  setZonePhase,
+} from "@/app/store/gameZoneSlice";
 import { Bookmark } from "lucide-react";
 import Image from "next/image";
 import React, { ReactElement } from "react";
@@ -13,6 +18,7 @@ export interface GameZoneCardObject {
   btnText?: string;
   stakeMultiplier?: number;
   btnDisabled?: boolean;
+  gameType?: GameTypes;
 }
 
 export type gamesObject = {
@@ -29,7 +35,8 @@ function GameZoneCardTemp(props: gamesObject) {
 
   const handleBtn = () => {
     data.onClick();
-    dispatch(setZonePhase("zone"));
+    dispatch(setCurrentGameType(data.gameType || ""));
+    dispatch(setZonePhase("game"));
     dispatch(playZoneAudio());
   };
   return (
