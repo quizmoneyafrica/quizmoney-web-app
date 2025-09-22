@@ -53,8 +53,8 @@ export default function MobileList({
                 ? "Wallet Top up"
                 : "Withdrawal made")}
           </p>
-          <p className="text-xs md:text-sm text-gray-500">
-            {transaction.transactionType}
+          <p className="text-xs md:text-sm text-gray-500 lowercase">
+            {transaction.direction}
           </p>
         </div>
       </div>

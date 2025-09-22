@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type GameTypes = "NUMBER_GUESSER" | "MEMORY_GAME" | "PERFECT_SCORE" | "";
-export type GamePhase = "zone" | "playing" | "win" | "lost" | "";
+export type GamePhase = "zone" | "game" | "playing" | "win" | "lost" | "";
 export interface GameZoneGamesObject {
   gameId: string;
   name: string;
@@ -51,6 +51,9 @@ const gameZoneSlice = createSlice({
     setZonePhase: (state, action: PayloadAction<GamePhase>) => {
       state.phase = action.payload;
     },
+    setCurrentGameType: (state, action: PayloadAction<GameTypes>) => {
+      state.currentGameData.type = action.payload;
+    },
     playZoneAudio: (state) => {
       state.audioShouldPlay = true;
     },
@@ -66,5 +69,6 @@ export const {
   setZonePhase,
   playZoneAudio,
   stopZoneAudio,
+  setCurrentGameType,
 } = gameZoneSlice.actions;
 export default gameZoneSlice.reducer;

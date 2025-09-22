@@ -4,7 +4,6 @@ export type GameStatus =
   | "START"
   | "STAKE"
   | "INPROGRESS"
-  | "ENDED"
   | "PURCHASE_TRIAL"
   | "LOST"
   | "WON";

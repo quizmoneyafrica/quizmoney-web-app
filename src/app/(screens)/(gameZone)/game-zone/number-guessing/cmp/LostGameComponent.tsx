@@ -4,10 +4,11 @@ import { motion } from "framer-motion";
 import {
   setExtraTrialBought,
   setGameStatus,
+  setTrials,
 } from "@/app/store/numberGuessGameSlice";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import { RefreshCcw } from "lucide-react";
-import { setCurrentGameData } from "@/app/store/gameZoneSlice";
+import { setCurrentGameData, setZonePhase } from "@/app/store/gameZoneSlice";
 import GameZoneAPI from "@/app/api/gameZoneApi";
 import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
@@ -40,13 +41,15 @@ export default function LostGameComponent() {
     try {
       await GameZoneAPI.leaveNumberGuessGame(sessionId);
       dispatch(setGameStatus("START"));
+      dispatch(setTrials(3));
+      dispatch(setZonePhase("game"));
       dispatch(setExtraTrialBought(0));
       dispatch(
         setCurrentGameData({
           gameId: "",
           name: "",
           description: "",
-          type: "",
+          type: "NUMBER_GUESSER",
           config: {
             minimumStake: 1000,
             maximumStake: 1000000,
