@@ -78,7 +78,7 @@ export default function WonGameComponent() {
           <div className="relative pb-2">
             <div className="w-full absolute -top-[7.3em] z-[1]">
               <Image
-                src="/icons/sunShine.svg"
+                src="/icons/sunshine.svg"
                 alt="sunshine"
                 className="w-full absolute -top-[7.3em] z-[1]"
                 width={100}

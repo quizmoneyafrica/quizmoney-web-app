@@ -1,5 +1,6 @@
 import * as React from "react";
 import { motion, HTMLMotionProps } from "framer-motion";
+import Image from "next/image";
 
 type GameButtonProps = HTMLMotionProps<"button"> & {
   text?: string;
@@ -28,7 +29,14 @@ export const GameButton: React.FC<GameButtonProps> = ({
 
       {/* Text */}
       <p className="absolute inset-0 z-[2] flex items-center justify-center text-white font-bold gap-1">
-        <img src="/icons/consoleGame.svg" className="w-6 h-6" alt="Quiz Money Game Zone" />
+        <Image
+          src="/icons/consoleGame.svg"
+          className="w-6 h-6"
+          alt="Quiz Money Game Zone"
+          width={100}
+          height={100}
+          quality={100}
+        />
         {loading ? (
           <div className="w-6 h-6 border-2 border-t-primary-800 border-gray-300 rounded-full animate-spin"></div>
         ) : (
