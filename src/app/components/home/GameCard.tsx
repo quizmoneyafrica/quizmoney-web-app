@@ -126,14 +126,16 @@ function GameCard() {
                     as="h1"
                     className="text-primary-900 !text-[2.7rem] !font-black"
                   >
-                    {formatNaira(nextGameData?.prize)}
+                    {formatNaira(1000000)}
+                    /* {formatNaira(nextGameData?.prize)} */
                   </Heading>
                   <span className="text-center text-2xl text-primary-900">
                     +
                   </span>
                   <div className="flex items-center gap-1 text-primary-900 font-bold text-xl">
                     <QMCoin />{" "}
-                    <span>{coinPrize.toLocaleString()} QM Coins</span>
+                    <span>-- QM Coins</span>
+                    {/* <span>{coinPrize.toLocaleString()} QM Coins</span> */}
                   </div>
                 </Flex>
                 <Flex
@@ -142,7 +144,7 @@ function GameCard() {
                   align="center"
                   justify="center"
                 >
-                  {nextGameData && nextGameData.status === "INPROGRESS" && (
+                  /* {nextGameData && nextGameData.status === "INPROGRESS" && (
                     <div className="flex items-center gap-1">
                       <div className="relative h-3 w-3 bg-error-500 rounded-full">
                         <div className="h-3 w-3 bg-error-500 rounded-full animate-ping absolute left-0 top-0" />
@@ -151,13 +153,15 @@ function GameCard() {
                         Live Game in Session
                       </p>
                     </div>
-                  )}
+                  )} */
 
                   <Text className="text-neutral-800">
-                    Next Game: {formatQuizDate(nextGameData?.startTime || "")}
+                     Next Game: --
+                    {/* Next Game: {formatQuizDate(nextGameData?.startTime || "")} */}
                   </Text>
                   <Text className="text-neutral-800 font-medium">
-                    Entry Fee: {formatNaira(nextGameData?.fee, true)}
+                    Entry Fee: --
+                    {/* Entry Fee: {formatNaira(nextGameData?.fee, true)} */}
                   </Text>
                 </Flex>
               </Flex>
