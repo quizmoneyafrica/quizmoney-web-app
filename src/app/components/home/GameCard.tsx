@@ -126,7 +126,8 @@ function GameCard() {
                     as="h1"
                     className="text-primary-900 !text-[2.7rem] !font-black"
                   >
-                    {formatNaira(nextGameData?.prize)}
+                    {/* {formatNaira(nextGameData?.prize)} */}
+                    {formatNaira(1000000)}
                   </Heading>
                   <span className="text-center text-2xl text-primary-900">
                     +
