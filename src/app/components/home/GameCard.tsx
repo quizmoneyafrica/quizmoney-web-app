@@ -5,7 +5,7 @@ import GameApi from "@/app/api/game";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import { setNextGameData } from "@/app/store/gameSlice";
 import { Flex, Heading, Skeleton, Text } from "@radix-ui/themes";
-import { formatNaira, formatQuizDate } from "@/app/utils/utils";
+import { formatNaira } from "@/app/utils/utils";
 import Link from "next/link";
 import PlayDemoBtn from "./PlayDemo";
 //import { toast } from "sonner";
@@ -99,7 +99,7 @@ function GameCard() {
         <Skeleton width="100%" height="288px" />
       </div>
     );
-  const coinPrize = nextGameData?.coinPrize || 0;
+  // const coinPrize = nextGameData?.coinPrize || 0;
 
   return (
     <>
@@ -126,16 +126,16 @@ function GameCard() {
                     as="h1"
                     className="text-primary-900 !text-[2.7rem] !font-black"
                   >
+                    {/* {formatNaira(nextGameData?.prize)} */}
                     {formatNaira(1000000)}
-                    /* {formatNaira(nextGameData?.prize)} */
                   </Heading>
                   <span className="text-center text-2xl text-primary-900">
                     +
                   </span>
                   <div className="flex items-center gap-1 text-primary-900 font-bold text-xl">
                     <QMCoin />{" "}
-                    <span>-- QM Coins</span>
                     {/* <span>{coinPrize.toLocaleString()} QM Coins</span> */}
+                    <span>- QM Coins</span>
                   </div>
                 </Flex>
                 <Flex
@@ -144,7 +144,7 @@ function GameCard() {
                   align="center"
                   justify="center"
                 >
-                  /* {nextGameData && nextGameData.status === "INPROGRESS" && (
+                  {/* {nextGameData && nextGameData.status === "INPROGRESS" && (
                     <div className="flex items-center gap-1">
                       <div className="relative h-3 w-3 bg-error-500 rounded-full">
                         <div className="h-3 w-3 bg-error-500 rounded-full animate-ping absolute left-0 top-0" />
@@ -153,15 +153,15 @@ function GameCard() {
                         Live Game in Session
                       </p>
                     </div>
-                  )} */
+                  )} */}
 
                   <Text className="text-neutral-800">
-                     Next Game: --
                     {/* Next Game: {formatQuizDate(nextGameData?.startTime || "")} */}
+                    Next Game: --
                   </Text>
                   <Text className="text-neutral-800 font-medium">
-                    Entry Fee: --
                     {/* Entry Fee: {formatNaira(nextGameData?.fee, true)} */}
+                    Entry Fee: {formatNaira(0, true)}
                   </Text>
                 </Flex>
               </Flex>
