@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { RootState } from "./store";
 
 export type GameStatus = "START" | "STAKE" | "INPROGRESS" | "ENDED" | "PURCHASE_TRIAL"|"LOST"|"WON";
 
@@ -61,3 +62,5 @@ export const {
   setOpenBuyModal,
 } = numberGuessGameSlice.actions;
 export default numberGuessGameSlice.reducer;
+const selectNumberGuess = (state: RootState) => state.numberGuess;
+export { selectNumberGuess };

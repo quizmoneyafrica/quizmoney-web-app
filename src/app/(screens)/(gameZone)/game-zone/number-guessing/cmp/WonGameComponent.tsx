@@ -1,10 +1,14 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { setGameStatus } from "@/app/store/numberGuessGameSlice";
+import {
+  selectNumberGuess,
+  setGameStatus,
+} from "@/app/store/numberGuessGameSlice";
 import { useAppDispatch } from "@/app/hooks/useAuth";
 import { RefreshCcw } from "lucide-react";
 import { redirect } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useSelector } from "react-redux";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -26,6 +30,7 @@ const buttonItem = {
 export default function WonGameComponent() {
   const dispatch = useAppDispatch();
   const [spinning, setSpinning] = useState(false);
+  const { gameSettings } = useSelector(selectNumberGuess);
   const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
