@@ -57,7 +57,7 @@ function Page() {
   }, [dispatch, phase]);
 
   if (phase === "lobby") return <LobbyScreen />;
-  if (nextGameData?.status === "INPROGRESS" && phase === "completed")
+  if (nextGameData?.status === "INPROGRESS" && phase === "playing")
     return <GameScreen />;
   if (phase === "completed") return <GameCompleted />;
   if (phase === "result") return <Results />;
