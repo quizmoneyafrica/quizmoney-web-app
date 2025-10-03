@@ -1,4 +1,5 @@
 import { useAppDispatch } from "@/app/hooks/useAuth";
+import { useGameZone } from "@/app/hooks/useGameZone";
 import {
   ClockSvg,
   MoneyWings,
@@ -12,6 +13,12 @@ import React from "react";
 
 function StartPage() {
   const dispatch = useAppDispatch();
+  const { fetchCurrentGameData } = useGameZone("NUMBER_GUESSER");
+
+  const handleStartGame = () => {
+    fetchCurrentGameData();
+    dispatch(setGameStatus("STAKE"));
+  };
   return (
     <div className="w-full max-w-lg mx-auto space-y-10">
       <div className="space-y-4">
@@ -82,11 +89,7 @@ function StartPage() {
       </div>
       <div className="flex items-center justify-center">
         <GameButton
-          onClick={() => {
-            // fetchCurrentGameData();
-            dispatch(setGameStatus("STAKE"));
-            // store.dispatch(setGameStatus("LOST"));
-          }}
+          onClick={() => handleStartGame()}
           text="Yes Start Game"
           type="submit"
         />

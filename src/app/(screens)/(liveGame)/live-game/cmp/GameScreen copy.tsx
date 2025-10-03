@@ -386,7 +386,7 @@
 //                 isPlaying
 //                 duration={7}
 //                 key={currentIndex}
-//                 colors={["#00B87B", "#A30000", "#A30000"]}
+//                 colors={["#000100", "#A30000", "#A30000"]}
 //                 colorsTime={[10, 5, 0]}
 //                 isSmoothColorTransition={false}
 //                 rotation="counterclockwise"

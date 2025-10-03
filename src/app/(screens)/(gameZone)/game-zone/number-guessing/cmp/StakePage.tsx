@@ -6,6 +6,7 @@ import { useGameZone } from "@/app/hooks/useGameZone";
 import {
   setGameSettings,
   setGameStatus,
+  setTrials,
 } from "@/app/store/numberGuessGameSlice";
 import CustomTextField from "@/app/utils/CustomTextField";
 import { GameButton } from "@/app/utils/GameButton";
@@ -19,6 +20,8 @@ import GameZoneAPI from "@/app/api/gameZoneApi";
 import { DiceQ } from "@/app/icons/icons";
 import { setPhase } from "@/app/store/gameSlice";
 import useWalletHook from "@/app/hooks/useWallet";
+import QMLoader from "@/app/components/splashScreen/QMLoader";
+import { setZonePhase } from "@/app/store/gameZoneSlice";
 
 const preStakeAmounts = [
   { value: 1000 },
@@ -37,19 +40,25 @@ function StakePage() {
 
   if (isFetching) {
     return (
-      <div className="pt-[30%] w-full max-w-lg mx-auto space-y-10">
-        <p className="text-center text-primary-900">Game Loading...</p>
+      <div className="w-full h-full grid place-items-center">
+        <QMLoader />
       </div>
     );
   }
 
-  const handleStakeInGame = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleStakeInGame = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     try {
       if (prevSessionId) {
-        await GameZoneAPI.leaveNumberGuessGame(prevSessionId);
+        try {
+          await GameZoneAPI.leaveNumberGuessGame(prevSessionId);
+        } catch (err: any) {
+          localStorage.removeItem("gameSessionId");
+
+          console.log(err);
+        }
       }
-      if (!currentGameData) {
+      if (!currentGameData.gameId) {
         throw new Error("Game not found");
       }
       const res = await GameZoneAPI.stakeInGame(
@@ -57,6 +66,7 @@ function StakePage() {
         currentGameData.type,
         stake
       );
+      dispatch(setTrials(3));
       dispatch(setGameSettings(res.data));
       console.log("====================================");
       console.log(res.data);
@@ -64,6 +74,7 @@ function StakePage() {
       localStorage.setItem("gameSessionId", res.data.sessionId);
       dispatch(setGameStatus("INPROGRESS"));
       dispatch(setPhase("playing"));
+      dispatch(setZonePhase("playing"));
       fetchWallet();
     } catch (err: any) {
       toast.error(err.message, { position: toastPosition });

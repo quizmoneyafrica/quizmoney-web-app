@@ -1,17 +1,19 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
 import { CirclePlus, Home, MoveLeft } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
-import { formatNaira } from "@/app/utils/utils";
+import { formatNaira, toastPosition } from "@/app/utils/utils";
 import { useRouter } from "next/navigation";
 import StartPage from "./cmp/StartPage";
 import StakePage from "./cmp/StakePage";
 import InProgress from "./cmp/InProgress";
-import ResultScreen from "./cmp/ResultScreen";
 import {
+  setExtraTrialBought,
   setGameStatus,
   setOpenBuyModal,
+  setTrials,
 } from "@/app/store/numberGuessGameSlice";
 import { useWalletBalances } from "@/app/hooks/useWallet";
 import OutOfTrialsComponent from "./cmp/OutOfTrialsComponent";
@@ -21,6 +23,9 @@ import PurchaseTrials from "./cmp/PurchaseTrials";
 import { store } from "@/app/store/store";
 import LostGameComponent from "./cmp/LostGameComponent";
 import WonGameComponent from "./cmp/WonGameComponent";
+import { setCurrentGameData, setZonePhase } from "@/app/store/gameZoneSlice";
+import GameZoneAPI from "@/app/api/gameZoneApi";
+import { toast } from "sonner";
 
 function Page() {
   const numberGuess = useAppSelector((s) => s.numberGuess);
@@ -30,6 +35,7 @@ function Page() {
   const openBuyModal = useAppSelector(
     (s) => s.numberGuess.openBuyModal ?? false
   );
+  const sessionId = useAppSelector((s) => s.numberGuess.gameSettings.sessionId);
 
   const handleBack = () => {
     if (numberGuess.gameStatus === "START") {
@@ -39,12 +45,36 @@ function Page() {
     } else if (numberGuess.gameStatus === "INPROGRESS") {
       dispatch(setGameStatus("STAKE"));
       // return;
-    } else if (numberGuess.gameStatus === "ENDED") {
-      dispatch(setGameStatus("START"));
     } else if (numberGuess.gameStatus === "LOST") {
       dispatch(setGameStatus("START"));
     } else if (numberGuess.gameStatus === "WON") {
       dispatch(setGameStatus("START"));
+    }
+  };
+
+  const handleLeaveGame = async () => {
+    try {
+      await GameZoneAPI.leaveNumberGuessGame(sessionId);
+      dispatch(setGameStatus("START"));
+      dispatch(setTrials(3));
+      dispatch(setZonePhase("zone"));
+      dispatch(setExtraTrialBought(0));
+      dispatch(
+        setCurrentGameData({
+          gameId: "",
+          name: "",
+          description: "",
+          type: "NUMBER_GUESSER",
+          config: {
+            minimumStake: 1000,
+            maximumStake: 1000000,
+          },
+        })
+      );
+      localStorage.removeItem("gameSessionId");
+      router.push("/home");
+    } catch (error: any) {
+      toast.error(error.message, { position: toastPosition });
     }
   };
 
@@ -61,11 +91,9 @@ function Page() {
 
           numberGuess.gameStatus === "START"
             ? "bg-primary-900 hero"
-            : "bg-[#E4F1FA]",
-
-          numberGuess.gameStatus === "PURCHASE_TRIAL" ||
-            numberGuess.gameStatus === "LOST" ||
-            numberGuess.gameStatus === "WON"
+            : numberGuess.gameStatus === "PURCHASE_TRIAL" ||
+              numberGuess.gameStatus === "LOST" ||
+              numberGuess.gameStatus === "WON"
             ? "bg-white"
             : "bg-[#E4F1FA]"
         )}
@@ -75,18 +103,26 @@ function Page() {
           numberGuess.gameStatus === "PURCHASE_TRIAL" ||
           numberGuess.gameStatus === "LOST"
         ) && (
-          <div className="grid grid-cols-2">
-            <button
-              type="button"
-              onClick={handleBack}
-              className={`${
-                numberGuess.gameStatus === "START" ? "text-white" : "text-black"
-              } font-bold flex items-center gap-1`}
-            >
-              <MoveLeft />
-            </button>
+          <div className="grid grid-cols-2 items-center">
+            {numberGuess.gameStatus === "START" ||
+            numberGuess.gameStatus === "STAKE" ? (
+              <button
+                type="button"
+                onClick={handleBack}
+                className={`${
+                  numberGuess.gameStatus === "START"
+                    ? "text-white"
+                    : "text-black"
+                } font-bold flex items-center gap-1`}
+              >
+                <MoveLeft />
+              </button>
+            ) : (
+              <div></div>
+            )}
             <div className="flex items-center justify-end">
               <button
+                disabled={numberGuess.gameStatus === "INPROGRESS"}
                 type="button"
                 onClick={() => router.push("/wallet")}
                 className="bg-white rounded-full px-4 py-2 text-primary-900 font-medium font-text flex items-center gap-1"
@@ -110,7 +146,7 @@ function Page() {
             <div className="flex items-center justify-end">
               <button
                 type="button"
-                onClick={() => router.push("/home")}
+                onClick={() => handleLeaveGame()}
                 className=" text-[#2364AA] border border-[#6DB2E4] rounded-full px-4 py-2 bg-[#E4F1FA] font-medium font-text flex items-center gap-1"
               >
                 <Home width={18} height={18} />
@@ -124,7 +160,6 @@ function Page() {
           {numberGuess.gameStatus === "START" && <StartPage />}
           {numberGuess.gameStatus === "STAKE" && <StakePage />}
           {numberGuess.gameStatus === "INPROGRESS" && <InProgress />}
-          {numberGuess.gameStatus === "ENDED" && <ResultScreen />}
           {numberGuess.gameStatus === "LOST" && <LostGameComponent />}
           {numberGuess.gameStatus === "WON" && <WonGameComponent />}
         </div>
@@ -134,7 +169,6 @@ function Page() {
       </div>
       <QmDrawer
         open={openBuyModal}
-        heightClass="h-fit"
         onOpenChange={(open) => store.dispatch(setOpenBuyModal(open))}
         title="Buy Extra Trials"
         titleLeft

@@ -2,9 +2,12 @@
 import GameZoneAPI from "@/app/api/gameZoneApi";
 import QMLoader from "@/app/components/splashScreen/QMLoader";
 import { useAppSelector } from "@/app/hooks/useAuth";
+import useHighPrecisionTimer from "@/app/hooks/useHighPrecisionTimer";
 import { useWalletBalances } from "@/app/hooks/useWallet";
 import { ArrowDownIcon } from "@/app/icons/icons";
+import { setZonePhase } from "@/app/store/gameZoneSlice";
 import {
+  setExtraTrialBought,
   setGameStatus,
   setOpenBuyModal,
   setTrials,
@@ -21,28 +24,26 @@ type Option = {
   label: string;
   value: number;
 };
-const SelectOptions: Option[] = [
-  {
-    label: "0",
-    value: 0,
-  },
-  {
-    label: "1",
-    value: 1,
-  },
-  {
-    label: "2",
-    value: 2,
-  },
-];
 
 export default function PurchaseTrials() {
+  const { startTimer } = useHighPrecisionTimer();
   const { ngnBalance } = useWalletBalances();
-  const [selectedTrials, setSelectedTrials] = useState<number>(0);
+  const [selectedTrials, setSelectedTrials] = useState<number>(1);
   const trials = useAppSelector((s) => s.numberGuess.trials);
+  const extraTrialBought = useAppSelector(
+    (s) => s.numberGuess.extraTrialBought
+  );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const sessionId = localStorage.getItem("gameSessionId");
+
+  const SelectOptions: Option[] =
+    extraTrialBought === 1
+      ? [{ label: "1", value: 1 }]
+      : [
+          { label: "1", value: 1 },
+          { label: "2", value: 2 },
+        ];
 
   const buyTrials = async () => {
     setErrorMessage(null);
@@ -59,6 +60,11 @@ export default function PurchaseTrials() {
             store.dispatch(setOpenBuyModal(false));
             toast.success("You're Back In!", { position: "top-center" });
             store.dispatch(setGameStatus("INPROGRESS"));
+            store.dispatch(setZonePhase("playing"));
+            startTimer();
+            store.dispatch(
+              setExtraTrialBought(extraTrialBought + selectedTrials)
+            );
           }
         } else {
           setErrorMessage("Session expired, please start a new game.");
@@ -73,7 +79,7 @@ export default function PurchaseTrials() {
     }
   };
   return (
-    <div className="relative space-y-6 pt-5">
+    <div className="relative space-y-6 pt-5 pb-5">
       <section className="grid grid-cols-2 place-items-center border-2 border-primary-700 rounded p-4">
         <div className="flex gap-2 text-sm w-full">
           <Wallet2Icon className="text-primary-700" />
@@ -123,7 +129,7 @@ export default function PurchaseTrials() {
             <div className="border border-primary-300 bg-primary-100 rounded w-full p-4 grid grid-cols-2">
               <p className="text-sm">Amount</p>
               <p className="text-end font-bold text-primary-900">
-                {formatNaira(Number(1000), true)}
+                {formatNaira(Number(1000 * selectedTrials), true)}
               </p>
             </div>
             <div className="flex items-center gap-1">

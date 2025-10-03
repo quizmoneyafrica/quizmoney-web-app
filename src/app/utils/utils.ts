@@ -1,4 +1,10 @@
-import { format, isToday, isTomorrow, isPast, parseISO } from "date-fns";
+import {
+  format,
+  isToday,
+  isTomorrow,
+  isPast,
+  differenceInCalendarDays,
+} from "date-fns";
 import { Transaction } from "../store/walletSlice";
 
 export function isIosPwaInstalled(): boolean {
@@ -103,10 +109,12 @@ export function formatNaira(
 
 export function formatQuizDate(input: string): string {
   if (!input) return "";
-  const originalDate = parseISO(input);
+
+  // Use new Date so it works with toLocaleString inputs like "10/2/2025, 6:55:00 PM"
+  const originalDate = new Date(input);
+
   if (isNaN(originalDate.getTime())) return "Invalid date";
 
-  // const date = addHours(originalDate, 1);
   const date = originalDate;
   const time = format(date, "h:mm a");
 
@@ -114,12 +122,22 @@ export function formatQuizDate(input: string): string {
     return `Today, ${time}`;
   } else if (isTomorrow(date)) {
     return `Tomorrow, ${time}`;
-  } else if (!isPast(date)) {
-    return `${format(date, "EEEE")}, ${time}`;
   } else {
-    // Past date
-    return `${format(date, "MMM do")}, ${time}`;
+    const daysAway = differenceInCalendarDays(date, new Date());
+
+    if (daysAway > 1 && daysAway <= 7) {
+      // Within the next week
+      return `${format(date, "EEEE")}, ${time}`;
+    } else if (daysAway > 7) {
+      // More than a week in the future
+      return `${format(date, "MMM do")}, ${time}`;
+    } else if (isPast(date)) {
+      // Past date
+      return `${format(date, "MMM do")}, ${time}`;
+    }
   }
+
+  return "";
 }
 
 //notification

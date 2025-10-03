@@ -10,23 +10,29 @@ export const useGameZone = (gameType: GameTypes) => {
   const dispatch = useAppDispatch();
   const currentGameData = useAppSelector((s) => s.gameZone.currentGameData);
   const [isFetching, setIsFetching] = useState<boolean>(false);
+  const [resultStatus, setResultStatus] = useState<"SUCCESS" | "FAILED" | "">(
+    ""
+  );
 
   const fetchCurrentGameData = useCallback(async () => {
+    setResultStatus("");
     setIsFetching(true);
     try {
       const res = await GameZoneAPI.getAGame(gameType);
       dispatch(setCurrentGameData(res.data));
+      setResultStatus("SUCCESS");
       setIsFetching(false);
     } catch (err: any) {
+      setResultStatus("FAILED");
       toast.error(err.message, { position: toastPosition });
     } finally {
       setIsFetching(false);
     }
   }, [dispatch, gameType]);
 
-  //   useEffect(() => {
-  //     fetchCurrentGameData();
-  //   }, [fetchCurrentGameData]);
+  // useEffect(() => {
+  //   fetchCurrentGameData();
+  // }, [fetchCurrentGameData]);
 
-  return { currentGameData, fetchCurrentGameData, isFetching };
+  return { currentGameData, fetchCurrentGameData, isFetching, resultStatus };
 };

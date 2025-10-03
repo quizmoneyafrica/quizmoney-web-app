@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PlusIcon } from "@/app/icons/icons";
 import CustomTextField from "@/app/utils/CustomTextField";
 import { GameButton } from "@/app/utils/GameButton";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import React, { Fragment, useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import GameZoneAPI from "@/app/api/gameZoneApi";
 import { toast } from "sonner";
@@ -12,17 +10,34 @@ import { toastPosition } from "@/app/utils/utils";
 import {
   setGameSettings,
   setGameStatus,
-  setOpenBuyModal,
 } from "@/app/store/numberGuessGameSlice";
 import { decrementTrials, resetTrials } from "@/app/store/numberGuessGameSlice";
 import { store } from "@/app/store/store";
+import { setZonePhase } from "@/app/store/gameZoneSlice";
+import QMLoader from "@/app/components/splashScreen/QMLoader";
+import useHighPrecisionTimer from "@/app/hooks/useHighPrecisionTimer";
+
 interface gameTry {
   guessDirection: "TOO_HIGH" | "TOO_LOW" | "EXACT" | string;
   result: "WON" | "IN_PROGRESS" | string;
 }
+
+const formatTime = (ms: number) => {
+  const minutes = Math.floor(ms / 60000);
+  const seconds = Math.floor((ms % 60000) / 1000);
+  return `${String(minutes).padStart(2, "0")}m:${String(seconds).padStart(
+    2,
+    "0"
+  )}s`;
+};
+
 function InProgress() {
+  const { elapsedMs, stopTimer, resetTimer } = useHighPrecisionTimer(true);
+
   const dispatch = useAppDispatch();
-  const { gameSettings } = useAppSelector((s) => s.numberGuess);
+  const { gameSettings, extraTrialBought } = useAppSelector(
+    (s) => s.numberGuess
+  );
   const min = gameSettings.lowerBound;
   const max = gameSettings.upperBound;
 
@@ -59,15 +74,20 @@ function InProgress() {
         const res = await GameZoneAPI.submitGuess(
           numGuess,
           gameSettings.sessionId,
-          2424
+          elapsedMs
         );
         dispatch(decrementTrials());
         setGuessResponse(res.data);
-        if (res.data.result === "TOO_LOW" || res.data.result === "TOO_HIGH") {
+        if (
+          res.data.guessDirection === "TOO_LOW" ||
+          res.data.guessDirection === "TOO_HIGH"
+        ) {
           wrongSoundRef.current?.play();
         }
         if (res.data.result === "WON") {
           localStorage.removeItem("gameSessionId");
+          correctSoundRef.current?.play();
+          dispatch(setZonePhase("win"));
           dispatch(
             setGameSettings({
               sessionId: "",
@@ -104,8 +124,8 @@ function InProgress() {
         toast.error(err.message, { position: toastPosition });
       }
     } else if (guessResponse.result === "WON") {
-      // dispatch(setGameStatus("ENDED"));
       store.dispatch(setGameStatus("WON"));
+      dispatch(setZonePhase("win"));
 
       dispatch(
         setGameSettings({
@@ -116,30 +136,45 @@ function InProgress() {
         })
       );
     }
-
-    // if (numGuess === hiddenNumber) {
-    //   setMessage(`Correct`);
-    //   setTrials((t) => t - 1);
-    //   setWon(true);
-    // } else if (numGuess > hiddenNumber) {
-    //   setMessage("Too High!");
-    //   setTrials((t) => t - 1);
-    // } else {
-    //   setMessage("Too Low!");
-    //   setTrials((t) => t - 1);
-    // }
   };
 
   useEffect(() => {
-    if (trials === 0 && guessResponse.result !== "WON") {
+    if (
+      extraTrialBought < 2 &&
+      trials === 0 &&
+      guessResponse.result !== "WON"
+    ) {
       dispatch(setGameStatus("PURCHASE_TRIAL"));
+      dispatch(setZonePhase("lost"));
+      stopTimer();
+    } else if (
+      extraTrialBought === 2 &&
+      trials === 0 &&
+      guessResponse.result !== "WON"
+    ) {
+      dispatch(setGameStatus("LOST"));
+      dispatch(setZonePhase("lost"));
+      resetTimer();
     }
-  }, [trials, guessResponse]);
+  }, [
+    trials,
+    guessResponse,
+    dispatch,
+    extraTrialBought,
+    stopTimer,
+    resetTimer,
+  ]);
 
   return (
     <Fragment>
       <div className="w-full max-w-lg mx-auto space-y-10">
         <div className="space-y-4">
+          <p className="absolute top-[2em] text-neutral-600">
+            Time:{" "}
+            <span className="font-bold text-primary-700">
+              {formatTime(elapsedMs)}
+            </span>
+          </p>
           <h2 className="text-center text-[2.3em] text-primary-900">
             Guess the Number
           </h2>
@@ -187,7 +222,7 @@ function InProgress() {
               >
                 ⚡ {trials} {trials === 1 ? "Trial" : "Trials"} Remaining
               </p>
-              {trials < 3 && (
+              {/* {trials < 3 && (
                 <div>
                   <motion.button
                     whileTap={{ scale: 0.95 }}
@@ -201,26 +236,31 @@ function InProgress() {
                   >
                     Buy Trials <PlusIcon />
                   </motion.button>{" "}
-                  {/* {trials <= 0 && guessResponse.result !== "WON" && ( */}
                 </div>
-              )}
+              )} */}
             </div>
             <div className="space-y-2">
-              <div
-                className={`h-[6em] w-[6em] mx-auto rounded-full border-3 text-lg  ${
-                  guessResponse.result === "WON"
-                    ? "border-positive-800 text-positive-800"
-                    : trials === 3 || trials === 2
-                    ? "border-[#2364AA] text-[#2364AA]"
-                    : "border-[#CF0105] text-[#CF0105]"
-                } bg-white grid place-items-center`}
-              >
-                {guessResponse.guessDirection ? (
-                  formatText(guessResponse.guessDirection)
-                ) : (
-                  <span className="font-bold text-5xl">?</span>
-                )}
-              </div>
+              {isGuessing ? (
+                <div className="w-[6em] mx-auto">
+                  <QMLoader />
+                </div>
+              ) : (
+                <div
+                  className={`h-[6em] w-[6em] mx-auto rounded-full border-3 text-lg  ${
+                    guessResponse.result === "WON"
+                      ? "border-positive-800 text-positive-800"
+                      : trials === 3
+                      ? "border-[#2364AA] text-[#2364AA]"
+                      : "border-[#CF0105] text-[#CF0105]"
+                  } bg-white grid place-items-center`}
+                >
+                  {guessResponse.guessDirection ? (
+                    formatText(guessResponse.guessDirection)
+                  ) : (
+                    <span className="font-bold text-5xl">?</span>
+                  )}
+                </div>
+              )}
               {guessResponse.result !== "WON" &&
                 trials > -1 &&
                 guessResponse.guessDirection && (
