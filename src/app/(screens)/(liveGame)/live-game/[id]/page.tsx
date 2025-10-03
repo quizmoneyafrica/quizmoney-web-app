@@ -9,13 +9,12 @@ import NotStarted from "../cmp/NotStarted";
 import Results from "../cmp/Results";
 import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
-import { setPhase, stopAudio } from "@/app/store/gameSlice";
+// import { setPhase, stopAudio } from "@/app/store/gameSlice";
 
 function Page() {
   const dispatch = useAppDispatch();
-  const { phase } = useAppSelector((state) => state.game);
-  // const [userTime, setUserTime] = useState("");
-  const userTime = "";
+  const { phase, nextGameData } = useAppSelector((state) => state.game);
+
   useEffect(() => {
     // Replace initial state so back doesn't work
     window.history.replaceState(null, "", window.location.href);
@@ -38,10 +37,10 @@ function Page() {
     };
 
     const handleVisibilityChange = () => {
-      if (document.hidden && (phase === "playing" || phase === "lobby")) {
-        dispatch(setPhase("cancelled"));
-        dispatch(stopAudio());
-      }
+      // if (document.hidden && (phase === "playing" || phase === "lobby")) {
+      //   dispatch(setPhase("cancelled"));
+      //   dispatch(stopAudio());
+      // }
     };
 
     window.history.pushState(null, "", window.location.href);
@@ -58,9 +57,10 @@ function Page() {
   }, [dispatch, phase]);
 
   if (phase === "lobby") return <LobbyScreen />;
-  if (phase === "playing") return <GameScreen />;
+  if (nextGameData?.status === "INPROGRESS" && phase === "completed")
+    return <GameScreen />;
   if (phase === "completed") return <GameCompleted />;
-  if (phase === "result") return <Results userTime={userTime} />;
+  if (phase === "result") return <Results />;
   if (phase === "cancelled") return <KickedOut />;
   return <NotStarted />;
 }

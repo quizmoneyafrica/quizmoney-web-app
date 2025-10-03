@@ -1,6 +1,6 @@
 "use client";
 import { useAppDispatch } from "@/app/hooks/useAuth";
-import { setCurrentLiveQuestion } from "@/app/store/gameSlice";
+import { setCurrentLiveQuestion, setOptionLocked } from "@/app/store/gameSlice";
 import { addSubscription, removeSubscription } from "@/app/store/stompSlice";
 import { IMessage } from "@stomp/stompjs";
 import { useEffect } from "react";
@@ -24,11 +24,13 @@ function LiveGameQueries() {
         const que = JSON.parse(msg.body);
         if (que?.id && que?.options?.length > 0) {
           dispatch(setCurrentLiveQuestion(que));
+          dispatch(setOptionLocked(false));
           console.log("Current Question", que);
         } else {
           console.warn("Fallback: Empty WebSocket payload");
           const res = await GameApi.getCurrentQuestion();
           dispatch(setCurrentLiveQuestion(res.data));
+          dispatch(setOptionLocked(false));
         }
       } catch (err) {
         console.error("WebSocket JSON parse failed, using fallback", err);

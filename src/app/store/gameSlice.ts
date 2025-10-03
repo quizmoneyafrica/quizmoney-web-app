@@ -10,7 +10,7 @@ export type GamePhase =
   | "result"
   | "cancelled"
   | "demo";
-export type GameStatus = "UPCOMING" | "INPROGRESS" | "WAITING" | "ENDED";
+export type GameStatus = "UPCOMING" | "WAITING" | "INPROGRESS" | "ENDED";
 
 interface CurrentGameObj {
   gameId: string;
@@ -21,6 +21,8 @@ interface CurrentGameObj {
   startTime: string;
   description: string;
   coinPrize: number;
+  currentQuestionOrder: number;
+  endTime: string;
 }
 export interface CurrentLiveQuestionOptionsObj {
   optionId: string;
@@ -30,6 +32,7 @@ interface CurrentLiveQuestionObj {
   id: string;
   text: string;
   options: CurrentLiveQuestionOptionsObj[];
+  order: number;
 }
 
 export interface TopGamersState {
@@ -54,7 +57,8 @@ interface GameState {
   openLeaveGame: boolean;
   topGamers: LeaderboardEntry[] | [];
   phase: GamePhase;
-  lobbyTime: string;
+  totalTimeUsed: number;
+  optionLocked: boolean;
   audioShouldPlay: boolean;
   currentLiveQuestion?: CurrentLiveQuestionObj | null;
 }
@@ -83,7 +87,8 @@ const initialState: GameState = {
   topGamers: [],
   phase: "loading",
   audioShouldPlay: false,
-  lobbyTime: "",
+  totalTimeUsed: 0,
+  optionLocked: false,
   currentLiveQuestion: null,
 };
 
@@ -93,6 +98,14 @@ const gameSlice = createSlice({
   reducers: {
     setNextGameData(state, action: PayloadAction<CurrentGameObj>) {
       state.nextGameData = action.payload;
+    },
+    updateNextGameData(state, action: PayloadAction<Partial<CurrentGameObj>>) {
+      if (state.nextGameData) {
+        state.nextGameData = {
+          ...state.nextGameData,
+          ...action.payload,
+        };
+      }
     },
     setCurrentLiveQuestion: (
       state,
@@ -127,8 +140,11 @@ const gameSlice = createSlice({
     setTopGamers(state, action: PayloadAction<LeaderboardEntry[]>) {
       state.topGamers = action.payload;
     },
-    setLobbyTime(state, action: PayloadAction<string>) {
-      state.lobbyTime = action.payload;
+    setTotalTimeUsed(state, action: PayloadAction<number>) {
+      state.totalTimeUsed = action.payload;
+    },
+    setOptionLocked(state, action: PayloadAction<boolean>) {
+      state.optionLocked = action.payload;
     },
     playAudio: (state) => {
       state.audioShouldPlay = true;
@@ -141,6 +157,7 @@ const gameSlice = createSlice({
 
 export const {
   setNextGameData,
+  updateNextGameData,
   setShowGameCountdown,
   setIsAllowedInGame,
   setLiveGameData,
@@ -152,7 +169,8 @@ export const {
   setPhase,
   playAudio,
   stopAudio,
-  setLobbyTime,
+  setTotalTimeUsed,
+  setOptionLocked,
   setCurrentLiveQuestion,
 } = gameSlice.actions;
 export default gameSlice.reducer;
