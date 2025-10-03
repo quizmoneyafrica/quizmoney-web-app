@@ -15,9 +15,19 @@ const GameApi = {
   },
   getCurrentQuestion(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
-      "/games/questions/current",
+      "games/questions/current",
       {},
       "GET"
+    );
+  },
+  submitAnswer(
+    questionOptionId: string,
+    answerTimeInMillisecond: number
+  ): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(
+      "games/questions/submit",
+      { questionOptionId, answerTimeInMillisecond },
+      "POST"
     );
   },
 
