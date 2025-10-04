@@ -7,7 +7,7 @@ const LeaderboardAPI = {
     size: number = 10
   ): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
-      `games/leaderboard?page=${page}&size=${size}`,
+      `games/leaderboard/all-time?page=${page}&size=${size}`,
       {},
       "GET"
     );
@@ -15,12 +15,11 @@ const LeaderboardAPI = {
 
   // Add this method for last game leaderboard
   getLastGameLeaderboard(
-    gameId: string,
     page: number = 0,
     size: number = 10
   ): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
-      `games/${gameId}/leaderboard?page=${page}&size=${size}`,
+      `games/leaderboard?page=${page}&size=${size}`,
       {},
       "GET"
     );

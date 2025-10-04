@@ -57,7 +57,7 @@ export default function LeaderBoardTableSection() {
 
       try {
         if (tab === "lastGame") {
-          const response = await LeaderboardAPI.getAllTimeLeaderboard(
+          const response = await LeaderboardAPI.getLastGameLeaderboard(
             page,
             entriesPerPage
           );
