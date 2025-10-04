@@ -1,7 +1,7 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Table, Skeleton } from "@radix-ui/themes";
-import { LeaderboardType } from "../types";
+import { LeaderboardEntry, LeaderboardType } from "../types";
 import LeaderboardTabs from "./LeaderboardTabs";
 import LeaderboardRow from "./LeaderboardRow";
 import LeaderboardPagination from "./LeaderboardPagination";
@@ -17,17 +17,27 @@ import { useSelector } from "react-redux";
 export default function LeaderBoardTableSection() {
   const [activeTab, setActiveTab] = useState<LeaderboardType>("lastGame");
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
   const entriesPerPage = 10;
 
   const { lastGame, allTime, pagination } = useSelector(
     (state: RootState) => state.leaderboard
   );
 
-  const leaderboardData = activeTab === "lastGame" ? lastGame : allTime;
+  // Fixed: Use arrays directly as dependencies, not .length
+  const leaderboardData = useMemo(() => {
+    if (activeTab === "lastGame") {
+      return lastGame || [];
+    } else if (activeTab === "allTime") {
+      return allTime || [];
+    }
+    return [];
+  }, [activeTab, lastGame, allTime]);
+
   const currentPagination = pagination[activeTab];
-  const totalEntries = currentPagination.totalElements;
-  const totalPages = currentPagination.totalPages;
-  const [loading, setLoading] = useState(false);
+  const totalEntries = currentPagination?.totalElements || 0;
+  const totalPages = currentPagination?.totalPages || 0;
+
   const handleTabChange = (tab: LeaderboardType) => {
     setActiveTab(tab);
     setCurrentPage(1);
@@ -47,27 +57,50 @@ export default function LeaderBoardTableSection() {
 
       try {
         if (tab === "lastGame") {
-          const games = await LeaderboardAPI.getUserGames();
-          const { gameId } = games?.data;
-          if (gameId) {
-            const response = await LeaderboardAPI.getLastGameLeaderboard(
-              gameId,
-              page,
-              entriesPerPage
-            );
-            const paginatedResponse = response.data;
-            store.dispatch(setLastGameLeaderboard(paginatedResponse));
-          }
-        } else {
           const response = await LeaderboardAPI.getAllTimeLeaderboard(
             page,
             entriesPerPage
           );
-          const paginatedResponse = response.data;
-          store.dispatch(setAllTimeLeaderboard(paginatedResponse));
+
+          const responseData = response?.data || response;
+
+          console.log("Last Game Response:", responseData);
+
+          store.dispatch(setLastGameLeaderboard(responseData));
+        } else {
+          // Fetch all-time leaderboard
+          const response = await LeaderboardAPI.getAllTimeLeaderboard(
+            page,
+            entriesPerPage
+          );
+
+          // Handle response - could be nested under data or at root
+          const responseData = response?.data || response;
+
+          console.log("All Time Response:", responseData);
+
+          // Dispatch the entire paginated response
+          store.dispatch(setAllTimeLeaderboard(responseData));
         }
       } catch (error: unknown) {
         console.error("Error fetching leaderboard:", error);
+
+        // Clear data on error
+        const emptyResponse = {
+          content: [],
+          pageNo: 0,
+          pageSize: entriesPerPage,
+          totalElements: 0,
+          totalPages: 0,
+          last: true,
+        };
+
+        if (tab === "lastGame") {
+          store.dispatch(setLastGameLeaderboard(emptyResponse));
+        } else {
+          store.dispatch(setAllTimeLeaderboard(emptyResponse));
+        }
+
         if (
           error instanceof Error &&
           error?.message === "Token expired, please login again"
@@ -83,24 +116,21 @@ export default function LeaderBoardTableSection() {
 
   useEffect(() => {
     const currentApiPage = currentPage - 1;
+
+    // Fetch if no data or page changed
     if (
+      !leaderboardData ||
       leaderboardData.length === 0 ||
-      currentPagination.pageNo !== currentApiPage
+      currentPagination?.pageNo !== currentApiPage
     ) {
       getLeaderboard(activeTab, currentApiPage);
     }
-  }, [
-    activeTab,
-    currentPage,
-    getLeaderboard,
-    leaderboardData.length,
-    currentPagination.pageNo,
-  ]);
+  }, [activeTab, currentPage]);
 
   return (
     <section className="w-full py-5">
-      <div className="bg-[#F9F9F9]    overflow-hidden">
-        <div className=" pb-0">
+      <div className="bg-[#F9F9F9] overflow-hidden">
+        <div className="pb-0">
           <LeaderboardTabs
             activeTab={activeTab}
             onTabChange={handleTabChange}
@@ -143,9 +173,9 @@ export default function LeaderBoardTableSection() {
               </Table.Body>
             </Table.Root>
           </div>
-        ) : leaderboardData?.length > 0 ? (
+        ) : leaderboardData && leaderboardData.length > 0 ? (
           <>
-            <div className=" w-full">
+            <div className="w-full">
               <Table.Root variant="ghost">
                 <Table.Header>
                   <Table.Row>
@@ -158,9 +188,9 @@ export default function LeaderBoardTableSection() {
                 </Table.Header>
 
                 <Table.Body className="relative gap-2">
-                  {leaderboardData.map((entry) => (
+                  {leaderboardData.map((entry, index) => (
                     <LeaderboardRow
-                      key={`${entry.rank}-${entry.firstName}`}
+                      key={`${entry.rank}-${entry.firstName}-${index}`}
                       entry={entry}
                     />
                   ))}
