@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Table, Skeleton } from "@radix-ui/themes";
-import { LeaderboardEntry, LeaderboardType } from "../types";
+import { LeaderboardType } from "../types";
 import LeaderboardTabs from "./LeaderboardTabs";
 import LeaderboardRow from "./LeaderboardRow";
 import LeaderboardPagination from "./LeaderboardPagination";
