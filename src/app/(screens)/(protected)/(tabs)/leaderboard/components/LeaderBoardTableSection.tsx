@@ -150,7 +150,7 @@ export default function LeaderBoardTableSection() {
                 </Table.Row>
               </Table.Header>
               <Table.Body className="relative gap-2">
-                {Array.from({ length: entriesPerPage }).map((_, index) => (
+                {Array.from({ length: 4 }).map((_, index) => (
                   <Table.Row key={`skeleton-${index}`}>
                     <Table.Cell>
                       <Skeleton width="30px" height="20px" />
