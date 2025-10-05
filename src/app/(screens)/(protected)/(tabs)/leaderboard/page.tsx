@@ -5,7 +5,7 @@ import LeaderBoardTableSection from "./components/LeaderBoardTableSection";
 export default function page() {
   return (
     <div className=" w-full">
-      <AdBanner />
+      {/* <AdBanner /> */}
       <LeaderBoardTableSection />
     </div>
   );

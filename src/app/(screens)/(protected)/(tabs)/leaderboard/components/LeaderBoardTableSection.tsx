@@ -13,6 +13,7 @@ import {
 } from "@/app/store/leaderboardSlice";
 import { RootState, store } from "@/app/store/store";
 import { useSelector } from "react-redux";
+import LastGameResultCard from "./LastGameResultCard";
 
 export default function LeaderBoardTableSection() {
   const [activeTab, setActiveTab] = useState<LeaderboardType>("lastGame");
@@ -51,11 +52,18 @@ export default function LeaderBoardTableSection() {
     }
   };
 
+  const [userLastGameStat, setUserLastGameStat] = useState();
+
   const getLeaderboard = useCallback(
     async (tab: "lastGame" | "allTime", page: number = 0) => {
       setLoading(true);
 
       try {
+        const response = await LeaderboardAPI.userLastGame("hgvcvhg");
+        if (response.data) {
+          setUserLastGameStat(response.data);
+        }
+
         if (tab === "lastGame") {
           const response = await LeaderboardAPI.getLastGameLeaderboard(
             page,
@@ -135,6 +143,9 @@ export default function LeaderBoardTableSection() {
             activeTab={activeTab}
             onTabChange={handleTabChange}
           />
+        </div>
+        <div className=" w-full py-3">
+          <LastGameResultCard userLastGameStats={userLastGameStat} />
         </div>
 
         {loading ? (

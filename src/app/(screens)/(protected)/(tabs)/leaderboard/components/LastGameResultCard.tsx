@@ -19,7 +19,7 @@ interface LastGameResultCardProps {
 const LastGameResultCard = ({ userLastGameStats }: LastGameResultCardProps) => {
   const user = getAuthUser();
 
-  console.log(JSON.stringify(user, null, 2));
+  console.log(JSON.stringify(userLastGameStats, null, 2));
 
   if (!userLastGameStats) return null;
 
