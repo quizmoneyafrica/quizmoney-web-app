@@ -1,15 +1,10 @@
-import { AlarmClockIcon } from "lucide-react";
 import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { formatNaira } from "@/app/utils/utils";
-import { Avatar, Table } from "@radix-ui/themes";
+import { Table } from "@radix-ui/themes";
 import { GameStatResult } from "@/app/hooks/useLastGameState";
 import Image from "next/image";
-import LeaderboardRow from "./LeaderboardRow";
 import { LeaderboardEntry } from "../types";
-import { getAuthUser } from "@/app/api/userApi";
-import { UserObject } from "@/app/store/authSlice";
 
 interface LastGameResultCardProps {
   userLastGameStats?: GameStatResult;
@@ -17,7 +12,6 @@ interface LastGameResultCardProps {
 
 const LastGameResultCard = ({ userLastGameStats }: LastGameResultCardProps) => {
   // Use dummy data if real data is not available
-  const user = getAuthUser() as UserObject;
   const gameStats = userLastGameStats;
 
   // || {
@@ -41,17 +35,10 @@ const LastGameResultCard = ({ userLastGameStats }: LastGameResultCardProps) => {
     return;
   }
 
-  const {
-    rank,
-    avatarUrl,
-    prizeWon,
-    firstName,
-    gamesPlayed,
-    score,
-  }: LeaderboardEntry = {
+  const { avatarUrl, prizeWon, firstName }: LeaderboardEntry = {
     rank: gameStats.rank,
     avatarUrl: gameStats.avatarUrl || "",
-    prizeWon: (gameStats as any)?.prizeWon || 0,
+    prizeWon: gameStats?.prizeWon || 0,
     firstName: gameStats.firstName,
     gamesPlayed: (gameStats?.questionsAnswered || []).length,
     score: gameStats?.score ?? 0,

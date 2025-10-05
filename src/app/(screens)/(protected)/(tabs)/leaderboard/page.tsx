@@ -1,4 +1,3 @@
-import AdBanner from "@/app/components/advert/adBanner";
 import React from "react";
 import LeaderBoardTableSection from "./components/LeaderBoardTableSection";
 

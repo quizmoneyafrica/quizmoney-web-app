@@ -2,27 +2,27 @@
 
 import { User } from "@/app/api/interface";
 import { useAppSelector } from "@/app/hooks/useAuth";
-import { RootState } from "@/app/store/store";
+// import { RootState } from "@/app/store/store";
 import { decryptData } from "@/app/utils/crypto";
-import {
-  formatNaira,
-  parseTimeStringToMilliseconds,
-  readLeaderboardTotalTime,
-} from "@/app/utils/utils";
+// import {
+//   formatNaira,
+//   parseTimeStringToMilliseconds,
+//   readLeaderboardTotalTime,
+// } from "@/app/utils/utils";
 import { Grid } from "@radix-ui/themes";
-import {
-  AlarmClockIcon,
-  ChartNoAxesColumnIcon,
-  Check,
-  Wallet,
-  X,
-} from "lucide-react";
+// import {
+//   AlarmClockIcon,
+//   ChartNoAxesColumnIcon,
+//   Check,
+//   Wallet,
+//   X,
+// } from "lucide-react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import React from "react";
-import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
-import { useSelector } from "react-redux";
-import { QMCoin } from "@/app/icons/icons";
+// import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
+// import { useSelector } from "react-redux";
+// import { QMCoin } from "@/app/icons/icons";
 import { useLastGameState } from "@/app/hooks/useLastGameState";
 
 const containerVariants = {
@@ -52,7 +52,7 @@ const ResultContent = () => {
   const encrypted = useAppSelector((s) => s.auth.userEncryptedData);
 
   const user: User | null = encrypted ? decryptData(encrypted) : null;
-  const { lastGame } = useSelector((state: RootState) => state.leaderboard);
+  // const { lastGame } = useSelector((state: RootState) => state.leaderboard);
 
   if (!gameState) {
     return (
@@ -66,7 +66,7 @@ const ResultContent = () => {
     );
   }
 
-  // const { totalCorrect, totalTime, prize, result, coins } = lastGame;
+  // const { totalCorrect, totalTime, prize, result, coins=0 } = lastGame[0];
 
   return (
     <motion.main
@@ -108,7 +108,7 @@ const ResultContent = () => {
         </div>
       </motion.section>
 
-      <motion.section
+      {/* <motion.section
         variants={itemVariants}
         aria-label="Game Statistics"
         className="border rounded-xl border-primary-800 p-2 md:p-4 flex justify-between md:justify-around"
@@ -162,9 +162,9 @@ const ResultContent = () => {
             </motion.p>
           </motion.div>
         ))}
-      </motion.section>
+      </motion.section> */}
 
-      <motion.section
+      {/* <motion.section
         variants={itemVariants}
         aria-label="Performance Analysis"
         className="space-y-4 md:space-y-6"
@@ -259,7 +259,7 @@ const ResultContent = () => {
               ))}
           </motion.div>
         </motion.div>
-      </motion.section>
+      </motion.section> */}
 
       <motion.section
         variants={itemVariants}

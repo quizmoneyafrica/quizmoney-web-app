@@ -39,9 +39,8 @@ export const useLastGameState = (): UseLastGameStateReturn => {
         setGameState(response.data);
       }
     } catch (err) {
-      setError(error);
       console.log("==========useLastGameState error==========================");
-      console.log(error);
+      console.log(err);
       console.log("==========useLastGameState error==========================");
     } finally {
       setLoading(false);
@@ -63,6 +62,7 @@ export type GameStatResult = {
   gameId: string;
   score: number;
   rank: number;
+  prizeWon: number;
   firstName: string;
   avatarUrl: string;
   questionsAnswered: {
