@@ -32,10 +32,10 @@ export default function LeaderboardRow({ entry }: LeaderboardRowProps) {
   const [imageError, setImageError] = useState(false);
 
   return (
-    <Table.Row className="">
+    <Table.Row className=" w-full">
       <Table.Cell>
         <div className="flex flex-col justify-center">
-          <div className=" size-8">🏆</div>
+          <div className=" text-3xl">🏆</div>
           <span className="text-primary-800 text-base font-semibold">
             {getRankMedal(rank)}
           </span>
@@ -45,13 +45,13 @@ export default function LeaderboardRow({ entry }: LeaderboardRowProps) {
       <Table.Cell>
         <div className="flex items-center gap-3">
           {/* Avatar */}
-          <div className="relative w-12 h-12">
+          <div className="relative w-14 h-14">
             {!imageError && avatarUrl ? (
               <Image
                 src={avatarUrl}
                 alt={`${firstName}'s avatar`}
                 fill
-                className="rounded-full object-cover"
+                className="rounded-full bg-[#E4F1FA] object-contain"
                 onError={() => setImageError(true)}
               />
             ) : (
@@ -70,9 +70,8 @@ export default function LeaderboardRow({ entry }: LeaderboardRowProps) {
       </Table.Cell>
 
       <Table.Cell align="right">
-        <span className=" bg-[#E4F1FA] py-1 px-3 rounded-full font-semibold text-[#2364AA]">
-          {/* ₦{amount.toLocaleString()} */}
-          {prizeWon}
+        <span className=" bg-[#E4F1FA] py-1 px-3 rounded-md font-semibold text-[#2364AA]">
+          {/* ₦{amount.toLocaleString()} */}₦ {prizeWon}
         </span>
       </Table.Cell>
     </Table.Row>
