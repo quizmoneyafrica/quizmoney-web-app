@@ -1,12 +1,11 @@
 export interface LeaderboardEntry {
+ rank: number;
   avatarUrl: string;
+  prizeWon:number;
   firstName: string;
   gamesPlayed: number;
-  rank: number;
   score: number;
-  amount?: number; // Prize amount
-  totalAnswerTime?: string;
-  prizeWon?: number;
+  totalAnswerTime: string;
 }
 
 export interface PaginatedLeaderboardResponse {

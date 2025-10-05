@@ -12,18 +12,19 @@ const LeaderboardAPI = {
       "GET"
     );
   },
+
+  // Add this method for last game leaderboard
   getLastGameLeaderboard(
-    gameId: string,
     page: number = 0,
     size: number = 10
   ): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(
-      `games/${gameId}/leaderboard?page=${page}&size=${size}`,
+      `games/leaderboard?page=${page}&size=${size}`,
       {},
-
       "GET"
     );
   },
+ 
   getUserGames(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(`games`, {}, "GET");
   },
