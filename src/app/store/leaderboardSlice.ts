@@ -1,6 +1,9 @@
 // store/leaderboardSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { LeaderboardEntry, PaginatedLeaderboardResponse } from "../(screens)/(protected)/(tabs)/leaderboard/types";
+import {
+  LeaderboardEntry,
+  PaginatedLeaderboardResponse,
+} from "../(screens)/(protected)/(tabs)/leaderboard/types";
 // import { LeaderboardData } from "../(screens)/(protected)/(tabs)/leaderboard/page";
 export interface QuestionResult {
   number: string;
@@ -95,11 +98,7 @@ interface LeaderboardState {
       last: boolean;
     };
   };
-  selectedPlayer?: {
-    data: LeaderboardRanking | AllTimeLeaderboardUser;
-    showSelected: boolean;
-    activeTab: "lastGame" | "allTime";
-  };
+  selectedPlayer?: LeaderboardEntry | null;
 }
 
 const initialState: LeaderboardState = {
@@ -128,7 +127,10 @@ const leaderboardSlice = createSlice({
   name: "leaderboard",
   initialState,
   reducers: {
-    setLastGameLeaderboard: (state, action: PayloadAction<PaginatedLeaderboardResponse>) => {
+    setLastGameLeaderboard: (
+      state,
+      action: PayloadAction<PaginatedLeaderboardResponse>
+    ) => {
       state.lastGame = action.payload.content;
       state.pagination.lastGame = {
         pageNo: action.payload.pageNo,
@@ -138,7 +140,7 @@ const leaderboardSlice = createSlice({
         last: action.payload.last,
       };
     },
-  
+
     setAllTimeLeaderboard: (
       state,
       action: PayloadAction<PaginatedLeaderboardResponse>
@@ -174,11 +176,7 @@ const leaderboardSlice = createSlice({
     },
     setSelectedPlayer: (
       state,
-      action: PayloadAction<{
-        data: LeaderboardRanking | AllTimeLeaderboardUser;
-        showSelected: boolean;
-        activeTab: "lastGame" | "allTime";
-      }>
+      action: PayloadAction<LeaderboardEntry | null>
     ) => {
       state.selectedPlayer = action.payload;
     },

@@ -1,11 +1,17 @@
 export interface LeaderboardEntry {
- rank: number;
+  rank: number;
   avatarUrl: string;
-  prizeWon:number;
   firstName: string;
   gamesPlayed: number;
   score: number;
   totalAnswerTime: string;
+  prizeWon: number;
+  facebookHandle: string;
+  twitterHandle: string;
+  instagramHandle: string;
+  tiktokHandle: string;
+  whatsappContact: string;
+  sessionId: string;
 }
 
 export interface PaginatedLeaderboardResponse {
@@ -24,4 +30,4 @@ export interface LeaderboardResponse {
   totalPages: number;
 }
 
-export type LeaderboardType = 'lastGame' | 'allTime';
+export type LeaderboardType = "lastGame" | "allTime";
