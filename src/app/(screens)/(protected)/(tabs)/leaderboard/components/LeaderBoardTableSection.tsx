@@ -13,12 +13,8 @@ import {
 } from "@/app/store/leaderboardSlice";
 import { RootState, store } from "@/app/store/store";
 import { useSelector } from "react-redux";
-import LastGameResultCard from "./LastGameResultCard";
-import { useLastGameState } from "@/app/hooks/useLastGameState";
 
 export default function LeaderBoardTableSection() {
-  const { gameState } = useLastGameState();
-
   const [activeTab, setActiveTab] = useState<LeaderboardType>("lastGame");
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -81,10 +77,7 @@ export default function LeaderBoardTableSection() {
           // Handle response - could be nested under data or at root
           const responseData = response?.data || response;
 
-          console.log(
-            "All Time Response:",
-            JSON.stringify(responseData, null, 2)
-          );
+          console.log("All Time Response:", responseData);
 
           // Dispatch the entire paginated response
           store.dispatch(setAllTimeLeaderboard(responseData));
@@ -132,22 +125,22 @@ export default function LeaderBoardTableSection() {
     ) {
       getLeaderboard(activeTab, currentApiPage);
     }
-  }, [activeTab, currentPage]);
+  }, [
+    activeTab,
+    currentPage,
+    currentPagination?.pageNo,
+    getLeaderboard,
+    leaderboardData,
+  ]);
 
   return (
     <section className="w-full py-5">
       <div className="bg-[#F9F9F9] overflow-hidden">
-        <div className=" w-full py-6 font-semibold text-[#3B3B3B]">
-          <span>See who is topping the leaderboard charts</span>
-        </div>
         <div className="pb-0">
           <LeaderboardTabs
             activeTab={activeTab}
             onTabChange={handleTabChange}
           />
-        </div>
-        <div className=" w-full py-3">
-          <LastGameResultCard userLastGameStats={gameState!} />
         </div>
 
         {loading ? (
@@ -156,10 +149,13 @@ export default function LeaderBoardTableSection() {
               <Table.Header>
                 <Table.Row>
                   <Table.ColumnHeaderCell>Rank</Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell>Username</Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell align="right">
-                    Amount
-                  </Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell>Player</Table.ColumnHeaderCell>
+                  {activeTab === "lastGame" && (
+                    <Table.ColumnHeaderCell colSpan={2}>
+                      Score & Time
+                    </Table.ColumnHeaderCell>
+                  )}
+                  <Table.ColumnHeaderCell>Reward</Table.ColumnHeaderCell>
                 </Table.Row>
               </Table.Header>
               <Table.Body className="relative gap-2">
@@ -178,7 +174,19 @@ export default function LeaderBoardTableSection() {
                         <Skeleton width="120px" height="16px" />
                       </div>
                     </Table.Cell>
-                    <Table.Cell align="right">
+                    {activeTab === "lastGame" && (
+                      <Table.Cell colSpan={2}>
+                        <div className="flex items-center space-x-3">
+                          <Skeleton
+                            width="32px"
+                            height="32px"
+                            className="rounded-full"
+                          />
+                          <Skeleton width="120px" height="16px" />
+                        </div>
+                      </Table.Cell>
+                    )}
+                    <Table.Cell>
                       <Skeleton width="80px" height="16px" />
                     </Table.Cell>
                   </Table.Row>
@@ -193,9 +201,14 @@ export default function LeaderBoardTableSection() {
                 <Table.Header>
                   <Table.Row>
                     <Table.ColumnHeaderCell>Rank</Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell>Username</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell>Player</Table.ColumnHeaderCell>
+                    {activeTab === "lastGame" && (
+                      <Table.ColumnHeaderCell colSpan={2}>
+                        Score & Time
+                      </Table.ColumnHeaderCell>
+                    )}
                     <Table.ColumnHeaderCell align="right">
-                      Amount
+                      Reward
                     </Table.ColumnHeaderCell>
                   </Table.Row>
                 </Table.Header>
@@ -205,6 +218,7 @@ export default function LeaderBoardTableSection() {
                     <LeaderboardRow
                       key={`${entry.rank}-${entry.firstName}-${index}`}
                       entry={entry}
+                      activeTab={activeTab}
                     />
                   ))}
                 </Table.Body>

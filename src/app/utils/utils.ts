@@ -152,6 +152,21 @@ export function formatDateTime(isoString: string) {
   };
 }
 
+export function readTotalTimeLeaderboard(ms: number): string {
+  const hours = Math.floor(ms / 3600000);
+  const minutes = Math.floor((ms % 3600000) / 60000);
+  const seconds = Math.floor((ms % 60000) / 1000);
+  const milliseconds = ms % 1000;
+
+  const parts = [
+    hours > 0 ? `${hours} h${hours !== 1 ? "s" : ""}` : "",
+    minutes > 0 ? `${minutes}m` : "",
+    seconds > 0 ? `${seconds}s` : "",
+    milliseconds > 0 ? `${milliseconds} ms` : "",
+  ];
+
+  return parts.filter(Boolean).join(", ");
+}
 export function readTotalTime(ms: number): string {
   const hours = Math.floor(ms / 3600000);
   const minutes = Math.floor((ms % 3600000) / 60000);
