@@ -24,9 +24,14 @@ const LeaderboardAPI = {
       "GET"
     );
   },
+
+
  
   getUserGames(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(`games`, {}, "GET");
+  },
+  userLastGameStat(gameId:string): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(`games/${gameId}/stats`, {}, "GET");
   },
 };
 

@@ -13,8 +13,12 @@ import {
 } from "@/app/store/leaderboardSlice";
 import { RootState, store } from "@/app/store/store";
 import { useSelector } from "react-redux";
+import LastGameResultCard from "./LastGameResultCard";
+import { useLastGameState } from "@/app/hooks/useLastGameState";
 
 export default function LeaderBoardTableSection() {
+  const { gameState } = useLastGameState();
+
   const [activeTab, setActiveTab] = useState<LeaderboardType>("lastGame");
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -77,7 +81,10 @@ export default function LeaderBoardTableSection() {
           // Handle response - could be nested under data or at root
           const responseData = response?.data || response;
 
-          console.log("All Time Response:", responseData);
+          console.log(
+            "All Time Response:",
+            JSON.stringify(responseData, null, 2)
+          );
 
           // Dispatch the entire paginated response
           store.dispatch(setAllTimeLeaderboard(responseData));
@@ -130,11 +137,17 @@ export default function LeaderBoardTableSection() {
   return (
     <section className="w-full py-5">
       <div className="bg-[#F9F9F9] overflow-hidden">
+        <div className=" w-full py-6 font-semibold text-[#3B3B3B]">
+          <span>See who is topping the leaderboard charts</span>
+        </div>
         <div className="pb-0">
           <LeaderboardTabs
             activeTab={activeTab}
             onTabChange={handleTabChange}
           />
+        </div>
+        <div className=" w-full py-3">
+          <LastGameResultCard userLastGameStats={gameState!} />
         </div>
 
         {loading ? (
