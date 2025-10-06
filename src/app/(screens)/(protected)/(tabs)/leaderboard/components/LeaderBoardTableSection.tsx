@@ -13,6 +13,7 @@ import {
 } from "@/app/store/leaderboardSlice";
 import { RootState, store } from "@/app/store/store";
 import { useSelector } from "react-redux";
+import LastGameResultCard from "./LastGameResultCard";
 
 export default function LeaderBoardTableSection() {
   const [activeTab, setActiveTab] = useState<LeaderboardType>("lastGame");
@@ -142,6 +143,10 @@ export default function LeaderBoardTableSection() {
             onTabChange={handleTabChange}
           />
         </div>
+
+        <section>
+          <LastGameResultCard />
+        </section>
 
         {loading ? (
           <div className="w-full">
