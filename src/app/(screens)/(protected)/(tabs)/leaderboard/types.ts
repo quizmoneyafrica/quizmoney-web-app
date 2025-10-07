@@ -12,6 +12,7 @@ export interface LeaderboardEntry {
   tiktokHandle: string;
   whatsappContact: string;
   sessionId: string;
+  rewardType: string;
 }
 
 export interface PaginatedLeaderboardResponse {

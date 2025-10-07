@@ -38,7 +38,14 @@ function GameScreen() {
     (state) => state.game
   );
   const optionLocked = useAppSelector((state) => state.game.optionLocked);
+
+  const [questionStart, setQuestionStart] = useState<number | null>(null);
+  const [questionTimeUsed, setQuestionTimeUsed] = useState(0);
+
+  const [totalStart, setTotalStart] = useState<number | null>(null);
   const totalTimeUsed = useAppSelector((state) => state.game.totalTimeUsed);
+  const rafRef = useRef<number | null>(null);
+
   const [questionHistory, setQuestionHistory] = useState<string[]>([]);
 
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -98,14 +105,50 @@ function GameScreen() {
   // --- User Timer Logic ---
   useEffect(() => {
     if (!currentLiveQuestion) return;
-    totalTimeInterval.current = setInterval(() => {
-      dispatch(setTotalTimeUsed(totalTimeUsed + 100));
-    }, 100);
+
+    // Reset question timer
+    const now = Date.now();
+    setQuestionStart(now);
+    setQuestionTimeUsed(0);
+
+    // Start total timer on first question
+    if (!totalStart) {
+      setTotalStart(now);
+      dispatch(setTotalTimeUsed(0));
+    }
+
+    const update = () => {
+      const current = Date.now();
+
+      // update per-question time
+      if (questionStart) {
+        setQuestionTimeUsed(current - questionStart); // in ms
+      }
+
+      // update total time in Redux
+      if (totalStart) {
+        dispatch(setTotalTimeUsed(current - totalStart)); // in ms
+      }
+
+      rafRef.current = requestAnimationFrame(update);
+    };
+
+    rafRef.current = requestAnimationFrame(update);
 
     return () => {
-      if (totalTimeInterval.current) clearInterval(totalTimeInterval.current);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [currentLiveQuestion, totalTimeUsed, dispatch]);
+  }, [currentLiveQuestion, dispatch, questionStart, totalStart]);
+  // useEffect(() => {
+  //   if (!currentLiveQuestion) return;
+  //   totalTimeInterval.current = setInterval(() => {
+  //     dispatch(setTotalTimeUsed(totalTimeUsed + 100));
+  //   }, 100);
+
+  //   return () => {
+  //     if (totalTimeInterval.current) clearInterval(totalTimeInterval.current);
+  //   };
+  // }, [currentLiveQuestion, totalTimeUsed, dispatch]);
 
   if (!currentLiveQuestion)
     return (
@@ -158,7 +201,7 @@ function GameScreen() {
     dispatch(setOptionLocked(true));
     setSelectedAnswer(optionId);
     try {
-      const res = await GameApi.submitAnswer(optionId, totalTimeUsed);
+      const res = await GameApi.submitAnswer(optionId, questionTimeUsed);
       console.log("Response: ", res);
     } catch (error: any) {
       console.log(error);
