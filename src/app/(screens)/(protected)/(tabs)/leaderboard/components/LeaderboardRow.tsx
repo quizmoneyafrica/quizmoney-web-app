@@ -10,6 +10,7 @@ import {
 import { AlarmClockIcon } from "lucide-react";
 import { useAppDispatch } from "@/app/hooks/useAuth";
 import { setSelectedPlayer } from "@/app/store/leaderboardSlice";
+import { QMCoin } from "@/app/icons/icons";
 
 interface LeaderboardRowProps {
   entry: LeaderboardEntry;
@@ -112,9 +113,17 @@ export default function LeaderboardRow({
       )}
 
       <Table.Cell align="right">
-        <span className=" bg-[#E4F1FA] py-1 px-3 rounded-md font-semibold text-[#2364AA]">
-          {formatNaira(prizeWon, true)}
-        </span>
+        {entry.rewardType === "NGN" ? (
+          <span className=" bg-[#E4F1FA] py-1 px-3 rounded-md font-semibold text-[#2364AA]">
+            {formatNaira(prizeWon, true)}
+          </span>
+        ) : (
+          <div className=" bg-[#E4F1FA] py-1 px-3 rounded-md font-semibold text-[#2364AA]">
+            <span className="flex items-center gap-2 text-positive-900 justify-center">
+              <QMCoin width={20} height={20} />+{prizeWon}
+            </span>
+          </div>
+        )}
       </Table.Cell>
     </Table.Row>
   );
