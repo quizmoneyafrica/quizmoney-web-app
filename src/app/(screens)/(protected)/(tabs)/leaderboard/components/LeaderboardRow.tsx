@@ -112,19 +112,27 @@ export default function LeaderboardRow({
         </Table.Cell>
       )}
 
-      <Table.Cell align="right">
-        {entry.rewardType === "NGN" ? (
+      {activeTab === "lastGame" ? (
+        <Table.Cell align="right">
+          {entry.rewardType === "NGN" ? (
+            <span className=" bg-[#E4F1FA] py-1 px-3 rounded-md font-semibold text-[#2364AA]">
+              {formatNaira(prizeWon, true)}
+            </span>
+          ) : (
+            <div className=" bg-[#E4F1FA] py-1 px-3 rounded-md font-semibold text-[#2364AA]">
+              <span className="flex items-center gap-2 text-positive-900 justify-center">
+                <QMCoin width={20} height={20} />+{prizeWon}
+              </span>
+            </div>
+          )}
+        </Table.Cell>
+      ) : (
+        <Table.Cell align="right">
           <span className=" bg-[#E4F1FA] py-1 px-3 rounded-md font-semibold text-[#2364AA]">
             {formatNaira(prizeWon, true)}
           </span>
-        ) : (
-          <div className=" bg-[#E4F1FA] py-1 px-3 rounded-md font-semibold text-[#2364AA]">
-            <span className="flex items-center gap-2 text-positive-900 justify-center">
-              <QMCoin width={20} height={20} />+{prizeWon}
-            </span>
-          </div>
-        )}
-      </Table.Cell>
+        </Table.Cell>
+      )}
     </Table.Row>
   );
 }

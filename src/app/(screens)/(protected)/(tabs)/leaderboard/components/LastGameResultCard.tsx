@@ -1,96 +1,110 @@
 import React from "react";
-import { motion } from "framer-motion";
-import Link from "next/link";
-import { Table } from "@radix-ui/themes";
-import { GameStatResult, useLastGameState } from "@/app/hooks/useLastGameState";
-import Image from "next/image";
-import { formatNaira } from "@/app/utils/utils";
+import { Avatar, Table } from "@radix-ui/themes";
+import { useLastGameState } from "@/app/hooks/useLastGameState";
+import { formatNaira, readTotalTimeLeaderboard } from "@/app/utils/utils";
+import { AlarmClockIcon } from "lucide-react";
+import { QMCoin } from "@/app/icons/icons";
+import { useRouter } from "next/navigation";
 
-interface LastGameResultCardProps {
-  userLastGameStats?: GameStatResult;
-}
-
-const LastGameResultCard = ({ userLastGameStats }: LastGameResultCardProps) => {
+const LastGameResultCard = () => {
   const { loading, gameState } = useLastGameState();
+  const router = useRouter();
 
   if (loading) return null;
 
-  // const { avatarUrl, prizeWon, firstName }: LeaderboardEntry = {
-  //   rank: gameStats.rank,
-  //   avatarUrl: gameStats.avatarUrl || "",
-  //   prizeWon: gameStats?.prizeWon || 0,
-  //   firstName: gameStats.firstName,
-  //   gamesPlayed: (gameStats?.questionsAnswered || []).length,
-  //   score: gameStats?.score ?? 0,
-  //   totalAnswerTime: "",
-  // };
-  console.log(userLastGameStats);
+  const handleViewStat = () => {
+    router.push("/leaderboard/my-last-game-result");
+  };
 
   if (gameState)
     return (
-      <Link
-        href={"#"}
-        // href={"/leaderboard/my-last-game-result"}
-
-        className="w-full"
-      >
-        <motion.div
-          transition={{ duration: 0.2 }}
-          className="bg-white rounded-xl border-3 border-[#51A2E0] my-3 p-3"
+      <>
+        <Table.Root
+          variant="ghost"
+          className="bg-white rounded-xl border-3 border-[#51A2E0] my-3 p-3 cursor-pointer"
+          onClick={handleViewStat}
         >
-          <motion.h2
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.4 }}
-            className="text-lg font-bold text-gray-900 mb-6"
-          >
-            My Last game Result
-          </motion.h2>
-          <Table.Root variant="ghost">
-            <Table.Body className="relative gap-2">
-              <Table.Row className=" w-full">
-                <Table.Cell>
-                  <div className="flex flex-col justify-center">
-                    <div className=" text-5xl">🏅</div>
-                  </div>
-                </Table.Cell>
+          <Table.Header>
+            <Table.Row>
+              <Table.ColumnHeaderCell colSpan={4}>
+                My Last Game Result
+              </Table.ColumnHeaderCell>
+              <Table.ColumnHeaderCell align="right">
+                <button className="p-1 rounded bg-primary-100 text-primary-600 text-xs ">
+                  View More..
+                </button>
+              </Table.ColumnHeaderCell>
+            </Table.Row>
+          </Table.Header>
 
-                <Table.Cell>
-                  <div className="flex items-center gap-3">
-                    {/* Avatar */}
-                    <div className="relative w-14 h-14">
-                      {gameState.avatarUrl ? (
-                        <Image
-                          src={gameState.avatarUrl}
-                          alt={`${gameState.firstName}'s avatar`}
-                          fill
-                          className="rounded-full bg-[#E4F1FA] object-contain"
-                        />
-                      ) : (
-                        <div className="w-12 h-12 rounded-full b flex items-center justify-center">
-                          <span className="text-[#2364AA] font-semibold text-lg">
-                            {gameState.firstName.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    {/* Username */}
-                    <span className="text-base font-medium text-[#2364AA]">
-                      {gameState.firstName}
-                    </span>
+          {/* body  */}
+          <Table.Body className="relative gap-2">
+            <Table.Row align="center">
+              <Table.Cell>
+                <div className="flex flex-col justify-center">
+                  <div className="text-xl">🏅</div>
+                </div>
+              </Table.Cell>
+              <Table.Cell>
+                <div className="flex items-center gap-3">
+                  {/* Avatar */}
+                  <div className="relative w-10 h-10">
+                    <Avatar
+                      src={gameState.avatarUrl ?? "/assets/images/profile.png"}
+                      fallback={
+                        gameState?.firstName?.charAt(0).toUpperCase() || ""
+                      }
+                      radius="full"
+                      className="bg-primary-100 w-full object-cover border-2 border-primary-400 backdrop-blur-sm"
+                      size="3"
+                    />
                   </div>
-                </Table.Cell>
-
-                <Table.Cell align="right">
+                  {/* Username */}
+                  <span className="capitalize text-base font-medium text-[#2364AA]">
+                    {gameState.firstName}
+                  </span>
+                </div>
+              </Table.Cell>
+              <Table.Cell colSpan={2}>
+                <div className="flex items-center gap-2">
+                  {/* score  */}
+                  <p className="flex md:h-10 md:w-10 w-6 h-6 items-center text-primary-800 justify-center gap-2 border-2 border-primary-800 rounded-full p-2">
+                    {gameState.score}
+                  </p>
+                  {/* Time  */}
+                  <div className="flex items-center h-full gap-1 text-nowrap">
+                    <AlarmClockIcon className=" text-primary-800" size={14} />
+                    {gameState.totalAnswerTime ? (
+                      <span className="text-sm text-primary-800 font-semibold">
+                        {readTotalTimeLeaderboard(
+                          Number(gameState.totalAnswerTime)
+                        )}
+                      </span>
+                    ) : (
+                      <span className="text-sm text-primary-800 font-semibold">
+                        -s, -ms
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </Table.Cell>
+              <Table.Cell align="right">
+                {gameState.rewardType === "NGN" ? (
                   <span className=" bg-[#E4F1FA] py-1 px-3 rounded-md font-semibold text-[#2364AA]">
                     {formatNaira(gameState.prizeWon, true)}
                   </span>
-                </Table.Cell>
-              </Table.Row>
-            </Table.Body>
-          </Table.Root>
-        </motion.div>
-      </Link>
+                ) : (
+                  <div className=" bg-[#E4F1FA] py-1 px-3 rounded-md font-semibold text-[#2364AA]">
+                    <span className="flex items-center gap-2 text-positive-900 justify-center">
+                      <QMCoin width={20} height={20} />+{gameState.prizeWon}
+                    </span>
+                  </div>
+                )}
+              </Table.Cell>
+            </Table.Row>
+          </Table.Body>
+        </Table.Root>
+      </>
     );
 };
 
