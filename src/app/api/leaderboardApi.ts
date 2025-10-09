@@ -25,13 +25,11 @@ const LeaderboardAPI = {
     );
   },
 
-
- 
   getUserGames(): Promise<ApiResponse> {
     return callWithSessionToken<ApiResponse>(`games`, {}, "GET");
   },
-  userLastGameStat(gameId:string): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(`games/${gameId}/stats`, {}, "GET");
+  userLastGameStat(): Promise<ApiResponse> {
+    return callWithSessionToken<ApiResponse>(`games/stats`, {}, "GET");
   },
 };
 

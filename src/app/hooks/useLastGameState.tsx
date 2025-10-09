@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import LeaderboardAPI from "../api/leaderboardApi";
 
 interface UseLastGameStateReturn {
@@ -13,22 +13,12 @@ export const useLastGameState = (): UseLastGameStateReturn => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
 
-  const fetchLastGameState = async () => {
+  const fetchLastGameState = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // Get user games
-      const games = await LeaderboardAPI.getUserGames();
-      const { gameId } = games?.data || {};
-
-      if (!gameId) {
-        console.log("====================================");
-        console.log("no game id");
-        console.log("====================================");
-      }
-
-      const response = await LeaderboardAPI.userLastGameStat(gameId);
+      const response = await LeaderboardAPI.userLastGameStat();
       console.log(
         "=============useLastGameState result stat======================="
       );
@@ -45,11 +35,11 @@ export const useLastGameState = (): UseLastGameStateReturn => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchLastGameState();
-  }, []);
+  }, [fetchLastGameState]);
 
   return {
     gameState,
@@ -58,22 +48,48 @@ export const useLastGameState = (): UseLastGameStateReturn => {
     refetch: fetchLastGameState,
   };
 };
-export type GameStatResult = {
-  gameId: string;
+// export type GameStatResult = {
+//   gameId: string;
+//   score: number;
+//   rank: number;
+//   prizeWon: number;
+//   firstName: string;
+//   avatarUrl: string;
+//   questionsAnswered: {
+//     questionText: string;
+//     questionOptions: {
+//       optionId: string;
+//       option: string;
+//       answer: boolean;
+//     }[];
+//     customerAnswer: string;
+//     isCorrect: boolean;
+//     eraserUsed: boolean;
+//   }[];
+// };
+
+export interface GameStatResult {
   score: number;
   rank: number;
-  prizeWon: number;
   firstName: string;
   avatarUrl: string;
-  questionsAnswered: {
-    questionText: string;
-    questionOptions: {
-      optionId: string;
-      option: string;
-      answer: boolean;
-    }[];
-    customerAnswer: string;
-    isCorrect: boolean;
-    eraserUsed: boolean;
-  }[];
-};
+  totalAnswerTime: string;
+  questionsAnswered: QuestionsAnswered[];
+  rewardType: string;
+  prizeWon: number;
+}
+
+interface QuestionsAnswered {
+  questionText: string;
+  questionOptions: QuestionOption[];
+  customerAnswer: string;
+  isCorrect: boolean;
+  eraserUsed: boolean;
+  questionOrder: number;
+}
+
+interface QuestionOption {
+  optionId: string;
+  option: string;
+  answer: boolean;
+}

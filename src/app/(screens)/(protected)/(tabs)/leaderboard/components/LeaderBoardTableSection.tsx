@@ -25,7 +25,6 @@ export default function LeaderBoardTableSection() {
     (state: RootState) => state.leaderboard
   );
 
-  // Fixed: Use arrays directly as dependencies, not .length
   const leaderboardData = useMemo(() => {
     if (activeTab === "lastGame") {
       return lastGame || [];
@@ -126,13 +125,8 @@ export default function LeaderBoardTableSection() {
     ) {
       getLeaderboard(activeTab, currentApiPage);
     }
-  }, [
-    activeTab,
-    currentPage,
-    currentPagination?.pageNo,
-    getLeaderboard,
-    leaderboardData,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, currentPage, currentPagination?.pageNo, getLeaderboard]);
 
   return (
     <section className="w-full py-5">
@@ -144,9 +138,11 @@ export default function LeaderBoardTableSection() {
           />
         </div>
 
-        <section>
-          <LastGameResultCard />
-        </section>
+        {activeTab == "lastGame" && (
+          <section>
+            <LastGameResultCard />
+          </section>
+        )}
 
         {loading ? (
           <div className="w-full">
