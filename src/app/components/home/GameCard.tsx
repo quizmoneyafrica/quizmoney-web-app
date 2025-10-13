@@ -26,7 +26,6 @@ function GameCard() {
   console.log(showJoinBtn);
 
   const fetchNextGame = useCallback(async () => {
-    if (nextGameData) return null;
     setLoading(true);
     try {
       const res = await GameApi.fetchNextGame();
@@ -42,7 +41,7 @@ function GameCard() {
       // });
       setLoading(false);
     }
-  }, [dispatch, nextGameData]);
+  }, [dispatch]);
   useEffect(() => {
     fetchNextGame();
   }, [fetchNextGame]);
