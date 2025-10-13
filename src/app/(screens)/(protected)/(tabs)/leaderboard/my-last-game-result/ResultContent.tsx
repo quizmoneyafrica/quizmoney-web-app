@@ -15,7 +15,7 @@ import {
   X,
 } from "lucide-react";
 import { formatNaira, readTotalTimeLeaderboard } from "@/app/utils/utils";
-import { QMCoin } from "@/app/icons/icons";
+import { EraserIcon, QMCoin } from "@/app/icons/icons";
 import QMLoader from "@/app/components/splashScreen/QMLoader";
 
 const containerVariants = {
@@ -316,6 +316,14 @@ const ResultContent = () => {
                     >
                       <X size={12} className="md:hidden" />
                       <X size={14} className="hidden md:block" />
+                    </motion.div>
+                  )}
+                  {currentQuestion.eraserUsed && (
+                    <motion.div
+                      whileHover={{ scale: 1.1 }}
+                      className="h-6 w-6 rounded-full flex items-center justify-center bg-primary-900 text-white"
+                    >
+                      <EraserIcon />
                     </motion.div>
                   )}
                 </motion.p>
