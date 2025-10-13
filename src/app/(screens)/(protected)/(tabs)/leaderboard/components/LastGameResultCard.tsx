@@ -96,7 +96,9 @@ const LastGameResultCard = () => {
                 ) : (
                   <div className=" bg-[#E4F1FA] py-1 px-3 rounded-md font-semibold text-[#2364AA]">
                     <span className="flex items-center gap-2 text-positive-900 justify-center">
-                      <QMCoin width={20} height={20} />+{gameState.prizeWon}
+                      <QMCoin width={20} height={20} />
+                      {gameState.prizeWon > 0 && "+"}
+                      {gameState.prizeWon}
                     </span>
                   </div>
                 )}
