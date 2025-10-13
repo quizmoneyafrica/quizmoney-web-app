@@ -109,7 +109,7 @@ const gameSlice = createSlice({
     },
     setCurrentLiveQuestion: (
       state,
-      action: PayloadAction<CurrentLiveQuestionObj>
+      action: PayloadAction<CurrentLiveQuestionObj | null>
     ) => {
       state.currentLiveQuestion = action.payload;
     },

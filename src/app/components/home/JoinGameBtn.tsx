@@ -2,7 +2,13 @@
 "use client";
 import GameApi from "@/app/api/game";
 import { useAppDispatch } from "@/app/hooks/useAuth";
-import { playAudio, setPhase } from "@/app/store/gameSlice";
+import {
+  playAudio,
+  setCurrentLiveQuestion,
+  setOptionLocked,
+  setPhase,
+  setTotalTimeUsed,
+} from "@/app/store/gameSlice";
 import { addSubscription } from "@/app/store/stompSlice";
 import { RootState } from "@/app/store/store";
 import { toastPosition } from "@/app/utils/utils";
@@ -28,6 +34,9 @@ function JoinGameBtn() {
       dispatch(addSubscription(`/topic/questions`));
       dispatch(setPhase("lobby"));
       dispatch(playAudio());
+      dispatch(setCurrentLiveQuestion(null));
+      dispatch(setOptionLocked(false));
+      dispatch(setTotalTimeUsed(0));
       router.replace(`/live-game/${gameData?.gameId}`);
     } catch (err: any) {
       console.log(err.message);

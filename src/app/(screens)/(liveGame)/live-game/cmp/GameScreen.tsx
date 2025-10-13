@@ -39,12 +39,8 @@ function GameScreen() {
   );
   const optionLocked = useAppSelector((state) => state.game.optionLocked);
 
-  const [questionStart, setQuestionStart] = useState<number | null>(null);
-  const [questionTimeUsed, setQuestionTimeUsed] = useState(0);
-
-  const [totalStart, setTotalStart] = useState<number | null>(null);
+  // const [totalStart, setTotalStart] = useState<number | null>(null);
   const totalTimeUsed = useAppSelector((state) => state.game.totalTimeUsed);
-  const rafRef = useRef<number | null>(null);
 
   const [questionHistory, setQuestionHistory] = useState<string[]>([]);
 
@@ -57,7 +53,10 @@ function GameScreen() {
   //countdown timer
   //game time used
   const totalTimeInterval = useRef<NodeJS.Timeout | null>(null);
-  // const [totalTimeUsed, setTotalTimeUsed] = useState(0);
+  const totalTimeRef = useRef(totalTimeUsed);
+  const prevTimerRef = useRef(0);
+
+  // const [questionTimeUsed, setQuestionTimeUsed] = useState(0);
 
   //Fallback fetch
   const fetchCurrentQuestion = useCallback(async () => {
@@ -102,53 +101,25 @@ function GameScreen() {
     }
   }, [currentLiveQuestion, fetchCurrentQuestion]);
 
-  // --- User Timer Logic ---
+  useEffect(() => {
+    totalTimeRef.current = totalTimeUsed;
+  }, [totalTimeUsed]);
+
+  //Timer
   useEffect(() => {
     if (!currentLiveQuestion) return;
 
-    // Reset question timer
-    const now = Date.now();
-    setQuestionStart(now);
-    setQuestionTimeUsed(0);
+    // prevTimerRef.current = totalTimeRef.current;
 
-    // Start total timer on first question
-    if (!totalStart) {
-      setTotalStart(now);
-      dispatch(setTotalTimeUsed(0));
-    }
-
-    const update = () => {
-      const current = Date.now();
-
-      // update per-question time
-      if (questionStart) {
-        setQuestionTimeUsed(current - questionStart); // in ms
-      }
-
-      // update total time in Redux
-      if (totalStart) {
-        dispatch(setTotalTimeUsed(current - totalStart)); // in ms
-      }
-
-      rafRef.current = requestAnimationFrame(update);
-    };
-
-    rafRef.current = requestAnimationFrame(update);
+    totalTimeInterval.current = setInterval(() => {
+      totalTimeRef.current += 100;
+      dispatch(setTotalTimeUsed(totalTimeRef.current));
+    }, 100);
 
     return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (totalTimeInterval.current) clearInterval(totalTimeInterval.current);
     };
-  }, [currentLiveQuestion, dispatch, questionStart, totalStart]);
-  // useEffect(() => {
-  //   if (!currentLiveQuestion) return;
-  //   totalTimeInterval.current = setInterval(() => {
-  //     dispatch(setTotalTimeUsed(totalTimeUsed + 100));
-  //   }, 100);
-
-  //   return () => {
-  //     if (totalTimeInterval.current) clearInterval(totalTimeInterval.current);
-  //   };
-  // }, [currentLiveQuestion, totalTimeUsed, dispatch]);
+  }, [currentLiveQuestion, totalTimeUsed, dispatch]);
 
   if (!currentLiveQuestion)
     return (
@@ -198,11 +169,18 @@ function GameScreen() {
 
     //Pause user time used
     if (totalTimeInterval.current) clearInterval(totalTimeInterval.current);
+
     dispatch(setOptionLocked(true));
     setSelectedAnswer(optionId);
+
+    const timeSpent = totalTimeRef.current - prevTimerRef.current;
     try {
-      const res = await GameApi.submitAnswer(optionId, questionTimeUsed);
+      const res = await GameApi.submitAnswer(optionId, timeSpent);
       console.log("Response: ", res);
+      console.log("⏱️ Time used:", timeSpent);
+      console.log("⏱️ Total Time used:", totalTimeUsed);
+
+      prevTimerRef.current = totalTimeUsed;
     } catch (error: any) {
       console.log(error);
     }
@@ -211,6 +189,7 @@ function GameScreen() {
   //End Game
   const handleGameEnd = () => {
     if (totalTimeInterval.current) clearInterval(totalTimeInterval.current);
+    console.log("Total Time (milli): ", totalTimeUsed);
     dispatch(setPhase("completed"));
   };
   return (
