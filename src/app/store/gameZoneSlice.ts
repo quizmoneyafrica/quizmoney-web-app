@@ -30,7 +30,7 @@ const initialState: GameZoneGames = {
     description: "",
     type: "",
     config: {
-      minimumStake: 1000,
+      minimumStake: 200,
       maximumStake: 1000000,
     },
   },

@@ -51,7 +51,7 @@ export default function LostGameComponent() {
           description: "",
           type: "NUMBER_GUESSER",
           config: {
-            minimumStake: 1000,
+            minimumStake: 200,
             maximumStake: 1000000,
           },
         })
