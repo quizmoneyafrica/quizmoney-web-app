@@ -222,6 +222,7 @@ const ResultContent = () => {
             >
               {gameState.questionsAnswered
                 .filter((q) => q.isCorrect)
+                .sort((a, b) => a.questionOrder - b.questionOrder)
                 .map((r, index) => (
                   <motion.div
                     key={index}
@@ -259,6 +260,7 @@ const ResultContent = () => {
             >
               {gameState.questionsAnswered
                 .filter((q) => !q.isCorrect)
+                .sort((a, b) => a.questionOrder - b.questionOrder)
                 .map((r, index) => (
                   <motion.div
                     key={index}
@@ -284,87 +286,89 @@ const ResultContent = () => {
             pt={"2"}
             className="w-full gap-4 md:gap-10"
           >
-            {gameState.questionsAnswered.map((currentQuestion, index) => (
-              <motion.div
-                key={index}
-                variants={itemVariants}
-                whileHover={{ scale: 1.02 }}
-                className="w-full bg-primary-50 rounded-lg border border-neutral-300 p-2 md:p-3"
-              >
-                <motion.p
-                  variants={itemVariants}
-                  className="font-semibold text-sm flex items-center gap-2"
-                >
-                  <span>
-                    Question{" "}
-                    {currentQuestion.questionOrder
-                      ? currentQuestion.questionOrder
-                      : index + 1}
-                  </span>
-                  {currentQuestion.isCorrect ? (
-                    <motion.div
-                      whileHover={{ scale: 1.1 }}
-                      className="h-5 w-5 md:h-6 md:w-6 rounded-full bg-green-600 flex items-center justify-center text-white"
-                    >
-                      <Check size={12} className="md:hidden" />
-                      <Check size={14} className="hidden md:block" />
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      whileHover={{ scale: 1.1 }}
-                      className="h-5 w-5 md:h-6 md:w-6 rounded-full bg-red-600 flex items-center justify-center text-white"
-                    >
-                      <X size={12} className="md:hidden" />
-                      <X size={14} className="hidden md:block" />
-                    </motion.div>
-                  )}
-                  {currentQuestion.eraserUsed && (
-                    <motion.div
-                      whileHover={{ scale: 1.1 }}
-                      className="h-6 w-6 rounded-full flex items-center justify-center bg-primary-900 text-white"
-                    >
-                      <EraserIcon />
-                    </motion.div>
-                  )}
-                </motion.p>
-                <motion.p
-                  variants={itemVariants}
-                  className="font-bold text-sm md:text-base mt-1"
-                >
-                  {currentQuestion.questionText}
-                </motion.p>
-
+            {gameState.questionsAnswered
+              .sort((a, b) => a.questionOrder - b.questionOrder)
+              .map((currentQuestion, index) => (
                 <motion.div
-                  variants={containerVariants}
-                  className="mt-2 md:mt-3 space-y-2 md:space-y-3"
+                  key={index}
+                  variants={itemVariants}
+                  whileHover={{ scale: 1.02 }}
+                  className="w-full bg-primary-50 rounded-lg border border-neutral-300 p-2 md:p-3"
                 >
-                  {currentQuestion.isCorrect ? (
-                    <p className="text-positive-900">
-                      Correct Answer: {currentQuestion.customerAnswer}
-                    </p>
-                  ) : (
-                    <div>
-                      {!currentQuestion.customerAnswer ? (
-                        <p className="text-error-900">
-                          You didn&apos;t select an option
-                        </p>
-                      ) : (
-                        <p className="text-error-900">
-                          Your Answer: {currentQuestion.customerAnswer}
-                        </p>
-                      )}
+                  <motion.p
+                    variants={itemVariants}
+                    className="font-semibold text-sm flex items-center gap-2"
+                  >
+                    <span>
+                      Question{" "}
+                      {currentQuestion.questionOrder
+                        ? currentQuestion.questionOrder
+                        : index + 1}
+                    </span>
+                    {currentQuestion.isCorrect ? (
+                      <motion.div
+                        whileHover={{ scale: 1.1 }}
+                        className="h-5 w-5 md:h-6 md:w-6 rounded-full bg-green-600 flex items-center justify-center text-white"
+                      >
+                        <Check size={12} className="md:hidden" />
+                        <Check size={14} className="hidden md:block" />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        whileHover={{ scale: 1.1 }}
+                        className="h-5 w-5 md:h-6 md:w-6 rounded-full bg-red-600 flex items-center justify-center text-white"
+                      >
+                        <X size={12} className="md:hidden" />
+                        <X size={14} className="hidden md:block" />
+                      </motion.div>
+                    )}
+                    {currentQuestion.eraserUsed && (
+                      <motion.div
+                        whileHover={{ scale: 1.1 }}
+                        className="h-6 w-6 rounded-full flex items-center justify-center bg-primary-900 text-white"
+                      >
+                        <EraserIcon />
+                      </motion.div>
+                    )}
+                  </motion.p>
+                  <motion.p
+                    variants={itemVariants}
+                    className="font-bold text-sm md:text-base mt-1"
+                  >
+                    {currentQuestion.questionText}
+                  </motion.p>
+
+                  <motion.div
+                    variants={containerVariants}
+                    className="mt-2 md:mt-3 space-y-2 md:space-y-3"
+                  >
+                    {currentQuestion.isCorrect ? (
                       <p className="text-positive-900">
-                        Correct Answer:{" "}
-                        {
-                          currentQuestion.questionOptions.filter(
-                            (c) => c.answer === true
-                          )[0].option
-                        }
+                        Correct Answer: {currentQuestion.customerAnswer}
                       </p>
-                    </div>
-                  )}
-                </motion.div>
-                {/* <motion.div
+                    ) : (
+                      <div>
+                        {!currentQuestion.customerAnswer ? (
+                          <p className="text-error-900">
+                            You didn&apos;t select an option
+                          </p>
+                        ) : (
+                          <p className="text-error-900">
+                            Your Answer: {currentQuestion.customerAnswer}
+                          </p>
+                        )}
+                        <p className="text-positive-900">
+                          Correct Answer:{" "}
+                          {
+                            currentQuestion.questionOptions.filter(
+                              (c) => c.answer === true
+                            )[0].option
+                          }
+                        </p>
+                      </div>
+                    )}
+                  </motion.div>
+                  {/* <motion.div
                 variants={containerVariants}
                 className="mt-2 md:mt-3 space-y-2 md:space-y-3"
               >
@@ -421,8 +425,8 @@ const ResultContent = () => {
                   );
                 })}
               </motion.div> */}
-              </motion.div>
-            ))}
+                </motion.div>
+              ))}
           </Grid>
         </motion.section>
       </motion.main>
