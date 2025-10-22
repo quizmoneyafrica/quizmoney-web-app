@@ -67,7 +67,7 @@ const RedeemModal = ({ setOpenRedeem }: Props) => {
             No, Cancel
           </CustomButton>
           <CustomButton size="lg" width="full" onClick={handleRedeem}>
-            Yes, Redeem QM Coin
+            Redeem Coin
           </CustomButton>
         </div>
       </div>

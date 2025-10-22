@@ -48,25 +48,6 @@ export const useLastGameState = (): UseLastGameStateReturn => {
     refetch: fetchLastGameState,
   };
 };
-// export type GameStatResult = {
-//   gameId: string;
-//   score: number;
-//   rank: number;
-//   prizeWon: number;
-//   firstName: string;
-//   avatarUrl: string;
-//   questionsAnswered: {
-//     questionText: string;
-//     questionOptions: {
-//       optionId: string;
-//       option: string;
-//       answer: boolean;
-//     }[];
-//     customerAnswer: string;
-//     isCorrect: boolean;
-//     eraserUsed: boolean;
-//   }[];
-// };
 
 export interface GameStatResult {
   score: number;
