@@ -5,16 +5,17 @@ import GameApi from "@/app/api/game";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import { setNextGameData } from "@/app/store/gameSlice";
 import { Flex, Heading, Skeleton, Text } from "@radix-ui/themes";
-import { formatNaira } from "@/app/utils/utils";
+import { formatNaira, formatQuizDate } from "@/app/utils/utils";
 import Link from "next/link";
 import PlayDemoBtn from "./PlayDemo";
 //import { toast } from "sonner";
 // import JoinGameBtn from "./JoinGameBtn";
-import { differenceInSeconds } from "date-fns";
+import { differenceInSeconds, parseISO } from "date-fns";
 import CustomButton from "@/app/utils/CustomBtn";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { QMCoin } from "@/app/icons/icons";
 import NextGameQueries from "@/app/api/queries/nextGameQueries";
+import JoinGameBtn from "./JoinGameBtn";
 
 function GameCard() {
   const dispatch = useAppDispatch();
@@ -25,7 +26,6 @@ function GameCard() {
   console.log(showJoinBtn);
 
   const fetchNextGame = useCallback(async () => {
-    if (nextGameData) return null;
     setLoading(true);
     try {
       const res = await GameApi.fetchNextGame();
@@ -41,7 +41,7 @@ function GameCard() {
       // });
       setLoading(false);
     }
-  }, [dispatch, nextGameData]);
+  }, [dispatch]);
   useEffect(() => {
     fetchNextGame();
   }, [fetchNextGame]);
@@ -99,7 +99,11 @@ function GameCard() {
         <Skeleton width="100%" height="288px" />
       </div>
     );
-  // const coinPrize = nextGameData?.coinPrize || 0;
+  const coinPrize = nextGameData?.coinPrize || 0;
+  const raw = nextGameData?.startTime || "";
+  const gameTime = parseISO(raw + "Z");
+
+  console.log("DATE:", gameTime.toLocaleString());
 
   return (
     <>
@@ -126,16 +130,14 @@ function GameCard() {
                     as="h1"
                     className="text-primary-900 !text-[2.7rem] !font-black"
                   >
-                    {/* {formatNaira(nextGameData?.prize)} */}
-                    {formatNaira(1000000)}
+                    {formatNaira(nextGameData?.prize)}
                   </Heading>
                   <span className="text-center text-2xl text-primary-900">
                     +
                   </span>
                   <div className="flex items-center gap-1 text-primary-900 font-bold text-xl">
                     <QMCoin />{" "}
-                    {/* <span>{coinPrize.toLocaleString()} QM Coins</span> */}
-                    <span>- QM Coins</span>
+                    <span>{coinPrize.toLocaleString()} QM Coins</span>
                   </div>
                 </Flex>
                 <Flex
@@ -144,7 +146,7 @@ function GameCard() {
                   align="center"
                   justify="center"
                 >
-                  {/* {nextGameData && nextGameData.status === "INPROGRESS" && (
+                  {nextGameData && nextGameData.status === "INPROGRESS" && (
                     <div className="flex items-center gap-1">
                       <div className="relative h-3 w-3 bg-error-500 rounded-full">
                         <div className="h-3 w-3 bg-error-500 rounded-full animate-ping absolute left-0 top-0" />
@@ -153,15 +155,13 @@ function GameCard() {
                         Live Game in Session
                       </p>
                     </div>
-                  )} */}
+                  )}
 
                   <Text className="text-neutral-800">
-                    {/* Next Game: {formatQuizDate(nextGameData?.startTime || "")} */}
-                    Next Game: --
+                    Next Game: {formatQuizDate(gameTime.toISOString())}
                   </Text>
                   <Text className="text-neutral-800 font-medium">
-                    {/* Entry Fee: {formatNaira(nextGameData?.fee, true)} */}
-                    Entry Fee: {formatNaira(0, true)}
+                    Entry Fee: {formatNaira(nextGameData?.fee, true)}
                   </Text>
                 </Flex>
               </Flex>
@@ -188,29 +188,20 @@ function GameCard() {
           </div>
           <div className="relative z-[2] bg-primary-800 w-full px-4 py-5 rounded-b-[20px]">
             <Flex align="center" justify="center"></Flex>
-            {/* {showJoinBtn ? (
-            <Flex align="center" justify="center">
-              <JoinGameBtn />
-            </Flex>
-          ) : (
-            <Flex align="center" justify="between">
-              <ShareBtn
-                gamePrize={nextGameData?.prize || 0}
-                startDate={nextGameData?.startTime || ""}
-              />
-              <JoinGameBtn />
-              <PlayDemoBtn />
-            </Flex>
-          )} */}
+            {nextGameData?.status === "WAITING" ? (
+              <Flex align="center" justify="center">
+                <JoinGameBtn />
+              </Flex>
+            ) : (
+              <Flex align="center" justify="between">
+                <ShareBtn
+                  gamePrize={nextGameData?.prize || 0}
+                  startDate={nextGameData?.startTime || ""}
+                />
 
-            <Flex align="center" justify="between">
-              <ShareBtn
-                gamePrize={nextGameData?.prize || 0}
-                startDate={nextGameData?.startTime || ""}
-              />
-              {/* <JoinGameBtn /> */}
-              <PlayDemoBtn />
-            </Flex>
+                <PlayDemoBtn />
+              </Flex>
+            )}
           </div>
         </div>
       </div>

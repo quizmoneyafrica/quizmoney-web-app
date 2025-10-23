@@ -1,12 +1,14 @@
-import AdBanner from "@/app/components/advert/adBanner";
 import React from "react";
 import LeaderBoardTableSection from "./components/LeaderBoardTableSection";
+import AdBanner from "@/app/components/advert/adBanner";
+import ShowPlayerData from "./ShowPlayerData";
 
-export default function page() {
+export default function Page() {
   return (
     <div className=" w-full">
       <AdBanner />
       <LeaderBoardTableSection />
+      <ShowPlayerData />
     </div>
   );
 }

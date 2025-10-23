@@ -11,6 +11,8 @@ import {
   setRefreshPromise,
 } from "@/app/utils/refreshTokenPromise";
 
+let refreshTimer: NodeJS.Timeout | null = null;
+
 export const handleInvalidSession = async (
   dispatch: AppDispatch,
   refreshToken?: string
@@ -53,6 +55,17 @@ export const handleInvalidSession = async (
       dispatch(updateAccessToken(tokenData.accessToken));
       dispatch(updateRefreshToken(tokenData.refreshToken));
       dispatch(updateExpiry(tokenData.expiredAt));
+
+      const delay = tokenData.expiredAt - Date.now() - 5000;
+      if (refreshTimer) clearTimeout(refreshTimer);
+      if (delay > 0) {
+        refreshTimer = setTimeout(() => {
+          handleInvalidSession(dispatch, tokenData.refreshToken).catch((err) =>
+            console.error("Auto-refresh failed:", err)
+          );
+        }, delay);
+        console.log(`Scheduled next refresh in ${Math.floor(delay / 1000)}s`);
+      }
 
       return tokenData.accessToken;
     } finally {

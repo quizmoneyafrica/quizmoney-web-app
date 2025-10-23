@@ -20,7 +20,7 @@ export const MenuToggle = ({ toggle }: Prop) => (
   <motion.button
     whileTap={{ scale: 0.95 }}
     onClick={toggle}
-    className="bg-primaryy-50 absolute top-6 left-5.5 z-50 grid place-items-center rounded-md"
+    className="absolute top-6 left-5.5 z-[100] grid place-items-center rounded-full bg-primary-900 h-10 w-10"
   >
     <svg width="20" height="20" viewBox="0 0 23 23" className="m-2 mb-1">
       <Path

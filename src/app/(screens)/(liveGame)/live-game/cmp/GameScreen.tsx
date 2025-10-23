@@ -2,19 +2,34 @@
 import { useAppDispatch, useAppSelector, useAuth } from "@/app/hooks/useAuth";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { EraserIcon } from "@/app/icons/icons";
-import { Avatar, Flex, Grid } from "@radix-ui/themes";
+import { EraserIcon, TimerIcon } from "@/app/icons/icons";
+import { Flex } from "@radix-ui/themes";
 import GameApi from "@/app/api/game";
 import {
   CurrentLiveQuestionOptionsObj,
   playAudio,
   setCurrentLiveQuestion,
+  setOptionLocked,
+  setPhase,
+  setTotalTimeUsed,
   // setPhase,
 } from "@/app/store/gameSlice";
 import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
-import CustomButton from "@/app/utils/CustomBtn";
-import { gameFetch } from "./gameRules";
+// import CustomButton from "@/app/utils/CustomBtn";
+// import { gameFetch } from "./gameRules";
+import { CountdownCircleTimer } from "react-countdown-circle-timer";
+import QMLoader from "@/app/components/splashScreen/QMLoader";
+
+const formatTime = (ms: number) => {
+  const minutes = Math.floor(ms / 60000);
+  const seconds = Math.floor((ms % 60000) / 1000);
+  const milliseconds = Math.floor((ms % 1000) / 100);
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
+    2,
+    "0"
+  )}:${milliseconds}0`;
+};
 
 function GameScreen() {
   const dispatch = useAppDispatch();
@@ -22,9 +37,13 @@ function GameScreen() {
   const { currentLiveQuestion, audioShouldPlay } = useAppSelector(
     (state) => state.game
   );
+  const optionLocked = useAppSelector((state) => state.game.optionLocked);
+
+  // const [totalStart, setTotalStart] = useState<number | null>(null);
+  const totalTimeUsed = useAppSelector((state) => state.game.totalTimeUsed);
+
   const [questionHistory, setQuestionHistory] = useState<string[]>([]);
 
-  const [locked, setLocked] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [fetching, setFetching] = useState(false);
 
@@ -34,8 +53,10 @@ function GameScreen() {
   //countdown timer
   //game time used
   const totalTimeInterval = useRef<NodeJS.Timeout | null>(null);
-  const [totalTimeUsed, setTotalTimeUsed] = useState(0);
-  console.log(totalTimeUsed);
+  const totalTimeRef = useRef(totalTimeUsed);
+  const prevTimerRef = useRef(0);
+
+  // const [questionTimeUsed, setQuestionTimeUsed] = useState(0);
 
   //Fallback fetch
   const fetchCurrentQuestion = useCallback(async () => {
@@ -47,12 +68,16 @@ function GameScreen() {
 
       if (!questionHistory.includes(que.id)) {
         dispatch(setCurrentLiveQuestion(que));
+        dispatch(setOptionLocked(false));
         setQuestionHistory((prev) => [...prev, que.id]);
         // setShuffledOptions(shuffleArray(que.options));
       }
     } catch (err: any) {
       console.log(err);
 
+      toast.error(err.message, {
+        position: "bottom-center",
+      });
       toast.error("Unable to fetch question. Please stay in app.", {
         position: toastPosition,
       });
@@ -76,270 +101,26 @@ function GameScreen() {
     }
   }, [currentLiveQuestion, fetchCurrentQuestion]);
 
-  // --- User Timer Logic ---
+  useEffect(() => {
+    totalTimeRef.current = totalTimeUsed;
+  }, [totalTimeUsed]);
+
+  //Timer
   useEffect(() => {
     if (!currentLiveQuestion) return;
+
+    // prevTimerRef.current = totalTimeRef.current;
+
     totalTimeInterval.current = setInterval(() => {
-      setTotalTimeUsed((prev) => prev + 100);
+      totalTimeRef.current += 100;
+      dispatch(setTotalTimeUsed(totalTimeRef.current));
     }, 100);
 
     return () => {
       if (totalTimeInterval.current) clearInterval(totalTimeInterval.current);
     };
-  }, [currentLiveQuestion]);
+  }, [currentLiveQuestion, totalTimeUsed, dispatch]);
 
-  // --- Shuffle Options ---
-  // useEffect(() => {
-  //   if (currentQuestion?.options) {
-  //     setShuffledOptions(shuffleArray(currentQuestion.options));
-  //   }
-  // }, [currentQuestion]);
-
-  // --- Next Question on Timer ---
-
-  // const handleNextQuestion = async () => {
-  //   setLocked(false);
-  //   const gameId = liveGameData.objectId;
-  //   // const questionNumber = (currentIndex + 1).toString();
-  //   const questionNumber = currentQuestion.number;
-  //   const totalTimeFormatted = formatTime(totalTimeUsed);
-  //   const hasAnswered = selectedAnswers[currentIndex] !== undefined;
-  //   console.log(selectedAnswers, questionNumber);
-  //   console.log(hasAnswered);
-  //   console.log(totalTimeFormatted);
-
-  //   // const isLastQuestion = currentIndex + 1 === liveGameData.questions.length;
-  //   const isLastQuestion = currentIndex + 1 === shuffledQuestions.length;
-
-  //   if (!isLastQuestion) setCurrentIndex((prev) => prev + 1);
-
-  //   if (isLastQuestion) {
-  //     if (totalTimeInterval.current) clearInterval(totalTimeInterval.current);
-  //     dispatch(setPhase("completed"));
-  //     setUserTime(totalTimeFormatted);
-  //     if (!hasAnswered) {
-  //       try {
-  //         await GameApi.recordGameAnswer(
-  //           gameId,
-  //           questionNumber.toString(),
-  //           "User missed it",
-  //           totalTimeFormatted,
-  //           false
-  //         );
-  //       } catch (error) {
-  //         console.log(error);
-  //       }
-  //     }
-  //   }
-
-  //   if (!hasAnswered && !isLastQuestion) {
-  //     try {
-  //       await GameApi.recordGameAnswer(
-  //         gameId,
-  //         questionNumber.toString(),
-  //         "User missed it",
-  //         totalTimeFormatted,
-  //         false
-  //       );
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   }
-  // };
-
-  //Option to click
-  const handleOptionClick = async (optionId: string) => {
-    // if (locked || !currentLiveQuestion) return;
-    setSelectedAnswer(optionId);
-    setLocked(false);
-
-    if (!audioShouldPlay) dispatch(playAudio());
-    // if (totalTimeInterval.current) clearInterval(totalTimeInterval.current);
-
-    // const isCorrect = optionId === currentLiveQuestion.options[0].optionId; // assume first is correct
-    // const totalTimeFormatted = formatTime(totalTimeUsed);
-    // let toSaveAnswer = optionId;
-    // let usedEraserThisQuestion = false;
-
-    // if (isCorrect) {
-    //   correctSoundRef.current?.play();
-    // } else if (
-    //   !isCorrect &&
-    //   !eraserUsedAlready &&
-    //   user?.gameEraserCount &&
-    //   user?.gameEraserCount > 0
-    // ) {
-    //   toSaveAnswer = currentLiveQuestion.options[0].optionId;
-    //   correctSoundRef.current?.play();
-    //   toast.success("Eraser used! Your answer was corrected.", {
-    //     position: toastPosition,
-    //   });
-    //   await GameApi.updateErasers(1);
-    //   dispatch(updateUser({ gameEraserCount: user.gameEraserCount - 1 }));
-    //   setEraserUsedAlready(true);
-    //   usedEraserThisQuestion = true;
-    // } else {
-    //   wrongSoundRef.current?.play();
-    // }
-
-    // try {
-    //   await GameApi.recordGameAnswer(
-    //     currentLiveQuestion.id,
-    //     currentLiveQuestion.id,
-    //     toSaveAnswer,
-    //     totalTimeFormatted,
-    //     usedEraserThisQuestion
-    //   );
-    // } catch (err: any) {
-    //   console.error("Retrying save...", err);
-    //   try {
-    //     await GameApi.recordGameAnswer(
-    //       currentLiveQuestion.id,
-    //       currentLiveQuestion.id,
-    //       toSaveAnswer,
-    //       totalTimeFormatted,
-    //       usedEraserThisQuestion
-    //     );
-    //   } catch (err: any) {
-    //     console.error("Second failure to save answer.", err);
-    //   }
-    // }
-  };
-
-  // const handleOptionClick = async (option: string) => {
-  //   if (locked) return;
-  //   setLocked(true);
-  //   if (!audioShouldPlay) dispatch(playAudio());
-
-  //   //pause timer
-  //   if (totalTimeInterval.current) {
-  //     clearInterval(totalTimeInterval.current);
-  //   }
-
-  //   const isCorrect = option === currentQuestion.correctAnswer;
-  //   const gameId = liveGameData.objectId;
-  //   // const questionNumber = (currentIndex + 1).toString();
-  //   const questionNumber = currentQuestion.number;
-  //   const totalTimeFormatted = formatTime(totalTimeUsed);
-
-  //   let toSaveAnswer = option;
-  //   const newAnswers = [...selectedAnswers];
-
-  //   let usedEraserThisQuestion = false;
-  //   // --- answer logic ---
-  //   if (isCorrect) {
-  //     correctSoundRef.current?.play();
-  //     newAnswers[currentIndex] = option;
-  //   } else if (
-  //     !isCorrect &&
-  //     !eraserUsedAlready &&
-  //     user?.gameEraserCount &&
-  //     user?.gameEraserCount > 0
-  //   ) {
-  //     toSaveAnswer = currentQuestion.correctAnswer;
-  //     correctSoundRef.current?.play();
-  //     newAnswers[currentIndex] = currentQuestion.correctAnswer;
-
-  //     toast.success("Eraser used! Your answer was corrected.", {
-  //       position: toastPosition,
-  //     });
-
-  //     await GameApi.updateErasers(1);
-  //     dispatch(updateUser({ gameEraserCount: user.gameEraserCount - 1 }));
-  //     setEraserUsedAlready(true);
-  //     usedEraserThisQuestion = true;
-  //   } else {
-  //     wrongSoundRef.current?.play();
-  //     newAnswers[currentIndex] = option;
-  //   }
-
-  //   // --- update answers state ---
-  //   setSelectedAnswers(newAnswers);
-
-  //   // --- Save Answer to DB ---
-  //   try {
-  //     await GameApi.recordGameAnswer(
-  //       gameId,
-  //       questionNumber.toString(),
-  //       toSaveAnswer,
-  //       totalTimeFormatted,
-  //       usedEraserThisQuestion
-  //     );
-  //   } catch (error) {
-  //     console.log(error);
-  //     try {
-  //       await GameApi.recordGameAnswer(
-  //         gameId,
-  //         questionNumber.toString(),
-  //         toSaveAnswer,
-  //         totalTimeFormatted,
-  //         usedEraserThisQuestion
-  //       );
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   }
-  // };
-
-  // if (fetchingQuestion === "loading") {
-  //   return (
-  //     <motion.div
-  //       initial={{ opacity: 0, y: 10 }}
-  //       animate={{ opacity: 1, y: 0 }}
-  //       exit={{ opacity: 0, y: -10 }}
-  //       transition={{ duration: 0.25, ease: "easeInOut" }}
-  //     >
-  //       <div className="h-[100dvh] bg-primary-900 hero flex items-center  px-4">
-  //         <CustomButton
-  //           loader
-  //           width="full"
-  //           size="lg"
-  //           type="button"
-  //           variant="secondary"
-  //         />
-  //       </div>
-  //     </motion.div>
-  //   );
-  // } else if (fetchingQuestion === "error") {
-  //   return (
-  //     <motion.div
-  //       initial={{ opacity: 0, y: 10 }}
-  //       animate={{ opacity: 1, y: 0 }}
-  //       exit={{ opacity: 0, y: -10 }}
-  //       transition={{ duration: 0.25, ease: "easeInOut" }}
-  //     >
-  //       <div className="h-[100dvh] bg-primary-900 hero flex items-center  px-4">
-  //         <Grid gap="3" className="w-full">
-  //           <div className=" bg-primary-50 text-center border-4 border-primary-500 rounded-[10px] px-4 py-4 space-y-4">
-  //             <h4 className="text-center text-error-900 font-bold">
-  //               Stay In App
-  //             </h4>
-  //             6
-  //             <div className="text-neutral-900 text-left space-y-4">
-  //               {gameFetch.map((rule, index) => (
-  //                 <div key={index}>
-  //                   <span className="font-semibold text-error-900">
-  //                     {index + 1}. {rule.title}
-  //                   </span>{" "}
-  //                   – {rule.description}
-  //                 </div>
-  //               ))}
-  //             </div>
-  //           </div>
-  //           <CustomButton
-  //             onClick={fetchGame}
-  //             width="full"
-  //             size="lg"
-  //             type="button"
-  //             variant="secondary"
-  //           >
-  //             Start Game Now
-  //           </CustomButton>
-  //         </Grid>
-  //       </div>
-  //     </motion.div>
-  //   );
-  // }
   if (!currentLiveQuestion)
     return (
       <motion.div
@@ -348,8 +129,9 @@ function GameScreen() {
         exit={{ opacity: 0, y: -10 }}
         transition={{ duration: 0.25, ease: "easeInOut" }}
       >
-        <div className="h-[100dvh] bg-primary-900 hero flex items-center  px-4">
-          <Grid gap="3" className="w-full">
+        <div className="h-[100dvh] bg-primary-900 hero flex items-center justify-center  px-4">
+          <QMLoader />
+          {/* <Grid gap="3" className="w-full">
             <div className=" bg-primary-50 text-center border-4 border-primary-500 rounded-[10px] px-4 py-4 space-y-4">
               <h4 className="text-center text-error-900 font-bold">
                 Stay In App
@@ -375,10 +157,41 @@ function GameScreen() {
             >
               Start Game Now
             </CustomButton>
-          </Grid>
+          </Grid> */}
         </div>
       </motion.div>
     );
+
+  //Option to click
+  const handleOptionClick = async (optionId: string) => {
+    if (!audioShouldPlay) dispatch(playAudio());
+    if (optionLocked || !currentLiveQuestion) return;
+
+    //Pause user time used
+    if (totalTimeInterval.current) clearInterval(totalTimeInterval.current);
+
+    dispatch(setOptionLocked(true));
+    setSelectedAnswer(optionId);
+
+    const timeSpent = totalTimeRef.current - prevTimerRef.current;
+    try {
+      const res = await GameApi.submitAnswer(optionId, timeSpent);
+      console.log("Response: ", res);
+      console.log("⏱️ Time used:", timeSpent);
+      console.log("⏱️ Total Time used:", totalTimeUsed);
+
+      prevTimerRef.current = totalTimeUsed;
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+
+  //End Game
+  const handleGameEnd = () => {
+    if (totalTimeInterval.current) clearInterval(totalTimeInterval.current);
+    console.log("Total Time (milli): ", totalTimeUsed);
+    dispatch(setPhase("completed"));
+  };
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -391,16 +204,39 @@ function GameScreen() {
           {/* Timer, countdown, Avatar  */}
           <div className="grid grid-cols-3 w-full">
             <div className="mt-6 text-white text-sm flex items-center justify-start gap-1">
-              {/* <TimerIcon width={23} /> <span>{formatTime(totalTimeUsed)}</span> */}
-              <Avatar
+              <TimerIcon width={23} /> <span>{formatTime(totalTimeUsed)}</span>
+              {/* <Avatar
                 src={user?.avatarUrl}
                 fallback={user?.firstName?.charAt(0).toUpperCase() || ""}
                 radius="full"
                 className="bg-primary-50"
-              />
+              /> */}
             </div>
             <div className="mt-6 text-gray-500 text-sm flex items-center justify-center">
-              <span>time</span>
+              <CountdownCircleTimer
+                isPlaying
+                duration={10}
+                key={currentLiveQuestion.order}
+                colors={["#00B87B", "#A30000", "#A30000"]}
+                colorsTime={[10, 5, 0]}
+                isSmoothColorTransition={false}
+                rotation="counterclockwise"
+                onComplete={() => {
+                  if (currentLiveQuestion.order >= 10) {
+                    handleGameEnd();
+                    return { shouldRepeat: false };
+                  }
+                  return { shouldRepeat: false };
+                }}
+                size={65}
+                strokeWidth={6}
+              >
+                {({ remainingTime }) => (
+                  <span className="text-white">{remainingTime}</span>
+                  // setTimeout(() => setTimeLeft(remainingTime), 0);
+                  // <TimerIcon width={20} className="text-white" />
+                )}
+              </CountdownCircleTimer>
             </div>
             <div className="mt-6 text-sm flex items-center justify-end">
               <Flex
@@ -423,7 +259,9 @@ function GameScreen() {
                 className="text-center"
                 gap="2"
               >
-                <h3 className="font-bold text-xl">Question</h3>
+                <h3 className="font-bold text-xl">
+                  Question {currentLiveQuestion.order}
+                </h3>
                 <p className="font-medium">{currentLiveQuestion.text}</p>
               </Flex>
             </div>
@@ -432,30 +270,20 @@ function GameScreen() {
               {currentLiveQuestion.options.map(
                 (option: CurrentLiveQuestionOptionsObj, idx: number) => {
                   const isSelected = selectedAnswer === option.optionId;
-                  // const isCorrectSelection =
-                  //   locked &&
-                  //   isSelected &&
-                  //   option === currentQuestion.correctAnswer;
-                  // const isWrongSelection =
-                  //   locked &&
-                  //   isSelected &&
-                  //   option !== currentQuestion.correctAnswer;
-                  // const isCorrectSelection = locked && isSelected;
-                  // const isWrongSelection = locked && isSelected;
 
                   return (
                     <button
                       key={idx}
                       onClick={() => handleOptionClick(option.optionId)}
-                      disabled={locked}
+                      disabled={optionLocked}
                       className={`w-full py-3 px-6 min-h-[80px] rounded-full text-left border-4 font-medium transition 
                         ${
                           isSelected
-                            ? "bg-amber-500 border-amber-500 text-white"
+                            ? "bg-amber-500 border-amber-400 text-white"
                             : "bg-neutral-50 border-neutral-50 text-neutral-900"
                         }
                         
-                ${locked ? "cursor-not-allowed" : ""}
+                ${optionLocked ? "cursor-not-allowed" : ""}
               `}
                     >
                       <Flex gap="4" align="center" justify="between">
@@ -465,14 +293,6 @@ function GameScreen() {
                           </span>
                           <span className="col-span-3">{option.text}</span>
                         </Flex>
-                        {/* <span className="text-xl">
-                          {isCorrectSelection && (
-                            <CorrectCircleIcon className="text-positive-300" />
-                          )}
-                          {isWrongSelection && (
-                            <WrongCircleIcon className="text-error-100" />
-                          )}
-                        </span> */}
                       </Flex>
                     </button>
                   );

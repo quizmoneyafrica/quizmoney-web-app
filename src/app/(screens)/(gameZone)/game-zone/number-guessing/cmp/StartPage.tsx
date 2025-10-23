@@ -82,7 +82,7 @@ function StartPage() {
                 className="text-white"
               />
               Note: Minimum stake of &nbsp;
-              <span className="font-bold">₦1000</span>&nbsp; is Required
+              <span className="font-bold">₦200</span>&nbsp; is Required
             </p>
           </div>
         </div>

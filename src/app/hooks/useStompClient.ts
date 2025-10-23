@@ -32,8 +32,13 @@ export const useStompClient = () => {
   useEffect(() => {
     if (!user?.firstName || !accessToken) return;
 
+    if (clientRef.current?.active) {
+      console.log("🔁 STOMP reconnect with new token");
+      clientRef.current.deactivate();
+    }
+
     const client = new Client({
-      brokerURL: "wss://frontoffice.quizmoney.ng/ws",
+      brokerURL: process.env.NEXT_PUBLIC_BROKER_URL,
       connectHeaders: {
         Authorization: `Bearer ${accessToken}`,
       },
