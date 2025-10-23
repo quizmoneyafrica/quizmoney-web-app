@@ -38,7 +38,7 @@ export const useStompClient = () => {
     }
 
     const client = new Client({
-      brokerURL: "wss://frontoffice-prod.quizmoney.ng/ws",
+      brokerURL: "wss://frontoffice.quizmoney.ng/ws",
       connectHeaders: {
         Authorization: `Bearer ${accessToken}`,
       },
