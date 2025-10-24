@@ -8,6 +8,7 @@ import CustomButton from "@/app/utils/CustomBtn";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import { setOpenLeaveGame, setPhase, stopAudio } from "@/app/store/gameSlice";
 import { LeaveGameModal } from "@/app/components/game/leaveGameModal";
+import { BiSolidErrorAlt } from "react-icons/bi";
 
 function LobbyScreen() {
   const dispatch = useAppDispatch();
@@ -91,6 +92,12 @@ function LobbyScreen() {
             <section>
               <div className="">
                 <Grid gap="3" className="w-full">
+                  <div className=" bg-primary-50 text-center border-4 border-primary-500 rounded-[10px] px-4 py-4 space-y-4">
+                    <div className="flex items-center justify-center gap-2 text-error-900 text-sm">
+                      <BiSolidErrorAlt size={20} color="red" />{" "}
+                      <p>This is a Test Game, Only QM Coins will be issued</p>
+                    </div>
+                  </div>
                   <div className="bg-primary-50 text-sm border-4 border-primary-500 rounded-[10px] px-4 py-4 space-y-4">
                     <p className="text-center text-neutral-900 font-bolds">
                       Game Starts Soon
@@ -120,7 +127,7 @@ function LobbyScreen() {
                     </div>
                   </div>
                   {/* body end  */}
-                  <div className="w-full ">
+                  <div className="w-full hidden">
                     <CustomButton
                       onClick={() => dispatch(setOpenLeaveGame(true))}
                       width="full"

@@ -36,23 +36,23 @@ function Page() {
       e.returnValue = "";
     };
 
-    const handleVisibilityChange = () => {
-      // if (document.hidden && (phase === "playing" || phase === "lobby")) {
-      //   dispatch(setPhase("cancelled"));
-      //   dispatch(stopAudio());
-      // }
-    };
+    // const handleVisibilityChange = () => {
+    //   if (document.hidden && (phase === "playing" || phase === "lobby")) {
+    //     dispatch(setPhase("cancelled"));
+    //     dispatch(stopAudio());
+    //   }
+    // };
 
     window.history.pushState(null, "", window.location.href);
     window.history.replaceState(null, "", window.location.href);
     window.addEventListener("popstate", onPopState);
     window.addEventListener("beforeunload", handleBeforeUnload);
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    // document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       window.removeEventListener("popstate", onPopState);
       window.removeEventListener("beforeunload", handleBeforeUnload);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      // document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [dispatch, phase]);
 
