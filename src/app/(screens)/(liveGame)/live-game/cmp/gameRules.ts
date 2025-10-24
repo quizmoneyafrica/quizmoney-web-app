@@ -1,25 +1,28 @@
 export const gameRules = [
   {
-    title: "Stay in the app",
-    description: "Closing or switching apps will disqualify you.",
+    title: "Stay in the App",
+    description:
+      "Leaving or switching away from the app will result in disqualification.",
   },
   {
-    title: "Don’t refresh",
-    description: "If you're on a browser, do not reload the page.",
+    title: "Keep Your Screen Active",
+    description: "Ensure your device screen stays on throughout the game.",
   },
   {
-    title: "Answer fast",
-    description: "Your total time affects your rank.",
+    title: "Do Not Refresh",
+    description:
+      "If you're playing in a browser, avoid reloading or closing the page.",
+  },
+  {
+    title: "Speed and Accuracy Matter",
+    description: "Your ranking is determined by both your speed and accuracy.",
   },
   {
     title: "Eraser Advantage",
-    description: "It auto corrects your first wrong answer.",
-  },
-  {
-    title: "Get paid",
-    description: "Winnings go to your wallet and can be withdrawn.",
+    description: "Your first incorrect answer is automatically corrected.",
   },
 ];
+
 export const gameFetch = [
   {
     title: "Start Game",

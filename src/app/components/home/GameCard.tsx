@@ -91,7 +91,6 @@ function GameCard() {
       clearInterval(intervalRef.current!);
     };
   }, [nextGameData?.startTime, setShowJoinBtn]);
-  console.log(nextGameData);
 
   if (loading)
     return (

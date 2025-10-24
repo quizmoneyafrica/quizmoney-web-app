@@ -1,9 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAppDispatch, useAppSelector, useAuth } from "@/app/hooks/useAuth";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { motion } from "framer-motion";
 import { EraserIcon, TimerIcon } from "@/app/icons/icons";
-import { Flex } from "@radix-ui/themes";
+import { Flex, Grid } from "@radix-ui/themes";
 import GameApi from "@/app/api/game";
 import {
   CurrentLiveQuestionOptionsObj,
@@ -15,7 +21,7 @@ import {
   // setPhase,
 } from "@/app/store/gameSlice";
 import { toast } from "sonner";
-import { toastPosition } from "@/app/utils/utils";
+import { shuffleOptionsArray, toastPosition } from "@/app/utils/utils";
 // import CustomButton from "@/app/utils/CustomBtn";
 // import { gameFetch } from "./gameRules";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
@@ -121,6 +127,11 @@ function GameScreen() {
     };
   }, [currentLiveQuestion, totalTimeUsed, dispatch]);
 
+  const shuffledOptions = useMemo(() => {
+    if (!currentLiveQuestion?.options) return [];
+    return shuffleOptionsArray(currentLiveQuestion.options);
+  }, [currentLiveQuestion?.options]);
+
   if (!currentLiveQuestion)
     return (
       <motion.div
@@ -130,34 +141,20 @@ function GameScreen() {
         transition={{ duration: 0.25, ease: "easeInOut" }}
       >
         <div className="h-[100dvh] bg-primary-900 hero flex items-center justify-center  px-4">
-          <QMLoader />
-          {/* <Grid gap="3" className="w-full">
-            <div className=" bg-primary-50 text-center border-4 border-primary-500 rounded-[10px] px-4 py-4 space-y-4">
-              <h4 className="text-center text-error-900 font-bold">
-                Stay In App
-              </h4>
-
-              <div className="text-neutral-900 text-left space-y-4">
-                {gameFetch.map((rule, index) => (
-                  <div key={index}>
-                    <span className="font-semibold text-error-900">
-                      {index + 1}. {rule.title}
-                    </span>{" "}
-                    – {rule.description}
-                  </div>
-                ))}
+          {/* <QMLoader /> */}
+          <Grid gap="3" className="w-full">
+            <div className="bg-primary-50 text-center border-4 border-primary-500 rounded-[10px] px-4 py-10 space-y-4">
+              <div className="flex items-center justify-center">
+                <QMLoader />
               </div>
+              <h4 className="text-center text-error-900 font-bold">
+                Game is Starting
+              </h4>
+              <p className="italic">
+                Please wait, make sure your screen light doesn&apos;t go off..
+              </p>
             </div>
-            <CustomButton
-              onClick={fetchCurrentQuestion}
-              width="full"
-              size="lg"
-              type="button"
-              variant="secondary"
-            >
-              Start Game Now
-            </CustomButton>
-          </Grid> */}
+          </Grid>
         </div>
       </motion.div>
     );
@@ -267,7 +264,7 @@ function GameScreen() {
             </div>
             {/* Options  */}
             <div className="w-full grid grid-cols-1 gap-4 md:grid-cols-2">
-              {currentLiveQuestion.options.map(
+              {shuffledOptions.map(
                 (option: CurrentLiveQuestionOptionsObj, idx: number) => {
                   const isSelected = selectedAnswer === option.optionId;
 
