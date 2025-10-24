@@ -6,9 +6,15 @@ import React, { useEffect, useRef, useState } from "react";
 import { gameRules } from "./gameRules";
 import CustomButton from "@/app/utils/CustomBtn";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
-import { setOpenLeaveGame, setPhase, stopAudio } from "@/app/store/gameSlice";
+import {
+  setNextGameData,
+  setOpenLeaveGame,
+  setPhase,
+  stopAudio,
+} from "@/app/store/gameSlice";
 import { LeaveGameModal } from "@/app/components/game/leaveGameModal";
 import { BiSolidErrorAlt } from "react-icons/bi";
+import GameApi from "@/app/api/game";
 
 function LobbyScreen() {
   const dispatch = useAppDispatch();
@@ -37,7 +43,17 @@ function LobbyScreen() {
       setSecondsLeft(diff);
 
       if (diff >= 0 && diff <= 20) {
-        setAnimatedCountdown(diff - 10);
+        const countdownVal = Math.max(diff - 10, 0);
+        setAnimatedCountdown(countdownVal);
+
+        if (countdownVal === 0 && nextGameData?.status === "WAITING") {
+          GameApi.fetchNextGame()
+            .then((res) => {
+              console.log("GAME (fallback)", res);
+              dispatch(setNextGameData(res.data));
+            })
+            .catch((err) => console.error("Fallback fetch failed", err));
+        }
       }
 
       // if (diff <= -1) {
@@ -59,7 +75,7 @@ function LobbyScreen() {
     return () => {
       clearInterval(intervalRef.current!);
     };
-  }, [startDate, dispatch, nextGameData?.status]);
+  }, [startDate, dispatch, nextGameData?.status, animatedCountdown]);
 
   // const minutes = Math.floor(secondsLeft / 60);
   // const seconds = secondsLeft % 60;
