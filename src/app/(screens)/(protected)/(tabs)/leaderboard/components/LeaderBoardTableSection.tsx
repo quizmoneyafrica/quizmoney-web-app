@@ -19,7 +19,7 @@ export default function LeaderBoardTableSection() {
   const [activeTab, setActiveTab] = useState<LeaderboardType>("lastGame");
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const entriesPerPage = 10;
+  const entriesPerPage = 100;
 
   const { lastGame, allTime, pagination } = useSelector(
     (state: RootState) => state.leaderboard
