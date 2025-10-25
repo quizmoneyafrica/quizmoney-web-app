@@ -13,7 +13,7 @@ import { toastPosition } from "@/app/utils/utils";
 
 function Page() {
   const dispatch = useAppDispatch();
-  const { phase, nextGameData } = useAppSelector((state) => state.game);
+  const { phase } = useAppSelector((state) => state.game);
 
   useEffect(() => {
     // Replace initial state so back doesn't work
@@ -57,8 +57,7 @@ function Page() {
   }, [dispatch, phase]);
 
   if (phase === "lobby") return <LobbyScreen />;
-  if (nextGameData?.status === "INPROGRESS" && phase === "playing")
-    return <GameScreen />;
+  if (phase === "playing") return <GameScreen />;
   if (phase === "completed") return <GameCompleted />;
   if (phase === "result") return <Results />;
   if (phase === "cancelled") return <KickedOut />;

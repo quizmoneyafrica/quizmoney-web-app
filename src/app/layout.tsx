@@ -72,6 +72,13 @@ export const metadata: Metadata = {
     images: ["/opengraph-image.png"],
   },
   robots: "index, follow",
+  // viewport: {
+  //   width: "device-width",
+  //   initialScale: 1.0,
+  //   minimumScale: 1.0,
+  //   maximumScale: 1.0,
+  //   userScalable: false,
+  // },
 };
 
 export default function RootLayout({
