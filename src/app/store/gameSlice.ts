@@ -85,7 +85,7 @@ const initialState: GameState = {
   showResultScreen: false,
   openLeaveGame: false,
   topGamers: [],
-  phase: "loading",
+  phase: "lobby",
   audioShouldPlay: false,
   totalTimeUsed: 0,
   optionLocked: false,
