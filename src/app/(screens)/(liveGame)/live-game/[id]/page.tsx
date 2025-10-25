@@ -5,7 +5,7 @@ import LobbyScreen from "../cmp/LobbyScreen";
 import GameScreen from "../cmp/GameScreen";
 import GameCompleted from "../cmp/GameCompleted";
 import KickedOut from "../cmp/KickedOut";
-import NotStarted from "../cmp/NotStarted";
+// import NotStarted from "../cmp/NotStarted";
 import Results from "../cmp/Results";
 import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
@@ -13,7 +13,7 @@ import { toastPosition } from "@/app/utils/utils";
 
 function Page() {
   const dispatch = useAppDispatch();
-  const { phase, nextGameData } = useAppSelector((state) => state.game);
+  const { phase } = useAppSelector((state) => state.game);
 
   useEffect(() => {
     // Replace initial state so back doesn't work
@@ -57,12 +57,12 @@ function Page() {
   }, [dispatch, phase]);
 
   if (phase === "lobby") return <LobbyScreen />;
-  if (nextGameData?.status === "INPROGRESS" && phase === "playing")
-    return <GameScreen />;
+  if (phase === "playing") return <GameScreen />;
   if (phase === "completed") return <GameCompleted />;
   if (phase === "result") return <Results />;
   if (phase === "cancelled") return <KickedOut />;
-  return <NotStarted />;
+  // return <NotStarted />;
+  return <GameScreen />;
 }
 
 export default Page;
