@@ -5,7 +5,7 @@ import LobbyScreen from "../cmp/LobbyScreen";
 import GameScreen from "../cmp/GameScreen";
 import GameCompleted from "../cmp/GameCompleted";
 import KickedOut from "../cmp/KickedOut";
-import NotStarted from "../cmp/NotStarted";
+// import NotStarted from "../cmp/NotStarted";
 import Results from "../cmp/Results";
 import { toast } from "sonner";
 import { toastPosition } from "@/app/utils/utils";
@@ -61,7 +61,8 @@ function Page() {
   if (phase === "completed") return <GameCompleted />;
   if (phase === "result") return <Results />;
   if (phase === "cancelled") return <KickedOut />;
-  return <NotStarted />;
+  // return <NotStarted />;
+  return <GameScreen />;
 }
 
 export default Page;
