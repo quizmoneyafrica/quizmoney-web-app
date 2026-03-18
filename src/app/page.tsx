@@ -22,7 +22,7 @@ export default function Home() {
           />
 
           <div>
-            <h1 className="text-2xl font-bold">Migration In Progress..</h1>
+            <h1 className="text-2xl font-bold">Maintenance In Progress..</h1>
             <p>We&apos;re preparing to serve you better.</p>
           </div>
         </div>
