@@ -32,6 +32,8 @@ export default function PracticeBoard() {
     }
   }
 
+  console.log("Current ", currentQuestion);
+  
   return (
     <div className="w-full max-w-xl mx-auto bg-white border border-gray-200 p-6 rounded-2xl shadow-sm text-black">
       <div className="flex justify-between items-center border-b border-gray-100 pb-4 mb-4">

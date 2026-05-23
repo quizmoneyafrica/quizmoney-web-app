@@ -39,6 +39,7 @@ interface PracticeStore {
   currentQuestionIndex: number;
   totalQuestions: number;
   score: number;
+  message: string;
   eraserUsed: boolean;
   currentQuestion: Question | null;
   summary: PracticeSessionSummary | null;
@@ -69,6 +70,7 @@ const initialState = {
   currentQuestionIndex: 0,
   totalQuestions: 10,
   score: 0,
+  message: "",
   eraserUsed: false,
   currentQuestion: null,
   summary: null,
@@ -88,8 +90,13 @@ export const usePracticeStore = create<PracticeStore>((set, get) => ({
     try {
       const res = await apiClient.post("/api/practice/start", { category });
       if (res.data.success) {
-        const { sessionId, currentQuestionIndex, totalQuestions, score } =
-          res.data.data;
+        const {
+          sessionId,
+          currentQuestionIndex,
+          totalQuestions,
+          score,
+          message,
+        } = res.data.data;
         set({
           isActive: true,
           isFinished: false,
@@ -97,6 +104,7 @@ export const usePracticeStore = create<PracticeStore>((set, get) => ({
           currentQuestionIndex,
           totalQuestions,
           score,
+          message,
         });
         // Fetch the first question instantly
         await get().fetchQuestionHttp();
@@ -115,7 +123,7 @@ export const usePracticeStore = create<PracticeStore>((set, get) => ({
     try {
       const res = await apiClient.get("/api/practice/question");
       if (res.data.success) {
-        const { questionIndex, score, eraserAvailable, question } =
+        const { eraserAvailable, question, questionIndex, score } =
           res.data.data;
         set({
           currentQuestionIndex: questionIndex,
@@ -123,11 +131,11 @@ export const usePracticeStore = create<PracticeStore>((set, get) => ({
           eraserUsed: !eraserAvailable,
           currentQuestion: {
             id: question.id,
-            question_text: question.question_text,
-            option_a: question.option_a,
-            option_b: question.option_b,
-            option_c: question.option_c,
-            option_d: question.option_d,
+            question_text: question.text,
+            option_a: question.options.a,
+            option_b: question.options.b,
+            option_c: question.options.c,
+            option_d: question.options.d,
             category: question.category,
           },
         });
