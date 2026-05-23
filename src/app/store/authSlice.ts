@@ -1,117 +1,34 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-// type UpdateUserFieldPayload = {
-//   key: keyof UserObject;
-//   value: UserObject[keyof UserObject];
-// };
+/* eslint-disable */
+// STUB — auth state has moved to src/lib/auth-store.ts (Zustand)
+// This file prevents build errors while un-migrated screens are still importing from here.
+// When migrating a screen: replace all imports from this file with useAuthStore from '@/lib/auth-store'
 
-export interface UserObject {
-  email?: string;
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
-  gender?: string;
-  dob?: string;
-  avatarUrl?: string;
-  createdAt?: string;
-  country?: string;
-  pinSetup?: boolean;
-  gameEraserCount?: number;
-  facebookHandle?: string;
-  twitterHandle?: string;
-  instagramHandle?: string;
-  tiktokHandle?: string;
-  whatsappContact?: string;
-  referralCode?: string;
-  referralEarnings?: number;
-  totalReferral?: number;
-  phoneVerified?: boolean;
-}
-interface AuthState {
-  isAuthenticated: boolean;
-  rehydrated: boolean;
-  accessToken: string;
-  expiredAt: number;
-  refreshToken: string;
-  user: UserObject | null;
-  userEncryptedData: string | null;
-  // UI state for modals and verification flow
-  openModal?: boolean;
-  showOtpVerification?: boolean;
+export type UserObject = {
+  id?: string
+  username?: string
+  email?: string
+  firstName?: string
+  lastName?: string
+  avatarUrl?: string | null
+  gameEraserCount?: number
+  [key: string]: any
 }
 
-const initialState: AuthState = {
-  isAuthenticated: false,
-  rehydrated: false,
-  accessToken: "",
-  expiredAt: 0,
-  refreshToken: "",
-  user: null,
-  userEncryptedData: null,
-  openModal: false,
-  showOtpVerification: false,
-};
-
-export interface LoginPayload {
-  accessToken: string;
-  refreshToken: string;
-  expiredAt: number;
-  user: UserObject;
+export type LoginPayload = {
+  user: UserObject
+  accessToken: string
+  refreshToken: string
 }
 
-const authSlice = createSlice({
-  name: "auth",
-  initialState,
-  reducers: {
-    login(state, action: PayloadAction<LoginPayload>) {
-      Object.assign(state, {
-        isAuthenticated: true,
-        ...action.payload,
-      });
-    },
-    logout: (state) => Object.assign(state, initialState),
+// No-op action creators — dispatching these does nothing
+export const login = (_payload: LoginPayload) => ({ type: 'stub/login', payload: _payload })
+export const logout = () => ({ type: 'stub/logout' })
+export const updateUser = (_payload: Partial<UserObject>) => ({ type: 'stub/updateUser', payload: _payload })
+export const setRehydrated = (_value: boolean) => ({ type: 'stub/setRehydrated', payload: _value })
 
-    setRehydrated(state, action: PayloadAction<boolean>) {
-      state.rehydrated = action.payload;
-    },
-    updateUser(state, action: PayloadAction<Partial<UserObject>>) {
-      if (state.user) {
-        state.user = {
-          ...state.user,
-          ...action.payload,
-        };
-      }
-    },
-    updateAccessToken(state, action: PayloadAction<string>) {
-      if (state.accessToken) {
-        state.accessToken = action.payload;
-      }
-    },
-    updateRefreshToken(state, action: PayloadAction<string>) {
-      if (state.refreshToken) {
-        state.refreshToken = action.payload;
-      }
-    },
-    updateExpiry(state, action: PayloadAction<number>) {
-      state.expiredAt = action.payload;
-    },
-    setOpenModal(state, action: PayloadAction<boolean>) {
-      state.openModal = action.payload;
-    },
-    setShowOtpVerification(state, action: PayloadAction<boolean>) {
-      state.showOtpVerification = action.payload;
-    },
-  },
-});
+export default function authReducer(state = {}, _action: any) {
+  return state
+}
 
-export const {
-  login,
-  logout,
-  setRehydrated,
-  updateUser,
-  updateAccessToken,
-  updateRefreshToken,
-  updateExpiry,
-  setOpenModal,
-  setShowOtpVerification,
-} = authSlice.actions;
-export default authSlice.reducer;
+export const setShowOtpVerification = (_v: boolean) => ({ type: 'stub/setShowOtpVerification' })
+export const setOpenModal = (_v: boolean) => ({ type: 'stub/setOpenModal' })

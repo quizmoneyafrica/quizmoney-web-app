@@ -1,52 +1,44 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
-import GameApi from "@/app/api/game";
-import { useAppDispatch } from "@/app/hooks/useAuth";
-import {
-  playAudio,
-  setCurrentLiveQuestion,
-  setOptionLocked,
-  setPhase,
-  setTotalTimeUsed,
-} from "@/app/store/gameSlice";
-import { addSubscription } from "@/app/store/stompSlice";
-import { RootState } from "@/app/store/store";
-import { toastPosition } from "@/app/utils/utils";
-import { Spinner } from "@radix-ui/themes";
-import { useRouter } from "next/navigation";
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
-import { toast } from "sonner";
+'use client'
 
-function JoinGameBtn() {
-  const dispatch = useAppDispatch();
-  const router = useRouter();
-  const gameData = useSelector((state: RootState) => state.game.nextGameData);
-  const [loading, setLoading] = useState(false);
+import { toastPosition } from '@/app/utils/utils'
+import { Spinner } from '@radix-ui/themes'
+import { useRouter } from 'next/navigation'
+import React, { useState } from 'react'
+import { toast } from 'sonner'
+import { api } from '@/lib/api-client'
+
+interface JoinGameBtnProps {
+  gameId: string
+}
+
+function JoinGameBtn({ gameId }: JoinGameBtnProps) {
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
 
   const handleJoinBtn = async () => {
-    setLoading(true);
-    try {
-      const res = await GameApi.registerForGame(gameData?.gameId || "");
-      const game = res.userData;
-      console.log(game);
-
-      dispatch(addSubscription(`/topic/questions`));
-      dispatch(setPhase("lobby"));
-      dispatch(playAudio());
-      dispatch(setCurrentLiveQuestion(null));
-      dispatch(setOptionLocked(false));
-      dispatch(setTotalTimeUsed(0));
-      router.replace(`/live-game/${gameData?.gameId}`);
-    } catch (err: any) {
-      console.log(err.message);
-      toast.error(err.message, {
-        position: toastPosition,
-      });
-    } finally {
-      setLoading(false);
+    if (!gameId) {
+      toast.error('No active game to join', { position: toastPosition })
+      return
     }
-  };
+    setLoading(true)
+    try {
+      // Game joining is socket-based — navigate to the live game room.
+      // The live-game screen emits game:join via Socket.io on mount.
+      // TODO: if a REST pre-register endpoint is added (e.g. POST /api/game/register/:id),
+      //       call it here before navigating.
+      await api.post(`/api/game/register/${gameId}`).catch(() => {
+        // No HTTP register endpoint currently — proceed to socket join
+      })
+      router.replace(`/live-game/${gameId}`)
+    } catch (err: unknown) {
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message || 'Failed to join game'
+      toast.error(msg, { position: toastPosition })
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <button
@@ -57,9 +49,9 @@ function JoinGameBtn() {
       <i className="bi bi-play-circle mb-1 relative">
         <i className="bi bi-play-circle mb-1 animate-ping absolute left-0 top-0"></i>
       </i>
-      {loading ? <Spinner /> : "Join Live Game!"}
+      {loading ? <Spinner /> : 'Join Live Game!'}
     </button>
-  );
+  )
 }
 
-export default JoinGameBtn;
+export default JoinGameBtn

@@ -1,7 +1,5 @@
 "use client";
-import { clearDemoData } from "@/app/store/demoSlice";
 import React from "react";
-import { useDispatch } from "react-redux";
 import { motion } from "framer-motion";
 import {
   CircleArrowLeft,
@@ -19,8 +17,6 @@ import {
 } from "@/app/utils/utils";
 import { ApiResponse } from "@/app/api/interface";
 import UseBlockBackNavigation from "../blockBackNav";
-import { useAppSelector } from "@/app/hooks/useAuth";
-import { stopAudio } from "@/app/store/gameSlice";
 
 type Props = {
   totalTimeUsed: string;
@@ -35,22 +31,16 @@ function DemoResult({
   user,
 }: Props) {
   UseBlockBackNavigation();
-  const dispatch = useDispatch();
   const router = useRouter();
-  const { nextGameData } = useAppSelector((state) => state.game);
 
   const handlePlayAgain = () => {
-    dispatch(clearDemoData());
     sessionStorage.clear();
     router.replace("/play-demo");
-    dispatch(stopAudio());
   };
 
   const handleGoBack = () => {
-    dispatch(clearDemoData());
     router.replace("/home");
     sessionStorage.clear();
-    dispatch(stopAudio());
   };
   return (
     <motion.div
@@ -106,23 +96,18 @@ function DemoResult({
             <div className="text-center space-y-2">
               <span className="text-7xl">🏆</span>
               <h2 className="font-bold text-2xl text-primary-900">
-                Good Job, {user?.firstName?.toUpperCase()}!
+                Good Job, {(user as any)?.firstName?.toUpperCase() || (user as any)?.first_name?.toUpperCase()}!
                 <br />
                 Ready to challenge other players?
               </h2>
 
               <p>
                 Join the next game and compete for your share of{" "}
-                {formatNaira(Number(nextGameData?.prize), true)}. Just 10
+                {formatNaira(0, true)}. Just 10
                 questions, 10 seconds each.
               </p>
             </div>
 
-            {/* button  */}
-            {/* <p className="text-center">
-              🚀 Don&apos;t just play for fun! play to earn with Quiz Money! Tap
-              the button 👇{" "}
-            </p> */}
             <CustomButton onClick={handleGoBack} width="full">
               Join Next Game
             </CustomButton>

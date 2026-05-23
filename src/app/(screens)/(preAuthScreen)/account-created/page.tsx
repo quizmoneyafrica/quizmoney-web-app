@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Container, Flex, Grid, Heading, Text } from "@radix-ui/themes";
@@ -6,45 +5,31 @@ import LeftSide from "../forgot-password/leftSide";
 import CustomButton from "@/app/utils/CustomBtn";
 import { SuccessIcon } from "@/app/utils/successIcon";
 import { useRouter } from "next/navigation";
-import UserAPI from "@/app/api/userApi";
-import { useAuth } from "@/app/hooks/useAuth";
-import { useState } from "react";
-import { toast } from "sonner";
-import { toastPosition } from "@/app/utils/utils";
+import { useLogin } from "@/lib/queries";
 
 function Page() {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
-  const loginData = localStorage.getItem("login");
-  const { loginUser, updateCustomer } = useAuth();
+  const { mutate: login, isPending: isLoading } = useLogin();
 
-  const handleGoHome = async () => {
-    setIsLoading(true);
-    if (loginData) {
-      const parsed = JSON.parse(loginData);
-      console.log(parsed);
-      try {
-        const res = await UserAPI.login(parsed);
-        console.log("RES", res);
-        const data = await UserAPI.customerProfile(res.data.accessToken);
-        console.log("Customer Profile", data);
-        if (res.success) {
-          loginUser(res.data);
-          if (res.data.accessToken) {
-            updateCustomer(data.data);
-            router.replace("/home");
+  const handleGoHome = () => {
+    const stored = localStorage.getItem("login");
+    if (stored) {
+      const { email, password } = JSON.parse(stored);
+      login(
+        { email, password },
+        {
+          onSuccess: () => {
             localStorage.removeItem("login");
-          }
+            router.replace("/home");
+          },
+          onError: () => router.replace("/login"),
         }
-      } catch (error: any) {
-        toast.error(error.message, { position: toastPosition });
-      } finally {
-        setIsLoading(false);
-      }
+      );
     } else {
-      router.replace("/");
+      router.replace("/login");
     }
   };
+
   return (
     <Grid columns={{ initial: "1", md: "2" }} className="h-screen">
       <LeftSide />

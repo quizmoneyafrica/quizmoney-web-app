@@ -290,6 +290,9 @@ export function formatTimeToMinutesAndSeconds(timeString: string): string {
 }
 
 // shuffle
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function shuffleOptionsArray(array: any[]): any[];
+export function shuffleOptionsArray<T>(array: T[]): T[];
 export function shuffleOptionsArray<T>(array: T[]): T[] {
   const newArray = [...array];
   for (let i = newArray.length - 1; i > 0; i--) {

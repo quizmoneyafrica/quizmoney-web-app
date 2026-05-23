@@ -1,45 +1,62 @@
-import { useEffect, useCallback } from "react";
-import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
-import { setCustomerKyc } from "@/app/store/kycSlice";
-import KycAPI from "@/app/api/kycApi";
+/**
+ * useKycStep.ts
+ *
+ * Reads KYC / verification status via React Query.
+ * Previously used Redux (kycSlice) — now delegates to useVerificationStatus()
+ * from '@/lib/queries' which calls GET /api/verification/status.
+ *
+ * Return shape is identical to the old hook so existing screens need no changes.
+ */
 
+import { useVerificationStatus } from "@/lib/queries";
+
+// Derived step type — keeps the same interface so existing UI screens don't break
 export type CurrentStep = "PHONE" | "BVN" | "DONE" | null;
 
 export const useKycStep = () => {
-  const dispatch = useAppDispatch();
-  const customerKyc = useAppSelector((s) => s.kyc.customerKyc);
+  const {
+    data: status,
+    isLoading,
+    refetch: refreshKyc,
+  } = useVerificationStatus();
 
-  const refreshKyc = useCallback(async () => {
-    try {
-      const res = await KycAPI.getCustomerKyc();
-      dispatch(setCustomerKyc(res.data));
-    } catch (err) {
-      console.error("Failed to fetch KYC:", err);
-    }
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (!customerKyc.length) {
-      refreshKyc();
-    }
-  }, [customerKyc.length, refreshKyc]);
-
-  const phoneStep = customerKyc.find((s) => s.step === "PHONE");
-  const bvnStep = customerKyc.find((s) => s.step === "BVN");
-
+  // Derive the current step from the flat status object
   let currentStep: CurrentStep = null;
+  console.log("KYC STATUS ", status);
 
-  if (!phoneStep || phoneStep.status !== "COMPLETED") {
-    currentStep = "PHONE";
-  } else if (!bvnStep || bvnStep.status !== "COMPLETED") {
-    currentStep = "BVN";
-  } else {
-    currentStep = "DONE";
+  if (status) {
+    if (!status.phone_verified) {
+      currentStep = "PHONE";
+    } else if (!status.bvn_verified) {
+      currentStep = "BVN";
+    } else {
+      currentStep = "DONE";
+    }
   }
+
+  // Compat: un-migrated screens destructure { customerKyc } as an array
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const customerKyc: any[] = status
+    ? [
+        {
+          step: "PHONE",
+          status: status.phone_verified ? "COMPLETED" : "PENDING",
+        },
+        {
+          step: "BVN",
+          status: status.bvn_verified ? "COMPLETED" : "PENDING",
+        },
+      ]
+    : [];
 
   return {
     currentStep,
-    customerKyc,
+    status: status ?? null,
+    isLoading,
     refreshKyc,
+    customerKyc,
+    canWithdraw: status?.can_withdraw ?? false,
+    canHaveVirtualAccount: status?.can_have_virtual_account ?? false,
+    isFullyVerified: status?.is_fully_verified ?? false,
   };
 };

@@ -15,3 +15,8 @@ function PlayDemoBtn() {
 }
 
 export default PlayDemoBtn;
+
+// check /Users/tosin/Documents/Dev Mode/QM TECH/quizmoney-web-app/src/app/(screens)/(practiceGameFlow)/play-demo I
+//   want the practice game working, this is the backend path /Users/tosin/Documents/Dev Mode/QM
+//   TECH/quizmoney_be/src/socket/handlers/practice.handler.ts and /Users/tosin/Documents/Dev Mode/QM
+//   TECH/quizmoney_be/src/modules/practice

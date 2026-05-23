@@ -1,4 +1,4 @@
-import { Content } from "@/app/store/notificationSlice";
+import { Content } from "@/app/components/notification/ViewNotification";
 import { truncateWords } from "@/app/utils/utils";
 import { Flex, Grid } from "@radix-ui/themes";
 import React from "react";

@@ -1,173 +1,79 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import KycAPI from "@/app/api/kycApi";
-import UserAPI from "@/app/api/userApi";
+import { useLogin, useResendOtp } from "@/lib/queries";
 import NLRC from "@/app/components/follow/nlrc";
 import SocialFollow from "@/app/components/follow/socialFollow";
-import { useAppDispatch, useAuth } from "@/app/hooks/useAuth";
 import useFcmToken from "@/app/hooks/useFcmToken";
 import { EyeIcon, EyeSlash, MailIcon } from "@/app/icons/icons";
-import getDeviceId from "@/app/pwa/deviceId";
-import { setCustomerKyc } from "@/app/store/kycSlice";
-import { decryptData } from "@/app/utils/crypto";
 import CustomButton from "@/app/utils/CustomBtn";
 import CustomTextField from "@/app/utils/CustomTextField";
-import {
-  capitalizeFirstLetter,
-  isValidEmail,
-  toastPosition,
-} from "@/app/utils/utils";
+import { isValidEmail, toastPosition } from "@/app/utils/utils";
 import { Flex } from "@radix-ui/themes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { toast } from "sonner";
 
-type Props = {
-  loading: boolean;
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-const LoginForm = ({ loading, setLoading }: Props) => {
-  const dispatch = useAppDispatch();
+const LoginForm = () => {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const { token, notificationPermissionStatus } = useFcmToken();
-  const { loginUser, updateCustomer } = useAuth();
-  const router = useRouter();
-  const [ipAddress, setIpAddress] = useState("");
+  const { notificationPermissionStatus } = useFcmToken();
+  const { mutate: login, isPending } = useLogin();
+  const { mutate: resendOtp } = useResendOtp();
 
-  useEffect(() => {
-    const fetchIP = async () => {
-      try {
-        const res = await fetch("/api/app-info");
-        const data = await res.json();
-        setIpAddress(decryptData(data));
-      } catch (err) {
-        console.error("Could not fetch IP:", err);
-      }
-    };
-
-    fetchIP();
-  }, []);
-  console.log(token);
-
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
 
     if (
       notificationPermissionStatus &&
       notificationPermissionStatus !== "granted"
     ) {
-      toast.info(`Notification is not set for Quiz Money`, {
+      toast.info("Notification is not set for Quiz Money", {
         position: toastPosition,
       });
     }
     if (!email || !password) {
-      toast.error(`Email and password are required.`, {
+      toast.error("Email and password are required.", {
         position: toastPosition,
       });
-      setLoading(false);
       return;
     }
-    const deviceId = getDeviceId();
-    const newValues = {
-      username: email.toLowerCase().trim(),
-      password: password,
-      deviceToken: token || null,
-      deviceId: deviceId,
-      ipAddress: ipAddress,
-    };
-    try {
-      const res = await UserAPI.login(newValues);
-      console.log("RES", res);
 
-      const data = await UserAPI.customerProfile(res.data.accessToken);
+    login(
+      { email: email.toLowerCase().trim(), password },
+      {
+        onSuccess: () => router.replace("/home"),
+        onError: (error: any) => {
+          console.log("LOGIN ERROR:", error);
+          console.log("RESPONSE:", error?.response);
 
-      console.log("=============login=======================");
-      console.log(JSON.stringify(res.data, null, 2));
-      console.log("===========login=========================");
-
-      if (res.success) {
-        loginUser(res.data);
-
-        if (data.data) {
-          updateCustomer(data.data);
-          checkCustomerKyc();
-          router.replace("/home");
-          toast.success(
-            `Welcome Back ${capitalizeFirstLetter(res.data.user.firstName)}`,
-            {
-              position: "top-center",
-            }
-          );
-        }
-      }
-    } catch (err: any) {
-      setLoading(false);
-      console.log("INVALID", err.raw);
-      if (err.raw.code === "422") {
-        await createPassword(email.toLowerCase().trim());
-      }
-      if (err.message === "Account deactivated") {
-        localStorage.setItem("login", JSON.stringify(newValues));
-        verifyEmail(email.toLowerCase().trim());
-      } else {
-        toast.error(`${err.message}`, {
-          position: toastPosition,
-        });
-        if (err.data !== null && err.data?.errorList) {
-          toast.error(`${err.data.errorList[0]}`, {
-            position: toastPosition,
-          });
-        }
-      }
-    }
+          const message =
+            error?.response?.data?.message ?? error?.message ?? "";
+          if (message === "Account deactivated") {
+            resendOtp(
+              {
+                email: email.toLowerCase().trim(),
+                purpose: "email_verification",
+              },
+              {
+                onSuccess: () => {
+                  router.push(
+                    `/verify-email?email=${encodeURIComponent(email.toLowerCase().trim())}`,
+                  );
+                  toast.error("Please verify your account to continue.", {
+                    position: toastPosition,
+                  });
+                },
+              },
+            );
+          }
+        },
+      },
+    );
   };
 
-  const checkCustomerKyc = async () => {
-    try {
-      const kycData = await KycAPI.getCustomerKyc();
-      dispatch(setCustomerKyc(kycData.data));
-      console.log("Customer kycData", kycData.data);
-    } catch (err: any) {
-      toast.error(err.message, { position: toastPosition });
-    }
-  };
-
-  const createPassword = async (email: string) => {
-    try {
-      // await UserAPI.resendSignupOtp(email);
-      router.push(
-        `/password-creation?email=${encodeURIComponent(
-          email.toLowerCase().trim()
-        )}`
-      );
-    } catch (err: any) {
-      console.log("ERROR Forgot Password", err);
-      toast.error(`${err.message}`, {
-        position: toastPosition,
-      });
-      setLoading(false);
-    }
-  };
-  const verifyEmail = async (email: string) => {
-    try {
-      await UserAPI.resendSignupOtp(email);
-      router.push(`/verify-email?email=${encodeURIComponent(email)}`);
-      toast.error("Please verify your account to continue.", {
-        position: toastPosition,
-      });
-    } catch (err: any) {
-      console.log("ERROR Forgot Password", err);
-      toast.error(`${err.message}`, {
-        position: toastPosition,
-      });
-      setLoading(false);
-    }
-  };
   return (
     <form onSubmit={handleLogin}>
       <Flex direction="column" gap="4">
@@ -180,7 +86,7 @@ const LoginForm = ({ loading, setLoading }: Props) => {
           placeholder="Enter your email"
           onChange={(e) => setEmail(e.target.value)}
           icon={<MailIcon className="text-[#A6ABC4]" />}
-          disabled={loading}
+          disabled={isPending}
         />
         <CustomTextField
           label="Password"
@@ -203,7 +109,7 @@ const LoginForm = ({ loading, setLoading }: Props) => {
               />
             )
           }
-          disabled={loading}
+          disabled={isPending}
         />
 
         <Flex justify="end">
@@ -215,7 +121,7 @@ const LoginForm = ({ loading, setLoading }: Props) => {
           </Link>
         </Flex>
         <div className="pt-4 w-full">
-          {!loading ? (
+          {!isPending ? (
             <CustomButton
               type="submit"
               width="full"

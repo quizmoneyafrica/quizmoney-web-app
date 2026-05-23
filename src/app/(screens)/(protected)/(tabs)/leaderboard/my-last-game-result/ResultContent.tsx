@@ -94,13 +94,13 @@ const ResultContent = () => {
               variants={itemVariants}
               className="capitalize text-lg md:text-2xl font-bold text-primary-700"
             >
-              {user?.firstName} {user?.lastName}
+              {user?.first_name} {user?.last_name}
             </motion.h1>
             <motion.p
               variants={itemVariants}
               className="capitalize text-xs md:text-base text-primary-700"
             >
-              @{user?.firstName}
+              @{user?.first_name}
             </motion.p>
           </div>
         </motion.section>

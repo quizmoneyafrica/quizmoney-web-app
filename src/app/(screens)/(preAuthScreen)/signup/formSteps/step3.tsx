@@ -1,6 +1,5 @@
 "use client";
 import { SignUpFormType } from "@/app/api/interface";
-import useFcmToken from "@/app/hooks/useFcmToken";
 import { EyeIcon, EyeSlash } from "@/app/icons/icons";
 import CustomTextField from "@/app/utils/CustomTextField";
 import { toastPosition } from "@/app/utils/utils";
@@ -8,9 +7,8 @@ import { Container, Flex } from "@radix-ui/themes";
 import * as React from "react";
 import { toast } from "sonner";
 import CustomButton from "@/app/utils/CustomBtn";
-import UserAPI from "@/app/api/userApi";
+import { useRegister } from "@/lib/queries";
 import { PasswordChip } from "@/app/utils/passwordChip";
-import getDeviceId from "@/app/pwa/deviceId";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -24,10 +22,8 @@ interface IStepThreeProps {
 
 const StepThree: React.FunctionComponent<IStepThreeProps> = (props) => {
   const router = useRouter();
-  const { token, notificationPermissionStatus } = useFcmToken();
   const { formData, onChange, toggleResetFieldVisibility } = props;
-
-  const [loading, setLoading] = React.useState(false);
+  const { mutate: register, isPending: loading } = useRegister();
 
   const isPasswordValid =
     formData.password.length >= 8 &&
@@ -38,48 +34,28 @@ const StepThree: React.FunctionComponent<IStepThreeProps> = (props) => {
   const isFormValid =
     isPasswordValid && formData.password === formData.confirmPassword;
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handleSignUp = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    if (
-      notificationPermissionStatus &&
-      notificationPermissionStatus !== "granted"
-    ) {
-      toast.info(`Notification is not set for Quiz Money`, {
-        position: toastPosition,
-      });
-    }
-    const deviceId = getDeviceId();
-    const newValues = {
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      email: formData.email,
-      phone: formData.phone,
-      country: formData.country,
-      gender: formData.gender.toUpperCase(),
-      dob: formData.dob,
-      password: formData.password,
-      promotionalMails: formData.promotionalMails,
-      referredBy: formData.referredBy,
-      deviceToken: token || formData.email + formData.password,
-      deviceId: deviceId,
-    };
-    sessionStorage.setItem("pass", formData.password);
-    try {
-      const response = await UserAPI.signUp(newValues);
-      console.log("Signup with:", response);
-
-      router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`);
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      console.log("ERROR SIGNUP", err);
-      toast.error(`${err.message}`, {
-        position: toastPosition,
-      });
-    } finally {
-      setLoading(false);
-    }
+    register(
+      {
+        username: formData.email.split("@")[0],
+        email: formData.email,
+        password: formData.password,
+        phone_number: formData.phone || undefined,
+        referral_code: formData.referredBy || undefined,
+      },
+      {
+        onSuccess: () => {
+          router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`);
+        },
+        onError: (error: unknown) => {
+          const err = error as { response?: { data?: { message?: string } }; message?: string };
+          toast.error(err?.response?.data?.message ?? err?.message ?? "Registration failed", {
+            position: toastPosition,
+          });
+        },
+      }
+    );
   };
 
   return (

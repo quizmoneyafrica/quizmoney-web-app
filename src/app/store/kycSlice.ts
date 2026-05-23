@@ -1,32 +1,10 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+/* eslint-disable */
+// STUB — KYC state moves to useVerificationStatus() from @/lib/queries
 
-export interface KycRootObject {
-  id: string;
-  customerId: string;
-  step: string;
-  status: string;
-  startedAt?: string;
-  completedAt?: string;
+export const setCustomerKyc = (_v: any) => ({ type: 'stub/setCustomerKyc' })
+export const setVerificationStatus = (_v: any) => ({ type: 'stub/setVerificationStatus' })
+export const setKycLoading = (_v: boolean) => ({ type: 'stub/setKycLoading' })
+
+export default function kycReducer(state = {}, _action: any) {
+  return state
 }
-
-interface KycState {
-  customerKyc: KycRootObject[];
-}
-
-const initialState: KycState = {
-  customerKyc: [],
-};
-
-const kycSlice = createSlice({
-  name: "kyc",
-  initialState,
-  reducers: {
-    setCustomerKyc(state, action: PayloadAction<KycRootObject[]>) {
-      state.customerKyc = action.payload;
-    },
-  },
-});
-
-export const { setCustomerKyc } = kycSlice.actions;
-
-export default kycSlice.reducer;

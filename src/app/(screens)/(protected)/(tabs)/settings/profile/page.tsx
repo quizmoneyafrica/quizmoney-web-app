@@ -38,7 +38,8 @@ const Page = () => {
   const { customerKyc } = useKycStep();
   const bvnStep = customerKyc.find((s) => s.step === "BVN");
 
-  const [formData, setFormData] = useState({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [formData, setFormData] = useState<any>({
     ...initialForm,
     ...user,
   });
@@ -57,7 +58,7 @@ const Page = () => {
   ) => {
     const target = e.target as HTMLInputElement | HTMLSelectElement;
     const { name, value } = target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev: any) => ({ ...prev, [name]: value }));
   };
 
   const updateUserInfo = async () => {

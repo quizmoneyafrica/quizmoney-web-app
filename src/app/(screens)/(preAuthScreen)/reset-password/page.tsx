@@ -7,9 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import CustomTextField from "@/app/utils/CustomTextField";
 import { EyeIcon, EyeSlash } from "@/app/icons/icons";
 import CustomButton from "@/app/utils/CustomBtn";
-import { toastPosition } from "@/app/utils/utils";
-import UserAPI from "@/app/api/userApi";
-import { toast } from "sonner";
+import { useResetPassword } from "@/lib/queries";
 import { PasswordChip } from "@/app/utils/passwordChip";
 
 const initialForm = {
@@ -18,33 +16,29 @@ const initialForm = {
   showPassword: false,
   showConfirmPassword: false,
 };
+
 function Page() {
   const searchParams = useSearchParams();
   const email = searchParams.get("email");
   const code = searchParams.get("code");
   const router = useRouter();
+  const { mutate: resetPassword, isPending: loading } = useResetPassword();
+
   if (!email) {
     router.replace("/forgot-password");
   }
-  //
-  const [loading, setLoading] = useState(false);
+
   const [resetForm, setResetForm] = useState(initialForm);
 
   const handleResetFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-
-    setResetForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setResetForm((prev) => ({ ...prev, [name]: value }));
   };
+
   const toggleResetFieldVisibility = (
     field: "showPassword" | "showConfirmPassword"
   ) => {
-    setResetForm((prev) => ({
-      ...prev,
-      [field]: !prev[field],
-    }));
+    setResetForm((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
   const isPasswordValid =
@@ -56,30 +50,18 @@ function Page() {
   const isFormValid =
     isPasswordValid && resetForm.password === resetForm.confirmPassword;
 
-  const handleResetPassword = async (e: React.FormEvent) => {
+  const handleResetPassword = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    const newValues = {
-      // email: email?.toLowerCase().trim() || "",
-      code: code || "",
-      password: resetForm.password,
-      confirmPassword: resetForm.password,
-    };
-
-    try {
-      await UserAPI.resetPasswordAuth(newValues);
-
-      router.push(`/password-changed?email=${encodeURIComponent(email || "")}`);
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      toast.error(`${err.message}`, {
-        position: toastPosition,
-      });
-    } finally {
-      setLoading(false);
-    }
+    resetPassword(
+      { email: email || "", otp: code || "", new_password: resetForm.password },
+      {
+        onSuccess: () => {
+          router.push(`/password-changed?email=${encodeURIComponent(email || "")}`);
+        },
+      }
+    );
   };
+
   return (
     <Grid columns={{ initial: "1", md: "2" }} className="h-screen">
       <LeftSide />

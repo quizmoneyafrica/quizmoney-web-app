@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Container, Flex, Grid, Heading, Text } from "@radix-ui/themes";
 import React, { useEffect, useState } from "react";
@@ -7,11 +6,9 @@ import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import CustomButton from "@/app/utils/CustomBtn";
 import { unstable_OneTimePasswordField as OneTimePasswordField } from "radix-ui";
-import { formatCountDown, resendTimer, toastPosition } from "@/app/utils/utils";
-import { toast } from "sonner";
-import UserAPI from "@/app/api/userApi";
+import { formatCountDown, resendTimer } from "@/app/utils/utils";
+import { useVerifyEmail, useResendOtp } from "@/lib/queries";
 import Link from "next/link";
-// import getDeviceId from "@/app/pwa/deviceId";
 
 function VerifyEmailPage() {
   const searchParams = useSearchParams();
@@ -19,28 +16,13 @@ function VerifyEmailPage() {
   const router = useRouter();
   const [countdown, setCountdown] = useState(resendTimer);
   const [canResend, setCanResend] = useState(false);
-  const [loading, setLoading] = React.useState(false);
-  // const [ipAddress, setIpAddress] = useState("");
-
   const [otpCode, setOtpCode] = useState("");
+  const { mutate: verifyEmail, isPending: loading } = useVerifyEmail();
+  const { mutate: resendOtp } = useResendOtp();
 
   if (!email) {
     router.replace("/signup");
   }
-
-  // useEffect(() => {
-  //   const fetchIP = async () => {
-  //     try {
-  //       const res = await fetch("/api/app-info");
-  //       const data = await res.json();
-  //       setIpAddress(decryptData(data));
-  //     } catch (err) {
-  //       console.error("Could not fetch IP:", err);
-  //     }
-  //   };
-
-  //   fetchIP();
-  // }, []);
 
   useEffect(() => {
     if (countdown <= 0) {
@@ -55,52 +37,26 @@ function VerifyEmailPage() {
     return () => clearInterval(timer);
   }, [countdown]);
 
-  const handleVerify = async (e: React.FormEvent) => {
+  const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    // const password = sessionStorage.getItem("pass");
-    // const deviceId = getDeviceId();
-    const newValues = {
-      email: email?.toLowerCase().trim() || "",
-      otp: otpCode,
-      // password: password,
-      // deviceId: deviceId,
-      // ipAddress: ipAddress,
-      purpose: "EMAIL_VERIFICATION",
-    };
-    try {
-      const response = await UserAPI.verifyEmail(newValues);
-      console.log("Verify Signup:", response);
-      // if (userData) {
-      //   sessionStorage.removeItem("pass");
-      // }
-
-      router.replace("/account-created");
-    } catch (err: any) {
-      console.log(err.raw);
-
-      setLoading(false);
-      toast.error(`${err.message}`, {
-        position: toastPosition,
-      });
-    }
+    verifyEmail(
+      { email: email?.toLowerCase().trim() || "", otp: otpCode },
+      { onSuccess: () => router.replace("/account-created") }
+    );
   };
-  const handleResendOTP = async () => {
-    try {
-      const res = await UserAPI.resendSignupOtp(email || "");
-      console.log(res);
 
-      toast.error("OTP sent successfully", {
-        position: toastPosition,
-      });
-      setCountdown(resendTimer);
-    } catch (err: any) {
-      console.log("ERROR Forgot Password", err);
-      toast.error(`${err.message}`, {
-        position: toastPosition,
-      });
-    }
+  const handleResendOTP = () => {
+    resendOtp(
+      { email: email || "", purpose: "email_verification" },
+      {
+        onSuccess: () => {
+          setCountdown(resendTimer);
+          setCanResend(false);
+        },
+      }
+    );
   };
+
   return (
     <Grid columns={{ initial: "1", md: "2" }} className="h-screen">
       <div className="hidden lg:inline-block">
@@ -186,9 +142,6 @@ function VerifyEmailPage() {
                     <OneTimePasswordField.Input className="OTPInput" />
                     <OneTimePasswordField.HiddenInput />
                   </OneTimePasswordField.Root>
-                  {/* <p className="text-error-500 mt-4">
-											Incorrect OTP provided
-										</p> */}
                 </div>
               </Flex>
             </div>
@@ -198,6 +151,7 @@ function VerifyEmailPage() {
                 <button
                   type="button"
                   onClick={handleResendOTP}
+                  disabled={!canResend}
                   className={`font-medium underline underline-offset-2 ${
                     canResend
                       ? "text-primary-900 cursor-pointer"

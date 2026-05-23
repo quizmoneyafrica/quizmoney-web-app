@@ -293,7 +293,7 @@ const Support = () => {
                     <p>
                       Thank you{" "}
                       <span className="capitalize font-medium text-primary-900">
-                        {user?.firstName}
+                        {user?.first_name}
                       </span>{" "}
                       for your feedback.
                     </p>

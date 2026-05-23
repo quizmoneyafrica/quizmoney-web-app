@@ -5,38 +5,31 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { CircleArrowLeft, MailIcon } from "@/app/icons/icons";
 import CustomButton from "@/app/utils/CustomBtn";
-import { isValidEmail, toastPosition } from "@/app/utils/utils";
+import { isValidEmail } from "@/app/utils/utils";
 import CustomTextField from "@/app/utils/CustomTextField";
 import Link from "next/link";
-import UserAPI from "@/app/api/userApi";
-import { toast } from "sonner";
+import { useForgotPassword } from "@/lib/queries";
 import LeftSide from "./leftSide";
 
 function Page() {
   const [emailAddress, setEmailAddress] = useState("");
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const { mutate: forgotPassword, isPending: loading } = useForgotPassword();
 
- 
-
-  const handleForgot = async (e: React.FormEvent) => {
+  const handleForgot = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    try {
-      await UserAPI.forgotPassword(emailAddress);
-
-      router.push(
-        `/verify-forgot-password?email=${encodeURIComponent(emailAddress)}`
-      );
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      toast.error(`${err.message}`, {
-        position: toastPosition,
-      });
-    } finally {
-      setLoading(false);
-    }
+    forgotPassword(
+      { email: emailAddress },
+      {
+        onSuccess: () => {
+          router.push(
+            `/verify-forgot-password?email=${encodeURIComponent(emailAddress)}`
+          );
+        },
+      }
+    );
   };
+
   return (
     <Grid columns={{ initial: "1", md: "2" }} className="h-screen">
       <LeftSide />

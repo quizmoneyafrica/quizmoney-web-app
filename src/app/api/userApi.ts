@@ -1,116 +1,33 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { UserObject } from "../store/authSlice";
-import { store } from "../store/store";
-import {
-  ApiResponse,
-  InAppChangePasswordForm,
-  LoginForm,
-  ResetPasswordForm,
-  SignUpForm,
-  UpdateProfile,
-  VerifyEmailForm,
-} from "./interface";
-import { callParseEndpoint } from "./parse/callParseEndpoint";
-import { callWithSessionToken } from "./parse/callWithSessionToken";
-
-const getAuthUser = () => {
-  const state = store.getState();
-  return state.auth.user;
-};
+/* eslint-disable */
+// STUB — replaced by authApi.ts (auth) + profileApi.ts (profile)
+// This file prevents build errors in un-migrated screens that still import UserAPI.
+// When migrating a screen: replace UserAPI calls with hooks from @/lib/queries
 
 const UserAPI = {
-  login(form: LoginForm): Promise<ApiResponse> {
-    return callParseEndpoint<ApiResponse>("auth/login", form);
-  },
+  login: async (_form: any) => ({ success: false, data: {} as any }),
+  customerProfile: async (_token: string) => ({ success: false, data: {} as any }),
+  DeleteMyProfile: async (_reason: string) => ({ success: false, data: {} as any, timestamp: null as any }),
+  signUp: async (_form: any) => ({ success: false, data: {} as any }),
+  verifyEmail: async (_form: any) => ({ success: false, data: {} as any }),
+  resendSignupOtp: async (_email: string) => ({ success: false, data: {} as any }),
+  forgotPassword: async (_email: string) => ({ success: false, data: {} as any }),
+  resetPasswordAuth: async (_form: any) => ({ success: false, data: {} as any }),
+  inAppChangePassword: async (_form: any) => ({ success: false, data: {} as any }),
+  updateUser: async (_form: any) => ({ success: false, data: {} as any }),
+  updateProfile: async (_form: any) => ({ success: false, data: {} as any }),
+  getGameErasers: async () => ({ success: false, data: {} as any }),
+  getAvatars: async () => ({ success: false, data: {} as any }),
+  getReferralCode: async () => ({ success: false, data: {} as any }),
+  getReferralSummary: async () => ({ success: false, data: {} as any }),
+  sendFeedback: async (_form: any) => ({ success: false, data: {} as any }),
+  topGamersOfToday: async () => ({ success: false, data: {} as any }),
+  getReferralStats: async () => ({ success: false, data: {} as any }),
+  fetchUserCoinAccount: async () => ({ success: false, data: {} as any }),
+  fetchCoinTransactions: async () => ({ success: false, data: {} as any }),
+  redeemCoin: async () => ({ success: false, data: {} as any }),
+  updateSocialHandles: async (..._args: any[]) => ({ success: false, data: {} as any }),
+}
 
-  customerProfile(accessToken: string): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(
-      "customers/profile",
-      {},
-      "GET",
-      accessToken
-    );
-  },
-  DeleteMyProfile(reason: string): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("customers", { reason }, "DELETE");
-  },
-  signUp(form: SignUpForm): Promise<ApiResponse> {
-    return callParseEndpoint<ApiResponse>("auth/register", form);
-  },
-  verifyEmail(form: VerifyEmailForm): Promise<ApiResponse> {
-    return callParseEndpoint<ApiResponse>("auth/otp/verify", form);
-  },
-  resendSignupOtp(email: string): Promise<ApiResponse> {
-    return callParseEndpoint<ApiResponse>("auth/resend", { email });
-  },
-  
-  forgotPassword(email: string): Promise<ApiResponse> {
-    return callParseEndpoint<ApiResponse>("auth/password/forgot", {
-      email,
-    });
-  },
+export default UserAPI
 
-  resetPasswordAuth(form: ResetPasswordForm): Promise<ApiResponse> {
-    return callParseEndpoint<ApiResponse>("auth/password/reset", form);
-  },
-  inAppChangePassword(form: InAppChangePasswordForm): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(
-      "customers/password/change",
-      form,
-      "PATCH"
-    );
-  },
-  updateUser(form: UserObject): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("customers", form, "PATCH");
-  },
-  updateProfile(form: UpdateProfile): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("customers", form, "PATCH");
-  },
-  updateSocialHandles(
-    facebook: string,
-    twitter: string,
-    whatsapp: string,
-    instagram: string,
-    tiktok: string
-  ): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(
-      "socials",
-      { facebook, twitter, whatsapp, instagram, tiktok },
-      "PATCH"
-    );
-  },
-  getGameErasers(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("erasers", {}, "GET");
-  },
-  getAvatars(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("avatars", {}, "GET");
-  },
-  getReferralCode(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("referrals/code", {}, "GET");
-  },
-  getReferralSummary(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("referrals/summary", {}, "GET");
-  },
-  sendFeedback(form: any): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("sendFeedback", form);
-  },
-
-  topGamersOfToday(): Promise<ApiResponse> {
-    return callParseEndpoint<ApiResponse>("topGamersOfTheWeekend");
-  },
-  getReferralStats(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("referralData", {});
-  },
-  fetchUserCoinAccount(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("fetchUserCoinAccount", {});
-  },
-  fetchCoinTransactions(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("fetchCoinTransactions", {});
-  },
-  redeemCoin(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("redeemCoinPoints", {});
-  },
-};
-
-export { getAuthUser };
-export default UserAPI;
+export const getAuthUser = () => ({} as any)

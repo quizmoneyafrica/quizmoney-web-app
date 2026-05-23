@@ -1,287 +1,103 @@
-"use client";
-import React, { useMemo, useState } from "react";
-import WalletBalance from "./WalletBalance";
-import MobileList from "./MobileList";
-import { useSelector } from "react-redux";
-import {
-  // setBanks,
-  // setTransactions,
-  // setWallet,
-  useWallet,
-  Transaction as WalletTransaction,
-} from "@/app/store/walletSlice";
-import { parseISO, isToday, isYesterday } from "date-fns";
-import Link from "next/link";
-import { renderEmptyState } from "../transactions/WalletActivity";
-import { Skeleton } from "@radix-ui/themes";
-import { TransactionDetailsModal } from "../transactions/TransactionDetailModal";
-// import { useAppDispatch } from "@/app/hooks/useAuth";
-// import WalletApi from "@/app/api/wallet";
-// import { getAuthUser } from "@/app/api/userApi";
-// import Parse from "parse";
-// import { liveQueryClient } from "@/app/api/parse/parseClient";
+'use client'
 
-export type UserWalletTransaction = {
-  date: string;
-  transactions: Array<WalletTransaction>;
-};
+import React, { useMemo, useState } from 'react'
+import WalletBalance from './WalletBalance'
+import MobileList from './MobileList'
+import { parseISO, isToday, isYesterday } from 'date-fns'
+import Link from 'next/link'
+import { renderEmptyState } from '../transactions/WalletActivity'
+import { Skeleton } from '@radix-ui/themes'
+import { TransactionDetailsModal } from '../transactions/TransactionDetailModal'
+import { useWalletTransactions } from '@/lib/queries'
+import { Transaction } from '@/app/api/wallet'
 
 export interface TransactionGroup {
-  today: WalletTransaction[];
-  yesterday: WalletTransaction[];
-  other: WalletTransaction[];
+  today: Transaction[]
+  yesterday: Transaction[]
+  other: Transaction[]
 }
 
 export default function TransactionHistory(): React.JSX.Element {
-  const { transactions: transactionList, isTransactionsLoading } =
-    useSelector(useWallet);
-  const transactions = transactionList?.filter((tx) => tx.currency === "NGN");
+  const { data, isLoading: isTransactionsLoading } = useWalletTransactions({
+    page: 1,
+    limit: 20,
+  })
+  const transactions: Transaction[] = data?.items ?? []
+
   const [selectedTransaction, setSelectedTransaction] =
-    useState<WalletTransaction | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  // const dispatch = useAppDispatch();
-
-  // useEffect(() => {
-  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //   let subscription: any;
-  //   const setupWalletLiveQuery = async () => {
-  //     const user = getAuthUser();
-  //     if (!user?.objectId) return;
-
-  //     const Wallet = Parse.Object.extend("Wallet");
-  //     const query = new Parse.Query(Wallet);
-  //     query.equalTo("user", {
-  //       __type: "Pointer",
-  //       className: "_User",
-  //       objectId: user.objectId,
-  //     });
-
-  //     subscription = await liveQueryClient.subscribe(query);
-
-  //     subscription.on("update", (walletObj: Parse.Object) => {
-  //       console.log("Wallet updated in real time:", walletObj.toJSON());
-  //       // dispatch(setWallet(walletObj.toJSON()));
-  //     });
-
-  //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //     subscription.on("error", (err: any) => {
-  //       console.error("Wallet LiveQuery error:", err);
-  //     });
-  //   };
-
-  //   setupWalletLiveQuery();
-
-  //   return () => {
-  //     if (subscription) subscription.unsubscribe();
-  //   };
-  // }, [dispatch]);
-
-  // useEffect(() => {
-  //   const fetchWallet = async () => {
-  //     try {
-  //       const res = await WalletApi.fetchCustomerWallet();
-  //       if (res.wallet) {
-  //         dispatch(setWallet(res.wallet));
-  //       }
-  //     } catch (error) {
-  //       console.log(error, "Wallet Error");
-  //     }
-  //   };
-  //   fetchWallet();
-
-  //   // SET AUTH USER WALLET DATA
-  //   const fetchTransactions = async () => {
-  //     try {
-  //       const res = await WalletApi.fetchTransactions();
-
-  //       if (res?.groupedTransactions) {
-  //         dispatch(setTransactions(res?.groupedTransactions));
-  //       }
-  //     } catch (error) {
-  //       console.log(error, "Transaction Error");
-  //     }
-  //   };
-  //   fetchTransactions();
-
-  //   // SET LIST OF BANKS
-  //   (async () => {
-  //     try {
-  //       const response = await WalletApi.listBanks();
-  //       if (response?.data) {
-  //         dispatch(setBanks(response?.data));
-  //       }
-  //     } catch (error) {
-  //       console.log(error, "ERROR FETCHING BANKS");
-  //     }
-  //   })();
-  //   (async () => {
-  //     try {
-  //       const { email } = getAuthUser();
-  //       const response = await WalletApi.fetchDedicatedAccount({
-  //         email,
-  //       });
-  //       if (response?.data) {
-  //         console.log(
-  //           "============fetchDedicatedAccount========================"
-  //         );
-  //         console.log(JSON.stringify(response.data, null, 2));
-  //         console.log(
-  //           "==========fetchDedicatedAccount=========================="
-  //         );
-  //       }
-  //     } catch (error) {
-  //       console.log(error, "ERROR FETCHING BANKS");
-  //     }
-  //   })();
-  // }, [dispatch]);
+    useState<Transaction | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const flattenedTransactions = useMemo(
-    () => (transactions && Array.isArray(transactions) ? transactions : []),
+    () => (Array.isArray(transactions) ? transactions : []),
     [transactions]
-  );
+  )
 
   const groupedTransactions: TransactionGroup = useMemo(() => {
-    const group: TransactionGroup = {
-      today: [],
-      yesterday: [],
-      other: [],
-    };
+    const group: TransactionGroup = { today: [], yesterday: [], other: [] }
 
-    if (!flattenedTransactions || !Array.isArray(flattenedTransactions)) {
-      return group;
-    }
-
-    flattenedTransactions.forEach((transaction: WalletTransaction) => {
-      const date = parseISO(
-        transaction?.transactionDate ?? new Date().toISOString()
-      );
-
+    flattenedTransactions.forEach((transaction) => {
+      const date = parseISO(transaction.created_at ?? new Date().toISOString())
       if (isToday(date)) {
-        group.today.push(transaction);
+        group.today.push(transaction)
       } else if (isYesterday(date)) {
-        group.yesterday.push(transaction);
+        group.yesterday.push(transaction)
       } else {
-        group.other.push(transaction);
+        group.other.push(transaction)
       }
-    });
+    })
 
-    return group;
-  }, [flattenedTransactions]);
+    return group
+  }, [flattenedTransactions])
 
   const limitedGroupedTransactions: TransactionGroup = useMemo(() => {
     const all = [
       ...groupedTransactions.today,
       ...groupedTransactions.yesterday,
       ...groupedTransactions.other,
-    ];
-    const limited = all.slice(0, 15);
-    const group: TransactionGroup = { today: [], yesterday: [], other: [] };
+    ]
+    const limited = all.slice(0, 15)
+    const group: TransactionGroup = { today: [], yesterday: [], other: [] }
     limited.forEach((transaction) => {
-      const date = parseISO(
-        transaction?.transactionDate ?? new Date().toISOString()
-      );
+      const date = parseISO(transaction.created_at ?? new Date().toISOString())
       if (isToday(date)) {
-        group.today.push(transaction);
+        group.today.push(transaction)
       } else if (isYesterday(date)) {
-        group.yesterday.push(transaction);
+        group.yesterday.push(transaction)
       } else {
-        group.other.push(transaction);
+        group.other.push(transaction)
       }
-    });
-    return group;
-  }, [groupedTransactions]);
+    })
+    return group
+  }, [groupedTransactions])
 
-  const handleTransactionClick = (transaction: WalletTransaction) => {
-    setSelectedTransaction(transaction);
-    setIsModalOpen(true);
-  };
+  const handleTransactionClick = (transaction: Transaction) => {
+    setSelectedTransaction(transaction)
+    setIsModalOpen(true)
+  }
 
   const renderTransaction = (
-    transaction: WalletTransaction,
+    transaction: Transaction,
     index: number,
-    array: WalletTransaction[]
+    array: Transaction[]
   ): React.JSX.Element => {
-    // const date = parseISO(
-    //   transaction.transactionDate ?? new Date().toISOString()
-    // );
-    // const dateData = format(date, "MMM d h:mma").toLowerCase();
-    const isLastInGroup = index === array.length - 1;
-
-    console.log(transaction.transactionType, "=======");
-
+    const isLastInGroup = index === array.length - 1
     return (
       <div key={transaction.id || index.toString()}>
-        {/* <div
-          className={classNames(
-            "bg-white px-3 md:px-4 py-3 md:py-4 hidden md:flex justify-between items-center cursor-pointer",
-            !isLastInGroup && "border-b border-b-[#D9D9D9]"
-          )}
-          onClick={() => handleTransactionClick(transaction)}
-        >
-          <div className="flex gap-2 md:gap-4 items-center">
-            <div className={`p-1.5 md:p-2 rounded-full`}>
-              <CustomImage
-                alt="arrow-icon"
-                src={
-                  transaction.direction === "DEBIT"
-                    ? "/icons/moneyOut.svg"
-                    : "/icons/moneyIn.svg"
-                }
-              />
-            </div>
-            <div className="flex flex-col items-start">
-              <span className="text-sm md:text-base font-medium text-[#3B3B3B]">
-                {transaction.narration ||
-                  (transaction.direction === "CREDIT"
-                    ? "Wallet Top up"
-                    : "Withdrawal made")}
-              </span>
-              <span className="text-xs md:text-sm text-gray-500">
-                {transaction.transactionType}
-              </span>
-            </div>
-          </div>
-          <div className="text-right">
-            <p
-              className={`text-sm md:text-base font-medium ${
-                transaction.direction === "CREDIT"
-                  ? "text-green-600"
-                  : "text-red-600"
-              }`}
-            >
-              {transaction.direction === "CREDIT" ? "+ " : "- "}
-              {formatNaira(Number(transaction.amount ?? 0), true)}
-            </p>
-            <p className="text-xs md:text-sm text-gray-500">{dateData}</p>
-          </div>
-        </div> */}
         <MobileList
           isLastInGroup={isLastInGroup}
-          transaction={transaction}
+          transaction={transaction as never}
           onClick={() => handleTransactionClick(transaction)}
         />
       </div>
-    );
-  };
+    )
+  }
 
   const renderTransactionSection = (
     title: string,
-    transactions: WalletTransaction[]
+    txList: Transaction[]
   ): React.JSX.Element | null => {
-    if (transactions.length === 0) return null;
-    // return (
-    //   <div className="space-y-2 md:space-y-3 pb-3 md:pb-5 mt-3 md:mt-5">
-    //     <div className="px-3 md:px-4">
-    //       <h2 className="text-sm md:text-base font-semibold text-[#3B3B3B]">
-    //         {title}
-    //       </h2>
-    //     </div>
-    //     <div className="px-3 md:px-4 py-3 md:py-4 flex justify-center items-center">
-    //       <p className="text-sm text-gray-500">No transactions</p>
-    //     </div>
-    //   </div>
-    // );
-
+    if (txList.length === 0) return null
     return (
       <div className="space-y-2 md:space-y-3 pb-3 md:pb-5 mt-3 md:mt-5">
         <div className="px-3 md:px-4">
@@ -289,27 +105,23 @@ export default function TransactionHistory(): React.JSX.Element {
             {title}
           </h2>
         </div>
-
-        {transactions.map((transaction, index, array) =>
+        {txList.map((transaction, index, array) =>
           renderTransaction(transaction, index, array)
         )}
       </div>
-    );
-  };
+    )
+  }
 
   return (
     <div className="w-full gap-4 md:gap-8 flex flex-col">
       <WalletBalance />
 
-      <div className="md:bg-white bg-inherit rounded-2xl max-h-[60svh] overflow-auto md:rounded-3xl  ">
+      <div className="md:bg-white bg-inherit rounded-2xl max-h-[60svh] overflow-auto md:rounded-3xl">
         <div className="flex p-3 md:p-4 justify-between items-center my-2 md:my-4">
           <h2 className="text-lg md:text-xl font-semibold text-[#2364AA]">
             Recent Transactions
           </h2>
-          <Link
-            href={"/wallet/transactions"}
-            className="text-sm md:text-base text-[#2A75BC]"
-          >
+          <Link href="/wallet/transactions" className="text-sm md:text-base text-[#2A75BC]">
             View all
           </Link>
         </div>
@@ -335,32 +147,24 @@ export default function TransactionHistory(): React.JSX.Element {
               </div>
             ))}
           </div>
-        ) : !flattenedTransactions || flattenedTransactions.length === 0 ? (
+        ) : flattenedTransactions.length === 0 ? (
           renderEmptyState()
         ) : (
           <>
-            {renderTransactionSection(
-              "Today",
-              limitedGroupedTransactions.today
-            )}
-            {renderTransactionSection(
-              "Yesterday",
-              limitedGroupedTransactions.yesterday
-            )}
-            {renderTransactionSection(
-              "Earlier",
-              limitedGroupedTransactions.other
-            )}
+            {renderTransactionSection('Today', limitedGroupedTransactions.today)}
+            {renderTransactionSection('Yesterday', limitedGroupedTransactions.yesterday)}
+            {renderTransactionSection('Earlier', limitedGroupedTransactions.other)}
           </>
         )}
       </div>
+
       {selectedTransaction && (
         <TransactionDetailsModal
-          transaction={selectedTransaction}
+          transaction={selectedTransaction as never}
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
         />
       )}
     </div>
-  );
+  )
 }

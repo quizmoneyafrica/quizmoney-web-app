@@ -1,9 +1,11 @@
 "use client";
-import { useAppSelector } from "@/app/hooks/useAuth";
+// import { useAppSelector } from "@/app/hooks/useAuth";
 import { useEffect, useRef } from "react";
 
 export default function AudioManager() {
-  const { audioShouldPlay, phase } = useAppSelector((state) => state.game);
+  // const { audioShouldPlay, phase } = useAppSelector((state) => state.game);
+  const phase = "lobby";
+  const audioShouldPlay = false;
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {

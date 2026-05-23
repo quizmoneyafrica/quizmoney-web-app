@@ -1,13 +1,10 @@
 "use client";
 import { Container, Flex, Grid, Heading, Text } from "@radix-ui/themes";
-import React, { useState } from "react";
 import Onboarding from "../../../components/onboarding/onboarding";
 import LoginForm from "./loginForm";
 import Image from "next/image";
 
 const LoginPage = () => {
-  const [loading, setLoading] = useState(false);
-
   return (
     <Grid columns={{ initial: "1", md: "2" }} className="min-h-[100dvh]">
       <div className="hidden lg:inline-block">
@@ -30,7 +27,7 @@ const LoginPage = () => {
           </Flex>
 
           <Container>
-            <LoginForm loading={loading} setLoading={setLoading} />
+            <LoginForm />
           </Container>
         </div>
       </Container>

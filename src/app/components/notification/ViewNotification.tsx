@@ -1,10 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import NotificationApi from "@/app/api/notification";
-import { Content } from "@/app/store/notificationSlice";
 import { toastPosition } from "@/app/utils/utils";
 import { Grid } from "@radix-ui/themes";
 import * as React from "react";
 import { toast } from "sonner";
+
+export interface Content {
+  body: string;
+  opened: boolean;
+  message: string;
+  id: string;
+}
 
 interface IViewNotificationProps {
   notification: Content;
@@ -25,7 +31,7 @@ const ViewNotification: React.FunctionComponent<IViewNotificationProps> = ({
       try {
         const res = await NotificationApi.readNotification(notification.id);
         console.log(res);
-        setOpenedNotification(res.data);
+        setOpenedNotification(res.data as Content);
       } catch (err: any) {
         toast.error(err.message, { position: toastPosition });
       } finally {

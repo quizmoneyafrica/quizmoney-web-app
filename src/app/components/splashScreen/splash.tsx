@@ -1,32 +1,33 @@
-"use client";
-import { useAppSelector } from "@/app/hooks/useAuth";
-import { isMobileOrTablet } from "@/app/utils/utils";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
-import { NlrcIcon } from "@/app/icons/icons";
-import { Text } from "@radix-ui/themes";
+'use client'
+
+import { useAuthStore } from '@/lib/auth-store'
+import { isMobileOrTablet } from '@/app/utils/utils'
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+import { NlrcIcon } from '@/app/icons/icons'
+import { Text } from '@radix-ui/themes'
 
 export default function Splash() {
-  const router = useRouter();
-  const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated);
-  const rehydrated = useAppSelector((s) => s.auth.rehydrated);
+  const router = useRouter()
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
+  const hasHydrated = useAuthStore((s) => s.hasHydrated)
 
   useEffect(() => {
-    if (!rehydrated) return;
+    if (!hasHydrated) return
 
     const timer = setTimeout(() => {
       if (isAuthenticated) {
-        router.replace("/home");
+        router.replace('/home')
       } else if (isMobileOrTablet()) {
-        router.replace("/onboarding");
+        router.replace('/onboarding')
       } else {
-        router.replace("/login");
+        router.replace('/login')
       }
-    }, 1000);
+    }, 1000)
 
-    return () => clearTimeout(timer);
-  }, [rehydrated, isAuthenticated, router]);
+    return () => clearTimeout(timer)
+  }, [hasHydrated, isAuthenticated, router])
 
   return (
     <main
@@ -42,15 +43,15 @@ export default function Splash() {
       />
       <div className="absolute bottom-8 w-full flex items-center justify-center">
         <div className="flex items-center justify-center !font-text gap-3">
-      <NlrcIcon />
-      <div className="grid">
-        <Text className="!text-white font-bold">Licensed by</Text>
-        <Text className="!text-neutral-100 font-medium">
-          National Lottery <br /> Regulatory Commission
-        </Text>
-      </div>
-    </div>
+          <NlrcIcon />
+          <div className="grid">
+            <Text className="!text-white font-bold">Licensed by</Text>
+            <Text className="!text-neutral-100 font-medium">
+              National Lottery <br /> Regulatory Commission
+            </Text>
+          </div>
+        </div>
       </div>
     </main>
-  );
+  )
 }

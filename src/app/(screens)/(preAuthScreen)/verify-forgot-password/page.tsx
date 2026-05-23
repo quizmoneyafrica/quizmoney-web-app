@@ -7,9 +7,8 @@ import { CircleArrowLeft } from "@/app/icons/icons";
 import { useSearchParams } from "next/navigation";
 import CustomButton from "@/app/utils/CustomBtn";
 import { unstable_OneTimePasswordField as OneTimePasswordField } from "radix-ui";
-import { formatCountDown, resendTimer, toastPosition } from "@/app/utils/utils";
-import UserAPI from "@/app/api/userApi";
-import { toast } from "sonner";
+import { formatCountDown, resendTimer } from "@/app/utils/utils";
+import { useForgotPassword, useVerifyResetOtp } from "@/lib/queries";
 import LeftSide from "../forgot-password/leftSide";
 import Link from "next/link";
 
@@ -20,11 +19,13 @@ function Page() {
   const [otpCode, setOtpCode] = useState("");
   const [countdown, setCountdown] = useState(resendTimer);
   const [canResend, setCanResend] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { mutate: verifyResetOtp, isPending: loading } = useVerifyResetOtp();
+  const { mutate: forgotPassword } = useForgotPassword();
 
   if (!email) {
     router.replace("/forgot-password");
   }
+
   useEffect(() => {
     if (countdown <= 0) {
       setCanResend(true);
@@ -38,48 +39,28 @@ function Page() {
     return () => clearInterval(timer);
   }, [countdown]);
 
-  const handleVerify = async (e: React.FormEvent) => {
+  const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-
-    const newValues = {
-      email: email?.toLowerCase().trim() || "",
-      otp: otpCode,
-    };
-    try {
-      await UserAPI.verifyEmail(newValues);
-
-      router.push(
-        `/reset-password?email=${encodeURIComponent(
-          email || ""
-        )}&code=${encodeURIComponent(otpCode || "")}`
-      );
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      setLoading(false);
-      toast.error(`${err.message}`, {
-        position: toastPosition,
-      });
-    }
+    verifyResetOtp(
+      { email: email?.toLowerCase().trim() || "", otp: otpCode },
+      {
+        onSuccess: () => {
+          router.push(
+            `/reset-password?email=${encodeURIComponent(
+              email || ""
+            )}&code=${encodeURIComponent(otpCode)}`
+          );
+        },
+      }
+    );
   };
-  const handleResendOTP = async () => {
+
+  const handleResendOTP = () => {
     setCountdown(resendTimer);
     setCanResend(false);
-    try {
-      const response = await UserAPI.forgotPassword(email || "");
-      console.log("Forgot Password:", response);
-      toast.success("OTP Re-sent Successfully", {
-        position: toastPosition,
-      });
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      toast.error(`${err.message}`, {
-        position: toastPosition,
-      });
-    }
+    forgotPassword({ email: email || "" });
   };
+
   return (
     <Grid columns={{ initial: "1", md: "2" }} className="h-screen">
       <LeftSide />
@@ -141,9 +122,6 @@ function Page() {
                     <OneTimePasswordField.Input className="OTPInput" />
                     <OneTimePasswordField.HiddenInput />
                   </OneTimePasswordField.Root>
-                  {/* <p className="text-error-500 mt-4">
-											Incorrect OTP provided
-										</p> */}
                 </div>
               </Flex>
             </div>
@@ -153,6 +131,7 @@ function Page() {
                 <button
                   type="button"
                   onClick={handleResendOTP}
+                  disabled={!canResend}
                   className={`font-medium underline underline-offset-2 ${
                     canResend
                       ? "text-primary-900 cursor-pointer"

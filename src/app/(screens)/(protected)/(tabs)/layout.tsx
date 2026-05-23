@@ -1,21 +1,29 @@
-"use client";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useAppDispatch } from "@/app/hooks/useAuth";
-import { setIsAllowedInGame } from "@/app/store/gameSlice";
+'use client'
+
+/**
+ * Tabs layout
+ *
+ * Prefetches the main tab routes on mount for instant navigation.
+ *
+ * Removed:
+ *   - useAppDispatch / setIsAllowedInGame — gameSlice (Redux) has been deleted.
+ *     Game access control is now handled server-side via the game session API.
+ */
+
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
-  const dispatch = useAppDispatch();
+  const router = useRouter()
 
   useEffect(() => {
-    dispatch(setIsAllowedInGame(false));
-    router.prefetch("/home");
-    router.prefetch("/wallet");
-    router.prefetch("/store");
-    router.prefetch("/leaderboard");
-    router.prefetch("/settings");
-    router.prefetch("/support");
-  });
-  return <main>{children}</main>;
+    router.prefetch('/home')
+    router.prefetch('/wallet')
+    router.prefetch('/store')
+    router.prefetch('/leaderboard')
+    router.prefetch('/settings')
+    router.prefetch('/support')
+  }, [router])
+
+  return <main>{children}</main>
 }

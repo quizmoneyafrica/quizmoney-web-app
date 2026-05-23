@@ -5,16 +5,13 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Product } from "@/app/api/interface";
 import SuccessMessageModal from "@/app/components/modal/store/SuccessMessageModal";
-import StoreAPI from "@/app/api/storeApi";
 import { useRouter } from "next/navigation";
 import CustomButton from "@/app/utils/CustomBtn";
-import { useAppDispatch } from "@/app/hooks/useAuth";
 import { Eraser } from "@/app/icons/icons";
 import { toast } from "sonner";
 import { formatNaira, toastPosition } from "@/app/utils/utils";
 import Modal from "@/app/components/game/modal/ModalWindow";
-import UserAPI from "@/app/api/userApi";
-import { updateUser } from "@/app/store/authSlice";
+import { usePurchaseItem } from "@/lib/queries";
 
 const displayColor = [
   {
@@ -65,39 +62,28 @@ const ProductCard = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const dispatch = useAppDispatch();
+  const { mutate: purchaseItem, isPending: isLoading } = usePurchaseItem();
 
   console.log(6 % (6 - index), index);
-  // console.log(displayColor[index % displayColor.length]);
-  const getGameErasers = async () => {
-    try {
-      const res = await UserAPI.getGameErasers();
-      console.log("USER ERASER", res);
-      dispatch(updateUser({ gameEraserCount: res.data.quantity }));
-    } catch (err: any) {
-      console.error("Error getting Erasers:", err.message);
-    }
-  };
-  const handlePurchase = async () => {
-    setIsLoading(true);
-    try {
-      const res = await StoreAPI.purchaseItem(product.id);
-      console.log(res);
-      getGameErasers();
-      setIsOpen(false);
-      setIsSuccess(true);
-    } catch (err: any) {
-      console.error("Error purchasing products:", err.message);
-      setIsOpen(false);
-      toast.error(`${err.message}`, { position: toastPosition });
-      if (err.message === "Insufficient balance") {
-        setIsError(true);
+  const handlePurchase = () => {
+    purchaseItem(
+      { item_id: product.id, quantity: 1 },
+      {
+        onSuccess: () => {
+          setIsOpen(false);
+          setIsSuccess(true);
+        },
+        onError: (err: any) => {
+          console.error("Error purchasing products:", err.message);
+          setIsOpen(false);
+          toast.error(`${err?.response?.data?.message || err.message}`, { position: toastPosition });
+          if (err?.response?.data?.message === "Insufficient balance" || err.message === "Insufficient balance") {
+            setIsError(true);
+          }
+        },
       }
-    } finally {
-      setIsLoading(false);
-    }
+    );
   };
   return (
     <section>

@@ -7,7 +7,6 @@ import { setOpenLeaveGame, setPhase, stopAudio } from "@/app/store/gameSlice";
 import { toast } from "sonner";
 import GameApi from "@/app/api/game";
 import Modal from "./modal/ModalWindow";
-import { removeSubscription } from "@/app/store/stompSlice";
 
 export const LeaveGameModal = () => {
   const router = useRouter();
@@ -23,7 +22,6 @@ export const LeaveGameModal = () => {
       dispatch(setPhase("loading"));
       dispatch(stopAudio());
       dispatch(setOpenLeaveGame(false));
-      dispatch(removeSubscription(`/topic/questions`));
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.message, {

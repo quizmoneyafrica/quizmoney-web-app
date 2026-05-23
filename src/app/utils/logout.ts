@@ -1,11 +1,24 @@
-"use client";
-import { logout } from "@/app/store/authSlice";
-import { AppDispatch } from "@/app/store/store";
+/**
+ * logout.ts
+ *
+ * Centralised logout utility.
+ * Clears Zustand auth state (which also wipes localStorage tokens).
+ *
+ * Usage:
+ *   import { performLogout } from '@/app/utils/logout'
+ *   performLogout()           // from event handlers / non-hook contexts
+ *
+ * For mutation-based logout (e.g. calling POST /auth/logout before clearing),
+ * use the useLogout() hook from '@/lib/queries' instead.
+ */
 
-export const performLogout = (dispatch: AppDispatch) => {
-  if (typeof window !== "undefined" && window.localStorage) {
-    localStorage.removeItem("userEncryptedData");
-  }
+import { useAuthStore } from '@/lib/auth-store'
 
-  dispatch(logout());
-};
+/**
+ * Synchronously clears auth state without calling the logout API.
+ * Use this for force-logout scenarios (e.g. 401 after refresh fails,
+ * account deletion, or manual sign-out where the API call is optional).
+ */
+export const performLogout = () => {
+  useAuthStore.getState().clearAuth()
+}

@@ -1,74 +1,31 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+/* eslint-disable */
+// STUB — game zone state moves to useGameZoneStore from @/lib/game-zone-store (Zustand)
 
-export type GameTypes = "NUMBER_GUESSER" | "MEMORY_GAME" | "PERFECT_SCORE" | "";
-export type GamePhase = "zone" | "game" | "playing" | "win" | "lost" | "";
+export type GameTypes = 'NUMBER_GUESSER' | 'MEMORY_GAME' | 'PERFECT_SCORE' | ''
+export type GamePhase = 'zone' | 'game' | 'playing' | 'win' | 'lost' | ''
+
 export interface GameZoneGamesObject {
-  gameId: string;
-  name: string;
-  description: string;
-  type: GameTypes;
-  config: Config;
-}
-
-interface Config {
-  minimumStake: number;
-  maximumStake: number;
+  gameId: string
+  name: string
+  description: string
+  type: GameTypes
+  config: { minimumStake: number; maximumStake: number }
 }
 
 export interface GameZoneGames {
-  allGamesData: GameZoneGamesObject[];
-  currentGameData: GameZoneGamesObject;
-  audioShouldPlay: boolean;
-  phase: GamePhase;
+  allGamesData: GameZoneGamesObject[]
+  currentGameData: GameZoneGamesObject
+  audioShouldPlay: boolean
+  phase: GamePhase
 }
 
-const initialState: GameZoneGames = {
-  allGamesData: [],
-  currentGameData: {
-    gameId: "",
-    name: "",
-    description: "",
-    type: "",
-    config: {
-      minimumStake: 200,
-      maximumStake: 1000000,
-    },
-  },
-  audioShouldPlay: false,
-  phase: "",
-};
+export const setGameZoneGames = (_v: GameZoneGamesObject[]) => ({ type: 'stub/setGameZoneGames' })
+export const setCurrentGameData = (_v: GameZoneGamesObject) => ({ type: 'stub/setCurrentGameData' })
+export const setZonePhase = (_v: GamePhase) => ({ type: 'stub/setZonePhase' })
+export const setCurrentGameType = (_v: GameTypes) => ({ type: 'stub/setCurrentGameType' })
+export const playZoneAudio = () => ({ type: 'stub/playZoneAudio' })
+export const stopZoneAudio = () => ({ type: 'stub/stopZoneAudio' })
 
-const gameZoneSlice = createSlice({
-  name: "gameZone",
-  initialState,
-  reducers: {
-    setGameZoneGames(state, action: PayloadAction<GameZoneGamesObject[]>) {
-      state.allGamesData = action.payload;
-    },
-    setCurrentGameData: (state, action: PayloadAction<GameZoneGamesObject>) => {
-      state.currentGameData = action.payload;
-    },
-    setZonePhase: (state, action: PayloadAction<GamePhase>) => {
-      state.phase = action.payload;
-    },
-    setCurrentGameType: (state, action: PayloadAction<GameTypes>) => {
-      state.currentGameData.type = action.payload;
-    },
-    playZoneAudio: (state) => {
-      state.audioShouldPlay = true;
-    },
-    stopZoneAudio: (state) => {
-      state.audioShouldPlay = false;
-    },
-  },
-});
-
-export const {
-  setGameZoneGames,
-  setCurrentGameData,
-  setZonePhase,
-  playZoneAudio,
-  stopZoneAudio,
-  setCurrentGameType,
-} = gameZoneSlice.actions;
-export default gameZoneSlice.reducer;
+export default function gameZoneReducer(state = {}, _action: any) {
+  return state
+}

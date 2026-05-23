@@ -1,23 +1,18 @@
-"use client";
+'use client'
 
-import { handleInvalidSession } from "@/app/api/parse/handleInvalidSession";
-import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
-import { useEffect, useState } from "react";
+/**
+ * checkSession.tsx
+ *
+ * Previously handled boot-time token refresh by calling the old
+ * Parse/handleInvalidSession layer. This is now a no-op — the Axios
+ * response interceptor in src/lib/api-client.ts automatically handles
+ * 401 responses by refreshing the token and retrying the request.
+ *
+ * This component is kept as a stub so existing layout.tsx imports
+ * don't break during migration. It can be removed once all screens
+ * have been verified against the new auth flow.
+ */
 
-function CheckSession() {
-  const [initialized, setInitialized] = useState(false);
-  const refreshToken = useAppSelector((s) => s.auth.refreshToken);
-  const dispatch = useAppDispatch();
-  useEffect(() => {
-    if (refreshToken && !initialized) {
-      handleInvalidSession(dispatch, refreshToken).catch((err) => {
-        console.error("Initial token refresh failed:", err);
-      });
-      setInitialized(true);
-    }
-  }, [refreshToken, dispatch, initialized]);
-
-  return null;
+export default function CheckSession() {
+  return null
 }
-
-export default CheckSession;

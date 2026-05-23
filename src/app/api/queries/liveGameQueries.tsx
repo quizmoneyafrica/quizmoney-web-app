@@ -1,78 +1,80 @@
 "use client";
+
+import { useGameQuestion, useGameQuestionResult, useGameStarted, useGameLocked, useGameFinished, useGamePlayerJoined, useGameLobbyUpdate, useGameCancelled, useGameError, useGameReconnected } from '@/lib/socket';
 import { useAppDispatch } from "@/app/hooks/useAuth";
-import { setCurrentLiveQuestion, setOptionLocked } from "@/app/store/gameSlice";
-import { addSubscription, removeSubscription } from "@/app/store/stompSlice";
-import { IMessage } from "@stomp/stompjs";
+import { setCurrentLiveQuestion, setOptionLocked, 
+  setGameStatus, setPlayersCount, setGameStarted, setGameFinished 
+} from "@/app/store/gameSlice";
 import { useEffect } from "react";
-import GameApi from "../game";
-import {
-  registerStompHandler,
-  unregisterStompHandler,
-  useStompClient,
-} from "@/app/hooks/useStompClient";
 
 function LiveGameQueries() {
   const dispatch = useAppDispatch();
-  const destination = "/topic/questions";
 
-  useStompClient();
+  // Handle incoming questions
+  useGameQuestion((data) => {
+    console.log("Received question:", data);
+    dispatch(setCurrentLiveQuestion(data.question));
+    dispatch(setOptionLocked(false));
+  });
 
-  useEffect(() => {
-    const handler = async (msg: IMessage) => {
-      // console.log("💰 Wallet Update:", msg.headers.destination, msg.body);
-      try {
-        const que = JSON.parse(msg.body);
-        if (que?.id && que?.options?.length > 0) {
-          dispatch(setCurrentLiveQuestion(que));
-          dispatch(setOptionLocked(false));
-          console.log("Current Question", que);
-        } else {
-          console.warn("Fallback: Empty WebSocket payload");
-          const res = await GameApi.getCurrentQuestion();
-          dispatch(setCurrentLiveQuestion(res.data));
-          dispatch(setOptionLocked(false));
-        }
-      } catch (err) {
-        console.error("WebSocket JSON parse failed, using fallback", err);
-        //   const res = await GameApi.getCurrentQuestion();
-        //   dispatch(setCurrentLiveQuestion(res.data));
-      }
-    };
+  // Handle question results
+  useGameQuestionResult((data) => {
+    console.log("Received question result:", data);
+    // You might want to update UI with correct answer, etc.
+  });
 
-    registerStompHandler(destination, handler);
-    dispatch(addSubscription(destination));
+  // Handle game started
+  useGameStarted((data) => {
+    console.log("Game started:", data);
+    dispatch(setGameStarted(true));
+    dispatch(setGameStatus('active'));
+  });
 
-    return () => {
-      unregisterStompHandler(destination);
-      dispatch(removeSubscription(destination));
-    };
-  }, [dispatch]);
+  // Handle game locked
+  useGameLocked((data) => {
+    console.log("Game locked:", data);
+    dispatch(setGameStatus('locked'));
+    // Optionally show "Game starting soon" message
+  });
 
-  // const onMessage = async (msg: IMessage) => {
-  //   try {
-  //     const que = JSON.parse(msg.body);
-  //     if (que?.id && que?.options?.length > 0) {
-  //       dispatch(setCurrentLiveQuestion(que));
-  //       console.log("Current Question", que);
-  //     } else {
-  //       console.warn("Fallback: Empty WebSocket payload");
-  //       const res = await GameApi.getCurrentQuestion();
-  //       dispatch(setCurrentLiveQuestion(res.data));
-  //     }
-  //   } catch (err) {
-  //     console.error("WebSocket JSON parse failed, using fallback", err);
-  //     //   const res = await GameApi.getCurrentQuestion();
-  //     //   dispatch(setCurrentLiveQuestion(res.data));
-  //   }
-  // };
-  // useStompClient({ onMessage });
+  // Handle game finished
+  useGameFinished((data) => {
+    console.log("Game finished:", data);
+    dispatch(setGameFinished(true));
+    dispatch(setGameStatus('finished'));
+    // Show final leaderboard
+  });
 
-  // useEffect(() => {
-  //   dispatch(addSubscription(`/topic/questions`));
-  //   return () => {
-  //     dispatch(removeSubscription(`/topic/questions`));
-  //   };
-  // }, [dispatch]);
+  // Handle player joined
+  useGamePlayerJoined((data) => {
+    console.log("Player joined:", data);
+    dispatch(setPlayersCount(data.totalPlayers));
+  });
+
+  // Handle lobby updates
+  useGameLobbyUpdate((data) => {
+    console.log("Lobby update:", data);
+    dispatch(setPlayersCount(data.totalPlayers));
+  });
+
+  // Handle game cancelled
+  useGameCancelled((data) => {
+    console.log("Game cancelled:", data);
+    dispatch(setGameStatus('cancelled'));
+    // Show cancellation message
+  });
+
+  // Handle game errors
+  useGameError((data) => {
+    console.error("Game error:", data);
+    // Show error message to user
+  });
+
+  // Handle reconnection
+  useGameReconnected((data) => {
+    console.log("Game reconnected:", data);
+    // Handle reconnection logic if needed
+  });
 
   return null;
 }

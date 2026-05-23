@@ -1,38 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Grid } from "@radix-ui/themes";
-import React, { useEffect } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import ProductCard from "./productCard";
-import StoreAPI from "@/app/api/storeApi";
-import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
-import { setStoreProducts } from "@/app/store/storeSlice";
 import ProductSkeleton from "./productSkeleton";
-import { toast } from "sonner";
-import { toastPosition } from "@/app/utils/utils";
+import { useStoreCatalogue } from "@/lib/queries";
 
 function Page() {
-  const dispatch = useAppDispatch();
-  const products = useAppSelector((state) => state.store.products);
-  const loading = products === null;
-  useEffect(() => {
-    const fetchProducts = async () => {
-      if (!products) {
-        try {
-          const res = await StoreAPI.getProducts();
-          console.log(res.data);
+  const { data: products, isLoading } = useStoreCatalogue();
 
-          dispatch(setStoreProducts(res.data));
-        } catch (err: any) {
-          console.error("Error fetching products:", err);
-          toast.error(`${err.message}`, { position: toastPosition });
-        }
-      }
-    };
-    fetchProducts();
-  }, [dispatch, products]);
-
-  if (loading) {
+  if (isLoading) {
     return <ProductSkeleton />;
   }
 

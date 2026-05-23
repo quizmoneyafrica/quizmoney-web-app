@@ -1,23 +1,8 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Product } from "../api/interface";
+/* eslint-disable */
+// STUB — store products come from useStoreCatalogue() from @/lib/queries
 
-interface StoreState {
-  products: Product[] | null;
+export const setStoreProducts = (_v: any[]) => ({ type: 'stub/setStoreProducts' })
+
+export default function storeReducer(state = { products: [] }, _action: any) {
+  return state
 }
-
-const initialState: StoreState = {
-  products: null,
-};
-
-const storeSlice = createSlice({
-  name: "store",
-  initialState,
-  reducers: {
-    setStoreProducts: (state, action: PayloadAction<Product[]>) => {
-      state.products = action.payload;
-    },
-  },
-});
-
-export const { setStoreProducts } = storeSlice.actions;
-export default storeSlice.reducer;

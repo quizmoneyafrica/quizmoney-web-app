@@ -1,3 +1,4 @@
+"use client";
 import { ApiResponse } from "@/app/api/interface";
 import { CircleArrowLeft } from "@/app/icons/icons";
 import { useRouter } from "next/navigation";
@@ -6,9 +7,6 @@ import { motion } from "framer-motion";
 import CustomButton from "@/app/utils/CustomBtn";
 import { Grid, Heading, Text } from "@radix-ui/themes";
 import Image from "next/image";
-import { useDispatch } from "react-redux";
-import { setDemoData } from "@/app/store/demoSlice";
-import { playAudio, setPhase } from "@/app/store/gameSlice";
 import { useQuestions } from "@/app/hooks/useDemoQuestions";
 
 type RouterType = ReturnType<typeof useRouter>;
@@ -19,29 +17,15 @@ type Props = {
   router: RouterType;
 };
 export default function WelcomeScreen({ loading, setLoading, router }: Props) {
-  const dispatch = useDispatch();
-  const { data } = useQuestions();
-
-  // if (err) return <p>Error: {err}</p>;
-  // if (!data?.length) return <p>No questions</p>;
+  // const { data } = useQuestions();
 
   const handleFetchDemoData = async () => {
     setLoading(true);
-    dispatch(setDemoData({}));
     try {
-      // const res: ApiResponse = await DemoApi.fetchDemoGame();
-      // const demoData = res;
-      // console.log(res);
-
-      // dispatch(setDemoData(demoData));
-      dispatch(setDemoData(data || []));
-      sessionStorage.setItem("quizmoney_demoData", JSON.stringify(data));
-      sessionStorage.setItem("quizmoney_demoData_d", "0");
-      const objectId = "practice";
-      //Play Song
-      dispatch(setPhase("demo"));
-      dispatch(playAudio());
-      router.replace(`/play-demo/${objectId}`);
+      // sessionStorage.setItem("quizmoney_demoData", JSON.stringify(data));
+      // sessionStorage.setItem("quizmoney_demoData_d", "0");
+      // const objectId = "practice";
+      // router.replace(`/play-demo/${objectId}`);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {

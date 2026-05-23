@@ -1,26 +1,23 @@
 "use client";
 import EmptyState from "@/app/components/notification/emptyState";
 import { NotificationBox } from "@/app/components/notification/NotificationBox";
-import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
 import { Grid } from "@radix-ui/themes";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import ViewNotification from "@/app/components/notification/ViewNotification";
+import { Content } from "@/app/components/notification/ViewNotification";
 import QmDrawer from "@/app/components/drawer/drawer";
 import NotificationApi from "@/app/api/notification";
-import {
-  appendNotifications,
-  clearNotifications,
-  Content,
-  setNotifications,
-  setNotificationsCount,
-} from "@/app/store/notificationSlice";
 import CustomButton from "@/app/utils/CustomBtn";
 
+interface NotificationPage {
+  content: Content[];
+  pageNo: number;
+  last: boolean;
+}
+
 function Page() {
-  const dispatch = useAppDispatch();
-  const notifications = useAppSelector((s) => s.notifications.notifications);
-  // const [loading, setLoading] = useState(true);
+  const [notifications, setNotifications] = useState<NotificationPage | null>(null);
 
   const [initialLoading, setInitialLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -45,13 +42,20 @@ function Page() {
         else setLoadingMore(true);
 
         const res = await NotificationApi.fetchNotifications(page, count);
-        const data = res.data;
+        const data = res.data as NotificationPage;
         console.log("Notifications", data);
-        // dispatch(setNotifications(data));
+
         if (isFirst) {
-          dispatch(setNotifications(data));
+          setNotifications(data);
         } else {
-          dispatch(appendNotifications(data));
+          setNotifications((prev) =>
+            prev
+              ? {
+                  ...data,
+                  content: [...prev.content, ...data.content],
+                }
+              : data
+          );
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -62,17 +66,8 @@ function Page() {
         setLoadingMore(false);
       }
     },
-    [dispatch]
+    []
   );
-  const fetchNotificationCount = useCallback(async () => {
-    try {
-      const res = await NotificationApi.fetchNotificationsCount();
-      dispatch(setNotificationsCount(res.data.count));
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      console.log(err.message);
-    }
-  }, [dispatch]);
 
   useEffect(() => {
     if (!notifications) fetchPage(0);
@@ -86,9 +81,8 @@ function Page() {
       passedNotification?.id &&
       !passedNotification.opened
     ) {
-      dispatch(clearNotifications());
+      setNotifications(null);
       fetchPage(0);
-      fetchNotificationCount();
     }
 
     // update previous value
@@ -96,9 +90,7 @@ function Page() {
   }, [
     openNotification,
     passedNotification,
-    dispatch,
     fetchPage,
-    fetchNotificationCount,
   ]);
 
   const loadMore = () => {

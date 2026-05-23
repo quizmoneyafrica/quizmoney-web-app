@@ -1,38 +1,30 @@
 "use client";
+
 import { useAppDispatch } from "@/app/hooks/useAuth";
-import {
-  registerStompHandler,
-  unregisterStompHandler,
-  useStompClient,
-} from "@/app/hooks/useStompClient";
 import useWalletHook from "@/app/hooks/useWallet";
-import { addSubscription, removeSubscription } from "@/app/store/stompSlice";
 import { setWalletBalance } from "@/app/store/walletSlice";
-import { IMessage } from "@stomp/stompjs";
 import { useEffect } from "react";
 
 function WalletQueries() {
   const dispatch = useAppDispatch();
   const { fetchTransactions } = useWalletHook();
-  const destination = "/user/queue/wallet";
 
-  useStompClient();
+  // Note: Wallet updates are typically handled via REST API polling or
+  // could be implemented via Socket.io if the backend supports it.
+  // For now, we'll keep the existing REST-based approach for wallet updates.
 
   useEffect(() => {
-    const handler = (msg: IMessage) => {
-      console.log("💰 Wallet Update:", msg.headers.destination, msg.body);
-      dispatch(setWalletBalance(Number(msg.body)));
-      fetchTransactions();
+    // Fetch wallet balance periodically or on specific events
+    // This could be enhanced with Socket.io if needed in the future
+    const fetchBalance = async () => {
+      // This would typically be handled by useWalletBalance hook in components
+      // Keeping this as a placeholder for potential Socket.io implementation
     };
 
-    registerStompHandler(destination, handler);
-    dispatch(addSubscription(destination));
-
-    return () => {
-      unregisterStompHandler(destination);
-      dispatch(removeSubscription(destination));
-    };
-  }, [dispatch, fetchTransactions]);
+    // Set up interval for balance updates if needed
+    // const interval = setInterval(fetchBalance, 30000); // 30 seconds
+    // return () => clearInterval(interval);
+  }, [fetchTransactions]);
 
   return null;
 }

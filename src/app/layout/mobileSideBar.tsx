@@ -1,64 +1,26 @@
-"use client";
-import React from "react";
-import { motion } from "framer-motion";
-import { Avatar, Flex, Grid, Separator, Text } from "@radix-ui/themes";
-import { navSidebar } from "./nav";
-import { usePathname, useRouter } from "next/navigation";
-import { useAppDispatch, useAuth } from "../hooks/useAuth";
-import { VerifiedBadge } from "../icons/icons";
-import { MenuToggle } from "./MenuToggle";
-import { useKycStep } from "../hooks/useKycStep";
-import { playZoneAudio, setZonePhase } from "../store/gameZoneSlice";
+'use client'
 
-// const sidebarOptions = {
-//   open: (height = 1000) => ({
-//     clipPath: `circle(${height * 2 + 200}px at 40px 40px)`,
-//     transition: {
-//       type: "spring",
-//       stiffness: 20,
-//       restDelta: 2,
-//     },
-//   }),
-//   closed: {
-//     clipPath: "circle(20px at 40px 40px)",
-//     transition: {
-//       delay: 0.5,
-//       type: "spring",
-//       stiffness: 400,
-//       damping: 40,
-//     },
-//   },
-// };
-// const sidebarOptions = {
-//   open: (height = 1000) => ({
-//     clipPath: `circle(${height * 2 + 200}px at 40px 40px)`,
-//     transition: {
-//       type: "spring",
-//       stiffness: 20,
-//       restDelta: 2,
-//     },
-//   }),
-//   closed: {
-//     clipPath: "circle(20px at 40px 40px)",
-//     transition: {
-//       delay: 0.5,
-//       type: "spring",
-//       stiffness: 400,
-//       damping: 40,
-//     },
-//   },
-// };
+import React from 'react'
+import { motion } from 'framer-motion'
+import { Avatar, Flex, Grid, Separator, Text } from '@radix-ui/themes'
+import { navSidebar } from './nav'
+import { usePathname, useRouter } from 'next/navigation'
+import { useAuth } from '../hooks/useAuth'
+import { VerifiedBadge } from '../icons/icons'
+import { MenuToggle } from './MenuToggle'
+import { useKycStep } from '../hooks/useKycStep'
+import { useGameZoneStore } from '@/lib/game-zone-store'
 
 const sidebarVariants = {
   open: {
     x: 0,
-    transition: { type: "spring", stiffness: 100, damping: 20 },
+    transition: { type: 'spring', stiffness: 100, damping: 20 },
   },
   closed: {
-    x: "-100%",
-    transition: { type: "spring", stiffness: 300, damping: 30 },
+    x: '-100%',
+    transition: { type: 'spring', stiffness: 300, damping: 30 },
   },
-};
+}
 
 const variants = {
   open: {
@@ -67,57 +29,56 @@ const variants = {
   closed: {
     transition: { staggerChildren: 0.05, staggerDirection: -1 },
   },
-};
-// const transition = {
-//   duration: 0.8,
-//   delay: 0.5,
-//   ease: [0, 0.71, 0.2, 1.01],
-// };
+}
 
 interface Prop {
-  isOpen: boolean;
-  toggle: () => void;
+  isOpen: boolean
+  toggle: () => void
 }
+
 const MobileSideBar = ({ isOpen, toggle }: Prop) => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const { user } = useAuth();
-  const { customerKyc } = useKycStep();
-  const bvnStep = customerKyc.find((s) => s.step === "BVN");
-  const dispatch = useAppDispatch();
+  const router = useRouter()
+  const pathname = usePathname()
+  const { user } = useAuth()
+  const { status } = useKycStep()
+  const setZonePhase = useGameZoneStore((s) => s.setZonePhase)
+  const playZoneAudio = useGameZoneStore((s) => s.playZoneAudio)
+
+  const isVerified = status?.bvn_verified ?? false
 
   const handleTabRoute = (path: string) => {
-    console.log(path);
     if (pathname !== path) {
-      router.push(path);
-      window.scrollTo(0, 0);
-      toggle();
+      router.push(path)
+      window.scrollTo(0, 0)
+      toggle()
     }
-  };
+  }
+
   return (
     <>
       {/* Always-visible toggle button */}
-      <div className="fixed top-0 left-0 z-50 ">
+      <div className="fixed top-0 left-0 z-50">
         <MenuToggle toggle={toggle} />
       </div>
+
       {/* Background overlay */}
       {isOpen && (
         <div className="fixed inset-0 bg-black/50 z-40" onClick={toggle} />
       )}
+
       <motion.nav
         initial={false}
-        animate={isOpen ? "open" : "closed"}
+        animate={isOpen ? 'open' : 'closed'}
         variants={sidebarVariants}
         className="fixed top-0 left-0 h-screen w-[80%] bg-primary-900 z-50 shadow-2xl"
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
-        onDragEnd={(event, info) => {
+        onDragEnd={(_event, info) => {
           if (info.offset.x < -100) {
-            toggle();
+            toggle()
           }
         }}
       >
-        {/* Toggle button */}
         <MenuToggle toggle={toggle} />
 
         <motion.section
@@ -131,14 +92,14 @@ const MobileSideBar = ({ isOpen, toggle }: Prop) => {
               className="text-white pl-4 pb-2 cursor-pointer"
               whileTap={{ scale: 0.95 }}
               onClick={() => {
-                router.push("/settings/profile");
-                toggle();
+                router.push('/settings/profile')
+                toggle()
               }}
             >
               <Flex gap="2">
                 <Avatar
-                  src={user?.avatarUrl}
-                  fallback={user?.firstName?.charAt(0).toUpperCase() || ""}
+                  src={user?.avatar_url ?? undefined}
+                  fallback={user?.first_name?.charAt(0).toUpperCase() || ''}
                   radius="full"
                   className="bg-primary-50 border-3"
                   size="4"
@@ -146,11 +107,9 @@ const MobileSideBar = ({ isOpen, toggle }: Prop) => {
                 <Grid>
                   <Flex align="center" gap="2">
                     <h2 className="capitalize">
-                      {user?.firstName} {user?.lastName}
+                      {user?.first_name} {user?.last_name}
                     </h2>
-                    {bvnStep && bvnStep?.status === "COMPLETED" && (
-                      <VerifiedBadge />
-                    )}
+                    {isVerified && <VerifiedBadge />}
                   </Flex>
                   <p className="text-xs text-gray-400 lowercase font-normal">
                     {user?.email}
@@ -165,172 +124,51 @@ const MobileSideBar = ({ isOpen, toggle }: Prop) => {
             <motion.div variants={variants} className="relative grid">
               {navSidebar.map((nav, index) => {
                 const isActive =
-                  pathname === nav.path || pathname.startsWith(nav.path + "/");
+                  pathname === nav.path || pathname.startsWith(nav.path + '/')
                 return (
                   <motion.button
                     layout
                     key={index}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => {
-                      handleTabRoute(`${nav.path}`);
-                      if (nav.path === "game-zone") {
-                        dispatch(setZonePhase("zone"));
-                        dispatch(playZoneAudio());
+                      handleTabRoute(nav.path)
+                      if (nav.path === 'game-zone') {
+                        setZonePhase('zone')
+                        playZoneAudio()
                       }
                     }}
                     className={`relative cursor-pointer transition text-sm py-4 px-4 text-left rounded-[8px] ${
                       isActive
-                        ? "text-white font-semibold bg-primary-500"
-                        : "text-primary-300"
+                        ? 'text-white font-semibold bg-primary-500'
+                        : 'text-primary-300'
                     }`}
                   >
                     {isActive && (
                       <motion.div
                         layoutId="nav-active-indicator"
                         className="absolute inset-0 bg-primary-500 rounded-[8px] z-0"
-                        transition={{
-                          type: "spring",
-                          stiffness: 500,
-                          damping: 30,
-                        }}
+                        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                       />
                     )}
                     <Flex
                       align="center"
                       gap="3"
                       className={`relative z-10 ${
-                        isActive
-                          ? "text-white font-semibold"
-                          : "text-primary-300"
+                        isActive ? 'text-white font-semibold' : 'text-primary-300'
                       }`}
                     >
                       {nav.icon}
                       <Text>{nav.name}</Text>
                     </Flex>
                   </motion.button>
-                );
+                )
               })}
             </motion.div>
           </Grid>
         </motion.section>
       </motion.nav>
-      {/* <motion.nav
-        // className={`w-full bg-black/50 ${
-        //   isOpen ? "fixed inset-0" : "absolute top-0 right-0"
-        // } z-40`}
-        className={`fixed inset-0 z-40 ${isOpen ? "block" : "hidden"}`}
-        initial={false}
-        animate={isOpen ? "open" : "closed"}
-        variants={sidebarOptions}
-      >
-        <motion.div
-          // className={`${
-          //   isOpen ? "" : ""
-          // } h-screen relative z-50 w-[80%] bg-primary-900 drop-shadow-2xl`}
-          className="absolute inset-0 w-[80%] bg-primary-900 shadow-2xl"
-        >
-          <MenuToggle toggle={toggle} />
-          <motion.section
-            animate={{ y: isOpen ? 0 : 1500 }}
-            transition={transition}
-            className="px-2 pt-16"
-          >
-            <Grid gap="5">
-              <motion.div
-                className="text-white pl-4 pb-2 cursor-pointer"
-                whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  router.push("/settings/profile");
-                  toggle();
-                }}
-              >
-                <Flex gap="2">
-                  <Avatar
-                    src={user?.avatarUrl}
-                    fallback={user?.firstName?.charAt(0).toUpperCase() || ""}
-                    radius="full"
-                    className="bg-primary-50 border-3"
-                    size="4"
-                  />
-
-                  <Grid>
-                    <Flex align="center" gap="2">
-                      <h2 className="capitalize">
-                        {user?.firstName} {user?.lastName}
-                      </h2>
-                      {bvnStep && bvnStep?.status === "COMPLETED" && (
-                        <VerifiedBadge />
-                      )}
-                    </Flex>
-                    <p className="text-xs text-gray-400 lowercase font-normal">
-                      {user?.email}
-                    </p>
-                  </Grid>
-                </Flex>
-              </motion.div>
-              <Separator size="4" color="blue" />
-              <motion.div variants={variants} className="relative grid">
-                {navSidebar.map((nav, index) => {
-                  // const isActive = splitName.includes(nav.name.toLowerCase());
-                  const isActive =
-                    pathname === nav.path ||
-                    pathname.startsWith(nav.path + "/");
-                  return (
-                    <motion.button
-                      layout
-                      key={index}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => {
-                        handleTabRoute(`${nav.path}`);
-                        if (nav.path === "game-zone") {
-                          dispatch(setZonePhase("zone"));
-                          dispatch(playZoneAudio());
-                        }
-                      }}
-                      // className={`relative cursor-pointer transition text-sm py-4 ${
-                      //   isActive ? "text-white font-semibold" : "text-primary-300"
-                      // }`}
-                      className={`relative cursor-pointer transition text-sm py-4 ${
-                        isActive
-                          ? "text-white font-semibold bg-primary-500 rounded-[8px]"
-                          : "text-primary-300"
-                      }`}
-                    >
-                      {isActive && (
-                        <motion.div
-                          layoutId="nav-active-indicator"
-                          className="absolute inset-0 bg-primary-500 rounded-[8px] z-0"
-                          transition={{
-                            type: "spring",
-                            stiffness: 500,
-                            damping: 30,
-                          }}
-                        />
-                      )}
-
-                      <Flex
-                        align="center"
-                        gap="3"
-                        mx="4"
-                        className={`relative z-10 ${
-                          isActive
-                            ? "text-white font-semibold"
-                            : "text-primary-300"
-                        }`}
-                      >
-                        {nav.icon}
-                        <Text>{nav.name}</Text>
-                      </Flex>
-                    </motion.button>
-                  );
-                })}
-              </motion.div>
-            </Grid>
-          </motion.section>
-        </motion.div>
-      </motion.nav> */}
     </>
-  );
-};
+  )
+}
 
-export default MobileSideBar;
+export default MobileSideBar

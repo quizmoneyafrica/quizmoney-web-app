@@ -1,74 +1,13 @@
-import { ApiResponse } from "./interface";
-import { callWithSessionToken } from "./parse/callWithSessionToken";
+/* eslint-disable */
+// STUB — game zone uses Socket.io; HTTP game zone API removed
 
 const GameZoneAPI = {
-  getAllGames(): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>("qm-games", {}, "GET");
-  },
-  getAGame(gameType: string): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(
-      `qm-games/game?game-type=${gameType}`,
-      {},
+  getAllGames: async () => ({ success: false, data: [] as any[] }),
+  getAGame: async (_gameType: string) => ({ success: false, data: null as any }),
+  stakeInGame: async (_gameId: string, _gameType: string, _stake: number) => ({ success: false, data: { sessionId: '', lowerBound: 0, upperBound: 0, range: 0, trials: 0 } }),
+  leaveNumberGuessGame: async (_sessionId: string) => ({ success: false, data: null }),
+  buyTrialsNumberGuessGame: async (_args: { sessionId: string; quantity: number }) => ({ success: false, code: '', data: null }),
+  submitGuess: async (_guess: number, _gameSessionId: string, _timeInMillis: number) => ({ success: false, data: { guessDirection: '', result: '' } }),
+}
 
-      "GET"
-    );
-  },
-
-  stakeInGame(
-    gameId: string,
-    gameType: string,
-    stake: number
-  ): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(
-      "qm-games/play",
-      {
-        gameId,
-        gameType,
-        stake,
-      },
-
-      "POST"
-    );
-  },
-
-  // number guesser
-  leaveNumberGuessGame(sessionId: string): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(
-      "number-guesser/leave",
-      {
-        sessionId,
-      },
-      "POST"
-    );
-  },
-  buyTrialsNumberGuessGame({sessionId, quantity}: {
-  sessionId:string;
-  quantity: number;
-}): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(
-      "number-guesser/trial/purchase",
-      {
-        sessionId,
-        quantity,
-      },
-      "POST"
-    );
-  },
-  submitGuess(
-    guess: number,
-    gameSessionId: string,
-    timeInMillis: number
-  ): Promise<ApiResponse> {
-    return callWithSessionToken<ApiResponse>(
-      "number-guesser/guess",
-      {
-        guess,
-        gameSessionId,
-        timeInMillis,
-      },
-      "POST"
-    );
-  },
-};
-
-export default GameZoneAPI;
+export default GameZoneAPI

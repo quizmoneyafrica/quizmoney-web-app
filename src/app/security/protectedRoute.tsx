@@ -1,6 +1,16 @@
 "use client";
 
-import { useAppSelector } from "@/app/hooks/useAuth";
+/**
+ * protectedRoute.tsx
+ *
+ * Guards any route that requires authentication.
+ * Reads from Zustand useAuthStore — no Redux dependency.
+ *
+ * Waits for Zustand to hydrate from localStorage before making
+ * any redirect decision, preventing a flash-redirect on first load.
+ */
+
+import { useAuthStore } from "@/lib/auth-store";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 
@@ -10,17 +20,19 @@ export default function ProtectedRoute({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { accessToken } = useAppSelector((s) => s.auth);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const hasHydrated = useAuthStore((s) => s.hasHydrated);
 
   useEffect(() => {
-    if (!accessToken) {
+    if (hasHydrated && !isAuthenticated) {
       router.replace("/login");
     }
-  }, [accessToken, router]);
+  }, [isAuthenticated, hasHydrated, router]);
 
-  if (!accessToken) {
-    return null;
-  }
+  // Wait for Zustand rehydration before rendering or redirecting
+  if (!hasHydrated) return null;
+
+  if (!isAuthenticated) return null;
 
   return <>{children}</>;
 }
