@@ -41,6 +41,31 @@ export const tokenStorage = {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+export interface PlayerVerification {
+  phone_verified: boolean
+  phone_verified_at: string | null
+  bvn_verified: boolean
+  bvn_verified_at: string | null
+}
+
+export interface PlayerWallet {
+  ngn_balance: number
+  ngn_balance_formatted: string
+  qmcoin_balance: number
+}
+
+export interface PlayerStats {
+  games_played: number
+  games_won: number
+  win_rate: number
+  best_rank: number
+  total_ngn_won_kobo: number
+  total_ngn_won_formatted: string
+  total_qmcoin_won: number
+  practice_sessions: number
+  practice_avg_score_percent: number
+}
+
 export interface Player {
   id: string
   username: string
@@ -52,10 +77,19 @@ export interface Player {
   is_admin: boolean
   is_active: boolean
   created_at: string
+  updated_at?: string
   // Extended fields returned by /api/profile/me
-  phone_number?: string
+  phone_number?: string | null
   referral_code?: string
+  bio?: string | null
+  date_of_birth?: string | null
+  state?: string | null
+  country?: string
   coin_balance?: number
+  // Rich objects synced from /api/profile/me
+  verification?: PlayerVerification
+  wallet?: PlayerWallet
+  stats?: PlayerStats
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any
 }

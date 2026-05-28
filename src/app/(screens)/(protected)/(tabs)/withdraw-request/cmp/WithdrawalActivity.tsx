@@ -1,21 +1,43 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import WalletApi from "@/app/api/wallet";
 import PaginationCmp from "@/app/(screens)/(protected)/(tabs)/withdraw-request/pagination/Pagination";
 import CustomImage from "@/app/components/wallet/CustomImage";
-import { useAppDispatch, useAppSelector } from "@/app/hooks/useAuth";
-import { formatNaira, toastPosition } from "@/app/utils/utils";
-import React, { JSX, useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
-import { setWithdrawalRequestData } from "@/app/store/withdrawalRequestSlice";
+import { formatNaira } from "@/app/utils/utils";
+import React, { JSX, useState } from "react";
 import { CardRemoveIcon, CardSendIcon } from "@/app/icons/icons";
-import { addHours, parseISO, format } from "date-fns";
-import QMLoader from "@/app/components/splashScreen/QMLoader";
+import { format, parseISO } from "date-fns";
+import { Skeleton } from "@radix-ui/themes";
+import { useWithdrawalHistory } from "@/lib/queries";
+import { WithdrawalRequest } from "@/app/api/wallet";
 
-// interface WithdrawTransactionGroup {
-//   today: Transaction[];
-//   yesterday: Transaction[];
-//   other: Transaction[];
-// }
+// Status → colour class
+function statusColor(status: string): string {
+  switch (status) {
+    case "pending":
+      return "bg-warning-100 text-warning-900";
+    case "approved":
+    case "paid":
+      return "bg-green-100 text-positive-900";
+    case "rejected":
+    case "failed":
+      return "bg-error-100 text-error-900";
+    default:
+      return "bg-gray-100 text-gray-500";
+  }
+}
+
+function statusTextColor(status: string): string {
+  switch (status) {
+    case "pending":
+      return "text-warning-900";
+    case "approved":
+    case "paid":
+      return "text-positive-900";
+    case "rejected":
+    case "failed":
+      return "text-error-900";
+    default:
+      return "text-gray-500";
+  }
+}
 
 function renderEmptyState(): JSX.Element {
   return (
@@ -35,111 +57,90 @@ function renderEmptyState(): JSX.Element {
   );
 }
 
-export default function WithdrawalActivity(): React.ReactElement {
-  const [isFetching, setIsFetching] = useState(true);
-  const dispatch = useAppDispatch();
-  const withdrawData = useAppSelector((s) => s.withdrawalRequest);
-  const [page, setPage] = useState(0);
-  const size = 10;
-
-  const fetchWithdrawalRequest = useCallback(
-    async (pageId: number) => {
-      setIsFetching(true);
-      try {
-        const res = await WalletApi.fetchWithdrawalRequests(pageId, size);
-        dispatch(setWithdrawalRequestData(res.data));
-      } catch (error: any) {
-        toast.error(error.message, { position: toastPosition });
-      } finally {
-        setIsFetching(false);
-      }
-    },
-    [dispatch, size]
+function renderSkeletonLoader(): JSX.Element {
+  return (
+    <div className="space-y-3 p-4">
+      {[...Array(4)].map((_, i) => (
+        <div key={i} className="flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <Skeleton width="40px" height="40px" />
+            <div className="space-y-1">
+              <Skeleton width="100px" height="12px" />
+              <Skeleton width="64px" height="12px" />
+            </div>
+          </div>
+          <div className="text-right space-y-1">
+            <Skeleton width="60px" height="12px" />
+            <Skeleton width="80px" height="12px" />
+          </div>
+        </div>
+      ))}
+    </div>
   );
+}
 
-  useEffect(() => {
-    fetchWithdrawalRequest(page);
-  }, [fetchWithdrawalRequest, page]);
+export default function WithdrawalActivity(): React.ReactElement {
+  // 1-based pages (matches the backend)
+  const [page, setPage] = useState(1);
+  const limit = 10;
 
-  if (isFetching) {
-    return (
-      <div className="pt-[10dvh] flex items-center justify-center">
-        <QMLoader />
-      </div>
-    );
-  }
+  const { data, isLoading } = useWithdrawalHistory({ page, limit });
+
+  // data shape: PaginatedResponse<WithdrawalRequest> (already unwrapped by select)
+  const items: WithdrawalRequest[] = (data as any)?.items ?? [];
+  const totalPages = (data as any)?.total_pages ?? 1;
 
   return (
     <div className="space-y-4">
       <section className="bg-white rounded-lg p-4 w-full">
-        {withdrawData.content.length > 0 ? (
+        {isLoading ? (
+          renderSkeletonLoader()
+        ) : items.length > 0 ? (
           <div className="space-y-4">
-            <h3>Recent withdrawals</h3>
-            {withdrawData.content.map((item, index) => {
-              const date = parseISO(item.createdAt ?? new Date().toISOString());
-              const nigeriaTime = addHours(date, 1);
-              const dateData = format(
-                nigeriaTime,
-                "MMM d, h:mma"
+            <h3 className="font-semibold text-[#3B3B3B]">Recent withdrawals</h3>
+            {items.map((item, index) => {
+              const dateStr = format(
+                parseISO(item.created_at ?? new Date().toISOString()),
+                "MMM d, h:mma",
               ).toLowerCase();
+
+              const isPendingOrApproved =
+                item.status === "pending" || item.status === "approved";
+
               return (
                 <div
-                  key={index}
-                  className={`bg-white cursor-pointer p-4 w-full rounded-2xl md:rounded-none border md:border-transparent border-[#D9D9D9] grid grid-cols-3 gap-1 items-center`}
+                  key={item.id ?? index}
+                  className="bg-white cursor-pointer p-4 w-full rounded-2xl md:rounded-none border md:border-transparent border-[#D9D9D9] grid grid-cols-3 gap-1 items-center"
                 >
                   <div className="col-span-2 flex items-center gap-2">
-                    <div>
-                      <div
-                        className={`h-10 w-10 rounded-full grid place-items-center  ${
-                          item.status === "PENDING" ||
-                          item.status === "PROCESSING"
-                            ? "bg-warning-100 text-warning-900"
-                            : item.status === "APPROVED" ||
-                              item.status === "PROCESSED"
-                            ? "bg-green-100 text-positive-900"
-                            : item.status === "REJECTED" ||
-                              item.status === "FAILED"
-                            ? "bg-error-100 text-error-900"
-                            : "bg-error-100 text-error-900"
-                        }`}
-                      >
-                        {item.status === "PENDING" ||
-                        item.status === "APPROVED" ? (
-                          <CardSendIcon width={18} height={18} />
-                        ) : (
-                          <CardRemoveIcon width={18} height={18} />
-                        )}
-                      </div>
+                    <div
+                      className={`h-10 w-10 rounded-full grid place-items-center ${statusColor(item.status)}`}
+                    >
+                      {isPendingOrApproved ? (
+                        <CardSendIcon width={18} height={18} />
+                      ) : (
+                        <CardRemoveIcon width={18} height={18} />
+                      )}
                     </div>
 
                     <div className="grid text-left">
                       <p className="text-sm text-left font-medium text-[#3B3B3B]">
-                        {formatNaira(Number(item.amount))}
+                        {formatNaira(item.amount)} {/* amount is in kobo */}
                       </p>
                       <p className="text-xs md:text-sm text-gray-500">
                         Withdrawal Request
                       </p>
                     </div>
                   </div>
-                  <div className="col-span-1 text-right ">
+
+                  <div className="col-span-1 text-right">
                     <p
-                      className={`text-sm  font-medium ${
-                        item.status === "PENDING" ||
-                        item.status === "PROCESSING"
-                          ? "text-warning-900"
-                          : item.status === "APPROVED" ||
-                            item.status === "PROCESSED"
-                          ? "text-positive-900"
-                          : item.status === "REJECTED" ||
-                            item.status === "FAILED"
-                          ? "text-error-900"
-                          : "text-error-900"
-                      }`}
+                      className={`text-sm font-medium capitalize ${statusTextColor(item.status)}`}
                     >
                       {item.status}
                     </p>
                     <p className="text-xs md:text-sm text-gray-500 capitalize">
-                      {dateData}
+                      {dateStr}
                     </p>
                   </div>
                 </div>
@@ -150,10 +151,11 @@ export default function WithdrawalActivity(): React.ReactElement {
           renderEmptyState()
         )}
       </section>
+
       <PaginationCmp
-        totalPages={withdrawData.totalPages}
+        totalPages={totalPages}
         currentPage={page}
-        onPageChange={(page) => setPage(page)}
+        onPageChange={setPage}
       />
     </div>
   );

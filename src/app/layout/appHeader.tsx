@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client'
+"use client";
 
 /**
  * appHeader.tsx
@@ -15,11 +15,11 @@
  * - Eraser count comes from user profile (user.gameEraserCount)
  */
 
-import { EraserIcon, QuestionMarkCircledIcon } from '@radix-ui/react-icons'
-import { Avatar, Container, Flex, Heading } from '@radix-ui/themes'
-import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
-import React, { useEffect, useRef, useState } from 'react'
+import { EraserIcon, QuestionMarkCircledIcon } from "@radix-ui/react-icons";
+import { Avatar, Container, Flex, Heading } from "@radix-ui/themes";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ArrowDownFillIcon,
   BellIcon,
@@ -29,65 +29,69 @@ import {
   QMCoin,
   SupportIcon,
   VerifiedBadge,
-} from '../icons/icons'
-import { useAuth } from '../hooks/useAuth'
-import { DropdownMenu } from 'radix-ui'
-import LogoutDialog from '../components/logout/logout'
-import { motion, useCycle } from 'framer-motion'
-import MobileSideBar from './mobileSideBar'
-import { useKycStep } from '../hooks/useKycStep'
+} from "../icons/icons";
+import { useAuth } from "../hooks/useAuth";
+import { DropdownMenu } from "radix-ui";
+import LogoutDialog from "../components/logout/logout";
+import { motion, useCycle } from "framer-motion";
+import MobileSideBar from "./mobileSideBar";
+import { useKycStep } from "../hooks/useKycStep";
+import { useQMCoinBalance } from "../hooks/useWallet";
+import { useEraserCount } from "../hooks/useEraserCount";
 
 const useDimensions = (ref: any) => {
-  const dimensions = useRef({ width: 0, height: 0 })
+  const dimensions = useRef({ width: 0, height: 0 });
   useEffect(() => {
-    dimensions.current.width = ref.current.offsetWidth
-    dimensions.current.height = ref.current.offsetHeight
-  }, [ref])
-  return dimensions.current
-}
+    dimensions.current.width = ref.current.offsetWidth;
+    dimensions.current.height = ref.current.offsetHeight;
+  }, [ref]);
+  return dimensions.current;
+};
 
 function AppHeader() {
-  const pathname = usePathname()
-  const router = useRouter()
-  const [openLogout, setOpenLogout] = useState(false)
-  const { user } = useAuth()
-  const { status } = useKycStep()
+  const pathname = usePathname();
+  const router = useRouter();
+  const [openLogout, setOpenLogout] = useState(false);
+  const { user } = useAuth();
+  const { status } = useKycStep();
+  const qmcoinBalance = useQMCoinBalance();
+  const { eraserCount } = useEraserCount();
 
-  const isVerified = status?.bvn_verified ?? false
+  const isVerified = status?.bvn_verified ?? false;
 
   // Notification count — FCM delivers push notifications; badge is managed
   // by the service worker. No REST polling needed.
-  const [notificationCount] = useState(0)
+  const [notificationCount] = useState(0);
 
   // Mobile menu
-  const [isOpen, toggleOpen] = useCycle(false, true)
-  const containerRef = useRef(null)
-  const { height } = useDimensions(containerRef)
+  const [isOpen, toggleOpen] = useCycle(false, true);
+  const containerRef = useRef(null);
+  const { height } = useDimensions(containerRef);
 
-  const excludedPaths = ['/practice-game']
-  if (excludedPaths.includes(pathname)) return null
+  const excludedPaths = ["/practice-game"];
+  if (excludedPaths.includes(pathname)) return null;
 
   const lastSegment =
     pathname
-      .split('/')
+      .split("/")
       .filter(Boolean)
       .pop()
-      ?.replace(/-/g, ' ')
-      .replace(/\b\w/g, (char) => char.toUpperCase()) || ''
+      ?.replace(/-/g, " ")
+      .replace(/\b\w/g, (char) => char.toUpperCase()) || "";
 
-  const isPin = () => pathname.includes('wallet') && pathname.includes('pin')
+  const isPin = () => pathname.includes("wallet") && pathname.includes("pin");
   const isVerifyOtp = () =>
-    pathname.includes('wallet') && pathname.includes('verify-otp')
+    pathname.includes("wallet") && pathname.includes("verify-otp");
 
   return (
     <div className="pb-4 relative">
       <motion.nav
         initial={false}
-        animate={isOpen ? 'open' : 'closed'}
+        animate={isOpen ? "open" : "closed"}
         custom={height}
         ref={containerRef}
         className={`lg:hidden relative bg-green-100 -top-4 -left-5 ${
-          !isOpen && '-ml-1 w-screen'
+          !isOpen && "-ml-1 w-screen"
         }`}
       >
         <MobileSideBar isOpen={isOpen} toggle={() => toggleOpen()} />
@@ -95,25 +99,25 @@ function AppHeader() {
 
       <Flex align="center" justify="between" gap="2">
         <Heading
-          size={{ initial: '4', lg: '5' }}
+          size={{ initial: "4", lg: "5" }}
           className="capitalize flex items-center flex-wrap overflow-hidden text-ellipsis whitespace-nowrap max-w-[200px] sm:max-w-none"
         >
           <div className="relative flex-row flex items-center gap-2">
-            {(pathname.split('/').length > 2 ||
-              pathname.includes('notification') ||
-              pathname.includes('kyc')) && (
+            {(pathname.split("/").length > 2 ||
+              pathname.includes("notification") ||
+              pathname.includes("kyc")) && (
               <button onClick={() => router?.back()} className="cursor-pointer">
                 <CircleArrowLeft />
               </button>
             )}
             <div className="hidden lg:block">
-              {lastSegment === 'Home' ? (
+              {lastSegment === "Home" ? (
                 <span className="flex items-center gap-1 capitalize font-bold">
-                  Welcome, {user?.first_name || ''}
+                  Welcome, {user?.username || ""}
                   {isVerified ? (
                     <VerifiedBadge className="text-primary-900" />
                   ) : (
-                    '👋'
+                    "👋"
                   )}
                 </span>
               ) : isVerifyOtp() || isPin() ? (
@@ -125,7 +129,7 @@ function AppHeader() {
           </div>
         </Heading>
 
-        <Flex align="center" gap={{ initial: '1', lg: '6' }}>
+        <Flex align="center" gap={{ initial: "1", lg: "6" }}>
           <Link href="/wallet?tab=coin">
             <Flex
               align="center"
@@ -133,7 +137,7 @@ function AppHeader() {
               className="rounded-full text-xs border-2 py-1 px-2 border-neutral-400 text-neutral-500 hover:border-primary-500 hover:text-primary-900 cursor-pointer"
             >
               <QMCoin width={15} height={15} />
-              <span>{(user as any)?.qmCoinBalance ?? 0}</span>
+              <span>{qmcoinBalance.qmcoin_balance ?? 0}</span>
             </Flex>
           </Link>
 
@@ -144,7 +148,7 @@ function AppHeader() {
               className="rounded-full text-xs border-2 py-1 px-2 border-neutral-400 text-neutral-500 hover:border-primary-500 hover:text-primary-900 cursor-pointer"
             >
               <EraserIcon />
-              <span>{user?.gameEraserCount ?? 0}</span>
+              <span>{eraserCount ?? 0}</span>
             </Flex>
           </Link>
 
@@ -155,7 +159,7 @@ function AppHeader() {
             <BellIcon />
             {notificationCount > 0 && (
               <div className="flex items-center justify-center h-4.5 w-4.5 rounded-full bg-primary-900 absolute -top-1 -right-1 text-white text-[0.5rem]">
-                {notificationCount > 99 ? '99+' : notificationCount}
+                {notificationCount > 99 ? "99+" : notificationCount}
               </div>
             )}
           </Link>
@@ -166,12 +170,12 @@ function AppHeader() {
                 <Flex align="center" gap="2">
                   <Avatar
                     src={user?.avatar_url ?? undefined}
-                    fallback={user?.first_name?.charAt(0).toUpperCase() || ''}
+                    fallback={user?.username?.charAt(0).toUpperCase() || ""}
                     radius="full"
                     className="bg-primary-50"
                   />
                   <p className="hidden lg:flex text-[#1B212D] capitalize font-medium">
-                    {user?.first_name} {user?.last_name}
+                    {user?.username}
                   </p>
                   <ArrowDownFillIcon className="text-neutral-500 hidden lg:flex" />
                 </Flex>
@@ -179,12 +183,15 @@ function AppHeader() {
             </DropdownMenu.Trigger>
 
             <DropdownMenu.Portal>
-              <DropdownMenu.Content className="DropdownMenuContent" sideOffset={5}>
+              <DropdownMenu.Content
+                className="DropdownMenuContent"
+                sideOffset={5}
+              >
                 <DropdownMenu.Item
                   className="DropdownMenuItem"
-                  onClick={() => router.push('/settings/profile')}
+                  onClick={() => router.push("/settings/profile")}
                 >
-                  My Profile{' '}
+                  My Profile{" "}
                   <span className="RightSlot">
                     <PersonIcon />
                   </span>
@@ -192,9 +199,9 @@ function AppHeader() {
 
                 <DropdownMenu.Item
                   className="DropdownMenuItem"
-                  onClick={() => router.push('/support')}
+                  onClick={() => router.push("/support")}
                 >
-                  Support{' '}
+                  Support{" "}
                   <span className="RightSlot">
                     <SupportIcon />
                   </span>
@@ -202,7 +209,7 @@ function AppHeader() {
 
                 <Link href="https://quizmoney.ng/how-it-works" target="_blank">
                   <DropdownMenu.Item className="DropdownMenuItem">
-                    How It Works{' '}
+                    How It Works{" "}
                     <span className="RightSlot">
                       <QuestionMarkCircledIcon />
                     </span>
@@ -213,7 +220,7 @@ function AppHeader() {
                   onSelect={() => setOpenLogout(true)}
                   className="DropdownMenuItem hover:!bg-error-900"
                 >
-                  Logout{' '}
+                  Logout{" "}
                   <span className="RightSlot">
                     <LogoutIcon />
                   </span>
@@ -226,10 +233,10 @@ function AppHeader() {
 
       {/* Mobile page title */}
       <div className="lg:hidden">
-        {lastSegment === 'Home' ? (
+        {lastSegment === "Home" ? (
           <span className="flex items-center gap-1 capitalize font-bold">
-            Welcome, {user?.first_name || ''}
-            {isVerified ? <VerifiedBadge className="text-primary-900" /> : '👋'}
+            Welcome, {user?.first_name || ""}
+            {isVerified ? <VerifiedBadge className="text-primary-900" /> : "👋"}
           </span>
         ) : isVerifyOtp() || isPin() ? (
           <span className="flex capitalize font-bold">Reset Pin</span>
@@ -240,7 +247,7 @@ function AppHeader() {
 
       <LogoutDialog open={openLogout} onOpenChange={setOpenLogout} />
     </div>
-  )
+  );
 }
 
-export default AppHeader
+export default AppHeader;

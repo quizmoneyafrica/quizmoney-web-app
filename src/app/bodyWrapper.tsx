@@ -3,6 +3,7 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { useSocket } from "@/lib/socket";
 
 const routeToBodyClass: Record<string, string> = {
   "/login": "bg-auth",
@@ -23,6 +24,7 @@ export default function BodyWrapper({
 }: {
   children: React.ReactNode;
 }) {
+  useSocket();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -31,7 +33,7 @@ export default function BodyWrapper({
 
     // Match and apply class
     const matchedRoute = Object.keys(routeToBodyClass).find((route) =>
-      pathname.startsWith(route)
+      pathname.startsWith(route),
     );
     if (matchedRoute) {
       document.body.classList.add(routeToBodyClass[matchedRoute]);

@@ -1,31 +1,67 @@
-import { useAppDispatch } from "@/app/hooks/useAuth";
-import { setPhase } from "@/app/store/gameSlice";
-import { Grid } from "@radix-ui/themes";
-import React, { useEffect } from "react";
+"use client";
+
+/**
+ * GameCompleted.tsx
+ *
+ * Shown immediately after game:finished.
+ * Waits 60 s (server tallies scores), then transitions to 'result'.
+ *
+ * No Redux — uses useLiveGameStore.
+ */
+
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { useLiveGameStore } from "@/lib/live-game-store";
 
 function GameCompleted() {
-  const dispatch = useAppDispatch();
+  const setPhase = useLiveGameStore((s) => s.setPhase);
+  const [secondsLeft, setSecondsLeft] = useState(2);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      dispatch(setPhase("result"));
-    }, 60000);
+    const interval = setInterval(() => {
+      setSecondsLeft((s) => {
+        if (s <= 1) {
+          clearInterval(interval);
+          setPhase("result");
+          return 0;
+        }
+        return s - 1;
+      });
+    }, 1000);
 
-    return () => clearTimeout(timeout);
-  }, [dispatch]);
+    return () => clearInterval(interval);
+  }, [setPhase]);
+
   return (
-    <div className="min-h-[100dvh] lg:h-screen bg-primary-900 hero flex flex-col items-center justify-center  px-4">
-      <div className="w-full h-full mx-auto max-w-lg space-y-6 grid grid-rows-2 place-items-center">
-        <Grid gap="3" className="w-full">
-          {/* body  */}
-          <div className="bg-primary-50 text-center border-4 border-primary-500 rounded-[10px] px-4 py-4 space-y-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-900 border-t-transparent mx-auto" />
-            <p className="text-lg font-medium">Collating results...</p>
-            <p className="text-sm italic">please don&apos;t leave this page</p>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-[100dvh] bg-primary-900 flex flex-col items-center justify-center px-4"
+    >
+      <div className="w-full max-w-sm mx-auto">
+        <div className="bg-primary-50 text-center border-4 border-primary-500 rounded-2xl px-6 py-10 space-y-5">
+          {/* Spinner */}
+          <div className="flex justify-center">
+            <div className="animate-spin rounded-full h-14 w-14 border-4 border-primary-900 border-t-transparent" />
           </div>
-        </Grid>
+
+          <div className="space-y-2">
+            <p className="text-xl font-bold text-primary-900">
+              Collating results…
+            </p>
+            <p className="text-sm text-primary-700 italic">
+              Please don&apos;t leave this page
+            </p>
+          </div>
+
+          {/* Countdown pill */}
+          <div className="inline-flex items-center gap-2 bg-primary-100 border border-primary-300 rounded-full px-4 py-1.5 text-sm text-primary-800 font-medium">
+            <span className="w-2 h-2 rounded-full bg-primary-500 animate-pulse" />
+            Results in {secondsLeft}s
+          </div>
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

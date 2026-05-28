@@ -11,7 +11,6 @@ import {
   setPayoutBanks,
 } from "@/app/store/walletSlice";
 import WalletApi from "@/app/api/wallet";
-import { useAppDispatch } from "@/app/hooks/useAuth";
 import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
@@ -22,7 +21,6 @@ import Coin from "./coin/coin";
 import { useSearchParams } from "next/navigation";
 
 function Page() {
-  const dispatch = useAppDispatch();
   // const {
   //   wallet: walletData,
   // } = useAppSelector((state) => state.wallet);
@@ -34,21 +32,8 @@ function Page() {
   const initialSlide = tab === "coin" ? 1 : 0;
 
   const fetchWallet = useCallback(async () => {
-    try {
-      dispatch(setWalletLoading(true));
-      const res = await WalletApi.fetchCustomerWallet();
-
-      console.log(JSON.stringify(res, null, 2), "WALLET RES");
-
-      if (res?.data) {
-        dispatch(setWallet(res?.data));
-      }
-    } catch (error: any) {
-      console.log("Error", error.raw);
-    } finally {
-      dispatch(setWalletLoading(false));
-    }
-  }, [dispatch]);
+    
+  }, []);
 
   useEffect(() => {
     fetchWallet();
@@ -56,39 +41,39 @@ function Page() {
 
   useEffect(() => {
     const fetchPayoutAccounts = async () => {
-      try {
-        dispatch(setWalletLoading(true));
-        const res = await WalletApi.fetchPayoutBanks();
+      // try {
+      //   dispatch(setWalletLoading(true));
+      //   const res = await WalletApi.fetchPayoutBanks();
 
-        if (res?.data) {
-          dispatch(setPayoutBanks(res.data));
-        }
-      } catch (error) {
-        console.log(error, "Wallet Error");
-      } finally {
-        dispatch(setWalletLoading(false));
-      }
+      //   if (res?.data) {
+      //     dispatch(setPayoutBanks(res.data));
+      //   }
+      // } catch (error) {
+      //   console.log(error, "Wallet Error");
+      // } finally {
+      //   dispatch(setWalletLoading(false));
+      // }
     };
 
     const fetchTransactions = async () => {
-      try {
-        dispatch(setTransactionsLoading(true));
-        const res = await WalletApi.fetchTransactions({});
-        console.log(res, "Transactions");
+      // try {
+      //   dispatch(setTransactionsLoading(true));
+      //   const res = await WalletApi.fetchTransactions({});
+      //   console.log(res, "Transactions");
 
-        if (res?.data?.content) {
-          dispatch(setTransactions(res?.data.content ?? []));
-        }
-      } catch (error) {
-        console.log(error, "Transaction Error");
-      } finally {
-        dispatch(setTransactionsLoading(false));
-      }
+      //   if (res?.data?.content) {
+      //     dispatch(setTransactions(res?.data.content ?? []));
+      //   }
+      // } catch (error) {
+      //   console.log(error, "Transaction Error");
+      // } finally {
+      //   dispatch(setTransactionsLoading(false));
+      // }
     };
 
     fetchTransactions();
     fetchPayoutAccounts();
-  }, [dispatch]);
+  }, []);
 
   return (
     <motion.div
@@ -111,7 +96,7 @@ function Page() {
           <WalletLayout />
         </SwiperSlide>
         <SwiperSlide>
-          <Coin />
+          {/* <Coin /> */}
         </SwiperSlide>
       </Swiper>
     </motion.div>

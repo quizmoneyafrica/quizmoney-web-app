@@ -5,10 +5,18 @@ import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { cn } from "@/app/utils/utils";
 
 export enum FilterType {
+  ALL = "all",
   PENDING = "pending",
   SUCCESSFUL = "successful",
   FAILED = "failed",
 }
+
+const FILTER_LABELS: Record<FilterType, string> = {
+  [FilterType.ALL]: "All",
+  [FilterType.PENDING]: "Pending",
+  [FilterType.SUCCESSFUL]: "Successful",
+  [FilterType.FAILED]: "Failed",
+};
 
 export function FilterBar({
   setSelectedFilter,
@@ -62,9 +70,7 @@ export function FilterBar({
                     "data-[highlighted]:outline-none data-[highlighted]:bg-gray-100"
                   )}
                 >
-                  <Select.ItemText>
-                    {type.charAt(0).toUpperCase() + type.slice(1)}
-                  </Select.ItemText>
+                  <Select.ItemText>{FILTER_LABELS[type]}</Select.ItemText>
                 </Select.Item>
               ))}
             </Select.Viewport>

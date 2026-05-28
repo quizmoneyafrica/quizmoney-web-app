@@ -8,36 +8,41 @@
  * New endpoints: /api/leaderboard/*
  */
 
-import { apiClient } from '@/lib/api-client'
+import { apiClient } from "@/lib/api-client";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface LeaderboardEntry {
-  rank: number
-  player_id: string
-  username: string
-  avatar_url: string | null
-  score: number
-  prize?: number | null       // in kobo
-  prize_formatted?: string    // e.g. "₦1,000.00"
-  is_admin?: boolean
+  data: {
+    leaderboard: LeaderboardEntryData[];
+  };
+}
+export interface LeaderboardEntryData {
+  rank: number;
+  player_id: string;
+  username: string;
+  avatar_url: string | null;
+  score: number;
+  prize?: number | null; // in kobo
+  prize_formatted?: string; // e.g. "₦1,000.00"
+  is_admin?: boolean;
 }
 
 export interface MyRank {
-  rank: number
-  score: number
-  total_players: number
+  rank: number;
+  score: number;
+  total_players: number;
 }
 
 export interface MyLastGamePerformance {
-  game_id: string
-  rank: number
-  score: number
-  total_players: number
-  correct_answers: number
-  total_questions: number
-  prize: number | null        // in kobo
-  played_at: string
+  game_id: string;
+  rank: number;
+  score: number;
+  total_players: number;
+  correct_answers: number;
+  total_questions: number;
+  prize: number | null; // in kobo
+  played_at: string;
 }
 
 // ─── Leaderboard API ──────────────────────────────────────────────────────────
@@ -48,9 +53,12 @@ const LeaderboardAPI = {
    * Replaces: getLastGameLeaderboard() → games/leaderboard
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getLastGameLeaderboard(limit?: number, _page?: number): Promise<{ success: boolean; data: LeaderboardEntry[] }> {
-    const qs = limit ? `?limit=${limit}` : ''
-    return apiClient.get(`/api/leaderboard/last-game${qs}`)
+  getLastGameLeaderboard(
+    limit?: number,
+    _page?: number,
+  ): Promise<{ success: boolean; data: LeaderboardEntry[] }> {
+    const qs = limit ? `?limit=${limit}` : "";
+    return apiClient.get(`/api/leaderboard/last-game${qs}`);
   },
 
   /**
@@ -58,9 +66,11 @@ const LeaderboardAPI = {
    * Replaces: getAllTimeLeaderboard() → games/leaderboard/all-time
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getAllTimeLeaderboard(limit?: number, _page?: number): Promise<{ success: boolean; data: LeaderboardEntry[] }> {
-    const qs = limit ? `?limit=${limit}` : ''
-    return apiClient.get(`/api/leaderboard/all-time${qs}`)
+  getAllTimeLeaderboard(limit?: number): Promise<{
+    data: { success: boolean; data: { leaderboard: LeaderboardEntryData[] } };
+  }> {
+    const qs = limit ? `?limit=${limit}` : "";
+    return apiClient.get(`/api/leaderboard/all-time${qs}`);
   },
 
   /**
@@ -68,14 +78,14 @@ const LeaderboardAPI = {
    * Replaces: userLastGameStat() → games/stats
    */
   getMyLastGameRank(): Promise<{ success: boolean; data: MyRank }> {
-    return apiClient.get('/api/leaderboard/my-rank/last-game')
+    return apiClient.get("/api/leaderboard/my-rank/last-game");
   },
 
   /**
    * Get the current player's all-time rank.
    */
   getMyAllTimeRank(): Promise<{ success: boolean; data: MyRank }> {
-    return apiClient.get('/api/leaderboard/my-rank/all-time')
+    return apiClient.get("/api/leaderboard/my-rank/all-time");
   },
 
   /**
@@ -85,17 +95,20 @@ const LeaderboardAPI = {
     gameId: string,
     limit?: number,
   ): Promise<{ success: boolean; data: LeaderboardEntry[] }> {
-    const qs = limit ? `?limit=${limit}` : ''
-    return apiClient.get(`/api/leaderboard/game/${gameId}${qs}`)
+    const qs = limit ? `?limit=${limit}` : "";
+    return apiClient.get(`/api/leaderboard/game/${gameId}${qs}`);
   },
 
   /**
    * Get the current player's detailed performance in the last game.
    * Use this for the post-game result screen.
    */
-  getMyLastGamePerformance(): Promise<{ success: boolean; data: MyLastGamePerformance }> {
-    return apiClient.get('/api/leaderboard/my-performance/last-game')
+  getMyLastGamePerformance(): Promise<{
+    success: boolean;
+    data: MyLastGamePerformance;
+  }> {
+    return apiClient.get("/api/leaderboard/my-performance/last-game");
   },
-}
+};
 
-export default LeaderboardAPI
+export default LeaderboardAPI;

@@ -1,35 +1,31 @@
-'use client'
+"use client";
 
-import { PlusIcon } from '@radix-ui/react-icons'
-import { useState } from 'react'
-import CustomImage from './CustomImage'
-import { MobileDepositForm } from './MobileDepositForm'
-import { MobileWithdrawalForm } from './MobileWithdrawalForm'
-import MobileWithdrawalPinForm from './MobileWithdrawalPinForm'
-import { Loader } from 'lucide-react'
-import { toast } from 'sonner'
-import { formatNaira } from '@/app/utils/utils'
-import { EyeIcon, EyeSlash } from '@/app/icons/icons'
-import { MobileSuccessDeposit } from './MobileSuccessDeposit'
-import { useParams } from 'next/navigation'
-import QmDrawer from '../drawer/drawer'
-import { useAuth } from '@/app/hooks/useAuth'
-import { useWalletBalance } from '@/lib/queries'
+import { PlusIcon } from "@radix-ui/react-icons";
+import { useState } from "react";
+import CustomImage from "./CustomImage";
+import { MobileDepositForm } from "./MobileDepositForm";
+import { MobileWithdrawalForm } from "./MobileWithdrawalForm";
+import { Loader } from "lucide-react";
+import { toast } from "sonner";
+import { EyeIcon, EyeSlash } from "@/app/icons/icons";
+import { MobileSuccessDeposit } from "./MobileSuccessDeposit";
+import { useParams } from "next/navigation";
+import QmDrawer from "../drawer/drawer";
+import { useWalletBalance } from "@/lib/queries";
+import { formatNaira } from "@/lib/utils";
 
 export default function WalletBalance() {
-  const [open, setOpen] = useState(false)
-  const { success } = useParams()
+  const [open, setOpen] = useState(false);
+  const { success } = useParams();
   const [isSuccessfulDepositOpen, setIsSuccessfulDepositOpen] = useState(
-    Boolean(success)
-  )
-  const [withdrawalModal, setWithdrawalModal] = useState(false)
-  const [withdrawalPinModal, setWithdrawalPinModal] = useState(false)
-  const [isBalanceHidden, setIsBalanceHidden] = useState(false)
+    Boolean(success),
+  );
+  const [withdrawalModal, setWithdrawalModal] = useState(false);
+  const [isBalanceHidden, setIsBalanceHidden] = useState(false);
 
-  const { data: walletBalance, isLoading: isWalletLoading } = useWalletBalance()
-  const balanceKobo = walletBalance?.balance ?? 0
-
-  const { user } = useAuth()
+  const { data: walletBalance, isLoading: isWalletLoading } =
+    useWalletBalance();
+  const balanceKobo = walletBalance?.ngn_balance ?? 0;
 
   return (
     <>
@@ -41,11 +37,7 @@ export default function WalletBalance() {
             <Loader className="animate-spin size-3 text-white" />
           ) : (
             <h1 className="md:text-4xl text-2xl font-bold text-center flex items-center justify-center gap-1">
-              <span>
-                {isBalanceHidden
-                  ? '****'
-                  : formatNaira(balanceKobo, true)}
-              </span>
+              <span>{isBalanceHidden ? "****" : formatNaira(balanceKobo)}</span>
               <button
                 onClick={() => setIsBalanceHidden(!isBalanceHidden)}
                 className="cursor-pointer"
@@ -69,7 +61,7 @@ export default function WalletBalance() {
                 >
                   Deposit
                   <span className="font-bold">
-                    <PlusIcon className="text-white w-4 h-4 md:w-5 md:h-5 hidden md:block" />
+                    <PlusIcon className="text-white w-4 h-4 md:w-5 md:h-5 md:block" />
                   </span>
                 </button>
               }
@@ -79,27 +71,16 @@ export default function WalletBalance() {
 
             <QmDrawer
               open={withdrawalModal}
-              onOpenChange={(val) => {
-                if (user?.pinSetup && val === true) {
-                  setWithdrawalModal(val)
-                  return
-                } else if (!user?.pinSetup && val === true) {
-                  setWithdrawalPinModal(true)
-                  return
-                }
-                setWithdrawalModal(val)
-              }}
+              onOpenChange={setWithdrawalModal}
               title="Withdraw"
               titleLeft
               heightClass="h-[75%] md:h-[55%] lg:h-[80%]"
               trigger={
-                <button
-                  className="bg-[#E4F1FA] cursor-pointer hover:bg-gray-100 text-primary-700 px-4 py-2 text-sm rounded-full flex items-center gap-0 md:gap-2 font-medium md:px-6 md:py-3 md:text-base"
-                >
-                  Withdraw{' '}
+                <button className="bg-[#E4F1FA] cursor-pointer hover:bg-gray-100 text-primary-700 px-4 py-2 text-sm rounded-full flex items-center gap-0 md:gap-2 font-medium md:px-6 md:py-3 md:text-base">
+                  Withdraw{" "}
                   <CustomImage
                     alt=""
-                    src={'/icons/arrow-up.svg'}
+                    src={"/icons/arrow-up.svg"}
                     className="w-2 h-2 md:w-5 md:h-5 hidden md:block"
                   />
                 </button>
@@ -107,11 +88,12 @@ export default function WalletBalance() {
             >
               <MobileWithdrawalForm
                 onAddBank={() => {
-                  toast.info('Add a payout account first', {
-                    position: 'top-right',
-                  })
-                  setWithdrawalModal(false)
+                  toast.info("Add a payout account first", {
+                    position: "top-right",
+                  });
+                  setWithdrawalModal(false);
                 }}
+                onSuccess={() => setWithdrawalModal(false)}
               />
             </QmDrawer>
           </div>
@@ -119,29 +101,14 @@ export default function WalletBalance() {
       </div>
 
       <QmDrawer
-        open={withdrawalPinModal}
-        onOpenChange={setWithdrawalPinModal}
-        title="Withdrawal Pin"
-        titleLeft
-        heightClass="h-[75%] md:h-[55%] lg:h-[80%]"
-      >
-        <MobileWithdrawalPinForm
-          onSubmit={() => {
-            setWithdrawalPinModal(false)
-            toast.success('Withdrawal pin set successfully!')
-          }}
-        />
-      </QmDrawer>
-
-      <QmDrawer
         open={isSuccessfulDepositOpen}
         onOpenChange={setIsSuccessfulDepositOpen}
         heightClass="h-[75%] lg:h-auto"
       >
         <MobileSuccessDeposit
-          title={Boolean(success) ? 'Successful !' : 'Failed !'}
+          title={Boolean(success) ? "Successful !" : "Failed !"}
         />
       </QmDrawer>
     </>
-  )
+  );
 }

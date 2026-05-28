@@ -4,29 +4,15 @@ import CustomButton from "@/app/utils/CustomBtn";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSelector } from "react-redux";
-import {
-  setPayoutBanks,
-  setWithdrawalData,
-  setWithdrawalModal,
-  setWithdrawalPinModal,
-  useWallet,
-} from "@/app/store/walletSlice";
-import { store } from "@/app/store/store";
 import { Trash2Icon } from "lucide-react";
 import { motion } from "framer-motion";
 import Modal from "../game/modal/ModalWindow";
-import { useAppDispatch } from "@/app/hooks/useAuth";
-import { toast } from "sonner";
-import { formatNaira, toastPosition } from "@/app/utils/utils";
-import WalletApi from "@/app/api/wallet";
-
-export type BankAccount = {
-  id: number;
-  accountNumber: string;
-  bankName: string;
-  accountName: string;
-};
+import { formatNaira } from "@/lib/utils";
+import {
+  useBankAccounts,
+  useDeleteBankAccount,
+  useRequestWithdrawal,
+} from "@/lib/queries";
 
 const withdrawFormSchema = z.object({
   amount: z
@@ -37,34 +23,42 @@ const withdrawFormSchema = z.object({
         const num = Number(val.replace(/[₦,]/g, ""));
         return !isNaN(num) && num > 0;
       },
-      { message: "Please enter a valid amount" }
+      { message: "Please enter a valid amount" },
     ),
-  bankId: z.string().min(1, { message: "Please select a bank" }),
 });
 
 type WithdrawFormData = z.infer<typeof withdrawFormSchema>;
 
+const AMOUNT_OPTIONS = [
+  { label: "₦5,000", value: 5000 },
+  { label: "₦10,000", value: 10000 },
+  { label: "₦20,000", value: 20000 },
+  { label: "₦100,000", value: 100000 },
+];
+
+const MIN_WITHDRAWAL_NAIRA = 5000;
+
 export const MobileWithdrawalForm = ({
-  onAddBank, // banks, // Allow override from props or use from wallet
+  onAddBank,
+  onSuccess,
 }: {
   close?: () => void;
-  banks?: BankAccount[];
   onAddBank: () => void;
+  onSuccess?: () => void;
 }) => {
-  const { payoutBanks } = useSelector(useWallet);
-  const dispatch = useAppDispatch();
-  const [isLoading, setIsLoading] = useState(false);
-  // payoutBanks is now a single object
+  const { data: bankAccounts = [], isLoading: banksLoading } =
+    useBankAccounts();
+  const deleteBank = useDeleteBankAccount();
+  const requestWithdrawal = useRequestWithdrawal();
+
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
-  const [openModal, setOpenModal] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [bankToDelete, setBankToDelete] = useState<string | null>(null);
   const [amountError, setAmountError] = useState("");
 
-  const amountOptions = [
-    { label: "₦5,000", value: 5000 },
-    { label: "₦10,000", value: 10000 },
-    { label: "₦20,000", value: 20000 },
-    { label: "₦100,000", value: 100000 },
-  ];
+  // Prefer the default bank; fall back to the first saved account
+  const activeBank =
+    bankAccounts.find((b) => b.is_default) ?? bankAccounts[0] ?? null;
 
   const {
     register,
@@ -75,64 +69,51 @@ export const MobileWithdrawalForm = ({
   } = useForm<WithdrawFormData>({
     resolver: zodResolver(withdrawFormSchema),
     mode: "onChange",
-    defaultValues: {
-      amount: "",
-      bankId: payoutBanks && payoutBanks.id ? String(payoutBanks.id) : "",
-    },
+    defaultValues: { amount: "" },
   });
 
-  // Handle predefined amount selection
   const handleAmountSelect = (amount: number) => {
     setSelectedAmount(amount);
     setValue("amount", `₦${amount.toLocaleString()}`, { shouldValidate: true });
   };
 
-  // Handle custom amount input
-  const handleCustomAmountChange = () => {
-    setSelectedAmount(null);
-  };
-
-  // Form submission handler
-  const onFormSubmit = (data: WithdrawFormData) => {
+  const onFormSubmit = async (data: WithdrawFormData) => {
     setAmountError("");
-    const numericAmount =
-      selectedAmount || Number(data.amount.replace(/[₦,]/g, ""));
 
-    if (!payoutBanks || !payoutBanks.id) return;
+    const amountNaira =
+      selectedAmount ?? Number(data.amount.replace(/[₦,]/g, ""));
 
-    if (numericAmount < 5000) {
-      setAmountError(`Minimum withdrawal is ${formatNaira(5000)}`);
+    if (!activeBank) return;
+
+    if (amountNaira < MIN_WITHDRAWAL_NAIRA) {
+      setAmountError(
+        `Minimum withdrawal is ${formatNaira(MIN_WITHDRAWAL_NAIRA * 100)}`,
+      );
       return;
     }
 
-    const payload = {
-      amount: numericAmount,
-      bankAccount: {
-        accountNumber: payoutBanks.accountNumber,
-        bankName: payoutBanks.bankName,
-        accountName: (payoutBanks as any).accountName,
-      },
-    };
-
-    store.dispatch(setWithdrawalData(payload));
-    reset();
-    setSelectedAmount(null);
-    store.dispatch(setWithdrawalModal(false));
-    store.dispatch(setWithdrawalPinModal(true));
+    try {
+      await requestWithdrawal.mutateAsync({
+        amount: amountNaira * 100, // naira → kobo
+        bank_account_id: activeBank.id,
+      });
+      reset();
+      setSelectedAmount(null);
+      onSuccess?.();
+    } catch {
+      // Error toast already shown by useRequestWithdrawal's onError
+    }
   };
 
-  const deletePayoutAccount = async (id: string) => {
-    setIsLoading(true);
+  const handleDeleteConfirm = async () => {
+    if (!bankToDelete) return;
     try {
-      await WalletApi.deletePayoutBank(id);
-      dispatch(setPayoutBanks(undefined));
-      setOpenModal(false);
-    } catch (err: any) {
-      toast.error(`${err.message}`, {
-        position: toastPosition,
-      });
+      await deleteBank.mutateAsync(bankToDelete);
+    } catch {
+      // Error toast already shown by useDeleteBankAccount's onError
     } finally {
-      setIsLoading(false);
+      setDeleteModalOpen(false);
+      setBankToDelete(null);
     }
   };
 
@@ -141,7 +122,9 @@ export const MobileWithdrawalForm = ({
       <p className="text-gray-600 mb-8">
         Withdraw your money directly to your Bank account
       </p>
+
       <form onSubmit={handleSubmit(onFormSubmit)}>
+        {/* Amount input */}
         <div className="mb-6">
           <label className="block text-gray-800 mb-3">
             Enter the amount you want to Withdraw
@@ -152,11 +135,11 @@ export const MobileWithdrawalForm = ({
             {...register("amount")}
             onChange={(e) => {
               register("amount").onChange(e);
-              handleCustomAmountChange();
+              setSelectedAmount(null); // clear preset selection on manual entry
             }}
             className={`w-full border ${
               errors.amount ? "border-red-500" : "border-gray-300"
-            } rounded-lg px-4 py-2 focus:outline-none focus:ring-transparent `}
+            } rounded-lg px-4 py-2 focus:outline-none focus:ring-transparent`}
           />
           {amountError && (
             <p className="text-red-500 text-sm mt-1">{amountError}</p>
@@ -165,8 +148,10 @@ export const MobileWithdrawalForm = ({
             <p className="text-red-500 text-sm mt-1">{errors.amount.message}</p>
           )}
         </div>
+
+        {/* Quick-select amounts */}
         <div className="flex flex-wrap gap-2 mb-6">
-          {amountOptions.map((option) => (
+          {AMOUNT_OPTIONS.map((option) => (
             <button
               key={option.value}
               type="button"
@@ -181,22 +166,30 @@ export const MobileWithdrawalForm = ({
             </button>
           ))}
         </div>
+
+        {/* Bank account */}
         <div className="mb-6">
           <label className="block text-gray-800 mb-3">Bank Account</label>
-          {payoutBanks && payoutBanks.accountNumber ? (
+
+          {banksLoading ? (
+            <div className="text-gray-400 text-sm">Loading accounts…</div>
+          ) : activeBank ? (
             <div className="relative border border-gray-300 rounded-lg px-4 py-3 bg-gray-50 flex flex-col gap-1">
               <span className="font-medium text-gray-900">
-                {(payoutBanks as any).accountName}
+                {activeBank.account_name}
               </span>
-              <span className="text-gray-700">{payoutBanks.accountNumber}</span>
+              <span className="text-gray-700">{activeBank.account_number}</span>
               <span className="text-gray-600 text-sm">
-                {payoutBanks.bankName}
+                {activeBank.bank_name}
               </span>
               <motion.button
                 type="button"
                 whileTap={{ scale: 0.9 }}
-                className="absolute z-[1] right-2 text-error-700 bg-error-50 p-1 rounded "
-                onClick={() => setOpenModal(true)}
+                className="absolute z-[1] right-2 top-1/2 -translate-y-1/2 text-error-700 bg-error-50 p-1 rounded"
+                onClick={() => {
+                  setBankToDelete(activeBank.id);
+                  setDeleteModalOpen(true);
+                }}
               >
                 <Trash2Icon width={20} height={20} />
               </motion.button>
@@ -204,7 +197,8 @@ export const MobileWithdrawalForm = ({
           ) : (
             <div className="text-gray-600">No bank added yet</div>
           )}
-          {!payoutBanks && (
+
+          {!activeBank && !banksLoading && (
             <div className="flex items-center mt-2">
               <span className="text-primary-900 text-lg font-bold mr-2">+</span>
               <button
@@ -217,32 +211,28 @@ export const MobileWithdrawalForm = ({
             </div>
           )}
         </div>
-        {/* <p className="text-xs text-error-800 text-center my-4">
-          Withdrawals will be open soon!
-        </p> */}
+
         <CustomButton
           type="submit"
-          // type="button"
-          disabled={!payoutBanks || !payoutBanks.id}
+          disabled={!activeBank || requestWithdrawal.isPending}
+          loader={requestWithdrawal.isPending}
           className="bg-primary-900 text-white w-full rounded-full py-4 hover:bg-primary-700 disabled:cursor-not-allowed"
-          // disabled
         >
           Proceed
         </CustomButton>
       </form>
+
       <Modal
-        open={openModal}
-        handleClose={setOpenModal}
+        open={deleteModalOpen}
+        handleClose={setDeleteModalOpen}
         title="Delete Payout"
         actionBtnText="Yes, Delete"
         showCloseIcon={false}
-        actionOnClick={() => deletePayoutAccount(payoutBanks?.id || "")}
+        actionOnClick={handleDeleteConfirm}
         redTitle
-        actionLoader={isLoading}
+        actionLoader={deleteBank.isPending}
       >
-        <div>
-          <p>Are you sure you want to delete your payout account?</p>
-        </div>
+        <p>Are you sure you want to delete your payout account?</p>
       </Modal>
     </div>
   );

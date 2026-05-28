@@ -99,7 +99,7 @@ const MobileSideBar = ({ isOpen, toggle }: Prop) => {
               <Flex gap="2">
                 <Avatar
                   src={user?.avatar_url ?? undefined}
-                  fallback={user?.first_name?.charAt(0).toUpperCase() || ''}
+                  fallback={user?.username?.charAt(0).toUpperCase() || ''}
                   radius="full"
                   className="bg-primary-50 border-3"
                   size="4"
@@ -107,7 +107,7 @@ const MobileSideBar = ({ isOpen, toggle }: Prop) => {
                 <Grid>
                   <Flex align="center" gap="2">
                     <h2 className="capitalize">
-                      {user?.first_name} {user?.last_name}
+                      {user?.username}
                     </h2>
                     {isVerified && <VerifiedBadge />}
                   </Flex>

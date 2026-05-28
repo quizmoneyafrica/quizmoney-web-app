@@ -1,87 +1,89 @@
-'use client'
+"use client";
 
-import React, { useMemo, useState } from 'react'
-import WalletBalance from './WalletBalance'
-import MobileList from './MobileList'
-import { parseISO, isToday, isYesterday } from 'date-fns'
-import Link from 'next/link'
-import { renderEmptyState } from '../transactions/WalletActivity'
-import { Skeleton } from '@radix-ui/themes'
-import { TransactionDetailsModal } from '../transactions/TransactionDetailModal'
-import { useWalletTransactions } from '@/lib/queries'
-import { Transaction } from '@/app/api/wallet'
+import React, { useMemo, useState } from "react";
+import WalletBalance from "./WalletBalance";
+import MobileList from "./MobileList";
+import { parseISO, isToday, isYesterday } from "date-fns";
+import Link from "next/link";
+import { renderEmptyState } from "../transactions/WalletActivity";
+import { Skeleton } from "@radix-ui/themes";
+import { TransactionDetailsModal } from "../transactions/TransactionDetailModal";
+import { useWalletTransactions } from "@/lib/queries";
+import { Transaction } from "@/app/api/wallet";
 
 export interface TransactionGroup {
-  today: Transaction[]
-  yesterday: Transaction[]
-  other: Transaction[]
+  today: Transaction[];
+  yesterday: Transaction[];
+  other: Transaction[];
 }
 
 export default function TransactionHistory(): React.JSX.Element {
   const { data, isLoading: isTransactionsLoading } = useWalletTransactions({
     page: 1,
     limit: 20,
-  })
-  const transactions: Transaction[] = data?.items ?? []
+  });
+  console.log("Transactions", data);
+
+  const transactions: Transaction[] = data?.transactions ?? [];
 
   const [selectedTransaction, setSelectedTransaction] =
-    useState<Transaction | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+    useState<Transaction | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const flattenedTransactions = useMemo(
     () => (Array.isArray(transactions) ? transactions : []),
-    [transactions]
-  )
+    [transactions],
+  );
 
   const groupedTransactions: TransactionGroup = useMemo(() => {
-    const group: TransactionGroup = { today: [], yesterday: [], other: [] }
+    const group: TransactionGroup = { today: [], yesterday: [], other: [] };
 
     flattenedTransactions.forEach((transaction) => {
-      const date = parseISO(transaction.created_at ?? new Date().toISOString())
+      const date = parseISO(transaction.created_at ?? new Date().toISOString());
       if (isToday(date)) {
-        group.today.push(transaction)
+        group.today.push(transaction);
       } else if (isYesterday(date)) {
-        group.yesterday.push(transaction)
+        group.yesterday.push(transaction);
       } else {
-        group.other.push(transaction)
+        group.other.push(transaction);
       }
-    })
+    });
 
-    return group
-  }, [flattenedTransactions])
+    return group;
+  }, [flattenedTransactions]);
 
   const limitedGroupedTransactions: TransactionGroup = useMemo(() => {
     const all = [
       ...groupedTransactions.today,
       ...groupedTransactions.yesterday,
       ...groupedTransactions.other,
-    ]
-    const limited = all.slice(0, 15)
-    const group: TransactionGroup = { today: [], yesterday: [], other: [] }
+    ];
+    const limited = all.slice(0, 15);
+    const group: TransactionGroup = { today: [], yesterday: [], other: [] };
     limited.forEach((transaction) => {
-      const date = parseISO(transaction.created_at ?? new Date().toISOString())
+      const date = parseISO(transaction.created_at ?? new Date().toISOString());
       if (isToday(date)) {
-        group.today.push(transaction)
+        group.today.push(transaction);
       } else if (isYesterday(date)) {
-        group.yesterday.push(transaction)
+        group.yesterday.push(transaction);
       } else {
-        group.other.push(transaction)
+        group.other.push(transaction);
       }
-    })
-    return group
-  }, [groupedTransactions])
+    });
+    return group;
+  }, [groupedTransactions]);
 
   const handleTransactionClick = (transaction: Transaction) => {
-    setSelectedTransaction(transaction)
-    setIsModalOpen(true)
-  }
+    setSelectedTransaction(transaction);
+    setIsModalOpen(true);
+  };
 
   const renderTransaction = (
     transaction: Transaction,
     index: number,
-    array: Transaction[]
+    array: Transaction[],
   ): React.JSX.Element => {
-    const isLastInGroup = index === array.length - 1
+    const isLastInGroup = index === array.length - 1;
     return (
       <div key={transaction.id || index.toString()}>
         <MobileList
@@ -90,14 +92,14 @@ export default function TransactionHistory(): React.JSX.Element {
           onClick={() => handleTransactionClick(transaction)}
         />
       </div>
-    )
-  }
+    );
+  };
 
   const renderTransactionSection = (
     title: string,
-    txList: Transaction[]
+    txList: Transaction[],
   ): React.JSX.Element | null => {
-    if (txList.length === 0) return null
+    if (txList.length === 0) return null;
     return (
       <div className="space-y-2 md:space-y-3 pb-3 md:pb-5 mt-3 md:mt-5">
         <div className="px-3 md:px-4">
@@ -106,11 +108,11 @@ export default function TransactionHistory(): React.JSX.Element {
           </h2>
         </div>
         {txList.map((transaction, index, array) =>
-          renderTransaction(transaction, index, array)
+          renderTransaction(transaction, index, array),
         )}
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <div className="w-full gap-4 md:gap-8 flex flex-col">
@@ -121,7 +123,10 @@ export default function TransactionHistory(): React.JSX.Element {
           <h2 className="text-lg md:text-xl font-semibold text-[#2364AA]">
             Recent Transactions
           </h2>
-          <Link href="/wallet/transactions" className="text-sm md:text-base text-[#2A75BC]">
+          <Link
+            href="/wallet/transactions"
+            className="text-sm md:text-base text-[#2A75BC]"
+          >
             View all
           </Link>
         </div>
@@ -151,9 +156,18 @@ export default function TransactionHistory(): React.JSX.Element {
           renderEmptyState()
         ) : (
           <>
-            {renderTransactionSection('Today', limitedGroupedTransactions.today)}
-            {renderTransactionSection('Yesterday', limitedGroupedTransactions.yesterday)}
-            {renderTransactionSection('Earlier', limitedGroupedTransactions.other)}
+            {renderTransactionSection(
+              "Today",
+              limitedGroupedTransactions.today,
+            )}
+            {renderTransactionSection(
+              "Yesterday",
+              limitedGroupedTransactions.yesterday,
+            )}
+            {renderTransactionSection(
+              "Earlier",
+              limitedGroupedTransactions.other,
+            )}
           </>
         )}
       </div>
@@ -166,5 +180,5 @@ export default function TransactionHistory(): React.JSX.Element {
         />
       )}
     </div>
-  )
+  );
 }

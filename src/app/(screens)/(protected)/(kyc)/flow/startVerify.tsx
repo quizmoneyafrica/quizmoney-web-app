@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import PhoneVerification from "./PhoneVerification";
 import BvnVerification from "./BvnVerification";
 import { StepIndicator } from "./StepIndicator";
@@ -7,11 +7,22 @@ import { useKycStep } from "@/app/hooks/useKycStep";
 const KYCVerification: React.FC = () => {
   const { currentStep, refreshKyc } = useKycStep();
 
-  const currentStepNumber = currentStep === "BVN" ? 2 : 1;
+  // Optimistic override: after a successful mutation we advance immediately
+  // without waiting for the status endpoint to reflect the change (it can lag).
+  const [stepOverride, setStepOverride] = useState<"BVN" | null>(null);
 
+  const effectiveStep = stepOverride ?? currentStep;
+  const currentStepNumber = effectiveStep === "BVN" ? 2 : 1;
   const totalSteps: number = 2;
 
-  const handleNext = (): void => {
+  // Called after phone OTP is verified — advance to BVN immediately.
+  const handlePhoneVerified = (): void => {
+    setStepOverride("BVN");
+    refreshKyc(); // Refresh in background so real status eventually syncs
+  };
+
+  // Called after BVN is done — just refresh (BvnVerification handles routing).
+  const handleBvnNext = (): void => {
     refreshKyc();
   };
 
@@ -25,10 +36,12 @@ const KYCVerification: React.FC = () => {
 
         <div className=" w-full">
           <Fragment>
-            {currentStep === "PHONE" && (
-              <PhoneVerification onNext={handleNext} />
+            {effectiveStep === "PHONE" && (
+              <PhoneVerification onNext={handlePhoneVerified} />
             )}
-            {currentStep === "BVN" && <BvnVerification onNext={handleNext} />}
+            {effectiveStep === "BVN" && (
+              <BvnVerification onNext={handleBvnNext} />
+            )}
           </Fragment>
         </div>
       </div>

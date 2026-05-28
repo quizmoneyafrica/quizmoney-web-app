@@ -1,79 +1,101 @@
 "use client";
 
-import { useGameQuestion, useGameQuestionResult, useGameStarted, useGameLocked, useGameFinished, useGamePlayerJoined, useGameLobbyUpdate, useGameCancelled, useGameError, useGameReconnected } from '@/lib/socket';
-import { useAppDispatch } from "@/app/hooks/useAuth";
-import { setCurrentLiveQuestion, setOptionLocked, 
-  setGameStatus, setPlayersCount, setGameStarted, setGameFinished 
-} from "@/app/store/gameSlice";
 import { useEffect } from "react";
+import {
+  useGameLocked,
+  useGameStarted,
+  useGameCancelled,
+  useGamePlayerJoined,
+  useGameFinished,
+  useGameQuestion,
+  useGameReconnected,
+  useSocket,
+  useGameError,
+} from "@/lib/socket";
+import { useLiveGameStore } from "@/lib/live-game-store";
 
 function LiveGameQueries() {
-  const dispatch = useAppDispatch();
+  const socket = useSocket();
+  const setPhase = useLiveGameStore((s) => s.setPhase);
+  const setTotalPlayers = useLiveGameStore((s) => s.setTotalPlayers);
+  const setLeaderboard = useLiveGameStore((s) => s.setLeaderboard);
+  const setPendingQuestion = useLiveGameStore((s) => s.setPendingQuestion);
+  const setError = useLiveGameStore((s) => s.setError);
 
-  // Handle incoming questions
-  useGameQuestion((data) => {
-    console.log("Received question:", data);
-    dispatch(setCurrentLiveQuestion(data.question));
-    dispatch(setOptionLocked(false));
-  });
+  // Debug all events
+  useEffect(() => {
+    if (!socket) return;
 
-  // Handle question results
-  useGameQuestionResult((data) => {
-    console.log("Received question result:", data);
-    // You might want to update UI with correct answer, etc.
-  });
+    const events = [
+      "game:player:joined",
+      "game:locked",
+      "game:started",
+      "game:question",
+      "game:question:result",
+      "game:finished",
+      "game:cancelled",
+      "game:reconnected",
+      "game:error",
+      "game:status",
+    ];
 
-  // Handle game started
-  useGameStarted((data) => {
-    console.log("Game started:", data);
-    dispatch(setGameStarted(true));
-    dispatch(setGameStatus('active'));
-  });
+    events.forEach((event) => {
+      socket.on(event, (data) => {
+        console.log(`📡 [${event}]`, data);
+      });
+    });
 
-  // Handle game locked
-  useGameLocked((data) => {
-    console.log("Game locked:", data);
-    dispatch(setGameStatus('locked'));
-    // Optionally show "Game starting soon" message
-  });
+    return () => {
+      events.forEach((event) => socket.off(event));
+    };
+  }, [socket]);
 
-  // Handle game finished
-  useGameFinished((data) => {
-    console.log("Game finished:", data);
-    dispatch(setGameFinished(true));
-    dispatch(setGameStatus('finished'));
-    // Show final leaderboard
-  });
+  
 
-  // Handle player joined
+  // Core handlers
   useGamePlayerJoined((data) => {
-    console.log("Player joined:", data);
-    dispatch(setPlayersCount(data.totalPlayers));
+    if (data?.totalPlayers != null) setTotalPlayers(data.totalPlayers);
   });
 
-  // Handle lobby updates
-  useGameLobbyUpdate((data) => {
-    console.log("Lobby update:", data);
-    dispatch(setPlayersCount(data.totalPlayers));
+  useGameLocked((data) => {
+    console.log("🔒 Game Locked");
+    if (data?.totalPlayers != null) setTotalPlayers(data.totalPlayers);
+    setPhase("locked");
   });
 
-  // Handle game cancelled
-  useGameCancelled((data) => {
-    console.log("Game cancelled:", data);
-    dispatch(setGameStatus('cancelled'));
-    // Show cancellation message
+  useGameStarted(() => {
+    console.log("🚀 Game Started");
+    setPhase("countdown");
   });
 
-  // Handle game errors
-  useGameError((data) => {
-    console.error("Game error:", data);
-    // Show error message to user
+  useGameQuestion((data) => {
+    console.log("❓ New Question");
+    if (useLiveGameStore.getState().phase !== "playing") {
+      setPendingQuestion(data);
+    }
   });
 
-  // Handle reconnection
+  useGameFinished((data) => {
+    console.log("🏁 Game Finished");
+    if (Array.isArray(data?.leaderboard)) setLeaderboard(data.leaderboard);
+    setPhase("completed");
+  });
+
   useGameReconnected((data) => {
-    console.log("Game reconnected:", data);
-    // Handle reconnection logic if needed
+    console.log("🔄 Reconnected:", data);
+
+    if (!data) return;
+
+    const { status, currentQuestion } = data;
+
+    if (status === "active" || currentQuestion > 0) {
+      setPhase("playing");
+    } else if (status === "locked") {
+      setPhase("locked");
+    } else if (status === "started" || status === "countdown") {
+      setPhase("countdown");
+    }
+    // "lobby" = do nothing (stay in lobby)
   });
 
   return null;

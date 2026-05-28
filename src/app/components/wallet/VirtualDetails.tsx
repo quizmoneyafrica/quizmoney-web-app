@@ -1,157 +1,113 @@
 "use client";
-import { useAppSelector } from "@/app/hooks/useAuth";
+
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import { useVirtualAccount, useSetupVirtualAccount } from "@/lib/queries";
 import { BankIcon } from "@/app/icons/icons";
 import CustomButton from "@/app/utils/CustomBtn";
 import { formatNaira } from "@/app/utils/utils";
 import { LucideCopy } from "lucide-react";
-import React, { useCallback, useState } from "react";
-import { toast } from "sonner";
-import { useEffect } from "react";
-import KycAPI from "@/app/api/kycApi";
-import useWalletHook from "@/app/hooks/useWallet";
 
-export type VirtualDetailsProps = { amount?: number; isBvnCompleted: boolean };
-function VirtualDetails({
-  amount = 1000,
-  isBvnCompleted,
-}: VirtualDetailsProps) {
-  const { wallet: walletData } = useAppSelector((state) => state.wallet);
-  const wallet = walletData.find((w) => w.currency === "NGN")! || {};
-  const { fetchWallet } = useWalletHook();
-  const [isLoading, setIsLoading] = useState(false);
+type Props = {
+  amount: number;
+  isBvnCompleted: boolean;
+};
 
-  const handleCopyAll = async () => {
-    const details = `Account Number: ${
-      wallet?.walletAccountNumber || ""
-    }\nBank Name: ${wallet?.bankName || ""}\nAmount: ${formatNaira(
-      amount,
-      true
-    )}`;
-    try {
-      await navigator.clipboard.writeText(details);
-      toast.success("All account details copied!", { position: "top-center" });
-    } catch (err) {
-      console.error("Failed to copy all details:", err);
-      toast.error("Failed to copy account details.", {
-        position: "top-center",
+export default function VirtualDetails({ amount, isBvnCompleted }: Props) {
+  const queryClient = useQueryClient();
+
+  const { data: vaResponse, isLoading: isFetching } = useVirtualAccount();
+  const { mutateAsync: createVA, isPending: isCreating } =
+    useSetupVirtualAccount();
+
+  const account = vaResponse?.account;
+  const isEligible = isBvnCompleted && vaResponse?.is_fully_verified;
+
+  // Auto-create if eligible and no account
+  useEffect(() => {
+    if (isEligible && !account && !isFetching && !isCreating) {
+      createVA().catch((err) => {
+        console.error(err);
       });
     }
+  }, [isEligible, account, isFetching, isCreating, createVA]);
+
+  const copyAll = async () => {
+    if (!account) return;
+    const text = `Account Number: ${account.account_number}\nBank: ${account.bank_name}\nAmount: ${formatNaira(amount)}`;
+    await navigator.clipboard.writeText(text);
+    toast.success("Details copied!");
   };
 
-  const createCustomerDva = useCallback(async () => {
-    if (!wallet.walletAccountNumber) {
-      setIsLoading(true);
-      try {
-        await KycAPI.createCustomerDVA();
-        fetchWallet();
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-  }, [fetchWallet, wallet.walletAccountNumber]);
-
-  useEffect(() => {
-    createCustomerDva();
-  }, [createCustomerDva]);
-
-  if (isLoading) {
+  if (isFetching || isCreating) {
     return (
-      <div className="w-full h-full text-center pt-10 text-primary-900">
-        <p>Fetching virtual Account</p>
+      <div className="py-12 text-center">
+        Setting up your virtual account...
       </div>
     );
   }
-  if (!isLoading && !wallet.walletAccountNumber) {
+
+  if (!account) {
     return (
-      <div className="w-full h-full text-center pt-10 text-primary-900">
-        <p>Failed to get Virtual account</p>
+      <div className="text-center py-10">
+        <p>Unable to setup virtual account.</p>
+        {isEligible && (
+          <CustomButton onClick={() => createVA()} className="mt-4">
+            Try Again
+          </CustomButton>
+        )}
       </div>
     );
   }
 
   return (
-    <div className="space-y-4 pt-3 border-t border-neutral-100">
-      {isBvnCompleted && (
-        <div className="bg-primary-50 p-4 rounded-[10px] space-y-6">
-          <CardCopy
-            title="Account Number"
-            value={wallet?.walletAccountNumber as string}
-          />
-          <CardCopy title="Bank Name" value={wallet?.bankName as string} />
-          <CardCopy title="Amount" value={`${formatNaira(amount, true)}`} />
-          <CustomButton width="full" onClick={handleCopyAll}>
-            Copy account details
-          </CustomButton>
-        </div>
-      )}
-      {!isBvnCompleted && (
-        <div className="bg-primary-50 p-4 rounded-[10px] space-y-6">
-          <CardCopy
-            title="Account Number"
-            value={wallet?.walletAccountNumber as string}
-          />
-          <CardCopy title="Bank Name" value={wallet?.bankName as string} />
-          <CardCopy title="Amount" value={`${formatNaira(amount, true)}`} />
-          <CustomButton width="full" onClick={handleCopyAll}>
-            Copy account details
-          </CustomButton>
-        </div>
-      )}
-      <div className="bg-warning-50 p-4 rounded-[10px] border border-warning-500 flex gap-2 items-start">
-        <div>⚠</div>
-        <div>
-          <p className="text-sm">
-            This is your dedicated virtual account. Funds transferred to this
-            account will be credited to your wallet instantly.
-          </p>
-        </div>
+    <div className="space-y-6 pt-4">
+      <div className="bg-primary-50 p-5 rounded-2xl space-y-5">
+        <CardCopy title="Account Number" value={account.account_number} />
+        <CardCopy title="Bank Name" value={account.bank_name} />
+        <CardCopy title="Send Exactly" value={formatNaira(amount)} />
+
+        <CustomButton width="full" onClick={copyAll}>
+          Copy All Details
+        </CustomButton>
+      </div>
+
+      <div className="bg-amber-50 border border-amber-400 p-4 rounded-2xl text-sm">
+        Transfer <strong>exactly {formatNaira(amount)}</strong> to this account
+        from any bank. Money will be credited to your wallet{" "}
+        <strong>instantly</strong>.
       </div>
     </div>
   );
 }
 
-export default VirtualDetails;
-
-type Props = {
-  title: string;
-  value: string;
-};
-
-const CardCopy = ({ title, value }: Props) => {
+const CardCopy = ({ title, value }: { title: string; value: string }) => {
   const [copied, setCopied] = useState(false);
 
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(value);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-      toast.success("copied successfully", { position: "top-center" });
-    } catch (err) {
-      console.error("Failed to copy:", err);
-    }
+  const copy = async () => {
+    await navigator.clipboard.writeText(value);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1400);
+    toast.success(`${title} copied`);
   };
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-3 flex-1">
-        <div className="h-[40px] w-[40px] text-white grid place-items-center rounded-full bg-primary-900">
+    <div className="flex justify-between items-center bg-white p-4 rounded-xl">
+      <div className="flex gap-3 items-center">
+        <div className="w-11 h-11 bg-primary-900 text-white rounded-full flex items-center justify-center">
           <BankIcon />
         </div>
-        <div className="col-span-2">
-          <p>{title}</p>
-          <h3 className="text-primary-900 text-lg font-bold">{value}</h3>
+        <div>
+          <p className="text-xs text-gray-500">{title}</p>
+          <p className="font-semibold text-lg">{value}</p>
         </div>
       </div>
-
-      <div>
-        <button onClick={handleCopy} title="Copy to clipboard">
-          <LucideCopy
-            className={`h-5 w-5 ${copied ? "text-green-600" : "text-gray-600"}`}
-          />
-        </button>
-      </div>
+      <button onClick={copy}>
+        <LucideCopy
+          className={`w-5 h-5 ${copied ? "text-green-600" : "text-gray-400"}`}
+        />
+      </button>
     </div>
   );
 };

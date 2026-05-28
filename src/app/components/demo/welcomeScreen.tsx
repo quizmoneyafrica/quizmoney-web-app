@@ -1,38 +1,36 @@
 "use client";
-import { ApiResponse } from "@/app/api/interface";
 import { CircleArrowLeft } from "@/app/icons/icons";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import CustomButton from "@/app/utils/CustomBtn";
 import { Grid, Heading, Text } from "@radix-ui/themes";
 import Image from "next/image";
-import { useQuestions } from "@/app/hooks/useDemoQuestions";
+import { usePracticeSocket } from "@/lib/practice-store";
+import { toast } from "sonner";
 
-type RouterType = ReturnType<typeof useRouter>;
-type Props = {
-  demoData: ApiResponse | null;
-  loading: boolean;
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  router: RouterType;
-};
-export default function WelcomeScreen({ loading, setLoading, router }: Props) {
-  // const { data } = useQuestions();
+export default function WelcomeScreen() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const { startPractice, isConnected } = usePracticeSocket();
 
-  const handleFetchDemoData = async () => {
-    setLoading(true);
-    try {
-      // sessionStorage.setItem("quizmoney_demoData", JSON.stringify(data));
-      // sessionStorage.setItem("quizmoney_demoData_d", "0");
-      // const objectId = "practice";
-      // router.replace(`/play-demo/${objectId}`);
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      console.log(err);
-      setLoading(false);
+  const handleStart = () => {
+    if (!isConnected) {
+      toast.error("Not connected. Please wait and try again.");
+      return;
     }
+
+    setLoading(true);
+    startPractice(undefined, (res) => {
+      if (res.success && res.data) {
+        router.replace("/play-demo/practice");
+      } else {
+        toast.error(res.message || "Failed to start practice. Try again.");
+        setLoading(false);
+      }
+    });
   };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -67,7 +65,7 @@ export default function WelcomeScreen({ loading, setLoading, router }: Props) {
             </div>
             <Grid gap="3" mt="2">
               <Heading className="text-primary-900 lg:text-center">
-                Let&apos;s play a Demo 👋{" "}
+                Let&apos;s play a Demo 👋
               </Heading>
               <Text className="font-medium lg:text-center">
                 You&apos;re about to play a solo warm up round.
@@ -78,7 +76,7 @@ export default function WelcomeScreen({ loading, setLoading, router }: Props) {
               {loading ? (
                 <CustomButton loader width="full" disabled />
               ) : (
-                <CustomButton onClick={handleFetchDemoData} width="full">
+                <CustomButton onClick={handleStart} width="full">
                   Start Game
                 </CustomButton>
               )}

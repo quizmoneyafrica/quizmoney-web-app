@@ -69,9 +69,10 @@ export interface Product {
   id: string;
   name: string;
   description: string;
-  price: number;
-  quantity: number;
-  category: string;
+  price_kobo: number;
+  price_formatted: string; // e.g. "₦500.00"
+  item_type: string;
+  quantity?: number;
 }
 export interface UpdateProfile {
   firstName?: string;

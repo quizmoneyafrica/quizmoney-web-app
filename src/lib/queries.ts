@@ -13,6 +13,7 @@
  */
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { queryKeys } from "@/lib/query-keys";
@@ -25,6 +26,8 @@ import LeaderboardAPI from "@/app/api/leaderboardApi";
 import StoreAPI from "@/app/api/storeApi";
 import NotificationAPI from "@/app/api/notification";
 import { toastPosition } from "@/app/utils/utils";
+import { UpcomingGame } from "@/app/api/game";
+import { apiClient } from "./api-client";
 
 // ─── Auth Mutations ───────────────────────────────────────────────────────────
 
@@ -133,29 +136,35 @@ export const useLogout = () => {
 
 // ─── Profile Queries & Mutations ──────────────────────────────────────────────
 
-export const useMe = () =>
-  useQuery({
+export const useMe = () => {
+  const updateUser = useAuthStore((s) => s.updateUser);
+
+  const query = useQuery({
     queryKey: queryKeys.me,
     queryFn: () => ProfileAPI.getMyProfile(),
-    select: (res) => res.data as Player,
+    select: (res) => res.data.data,
     staleTime: 1000 * 60 * 5,
   });
 
+  // Sync fresh profile data into Zustand so any component can read it
+  // via useAuthStore without subscribing to React Query.
+  useEffect(() => {
+    if (query.data) {
+      updateUser(query.data);
+    }
+  }, [query.data, updateUser]);
+
+  return query;
+};
+
 export const useUpdateProfile = () => {
   const queryClient = useQueryClient();
-  const updateUser = useAuthStore((s) => s.updateUser);
 
   return useMutation({
     mutationFn: ProfileAPI.updateProfile,
-    onSuccess: (res) => {
+    onSuccess: () => {
+      // Invalidate — useMe's useEffect will sync the fresh data to Zustand automatically
       queryClient.invalidateQueries({ queryKey: queryKeys.me });
-      // Keep Zustand in sync for nav/header display
-      updateUser({
-        username: res.data.username,
-        avatar_url: res.data.avatar_url,
-        first_name: res.data.first_name,
-        last_name: res.data.last_name,
-      });
       toast.success("Profile updated");
     },
     onError: (error: any) => {
@@ -211,7 +220,7 @@ export const useWalletBalance = () =>
   useQuery({
     queryKey: queryKeys.walletBalance,
     queryFn: WalletAPI.getBalance,
-    select: (res) => res.data,
+    select: (res) => res.data.data,
     staleTime: 1000 * 30, // 30 seconds — balance changes frequently
   });
 
@@ -223,7 +232,7 @@ export const useWalletTransactions = (params?: {
   useQuery({
     queryKey: queryKeys.walletTransactions(params),
     queryFn: () => WalletAPI.getTransactions(params),
-    select: (res) => res.data,
+    select: (res) => res.data.data,
     staleTime: 1000 * 60,
   });
 
@@ -292,7 +301,7 @@ export const useBankAccounts = () =>
   useQuery({
     queryKey: queryKeys.bankAccounts,
     queryFn: WalletAPI.getBankAccounts,
-    select: (res) => res.data,
+    select: (res) => res.data.data, // res.data = { success, data: BankAccount[] }
   });
 
 export const useAddBankAccount = () => {
@@ -393,7 +402,7 @@ export const useAllTimeLeaderboard = (limit?: number) =>
   useQuery({
     queryKey: queryKeys.leaderboardAllTime({ limit }),
     queryFn: () => LeaderboardAPI.getAllTimeLeaderboard(limit),
-    select: (res) => res.data,
+    select: (res) => res.data.data.leaderboard,
     staleTime: 1000 * 60 * 5,
   });
 
@@ -433,7 +442,7 @@ export const useVerificationStatus = () =>
     queryKey: queryKeys.verificationStatus,
     queryFn: KycAPI.getVerificationStatus,
     select: (res) => res.data.data,
-    staleTime: 1000 * 60 * 2,
+    staleTime: 0, // Always fetch fresh — verified state must never be served from cache
   });
 
 export const useSendPhoneOtp = () =>
@@ -452,7 +461,10 @@ export const useVerifyPhoneOtp = () => {
   return useMutation({
     mutationFn: KycAPI.verifyPhoneOtp,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.verificationStatus });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.verificationStatus,
+        refetchType: "all", // Force refetch even for active observers
+      });
       toast.success("Phone number verified");
     },
     onError: (error: any) => {
@@ -468,7 +480,10 @@ export const useVerifyBvn = () => {
   return useMutation({
     mutationFn: KycAPI.verifyBvn,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.verificationStatus });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.verificationStatus,
+        refetchType: "all",
+      });
       toast.success("BVN verified successfully");
     },
     onError: (error: any) => {
@@ -485,7 +500,7 @@ export const useStoreCatalogue = () =>
   useQuery({
     queryKey: queryKeys.storeCatalogue,
     queryFn: StoreAPI.getCatalogue,
-    select: (res) => res.data,
+    select: (res: any) => res.data.data, // res.data = { success, data: StoreItem[] }
     staleTime: 1000 * 60 * 5,
   });
 
@@ -493,7 +508,7 @@ export const useStoreInventory = () =>
   useQuery({
     queryKey: queryKeys.storeInventory,
     queryFn: StoreAPI.getInventory,
-    select: (res) => res.data,
+    select: (res: any) => res.data.data, // res.data = { success, data: InventoryItem[] }
   });
 
 export const usePurchaseItem = () => {
@@ -501,9 +516,9 @@ export const usePurchaseItem = () => {
   return useMutation({
     mutationFn: StoreAPI.purchaseItem,
     onSuccess: () => {
+      // Invalidate cache — component handles success feedback via modal
       queryClient.invalidateQueries({ queryKey: queryKeys.storeInventory });
       queryClient.invalidateQueries({ queryKey: queryKeys.walletBalance });
-      toast.success("Item purchased");
     },
     onError: (error: any) => {
       toast.error(error?.response?.data?.message || "Purchase failed", {
@@ -541,4 +556,18 @@ export const useSubscribePush = () =>
 export const useUnsubscribePush = () =>
   useMutation({
     mutationFn: NotificationAPI.unsubscribe,
+  });
+
+// ─── Game Queries ─────────────────────────────────────────────────────────────
+
+export const useUpcomingGame = () =>
+  useQuery({
+    queryKey: queryKeys.upcomingGame,
+    queryFn: () =>
+      apiClient.get<{ success: boolean; data: UpcomingGame | null }>(
+        "/api/game/upcoming",
+      ),
+    select: (res) => res.data.data,
+    staleTime: 1000 * 30, // 30s — status changes when lobby opens
+    refetchInterval: 1000 * 30, // poll every 30s as a safety net
   });

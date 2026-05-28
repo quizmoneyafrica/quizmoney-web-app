@@ -1,17 +1,17 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import CustomButton from "@/app/utils/CustomBtn";
-import React, { useRef, useEffect, Fragment } from "react";
+"use client";
+
+import React, { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { cn, toastPosition } from "@/app/utils/utils";
-import { ArrowLeft, Loader } from "lucide-react";
-import QmDrawer from "@/app/components/drawer/drawer";
-import CustomImage from "@/app/components/wallet/CustomImage";
 import { toast } from "sonner";
-import KycAPI from "@/app/api/kycApi";
-import { useAppDispatch } from "@/app/hooks/useAuth";
-import { updateUser } from "@/app/store/authSlice";
+import { ArrowLeft } from "lucide-react";
+
+import CustomButton from "@/app/utils/CustomBtn";
+import { useVerifyPhoneOtp, useVerificationStatus } from "@/lib/queries";
+import { toastPosition } from "@/app/utils/utils";
+import CustomImage from "@/app/components/wallet/CustomImage";
+import QmDrawer from "@/app/components/drawer/drawer";
 
 const otpSchema = z.object({
   otp: z
@@ -27,28 +27,31 @@ export default function OTPVerification({
   onBack,
   onNext,
 }: {
-  phoneNumber?: string;
+  phoneNumber: string;
   onBack: () => void;
   onNext: () => void;
 }) {
-  const dispatch = useAppDispatch();
+  const [timeLeft, setTimeLeft] = useState(82);
+  const [successModal, setSuccessModal] = useState(false);
+
+  const verifyPhoneOtp = useVerifyPhoneOtp();
+  const { refetch: refreshVerification } = useVerificationStatus();
+
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const [timeLeft, setTimeLeft] = React.useState(82);
 
   const {
-    register,
     setValue,
-    getValues,
+    watch,
     handleSubmit,
     formState: { errors },
     reset,
-    trigger,
   } = useForm<OTPForm>({
     resolver: zodResolver(otpSchema),
     mode: "onChange",
     defaultValues: { otp: "" },
   });
 
+  // Countdown timer
   useEffect(() => {
     if (timeLeft > 0) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
@@ -59,203 +62,177 @@ export default function OTPVerification({
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs
-      .toString()
-      .padStart(2, "0")}`;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
-  const otpValue = getValues("otp");
+  const otpValue = watch("otp");
   const otpDigits = Array.from({ length: 6 }, (_, i) => otpValue[i] || "");
 
   const handleInputChange = (index: number, value: string) => {
     if (value.length > 1) return;
-    let newOtp = otpDigits.slice();
-    newOtp[index] = value;
-    newOtp = newOtp.map((d) => (/\d/.test(d) ? d : ""));
-    setValue("otp", newOtp.join(""));
-    trigger("otp");
-    if (value && index < 5) {
+
+    const digit = value.replace(/\D/g, "");
+    const newOtp = otpDigits.slice();
+    newOtp[index] = digit;
+    setValue("otp", newOtp.join(""), { shouldValidate: true });
+
+    // Auto-advance to next box when a digit is entered
+    if (digit && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
   };
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
-    if (e.key === "Backspace" && !otpDigits[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
+    if (e.key === "Backspace") {
+      if (otpDigits[index]) {
+        // Clear current box
+        const newOtp = otpDigits.slice();
+        newOtp[index] = "";
+        setValue("otp", newOtp.join(""), { shouldValidate: true });
+      } else if (index > 0) {
+        // Move back and clear previous box
+        const newOtp = otpDigits.slice();
+        newOtp[index - 1] = "";
+        setValue("otp", newOtp.join(""), { shouldValidate: true });
+        inputRefs.current[index - 1]?.focus();
+      }
     }
   };
 
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
-    const pastedData = e.clipboardData.getData("text").replace(/\D/g, "");
-    const digits = pastedData.slice(0, 6).split("");
-    const newOtp = otpDigits.slice();
-    digits.forEach((digit, index) => {
-      if (index < 6) newOtp[index] = digit;
-    });
-    setValue("otp", newOtp.join(""));
-    trigger("otp");
-    const nextEmptyIndex = newOtp.findIndex((digit, idx) => !digit && idx < 6);
-    const focusIndex =
-      nextEmptyIndex !== -1 ? nextEmptyIndex : Math.min(digits.length, 5);
-    inputRefs.current[focusIndex]?.focus();
+    const pasted = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, 6);
+    setValue("otp", pasted, { shouldValidate: true });
+    // Focus the last filled box after paste
+    const lastIndex = Math.min(pasted.length, 5);
+    inputRefs.current[lastIndex]?.focus();
   };
 
-  const [successModal, setSuccessModal] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
-
-  const onSubmit = async () => {
+  const onSubmit = async (data: OTPForm) => {
     try {
-      setIsLoading(true);
-      const res = await KycAPI.phoneOtpVerify(otpValue, phoneNumber);
-      console.log(res);
-      dispatch(updateUser({ phoneVerified: true }));
+      await verifyPhoneOtp.mutateAsync({
+        otp: data.otp,
+        phone_number: phoneNumber,
+      });
+
+      await refreshVerification(); // Refresh KYC status
       setSuccessModal(true);
     } catch (err: any) {
-      toast.error(err.message, { position: toastPosition });
-    } finally {
-      setIsLoading(false);
+      // Error handled in query mutation
     }
   };
 
   const handleResend = () => {
     reset();
     inputRefs.current[0]?.focus();
+    setTimeLeft(82);
+    // You can call resend OTP here if needed
   };
 
   const maskPhoneNumber = (num: string) => {
     if (!num) return "";
-    const match = num.match(/^(\+\d{1,3})(\d{0,})$/);
-    if (!match) return num;
-    const country = match[1];
-    const rest = match[2];
-    if (rest.length < 4) return num;
-    const masked =
-      rest.slice(0, rest.length - 4).replace(/\d/g, "*") + rest.slice(-4);
-    return `${country}${masked}`;
+    return num.replace(/(\+\d{3})\d{4}(\d{4})/, "$1****$2");
   };
 
   return (
-    <Fragment>
-      <div className="w-full flex-1">
-        <div className="mb-8 flex flex-col gap-2 md:items-center">
-          <h1 className="text-2xl font-bold text-gray-900">Verify OTP</h1>
-          <p className="text-black text-sm">
-            We sent a 6-digit code to {maskPhoneNumber(phoneNumber)}.
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="mb-8 w-full flex flex-col gap-2 md:items-center ">
-            <label className=" text-sm font-semibold text-black">
-              Enter OTP Code
-            </label>
-            <div className="flex flex-1 gap-3 md:justify-center justify-between w-full">
-              {otpDigits.map((digit, index) => (
-                <input
-                  key={index}
-                  ref={(el) => {
-                    inputRefs.current[index] = el;
-                    if (index === 0) {
-                      const { ref } = register("otp");
-                      if (typeof ref === "function") {
-                        ref(el);
-                      } else if (ref) {
-                        (
-                          ref as React.MutableRefObject<HTMLInputElement | null>
-                        ).current = el;
-                      }
-                    }
-                  }}
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={1}
-                  value={digit}
-                  onChange={(e) => handleInputChange(index, e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(index, e)}
-                  onPaste={handlePaste}
-                  className={cn(
-                    "aspect-square w-10 h-10 md:w-12 md:h-12 text-center text-lg font-semibold border-1 rounded focus:border-primary-900 focus:outline-none transition-colors",
-                    errors.otp ? "border-red-500" : "border-primary-900"
-                  )}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div className="pt-4 w-full flex justify-between gap-2">
-            <CustomButton
-              type="button"
-              onClick={() => {
-                setSuccessModal(false);
-                onBack?.();
-              }}
-              className=" flex border border-primary-900 bg-white hover:bg-white  items-center w-fit gap-2 flex-1 h-12"
-            >
-              <ArrowLeft className="text-primary-900" />
-              <span className="text-primary-900">Back</span>
-            </CustomButton>
-            <CustomButton
-              loader={isLoading}
-              type="submit"
-              disabled={otpValue.length !== 6 || !!errors.otp}
-              className="w-full h-12 flex items-center justify-center  py-4 rounded-full text-white font-semibold text-lg transition-all"
-            >
-              Verify
-            </CustomButton>
-          </div>
-        </form>
-
-        <div className="md:text-center text-start mt-6">
-          <p className="text-sm text-black">
-            Didn&apos;t get code?{" "}
-            {timeLeft > 0 ? (
-              <span className="text-gray-500">
-                Resend Code • {formatTime(timeLeft)}
-              </span>
-            ) : (
-              <button
-                onClick={handleResend}
-                className="text-primary-900 hover:text-primary-900 font-medium"
-                type="button"
-              >
-                Resend Code
-              </button>
-            )}
-          </p>
-        </div>
+    <div className="w-full">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-gray-900">Verify OTP</h1>
+        <p className="text-gray-600 text-sm mt-1">
+          We sent a 6-digit code to{" "}
+          <strong>{maskPhoneNumber(phoneNumber)}</strong>
+        </p>
       </div>
 
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="mb-8">
+          <label className="text-sm font-semibold block mb-3">
+            Enter OTP Code
+          </label>
+          <div className="flex gap-3 justify-center">
+            {otpDigits.map((digit, index) => (
+              <input
+                key={index}
+                ref={(el) => {
+                  inputRefs.current[index] = el;
+                }}
+                type="text"
+                inputMode="numeric"
+                maxLength={1}
+                value={digit}
+                onChange={(e) => handleInputChange(index, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
+                onPaste={handlePaste}
+                className="w-12 h-12 text-center text-xl font-semibold border rounded-lg focus:border-primary-900 focus:outline-none"
+              />
+            ))}
+          </div>
+          {errors.otp && (
+            <p className="text-red-500 text-xs mt-2 text-center">
+              {errors.otp.message}
+            </p>
+          )}
+        </div>
+
+        <div className="flex gap-3">
+          <CustomButton
+            type="button"
+            onClick={onBack}
+            variant="outline"
+            className="flex-1 text-neutral-500 border-neutral-300"
+          >
+            Back
+          </CustomButton>
+
+          <CustomButton
+            type="submit"
+            loader={verifyPhoneOtp.isPending}
+            disabled={otpValue.length !== 6 || verifyPhoneOtp.isPending}
+            className="flex-1"
+          >
+            Verify OTP
+          </CustomButton>
+        </div>
+      </form>
+
+      <div className="text-center mt-6">
+        <p className="text-sm">
+          Didn&apos;t receive code?{" "}
+          {timeLeft > 0 ? (
+            <span>Resend in {formatTime(timeLeft)}</span>
+          ) : (
+            <button
+              onClick={handleResend}
+              className="text-primary-900 font-medium"
+            >
+              Resend Code
+            </button>
+          )}
+        </p>
+      </div>
+
+      {/* Success Drawer */}
       <QmDrawer
         open={successModal}
-        onOpenChange={() => {}}
+        onOpenChange={onNext}
         title=""
-        titleLeft
-        heightClass="h-[75%] md:h-[45%] lg:h-[65%]"
+        heightClass="h-[65%]"
       >
-        <div className=" flex-col flex gap-2 items-center pt-2">
-          <CustomImage alt="succ" src={"/icons/success_bg.svg"} />
-          <p className="font-bold text-xl text-[#3B3B3B] text-center">
-            Phone number verified <br /> Successfully
+        <div className="flex flex-col items-center pt-8 text-center">
+          <CustomImage alt="success" src="/icons/success_bg.svg" />
+          <h2 className="text-2xl font-bold mt-6">Phone Verified!</h2>
+          <p className="text-gray-600 mt-2">
+            Your number has been successfully verified.
           </p>
-          <div className=" w-full pt-14">
-            <CustomButton
-              onClick={() => {
-                setSuccessModal(false);
-                onNext();
-              }}
-              loaderComponent={
-                <Loader className="animate-spin size-5 text-white" />
-              }
-              type="submit"
-              disabled={otpValue.length !== 6 || !!errors.otp}
-              className="w-full h-12 flex items-center justify-center  py-4 rounded-full text-white font-semibold text-lg transition-all"
-            >
-              Proceed to step 2 Verification
-            </CustomButton>
-          </div>
+
+          <CustomButton onClick={onNext} className="mt-12 w-full">
+            Continue to BVN Verification
+          </CustomButton>
         </div>
       </QmDrawer>
-    </Fragment>
+    </div>
   );
 }

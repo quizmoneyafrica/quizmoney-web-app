@@ -1,8 +1,8 @@
-import { formatAmount } from "./ActivityRow";
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Transaction } from "@/app/store/walletSlice";
+import { formatDateTime, formatNaira } from "@/lib/utils";
 
 interface TransactionDetailsModalProps {
   transaction: Transaction;
@@ -70,7 +70,7 @@ export function TransactionDetailsModal({
                         Transaction Date:
                       </span>
                       <span className="text-right text-gray-800 ">
-                        {new Date(transaction.transactionDate).toLocaleString()}
+                        {formatDateTime(transaction.created_at)}
                       </span>
                     </div>
                     <div className="border-b border-dashed border-[#17478B] mt-4"></div>
@@ -87,7 +87,7 @@ export function TransactionDetailsModal({
                         Transaction Type:
                       </span>
                       <span className="text-right text-gray-800  capitalize">
-                        {transaction.transactionType}
+                        {transaction.direction}
                       </span>
                     </div>
                     <div className="border-b border-dashed border-[#17478B] mt-4"></div>
@@ -111,7 +111,7 @@ export function TransactionDetailsModal({
                         }`}
                       >
                         {transaction.direction === "CREDIT" ? "+  " : "- "}
-                        {formatAmount(transaction.amount)}
+                        {formatNaira(transaction.amount)}
                       </span>
                     </div>
                     <div className="border-b border-dashed border-[#17478B] mt-4"></div>
@@ -128,29 +128,26 @@ export function TransactionDetailsModal({
                         Transaction Status:
                       </span>
                       <span
-                        className={`text-right ${
-                          transaction.transactionStatus?.toLowerCase() ===
-                          "successful"
+                        className={`text-right capitalize ${
+                          transaction.status?.toLowerCase() === "status"
                             ? "text-green-600"
-                            : transaction.transactionStatus?.toLowerCase() ===
-                              "pending"
-                            ? "text-amber-500"
-                            : transaction.transactionStatus?.toLowerCase() ===
-                                "failed" ||
-                              transaction.transactionStatus?.toLowerCase() ===
-                                "rejected"
-                            ? "text-red-600"
-                            : "text-green-600"
+                            : transaction.status?.toLowerCase() === "pending"
+                              ? "text-amber-500"
+                              : transaction.status?.toLowerCase() ===
+                                    "failed" ||
+                                  transaction.status?.toLowerCase() ===
+                                    "rejected"
+                                ? "text-red-600"
+                                : "text-green-600"
                         }`}
                       >
-                        {transaction.transactionStatus}
+                        {transaction.status}
                       </span>
                     </div>
                     <div className="border-b border-dashed border-[#17478B] mt-4"></div>
                   </motion.div>
 
-                  {transaction.transactionStatus?.toLowerCase() ===
-                    "rejected" && (
+                  {transaction.status?.toLowerCase() === "rejected" && (
                     <motion.div
                       className="text-[#3B3B3B] text-sm"
                       initial={{ y: 10, opacity: 0 }}

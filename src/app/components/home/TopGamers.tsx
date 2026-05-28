@@ -1,41 +1,40 @@
-'use client'
+"use client";
 
-import { formatNaira, formatRank } from '@/app/utils/utils'
-import { Avatar, Flex, Grid, Skeleton, Text } from '@radix-ui/themes'
-import React, { useState } from 'react'
-import QmDrawer from '../drawer/drawer'
-import Image from 'next/image'
-import { useAllTimeLeaderboard } from '@/lib/queries'
+import { formatNaira, formatRank } from "@/app/utils/utils";
+import { Avatar, Flex, Grid, Skeleton, Text } from "@radix-ui/themes";
+import React, { useState } from "react";
+import QmDrawer from "../drawer/drawer";
+import Image from "next/image";
+import { useAllTimeLeaderboard } from "@/lib/queries";
+import {
+  LeaderboardEntry,
+  LeaderboardEntryData,
+} from "@/app/api/leaderboardApi";
 
-const avatarColors = ['#F2F2F2', '#AFF0FF', '#C4FBD2', '#FFCBD2', '#FFF6C5']
+const avatarColors = ["#F2F2F2", "#AFF0FF", "#C4FBD2", "#FFCBD2", "#FFF6C5"];
 
 interface GamerDisplay {
-  rank: number
-  avatarUrl: string
-  firstName: string
-  prizeWon: number
-  gamesPlayed: number
-  score: number
+  rank: number;
+  avatarUrl: string;
+  firstName: string;
+  prizeWon: number;
+  gamesPlayed: number;
+  score: number;
 }
 
 function TopGamers() {
-  const { data, isLoading } = useAllTimeLeaderboard(20)
-  const [open, setOpen] = useState(false)
-  const [gamerInfo, setGamerInfo] = useState<GamerDisplay | null>(null)
+  const { data, isLoading } = useAllTimeLeaderboard(20);
+  const [open, setOpen] = useState(false);
+  const [gamerInfo, setGamerInfo] = useState<LeaderboardEntryData | null>(null);
 
-  const topGamers: GamerDisplay[] = (data ?? []).map((entry) => ({
-    rank: entry.rank,
-    avatarUrl: entry.avatar_url ?? '',
-    firstName: entry.username,
-    prizeWon: entry.prize ?? 0,
-    gamesPlayed: entry.score,
-    score: entry.score,
-  }))
+  console.log("Ranks", data);
 
-  const handleViewGamer = (gamer: GamerDisplay) => {
-    setGamerInfo(gamer)
-    setOpen(true)
-  }
+  const topGamers: LeaderboardEntryData[] = data || [];
+
+  const handleViewGamer = (gamer: LeaderboardEntryData) => {
+    setGamerInfo(gamer);
+    setOpen(true);
+  };
 
   const skeletonList = (
     <>
@@ -58,7 +57,7 @@ function TopGamers() {
         </div>
       ))}
     </>
-  )
+  );
 
   return (
     <div className="bg-white rounded-[20px] w-full py-6 grid grid-cols-1 gap-3">
@@ -75,7 +74,7 @@ function TopGamers() {
             title="Player Stats"
             trigger={
               <div className="flex gap-4">
-                {topGamers.map((gamer, index) => (
+                {topGamers.map((gamer: LeaderboardEntryData, index) => (
                   <Gamers
                     key={index}
                     gamer={gamer}
@@ -89,15 +88,15 @@ function TopGamers() {
               <div className="grid place-items-center gap-3 max-w-lg mx-auto">
                 <div className="flex items-center justify-center bg-primary-100 h-[90px] w-[90px] rounded-full overflow-clip">
                   <Image
-                    src={gamerInfo.avatarUrl || '/icons/quizmoney-logo-blue.svg'}
-                    alt={gamerInfo.firstName}
+                    src={gamerInfo.username ? `/avatars/${gamerInfo.username}.png` : ""}
+                    alt={gamerInfo.username}
                     width={70}
                     height={70}
                     className="rounded-full"
                   />
                 </div>
                 <p className="text-center capitalize text-primary-700 text-xl sm:text-2xl font-semibold">
-                  {gamerInfo.firstName}
+                  {gamerInfo.username}
                 </p>
                 <div className="flex flex-col gap-2 w-full md:w-[80%]">
                   <Grid
@@ -113,13 +112,13 @@ function TopGamers() {
                     <Flex direction="column" align="center" justify="center">
                       <p>Score</p>
                       <div className="flex min-h-10 min-w-10 h-auto w-auto text-sm items-center text-primary-800 justify-center gap-2 border-2 border-primary-800 rounded-full p-2">
-                        {gamerInfo.gamesPlayed}
+                        {gamerInfo.score}
                       </div>
                     </Flex>
                     <Flex direction="column" align="center" justify="center">
                       <p>Amount</p>
                       <div className="flex h-auto w-auto items-center justify-center font-semibold text-primary-800 p-2">
-                        {formatNaira(gamerInfo.prizeWon)}
+                        {formatNaira(gamerInfo.score)}
                       </div>
                     </Flex>
                   </Grid>
@@ -132,17 +131,17 @@ function TopGamers() {
         )}
       </div>
     </div>
-  )
+  );
 }
 
-export default TopGamers
+export default TopGamers;
 
 type Props = {
-  gamer: GamerDisplay
-  onClick: () => void
-}
+  gamer: LeaderboardEntryData;
+  onClick: () => void;
+};
 const Gamers = ({ gamer, onClick }: Props) => {
-  const bgColor = avatarColors[Math.floor(Math.random() * avatarColors.length)]
+  const bgColor = avatarColors[Math.floor(Math.random() * avatarColors.length)];
   return (
     <div
       onClick={onClick}
@@ -150,19 +149,19 @@ const Gamers = ({ gamer, onClick }: Props) => {
     >
       <Avatar
         radius="full"
-        src={gamer.avatarUrl}
-        fallback={gamer.firstName[0] ?? '?'}
+        src={gamer.username ? `/avatars/${gamer.username}.png` : undefined}
+        fallback={gamer.username[0] ?? "?"}
         style={{ backgroundColor: bgColor }}
         size="4"
       />
       <Flex direction="column" align="center">
         <Text size="2" weight="medium" className="text-neutral-800 capitalize">
-          {gamer.firstName}
+          {gamer.username}
         </Text>
         <Text size="1" className="text-primary-800">
-          {formatNaira(gamer.prizeWon)}
+          {formatNaira(gamer.score)}
         </Text>
       </Flex>
     </div>
-  )
-}
+  );
+};

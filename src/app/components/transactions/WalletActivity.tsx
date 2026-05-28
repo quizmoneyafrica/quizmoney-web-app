@@ -1,20 +1,22 @@
 "use client";
-import React, { JSX, useCallback, useEffect, useState } from "react";
+import React, { JSX, useState } from "react";
 import { parseISO, isToday, isYesterday } from "date-fns";
-import { useDispatch, useSelector } from "react-redux";
 import { Skeleton } from "@radix-ui/themes";
 
 import FilterBar, { FilterType } from "./FilterBar";
 import Pagination from "./Pagination";
 import CustomImage from "../wallet/CustomImage";
 import { ActivityRow } from "./ActivityRow";
-import {
-  setTransactions,
-  setTransactionsLoading,
-  useWallet,
-  Transaction,
-} from "@/app/store/walletSlice";
-import WalletApi from "@/app/api/wallet";
+import { useWalletTransactions } from "@/lib/queries";
+import { Transaction } from "@/app/store/walletSlice";
+
+// Map FilterType (status label) → actual status string used by the API
+const STATUS_FILTER_MAP: Record<FilterType, string | null> = {
+  [FilterType.ALL]: null,
+  [FilterType.PENDING]: "pending",
+  [FilterType.SUCCESSFUL]: "success", // API uses "success", not "successful"
+  [FilterType.FAILED]: "failed",
+};
 
 interface WalletTransactionGroup {
   today: Transaction[];
@@ -41,65 +43,24 @@ export function renderEmptyState(): JSX.Element {
 }
 
 export default function WalletActivity(): React.ReactElement {
-  const [page, setPage] = useState(0);
-  const [totalPages, setTotalPages] = useState<number>(0);
+  const [page, setPage] = useState(1);
   const [selectedFilter, setSelectedFilter] = useState<FilterType>(
-    FilterType.PENDING
+    FilterType.ALL,
   );
 
-  const dispatch = useDispatch();
-  const { transactions: transactionList, isTransactionsLoading } =
-    useSelector(useWallet);
-  const transactions = transactionList.filter((tx) => tx.currency === "NGN");
-  const fetchTransactions = useCallback(
-    async (
-      params: {
-        searchText?: string;
-        transactionStatus?: FilterType;
-      } = {}
-    ) => {
-      try {
-        let res;
-        if (Object.keys(params).length > 0) {
-          res = await WalletApi.fetchTransactions({ page, ...params });
-        } else {
-          res = await WalletApi.fetchTransactions({ page });
-        }
-        dispatch(setTransactionsLoading(true));
-        console.log(
-          JSON.stringify(res, null, 2),
-          "=============list of transactions from api======="
-        );
+  // Always fetch all transactions — status filtering happens client-side
+  // (the API only supports type filtering, not status filtering)
+  const { data, isLoading } = useWalletTransactions({ page, limit: 20 });
 
-        if (res?.success && res?.data) {
-          dispatch(setTransactions(res.data.content || []));
-          setTotalPages(res.data.totalPages || 1);
-          console.log("Transactions fetched:", res.data.content?.length || 0);
-        } else {
-          dispatch(setTransactions([]));
-          setTotalPages(1);
-        }
-      } catch (error) {
-        console.log(error);
+  const allTransactions: Transaction[] = data?.transactions || [];
 
-        dispatch(setTransactions([]));
-        setTotalPages(1);
-      } finally {
-        dispatch(setTransactionsLoading(false));
-      }
-    },
-    [dispatch, page]
-  );
+  // Client-side status filter
+  const activeStatus = STATUS_FILTER_MAP[selectedFilter];
+  const transactions = activeStatus
+    ? allTransactions.filter((t) => t.status === activeStatus)
+    : allTransactions;
 
-  useEffect(() => {
-    fetchTransactions();
-  }, [page, dispatch, fetchTransactions]);
-
-  const handlePageChange = (newPage: number) => {
-    if (newPage >= 1 && newPage <= totalPages) {
-      setPage(newPage);
-    }
-  };
+  const totalPages = data?.pagination.total_pages || 1;
 
   const groupTransactions = (): WalletTransactionGroup => {
     const grouped: WalletTransactionGroup = {
@@ -108,12 +69,9 @@ export default function WalletActivity(): React.ReactElement {
       other: [],
     };
 
-    (transactions || []).forEach((transaction: Transaction) => {
-      const date = parseISO(
-        transaction?.transactionDate ?? new Date().toISOString()
-      );
-      // Debug: log grouping
-      console.log("Grouping transaction:", transaction, "Parsed date:", date);
+    transactions.forEach((transaction) => {
+      const date = parseISO(transaction.created_at ?? new Date().toISOString());
+
       if (isToday(date)) {
         grouped.today.push(transaction);
       } else if (isYesterday(date)) {
@@ -126,22 +84,26 @@ export default function WalletActivity(): React.ReactElement {
     return grouped;
   };
 
-  const handleSearchTransaction = async (query: string) => {
-    setPage(0); // Reset to first page when searching
-    await fetchTransactions({ searchText: query });
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setPage(newPage);
+    }
   };
 
-  const handleFilterChange = async (filter: FilterType) => {
-    setPage(0); // Reset to first page when filtering
+  const handleSearchTransaction = (_query: string) => {
+    // Search not yet supported by the API
+  };
+
+  const handleFilterChange = (filter: FilterType) => {
     setSelectedFilter(filter);
-    await fetchTransactions({ transactionStatus: filter });
+    setPage(1); // Reset to first page when filter changes
   };
 
   const renderTransactionSection = (
     title: string,
-    transactions: Transaction[]
+    txs: Transaction[],
   ): JSX.Element | null => {
-    if (transactions.length === 0) return null;
+    if (txs.length === 0) return null;
 
     return (
       <div className="space-y-2 md:space-y-3 py-5 md:bg-white rounded-2xl mt-3 md:mt-5">
@@ -150,9 +112,9 @@ export default function WalletActivity(): React.ReactElement {
             {title}
           </h2>
         </div>
-        {transactions.map((transaction, index) => (
+        {txs.map((transaction, index) => (
           <ActivityRow
-            isLast={transactions.length === index + 1}
+            isLast={txs.length === index + 1}
             transaction={transaction}
             key={transaction.id || index.toString()}
           />
@@ -161,28 +123,8 @@ export default function WalletActivity(): React.ReactElement {
     );
   };
 
-  const renderSkeletonLoader = (): JSX.Element => (
-    <div className="space-y-2 md:space-y-3 py-5 md:bg-white rounded-2xl mt-3 md:mt-5 px-3 md:px-4">
-      {[...Array(5)].map((_, index) => (
-        <div
-          key={index}
-          className="flex justify-between items-center pb-3 mb-3"
-        >
-          <div className="flex items-center gap-3">
-            <Skeleton width="40px" height="40px" />
-            <div className="space-y-1">
-              <Skeleton width="112px" height="12px" />
-              <Skeleton width="64px" height="12px" />
-            </div>
-          </div>
-          <Skeleton width="64px" height="12px" />
-        </div>
-      ))}
-    </div>
-  );
-
   const groupedTransactions = groupTransactions();
-  const hasTransactions = (transactions || []).length > 0;
+  const hasTransactions = transactions.length > 0;
 
   return (
     <div className="py-5">
@@ -193,20 +135,15 @@ export default function WalletActivity(): React.ReactElement {
       />
 
       <div className="w-full gap-4 md:gap-8 flex flex-col">
-        {isTransactionsLoading ? (
+        {isLoading ? (
           renderSkeletonLoader()
         ) : !hasTransactions ? (
           renderEmptyState()
         ) : (
           <>
             {renderTransactionSection("Today", groupedTransactions.today)}
-            {renderTransactionSection(
-              "Yesterday",
-              groupedTransactions.yesterday
-            )}
-            {/* Always render 'Earlier' if any transaction exists */}
-            {(groupedTransactions.other.length > 0 || hasTransactions) &&
-              renderTransactionSection("Earlier", groupedTransactions.other)}
+            {renderTransactionSection("Yesterday", groupedTransactions.yesterday)}
+            {renderTransactionSection("Earlier", groupedTransactions.other)}
           </>
         )}
       </div>
@@ -221,3 +158,21 @@ export default function WalletActivity(): React.ReactElement {
     </div>
   );
 }
+
+// Skeleton Loader
+const renderSkeletonLoader = (): JSX.Element => (
+  <div className="space-y-2 md:space-y-3 py-5 md:bg-white rounded-2xl mt-3 md:mt-5 px-3 md:px-4">
+    {[...Array(5)].map((_, index) => (
+      <div key={index} className="flex justify-between items-center pb-3 mb-3">
+        <div className="flex items-center gap-3">
+          <Skeleton width="40px" height="40px" />
+          <div className="space-y-1">
+            <Skeleton width="112px" height="12px" />
+            <Skeleton width="64px" height="12px" />
+          </div>
+        </div>
+        <Skeleton width="64px" height="12px" />
+      </div>
+    ))}
+  </div>
+);

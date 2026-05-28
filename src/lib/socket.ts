@@ -1,6 +1,6 @@
 import { io, Socket } from "socket.io-client";
 import { useAuthStore, tokenStorage } from "@/lib/auth-store";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 let socketInstance: Socket | null = null;
 
@@ -62,10 +62,21 @@ export const disconnectSocket = () => {
 
 /**
  * Consolidated Core Hook: Shared Context Framework Tracker
+ *
+ * Returns a reactive socket reference so that components re-render
+ * (and register their event listeners) the moment the socket is ready,
+ * instead of capturing the module-level null on first render and never
+ * updating.
  */
 export const useSocket = () => {
   const user = useAuthStore((state) => state.user);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+  // Initialise from module-level variable so components that mount after
+  // the socket is already connected get the instance immediately.
+  const [instance, setInstance] = useState<Socket | null>(
+    () => (typeof window !== "undefined" ? socketInstance : null),
+  );
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -73,16 +84,19 @@ export const useSocket = () => {
     if (user && isAuthenticated) {
       const liveSocket = initializeSocket();
       if (liveSocket && !liveSocket.connected) {
-        // Sync fresh tokens directly into the payload right before execution trigger
+        // Sync fresh tokens directly into the payload right before connecting
         liveSocket.auth = { token: tokenStorage.getAccessToken() };
         liveSocket.connect();
       }
+      // Push the instance into state so event-listener effects re-fire
+      setInstance(liveSocket);
     } else {
       disconnectSocket();
+      setInstance(null);
     }
   }, [user, isAuthenticated]);
 
-  return socketInstance;
+  return instance;
 };
 
 /**

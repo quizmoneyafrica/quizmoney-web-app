@@ -1,5 +1,22 @@
+"use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useAppDispatch, useAppSelector, useAuth } from "@/app/hooks/useAuth";
+
+/**
+ * GameScreen.tsx
+ *
+ * Live quiz screen — fully socket-driven, zero Redux.
+ *
+ * Socket events consumed:
+ *   game:question        → new question arrives  (sets state, resets timer)
+ *   game:question:result → correct answer reveal  (3 s before next question)
+ *   game:finished        → handled upstream by LiveGameQueries → phase = 'completed'
+ *
+ * Socket event emitted:
+ *   game:answer          → { questionIndex, selectedOption: "a"|"b"|"c"|"d" }
+ *
+ * State: all local + Zustand — no Redux whatsoever.
+ */
+
 import React, {
   useCallback,
   useEffect,
@@ -7,297 +24,406 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { motion } from "framer-motion";
-import { EraserIcon, TimerIcon } from "@/app/icons/icons";
-import { Flex, Grid } from "@radix-ui/themes";
-import GameApi from "@/app/api/game";
-import {
-  CurrentLiveQuestionOptionsObj,
-  playAudio,
-  setCurrentLiveQuestion,
-  setOptionLocked,
-  setPhase,
-  setTotalTimeUsed,
-  // setPhase,
-} from "@/app/store/gameSlice";
-import { toast } from "sonner";
-import { shuffleOptionsArray, toastPosition } from "@/app/utils/utils";
-// import CustomButton from "@/app/utils/CustomBtn";
-// import { gameFetch } from "./gameRules";
+import { motion, AnimatePresence } from "framer-motion";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
+import { Flex, Grid } from "@radix-ui/themes";
+import { CheckCircle, XCircle } from "lucide-react";
+
+import { useSocket, useGameQuestion, useGameQuestionResult } from "@/lib/socket";
+import { useLiveGameStore } from "@/lib/live-game-store";
+import { useInventoryStore } from "@/lib/inventory-store";
+import { EraserIcon, TimerIcon } from "@/app/icons/icons";
+import { shuffleOptionsArray, toastPosition } from "@/app/utils/utils";
+import { toast } from "sonner";
 import QMLoader from "@/app/components/splashScreen/QMLoader";
 
-const formatTime = (ms: number) => {
-  const minutes = Math.floor(ms / 60000);
-  const seconds = Math.floor((ms % 60000) / 1000);
-  const milliseconds = Math.floor((ms % 1000) / 100);
-  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
-    2,
-    "0"
-  )}:${milliseconds}0`;
-};
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+type OptionKey = "a" | "b" | "c" | "d";
+
+interface QuestionOptions {
+  a: string;
+  b: string;
+  c: string;
+  d: string;
+}
+
+interface LiveQuestionEvent {
+  questionIndex: number;       // 0-based
+  totalQuestions: number;
+  question: {
+    id: string;
+    text: string;
+    options: QuestionOptions;
+  };
+  serverTimestamp: number;
+  timeMs: number;
+}
+
+interface QuestionResultEvent {
+  questionIndex: number;
+  correctOption: OptionKey;
+  partialLeaderboard: {
+    rank: number;
+    playerId: string;
+    username: string;
+    score: number;
+  }[];
+}
+
+interface DisplayOption {
+  key: OptionKey;
+  text: string;
+}
+
+const OPTION_KEYS: OptionKey[] = ["a", "b", "c", "d"];
+
+// ─── Option button ────────────────────────────────────────────────────────────
+
+function getOptionStyle(
+  optionKey: OptionKey,
+  selectedKey: OptionKey | null,
+  correctKey: OptionKey | null,
+  isLocked: boolean,
+): string {
+  const base =
+    "w-full min-h-[72px] rounded-2xl px-5 py-3 text-left border-2 font-semibold text-sm transition-all duration-200 active:scale-[0.97]";
+
+  if (!correctKey) {
+    // Pre-result state
+    if (optionKey === selectedKey) {
+      return `${base} bg-amber-500 border-amber-400 text-white shadow-md`;
+    }
+    return `${base} bg-white border-neutral-200 text-neutral-800 ${
+      isLocked ? "opacity-60 cursor-not-allowed" : "hover:border-primary-400 hover:bg-primary-50"
+    }`;
+  }
+
+  // Post-result state
+  if (optionKey === correctKey) {
+    return `${base} bg-emerald-500 border-emerald-400 text-white`;
+  }
+  if (optionKey === selectedKey && optionKey !== correctKey) {
+    return `${base} bg-red-500 border-red-400 text-white`;
+  }
+  return `${base} bg-white border-neutral-100 text-neutral-400 opacity-50 cursor-not-allowed`;
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
 
 function GameScreen() {
-  const dispatch = useAppDispatch();
-  const { user } = useAuth();
-  const { currentLiveQuestion, audioShouldPlay } = useAppSelector(
-    (state) => state.game
+  const socket = useSocket();
+
+  // Zustand
+  const eraserOpted = useLiveGameStore((s) => s.hasEraser && s.eraserOpted);
+  const eraserCount = useInventoryStore((s) =>
+    s.eraserCount < 0 ? 0 : s.eraserCount,
   );
-  const optionLocked = useAppSelector((state) => state.game.optionLocked);
+  const pendingQuestion = useLiveGameStore((s) => s.pendingQuestion);
+  const clearPendingQuestion = useLiveGameStore((s) => s.clearPendingQuestion);
 
-  // const [totalStart, setTotalStart] = useState<number | null>(null);
-  const totalTimeUsed = useAppSelector((state) => state.game.totalTimeUsed);
+  // ── Question state ─────────────────────────────────────────────────────────
+  const [currentQuestion, setCurrentQuestion] =
+    useState<LiveQuestionEvent | null>(null);
+  const [selectedKey, setSelectedKey] = useState<OptionKey | null>(null);
+  const [correctKey, setCorrectKey] = useState<OptionKey | null>(null);
+  const [isAnswerLocked, setIsAnswerLocked] = useState(false);
+  const [timerKey, setTimerKey] = useState(0);
 
-  const [questionHistory, setQuestionHistory] = useState<string[]>([]);
-
-  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-  const [fetching, setFetching] = useState(false);
-
-  //Sounds
-  const correctSoundRef = useRef<HTMLAudioElement | null>(null);
-  const wrongSoundRef = useRef<HTMLAudioElement | null>(null);
-  //countdown timer
-  //game time used
-  const totalTimeInterval = useRef<NodeJS.Timeout | null>(null);
-  const totalTimeRef = useRef(totalTimeUsed);
-  const prevTimerRef = useRef(0);
-
-  // const [questionTimeUsed, setQuestionTimeUsed] = useState(0);
-
-  //Fallback fetch
-  const fetchCurrentQuestion = useCallback(async () => {
-    if (fetching || currentLiveQuestion?.id) return;
-    setFetching(true);
-    try {
-      const res = await GameApi.getCurrentQuestion();
-      const que = res.data;
-
-      if (!questionHistory.includes(que.id)) {
-        dispatch(setCurrentLiveQuestion(que));
-        dispatch(setOptionLocked(false));
-        setQuestionHistory((prev) => [...prev, que.id]);
-        // setShuffledOptions(shuffleArray(que.options));
-      }
-    } catch (err: any) {
-      console.log(err);
-
-      toast.error(err.message, {
-        position: "bottom-center",
-      });
-      toast.error("Unable to fetch question. Please stay in app.", {
-        position: toastPosition,
-      });
-    } finally {
-      setFetching(false);
-    }
-  }, [dispatch, fetching, currentLiveQuestion, questionHistory]);
+  // ── Audio refs ─────────────────────────────────────────────────────────────
+  const correctSfxRef = useRef<HTMLAudioElement | null>(null);
+  const wrongSfxRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    correctSoundRef.current = new Audio("/sounds/correct-answer.mp3");
-    wrongSoundRef.current = new Audio("/sounds/wrong-answer.mp3");
-  }, []);
-
-  // fallback to fetch question if WebSocket didn't push
-  useEffect(() => {
-    if (!currentLiveQuestion) {
-      const fallback = setTimeout(() => {
-        // fetchCurrentQuestion();
-      }, 2000);
-      return () => clearTimeout(fallback);
-    }
-  }, [currentLiveQuestion, fetchCurrentQuestion]);
-
-  useEffect(() => {
-    totalTimeRef.current = totalTimeUsed;
-  }, [totalTimeUsed]);
-
-  //Timer
-  useEffect(() => {
-    if (!currentLiveQuestion) return;
-
-    // prevTimerRef.current = totalTimeRef.current;
-
-    totalTimeInterval.current = setInterval(() => {
-      totalTimeRef.current += 100;
-      dispatch(setTotalTimeUsed(totalTimeRef.current));
-    }, 100);
+    correctSfxRef.current = new Audio("/sounds/correct-answer.mp3");
+    wrongSfxRef.current = new Audio("/sounds/wrong-answer.mp3");
 
     return () => {
-      if (totalTimeInterval.current) clearInterval(totalTimeInterval.current);
+      correctSfxRef.current = null;
+      wrongSfxRef.current = null;
     };
-  }, [currentLiveQuestion, totalTimeUsed, dispatch]);
+  }, []);
 
-  const shuffledOptions = useMemo(() => {
-    if (!currentLiveQuestion?.options) return [];
-    return shuffleOptionsArray(currentLiveQuestion.options);
-  }, [currentLiveQuestion?.options]);
+  // ── Drain buffered first question (may have arrived before this mounted) ───
+  useEffect(() => {
+    if (pendingQuestion) {
+      setCurrentQuestion(pendingQuestion as LiveQuestionEvent);
+      setSelectedKey(null);
+      setCorrectKey(null);
+      setIsAnswerLocked(false);
+      setTimerKey((k) => k + 1);
+      clearPendingQuestion();
+    }
+    // Only run on mount — pendingQuestion captured in closure is intentional
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  if (!currentLiveQuestion)
+  // ── game:question (all questions after the first) ──────────────────────────
+  useGameQuestion(
+    useCallback((data: LiveQuestionEvent) => {
+      setCurrentQuestion(data);
+      setSelectedKey(null);
+      setCorrectKey(null);
+      setIsAnswerLocked(false);
+      setTimerKey((k) => k + 1); // resets CountdownCircleTimer
+    }, []),
+  );
+
+  // ── game:question:result ───────────────────────────────────────────────────
+  useGameQuestionResult(
+    useCallback(
+      (data: QuestionResultEvent) => {
+        setCorrectKey(data.correctOption);
+        setIsAnswerLocked(true);
+
+        // Play sound feedback
+        if (selectedKey === data.correctOption) {
+          correctSfxRef.current?.play().catch(() => {});
+        } else if (selectedKey !== null) {
+          wrongSfxRef.current?.play().catch(() => {});
+        }
+      },
+      [selectedKey],
+    ),
+  );
+
+  // ── Shuffle options once per question ──────────────────────────────────────
+  const displayOptions = useMemo<DisplayOption[]>(() => {
+    if (!currentQuestion) return [];
+    const opts = currentQuestion.question.options;
+    const arr: DisplayOption[] = OPTION_KEYS.map((k) => ({
+      key: k,
+      text: opts[k],
+    }));
+    return shuffleOptionsArray(arr);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentQuestion?.question.id]);
+
+  // ── Submit answer ──────────────────────────────────────────────────────────
+  const handleOptionClick = useCallback(
+    (key: OptionKey) => {
+      if (isAnswerLocked || !currentQuestion || !socket) return;
+
+      setSelectedKey(key);
+      setIsAnswerLocked(true); // one answer per question
+
+      socket.emit(
+        "game:answer",
+        {
+          questionIndex: currentQuestion.questionIndex,
+          selectedOption: key,
+        },
+        (res: any) => {
+          if (!res?.success) {
+            // Server rejected — could be rate-limit, stale question, etc.
+            const msg: string = res?.message ?? "Answer not recorded";
+            if (!msg.includes("already")) {
+              toast.error(msg, { position: toastPosition });
+            }
+          }
+        },
+      );
+    },
+    [isAnswerLocked, currentQuestion, socket],
+  );
+
+  // ── Loading: waiting for first question ───────────────────────────────────
+  if (!currentQuestion) {
     return (
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -10 }}
-        transition={{ duration: 0.25, ease: "easeInOut" }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="min-h-[100dvh] bg-primary-900 flex items-center justify-center px-4"
       >
-        <div className="h-[100dvh] bg-primary-900 hero flex items-center justify-center  px-4">
-          {/* <QMLoader /> */}
-          <Grid gap="3" className="w-full">
-            <div className="bg-primary-50 text-center border-4 border-primary-500 rounded-[10px] px-4 py-10 space-y-4">
-              <div className="flex items-center justify-center">
-                <QMLoader />
-              </div>
-              <h4 className="text-center text-error-900 font-bold">
-                Game is Starting
-              </h4>
-              <p className="italic">
-                Please wait, make sure your screen light doesn&apos;t go off..
-              </p>
-            </div>
-          </Grid>
+        <div className="bg-primary-50 text-center border-4 border-primary-500 rounded-2xl px-6 py-10 space-y-4 max-w-sm w-full">
+          <div className="flex items-center justify-center">
+            <QMLoader />
+          </div>
+          <h4 className="text-primary-900 font-bold text-lg">
+            Game is Starting
+          </h4>
+          <p className="text-primary-700 text-sm italic">
+            Please wait — keep this screen open.
+          </p>
         </div>
       </motion.div>
     );
+  }
 
-  //Option to click
-  const handleOptionClick = async (optionId: string) => {
-    if (!audioShouldPlay) dispatch(playAudio());
-    if (optionLocked || !currentLiveQuestion) return;
+  const questionNumber = currentQuestion.questionIndex + 1;
+  const totalQuestions = currentQuestion.totalQuestions;
+  const questionText = currentQuestion.question.text;
 
-    //Pause user time used
-    if (totalTimeInterval.current) clearInterval(totalTimeInterval.current);
+  // Result feedback label
+  const hasResult = correctKey !== null;
+  const answeredCorrectly =
+    hasResult && selectedKey !== null && selectedKey === correctKey;
+  const answeredWrong =
+    hasResult && selectedKey !== null && selectedKey !== correctKey;
+  const didNotAnswer = hasResult && selectedKey === null;
 
-    dispatch(setOptionLocked(true));
-    setSelectedAnswer(optionId);
-
-    const timeSpent = totalTimeRef.current - prevTimerRef.current;
-    try {
-      const res = await GameApi.submitAnswer(optionId, timeSpent);
-      console.log("Response: ", res);
-      console.log("⏱️ Time used:", timeSpent);
-      console.log("⏱️ Total Time used:", totalTimeUsed);
-
-      prevTimerRef.current = totalTimeUsed;
-    } catch (error: any) {
-      console.log(error);
-    }
-  };
-
-  //End Game
-  const handleGameEnd = () => {
-    if (totalTimeInterval.current) clearInterval(totalTimeInterval.current);
-    console.log("Total Time (milli): ", totalTimeUsed);
-    dispatch(setPhase("completed"));
-  };
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: 0.25, ease: "easeInOut" }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="min-h-[100dvh] bg-primary-900 flex flex-col items-center px-4 pb-8"
     >
-      <div className="min-h-[100dvh] bg-primary-900 hero flex flex-col items-center  px-4">
-        <div className="w-full mx-auto max-w-xl space-y-6">
-          {/* Timer, countdown, Avatar  */}
-          <div className="grid grid-cols-3 w-full">
-            <div className="mt-6 text-white text-sm flex items-center justify-start gap-1">
-              <TimerIcon width={23} /> <span>{formatTime(totalTimeUsed)}</span>
-              {/* <Avatar
-                src={user?.avatarUrl}
-                fallback={user?.firstName?.charAt(0).toUpperCase() || ""}
-                radius="full"
-                className="bg-primary-50"
-              /> */}
-            </div>
-            <div className="mt-6 text-gray-500 text-sm flex items-center justify-center">
-              <CountdownCircleTimer
-                isPlaying
-                duration={10}
-                key={currentLiveQuestion.order}
-                colors={["#00B87B", "#A30000", "#A30000"]}
-                colorsTime={[10, 5, 0]}
-                isSmoothColorTransition={false}
-                rotation="counterclockwise"
-                onComplete={() => {
-                  if (currentLiveQuestion.order >= 10) {
-                    handleGameEnd();
-                    return { shouldRepeat: false };
-                  }
-                  return { shouldRepeat: false };
-                }}
-                size={65}
-                strokeWidth={6}
-              >
-                {({ remainingTime }) => (
-                  <span className="text-white">{remainingTime}</span>
-                  // setTimeout(() => setTimeLeft(remainingTime), 0);
-                  // <TimerIcon width={20} className="text-white" />
-                )}
-              </CountdownCircleTimer>
-            </div>
-            <div className="mt-6 text-sm flex items-center justify-end">
-              <Flex
-                align="center"
-                gap="2"
-                className="rounded-full border py-1 px-4 border-neutral-50 text-neutral-50"
-              >
-                <EraserIcon width={20} height={20} />
-                <span>{user?.gameEraserCount}</span>
-              </Flex>
-            </div>
-          </div>
-          <div className="space-y-6">
-            {/* Question  */}
-            <div className="bg-white border-6 border-secondary-500 rounded-[10px] w-full p-4 min-h-[180px] flex items-center justify-center">
-              <Flex
-                align="center"
-                justify="center"
-                direction="column"
-                className="text-center"
-                gap="2"
-              >
-                <h3 className="font-bold text-xl">
-                  Question {currentLiveQuestion.order}
-                </h3>
-                <p className="font-medium">{currentLiveQuestion.text}</p>
-              </Flex>
-            </div>
-            {/* Options  */}
-            <div className="w-full grid grid-cols-1 gap-4 md:grid-cols-2">
-              {shuffledOptions.map(
-                (option: CurrentLiveQuestionOptionsObj, idx: number) => {
-                  const isSelected = selectedAnswer === option.optionId;
+      <div className="w-full mx-auto max-w-xl space-y-5 pt-4">
 
-                  return (
-                    <button
-                      key={idx}
-                      onClick={() => handleOptionClick(option.optionId)}
-                      disabled={optionLocked}
-                      className={`w-full py-3 px-6 min-h-[80px] rounded-full text-left border-4 font-medium transition 
-                        ${
-                          isSelected
-                            ? "bg-amber-500 border-amber-400 text-white"
-                            : "bg-neutral-50 border-neutral-50 text-neutral-900"
-                        }
-                        
-                ${optionLocked ? "cursor-not-allowed" : ""}
-              `}
-                    >
-                      <Flex gap="4" align="center" justify="between">
-                        <Flex gap="4" align="center">
-                          <span className="col-span-1">
-                            {String.fromCharCode(65 + idx)}.
-                          </span>
-                          <span className="col-span-3">{option.text}</span>
-                        </Flex>
-                      </Flex>
-                    </button>
-                  );
-                }
+        {/* ── Header row ──────────────────────────────────────────────────── */}
+        <div className="grid grid-cols-3 items-center w-full">
+
+          {/* Left: question progress */}
+          <div className="flex items-center gap-1.5 text-white text-sm">
+            <TimerIcon width={20} height={20} />
+            <span className="font-bold tabular-nums">
+              {questionNumber}
+              <span className="text-white/40 font-normal">/{totalQuestions}</span>
+            </span>
+          </div>
+
+          {/* Centre: per-question countdown ring */}
+          <div className="flex justify-center">
+            <CountdownCircleTimer
+              key={timerKey}
+              isPlaying={!hasResult} // pause ring after result revealed
+              duration={10}
+              colors={["#00B87B", "#F7B731", "#A30000"]}
+              colorsTime={[10, 5, 0]}
+              isSmoothColorTransition
+              rotation="counterclockwise"
+              onComplete={() => {
+                // Time expired — lock without answer (server will reveal shortly)
+                setIsAnswerLocked(true);
+                return { shouldRepeat: false };
+              }}
+              size={60}
+              strokeWidth={5}
+            >
+              {({ remainingTime }) => (
+                <span className="text-white font-bold text-lg tabular-nums">
+                  {remainingTime}
+                </span>
               )}
-            </div>
+            </CountdownCircleTimer>
+          </div>
+
+          {/* Right: eraser badge */}
+          <div className="flex justify-end">
+            <Flex
+              align="center"
+              gap="1"
+              className={[
+                "rounded-full border py-1 px-3 text-sm font-semibold",
+                eraserOpted && eraserCount > 0
+                  ? "border-emerald-400 text-emerald-300"
+                  : "border-white/20 text-white/40",
+              ].join(" ")}
+            >
+              <EraserIcon width={16} height={16} />
+              <span>{eraserCount}</span>
+            </Flex>
           </div>
         </div>
+
+        {/* ── Question card ─────────────────────────────────────────────── */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentQuestion.question.id}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.18 }}
+            className="bg-white rounded-2xl w-full px-5 py-7 min-h-[140px] flex items-center justify-center shadow-sm"
+          >
+            <Flex
+              direction="column"
+              align="center"
+              justify="center"
+              gap="2"
+              className="text-center w-full"
+            >
+              <span className="text-xs font-semibold text-primary-400 uppercase tracking-wider">
+                Question {questionNumber}
+              </span>
+              <p className="font-bold text-neutral-900 text-base leading-snug">
+                {questionText}
+              </p>
+            </Flex>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* ── Options grid ──────────────────────────────────────────────── */}
+        <Grid columns={{ initial: "1", sm: "2" }} gap="3">
+          {displayOptions.map((option, idx) => (
+            <button
+              key={option.key}
+              onClick={() => handleOptionClick(option.key)}
+              disabled={isAnswerLocked}
+              className={getOptionStyle(
+                option.key,
+                selectedKey,
+                correctKey,
+                isAnswerLocked,
+              )}
+              style={{ willChange: "transform" }}
+            >
+              <Flex align="center" gap="3">
+                <span className="w-6 h-6 rounded-full bg-black/8 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                  {String.fromCharCode(65 + idx)}
+                </span>
+                <span className="leading-snug">{option.text}</span>
+              </Flex>
+            </button>
+          ))}
+        </Grid>
+
+        {/* ── Result feedback banner ────────────────────────────────────── */}
+        <AnimatePresence>
+          {hasResult && (
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ type: "spring", stiffness: 300, damping: 24 }}
+              className={[
+                "flex items-center gap-3 rounded-2xl px-4 py-3",
+                answeredCorrectly
+                  ? "bg-emerald-500/20 border border-emerald-400/40"
+                  : answeredWrong
+                  ? "bg-red-500/20 border border-red-400/40"
+                  : "bg-white/10 border border-white/20",
+              ].join(" ")}
+            >
+              {answeredCorrectly && (
+                <CheckCircle size={22} className="text-emerald-400 flex-shrink-0" />
+              )}
+              {answeredWrong && (
+                <XCircle size={22} className="text-red-400 flex-shrink-0" />
+              )}
+              {didNotAnswer && (
+                <XCircle size={22} className="text-white/40 flex-shrink-0" />
+              )}
+              <div>
+                <p className="font-bold text-white text-sm">
+                  {answeredCorrectly
+                    ? "Correct! 🎉"
+                    : answeredWrong
+                    ? "Wrong answer"
+                    : "Time's up!"}
+                </p>
+                <p className="text-white/50 text-xs mt-0.5">
+                  {answeredCorrectly
+                    ? "Great job — next question coming up"
+                    : `Correct answer: ${correctKey?.toUpperCase()}`}
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
       </div>
     </motion.div>
   );

@@ -54,11 +54,11 @@ export default function HomeTab() {
             <GameCard />
             {/* <GameZoneCardTemp data={gameZoneData} /> */}
             <AdBanner />
-            {/* <TopGamers /> */}
+            <TopGamers />
           </Grid>
         </div>
         <div className="bg-white rounded-[20px] hidden lg:inline-block p-4">
-          {/* <TransactionHistory /> */}
+          <TransactionHistory />
         </div>
       </Grid>
     </motion.div>
