@@ -71,7 +71,7 @@ export default function LeaderBoardTableSection() {
           // Fetch all-time leaderboard
           const response = await LeaderboardAPI.getAllTimeLeaderboard(
             page,
-            entriesPerPage,
+            // entriesPerPage,
           );
 
           // Handle response - could be nested under data or at root
