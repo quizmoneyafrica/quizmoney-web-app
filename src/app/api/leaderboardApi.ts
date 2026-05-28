@@ -58,6 +58,8 @@ const LeaderboardAPI = {
     _page?: number,
   ): Promise<{ success: boolean; data: LeaderboardEntry[] }> {
     const qs = limit ? `?limit=${limit}` : "";
+    console.log(_page);
+
     return apiClient.get(`/api/leaderboard/last-game${qs}`);
   },
 

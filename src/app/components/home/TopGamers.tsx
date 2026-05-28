@@ -7,20 +7,20 @@ import QmDrawer from "../drawer/drawer";
 import Image from "next/image";
 import { useAllTimeLeaderboard } from "@/lib/queries";
 import {
-  LeaderboardEntry,
+  // LeaderboardEntry,
   LeaderboardEntryData,
 } from "@/app/api/leaderboardApi";
 
 const avatarColors = ["#F2F2F2", "#AFF0FF", "#C4FBD2", "#FFCBD2", "#FFF6C5"];
 
-interface GamerDisplay {
-  rank: number;
-  avatarUrl: string;
-  firstName: string;
-  prizeWon: number;
-  gamesPlayed: number;
-  score: number;
-}
+// interface GamerDisplay {
+//   rank: number;
+//   avatarUrl: string;
+//   firstName: string;
+//   prizeWon: number;
+//   gamesPlayed: number;
+//   score: number;
+// }
 
 function TopGamers() {
   const { data, isLoading } = useAllTimeLeaderboard(20);

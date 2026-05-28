@@ -28,8 +28,7 @@ type OptionKey = (typeof OPTION_KEYS)[number];
 
 function DemoGameScreen() {
   const user = useAuth();
-  const { getQuestion, submitAnswer, quitPractice, isConnected } =
-    usePracticeSocket();
+  const { getQuestion, submitAnswer, isConnected } = usePracticeSocket();
 
   // Current question state
   const [currentQuestion, setCurrentQuestion] =

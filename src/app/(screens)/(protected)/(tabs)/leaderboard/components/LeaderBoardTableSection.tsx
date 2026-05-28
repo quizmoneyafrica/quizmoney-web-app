@@ -22,7 +22,7 @@ export default function LeaderBoardTableSection() {
   const entriesPerPage = 100;
 
   const { lastGame, allTime, pagination } = useSelector(
-    (state: RootState) => state.leaderboard
+    (state: RootState) => state.leaderboard,
   );
 
   const leaderboardData = useMemo(() => {
@@ -59,7 +59,7 @@ export default function LeaderBoardTableSection() {
         if (tab === "lastGame") {
           const response = await LeaderboardAPI.getLastGameLeaderboard(
             page,
-            entriesPerPage
+            entriesPerPage,
           );
 
           const responseData = response?.data || response;
@@ -71,7 +71,7 @@ export default function LeaderBoardTableSection() {
           // Fetch all-time leaderboard
           const response = await LeaderboardAPI.getAllTimeLeaderboard(
             page,
-            entriesPerPage
+            entriesPerPage,
           );
 
           // Handle response - could be nested under data or at root
@@ -111,7 +111,7 @@ export default function LeaderBoardTableSection() {
         setLoading(false);
       }
     },
-    [entriesPerPage]
+    [entriesPerPage],
   );
 
   useEffect(() => {

@@ -4,13 +4,13 @@ import { useEffect } from "react";
 import {
   useGameLocked,
   useGameStarted,
-  useGameCancelled,
+  // useGameCancelled,
   useGamePlayerJoined,
   useGameFinished,
   useGameQuestion,
   useGameReconnected,
   useSocket,
-  useGameError,
+  // useGameError,
 } from "@/lib/socket";
 import { useLiveGameStore } from "@/lib/live-game-store";
 
@@ -20,7 +20,7 @@ function LiveGameQueries() {
   const setTotalPlayers = useLiveGameStore((s) => s.setTotalPlayers);
   const setLeaderboard = useLiveGameStore((s) => s.setLeaderboard);
   const setPendingQuestion = useLiveGameStore((s) => s.setPendingQuestion);
-  const setError = useLiveGameStore((s) => s.setError);
+  // const setError = useLiveGameStore((s) => s.setError);
 
   // Debug all events
   useEffect(() => {

@@ -1,4 +1,4 @@
-import ProtectedRoute from "@/app/security/protectedRoute";
+// import ProtectedRoute from "@/app/security/protectedRoute";
 import React from "react";
 
 function Layout({ children }: { children: React.ReactNode }) {

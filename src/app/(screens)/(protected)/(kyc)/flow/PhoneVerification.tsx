@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React, { useState, useEffect } from "react";
 import PhoneInput from "react-phone-number-input";
@@ -6,12 +7,12 @@ import "react-phone-number-input/style.css";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
+// import { toast } from "sonner";
 
 import CustomButton from "@/app/utils/CustomBtn";
 import OTPVerification from "./OTPVerification";
-import { useSendPhoneOtp, useMe, useVerificationStatus } from "@/lib/queries";
-import { toastPosition } from "@/app/utils/utils";
+import { useSendPhoneOtp, useMe } from "@/lib/queries";
+// import { toastPosition } from "@/app/utils/utils";
 import Modal from "@/app/components/game/modal/ModalWindow";
 import QMLoader from "@/app/components/splashScreen/QMLoader";
 
@@ -32,7 +33,7 @@ export default function PhoneVerification({ onNext }: { onNext: () => void }) {
   const [pendingPhoneNumber, setPendingPhoneNumber] = useState("");
 
   const { data: user, isFetching } = useMe();
-  const { data: verificationStatus } = useVerificationStatus();
+  // const { data: verificationStatus } = useVerificationStatus();
   const sendPhoneOtp = useSendPhoneOtp();
 
   const {
@@ -79,7 +80,7 @@ export default function PhoneVerification({ onNext }: { onNext: () => void }) {
           onBack={() => setShowOtpScreen(false)}
         />
       );
-    } catch (error) {
+    } catch {
       // Error already handled in the mutation
     }
   };
@@ -108,7 +109,7 @@ export default function PhoneVerification({ onNext }: { onNext: () => void }) {
           Verify Your Phone Number
         </h1>
         <p className="text-gray-600">
-          We'll send a 6-digit OTP code to verify your number.
+          We&apos;ll send a 6-digit OTP code to verify your number.
         </p>
       </div>
 

@@ -92,6 +92,7 @@ export default function WalletActivity(): React.ReactElement {
 
   const handleSearchTransaction = (_query: string) => {
     // Search not yet supported by the API
+    console.log(_query);
   };
 
   const handleFilterChange = (filter: FilterType) => {
@@ -142,7 +143,10 @@ export default function WalletActivity(): React.ReactElement {
         ) : (
           <>
             {renderTransactionSection("Today", groupedTransactions.today)}
-            {renderTransactionSection("Yesterday", groupedTransactions.yesterday)}
+            {renderTransactionSection(
+              "Yesterday",
+              groupedTransactions.yesterday,
+            )}
             {renderTransactionSection("Earlier", groupedTransactions.other)}
           </>
         )}

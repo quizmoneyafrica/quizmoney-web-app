@@ -1,17 +1,18 @@
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { CircleCheck, Info, Loader } from "lucide-react";
+// import { toast } from "sonner";
+import { CircleCheck, Info } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+// import Link from "next/link";
 
 import CustomButton from "@/app/utils/CustomBtn";
 import { useVerifyBvn, useVerificationStatus, useMe } from "@/lib/queries";
-import { toastPosition } from "@/app/utils/utils";
+// import { toastPosition } from "@/app/utils/utils";
 import Modal from "@/app/components/game/modal/ModalWindow";
 import CustomImage from "@/app/components/wallet/CustomImage";
 import QmDrawer from "@/app/components/drawer/drawer";
@@ -64,8 +65,8 @@ export default function BvnVerification({ onNext }: { onNext: () => void }) {
       setShowConfirmModal(false);
       setSuccessModal(true);
       router.replace("/home");
-    } catch (err: any) {
-      // Error already handled in query
+    } catch {
+      // Error already  handled in query
     }
   };
 

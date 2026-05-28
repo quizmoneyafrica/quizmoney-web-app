@@ -11,12 +11,7 @@ import TransactionHistory from "@/app/components/wallet/TransactionHistory";
 import AdBanner from "@/app/components/advert/adBanner";
 import KycStart from "@/app/components/kyc/kyc-start";
 import KycContinue from "@/app/components/kyc/kyc-continue";
-import GameZoneCardTemp, {
-  GameZoneCardObject,
-} from "@/app/components/home/(game-zone)/temp/GameZoneCardTemp";
-import { GameZoneTitle } from "@/app/icons/icons";
 import { useAuthStore } from "@/lib/auth-store";
-import { log } from "util";
 
 export default function HomeTab() {
   const { currentStep } = useKycStep();

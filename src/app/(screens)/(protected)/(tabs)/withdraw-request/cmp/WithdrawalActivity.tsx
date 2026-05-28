@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import PaginationCmp from "@/app/(screens)/(protected)/(tabs)/withdraw-request/pagination/Pagination";
 import CustomImage from "@/app/components/wallet/CustomImage";
 import { formatNaira } from "@/app/utils/utils";

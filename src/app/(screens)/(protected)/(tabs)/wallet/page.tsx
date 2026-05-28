@@ -3,21 +3,12 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import WalletLayout from "@/app/components/wallet/WalletLayout";
-import {
-  setWallet,
-  setWalletLoading,
-  setTransactionsLoading,
-  setTransactions,
-  setPayoutBanks,
-} from "@/app/store/walletSlice";
-import WalletApi from "@/app/api/wallet";
 import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/pagination";
 // import required modules
 import { Pagination } from "swiper/modules";
-import Coin from "./coin/coin";
 import { useSearchParams } from "next/navigation";
 
 function Page() {

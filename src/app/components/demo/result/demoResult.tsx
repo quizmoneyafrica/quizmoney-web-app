@@ -1,4 +1,6 @@
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import React from "react";
 import { motion } from "framer-motion";
 import {
@@ -10,35 +12,35 @@ import {
 import { useRouter } from "next/navigation";
 import { Flex, Grid, Separator } from "@radix-ui/themes";
 import CustomButton from "@/app/utils/CustomBtn";
-import { formatNaira, readTotalTime } from "@/app/utils/utils";
+import { formatNaira } from "@/app/utils/utils";
 import { ApiResponse } from "@/app/api/interface";
 import UseBlockBackNavigation from "../blockBackNav";
 import type { PracticeSummary } from "@/lib/practice-store";
- 
+
 type Props = {
   summary: PracticeSummary;
   totalTimeUsed: string;
   user: ApiResponse;
 };
- 
+
 function DemoResult({ summary, totalTimeUsed, user }: Props) {
   UseBlockBackNavigation();
   const router = useRouter();
- 
+
   const handlePlayAgain = () => {
     router.replace("/play-demo");
   };
- 
+
   const handleGoHome = () => {
     router.replace("/home");
   };
- 
+
   const firstName =
     (user as any)?.user?.firstName ||
     (user as any)?.firstName ||
     (user as any)?.first_name ||
     "";
- 
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -60,7 +62,7 @@ function DemoResult({ summary, totalTimeUsed, user }: Props) {
               <RepeatIcon /> Play again!
             </button>
           </Flex>
- 
+
           <div className="space-y-10 w-full max-w-lg mx-auto">
             {/* Stats box */}
             <div className="bg-primary-50 border-4 border-primary-500 rounded-[10px] px-4 py-4 space-y-4">
@@ -68,7 +70,7 @@ function DemoResult({ summary, totalTimeUsed, user }: Props) {
                 Total Time Used:{" "}
                 <span className="font-medium">{totalTimeUsed}</span>
               </p>
- 
+
               <Grid
                 columns="3"
                 align="center"
@@ -85,7 +87,7 @@ function DemoResult({ summary, totalTimeUsed, user }: Props) {
                   <WrongCircleIcon className="text-error-400" />
                 </div>
               </Grid>
- 
+
               {/* Accuracy + eraser row */}
               <div className="flex items-center justify-between text-sm text-neutral-600 pt-1 border-t border-primary-200">
                 <span>
@@ -107,7 +109,7 @@ function DemoResult({ summary, totalTimeUsed, user }: Props) {
                 </span>
               </div>
             </div>
- 
+
             {/* Encouragement */}
             <div className="text-center space-y-2">
               <span className="text-7xl">🏆</span>
@@ -121,7 +123,7 @@ function DemoResult({ summary, totalTimeUsed, user }: Props) {
                 {formatNaira(0, true)}. Just 10 questions, 10 seconds each.
               </p>
             </div>
- 
+
             <CustomButton onClick={handleGoHome} width="full">
               Join Next Game
             </CustomButton>
@@ -131,5 +133,5 @@ function DemoResult({ summary, totalTimeUsed, user }: Props) {
     </motion.div>
   );
 }
- 
+
 export default DemoResult;

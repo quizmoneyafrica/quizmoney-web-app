@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { useQueryClient } from "@tanstack/react-query";
+// import { useQueryClient } from "@tanstack/react-query";
 import { useVirtualAccount, useSetupVirtualAccount } from "@/lib/queries";
 import { BankIcon } from "@/app/icons/icons";
 import CustomButton from "@/app/utils/CustomBtn";
@@ -15,7 +15,7 @@ type Props = {
 };
 
 export default function VirtualDetails({ amount, isBvnCompleted }: Props) {
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
 
   const { data: vaResponse, isLoading: isFetching } = useVirtualAccount();
   const { mutateAsync: createVA, isPending: isCreating } =

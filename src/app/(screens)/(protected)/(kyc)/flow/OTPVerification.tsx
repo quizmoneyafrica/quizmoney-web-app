@@ -1,15 +1,16 @@
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React, { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { ArrowLeft } from "lucide-react";
+// import { toast } from "sonner";
+// import { ArrowLeft } from "lucide-react";
 
 import CustomButton from "@/app/utils/CustomBtn";
 import { useVerifyPhoneOtp, useVerificationStatus } from "@/lib/queries";
-import { toastPosition } from "@/app/utils/utils";
+// import { toastPosition } from "@/app/utils/utils";
 import CustomImage from "@/app/components/wallet/CustomImage";
 import QmDrawer from "@/app/components/drawer/drawer";
 
@@ -120,7 +121,7 @@ export default function OTPVerification({
 
       await refreshVerification(); // Refresh KYC status
       setSuccessModal(true);
-    } catch (err: any) {
+    } catch {
       // Error handled in query mutation
     }
   };

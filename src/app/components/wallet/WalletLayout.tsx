@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import TransactionHistory from "./TransactionHistory";
-import WithdrawalAccounts from "./WithdrawalAccounts";
+// import WithdrawalAccounts from "./WithdrawalAccounts";
 
 export default function WalletLayout() {
   return (

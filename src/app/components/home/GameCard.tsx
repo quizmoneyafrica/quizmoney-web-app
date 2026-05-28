@@ -7,7 +7,7 @@ import { formatQuizDate } from "@/app/utils/utils";
 import Link from "next/link";
 import PlayDemoBtn from "./PlayDemo";
 import { parseISO } from "date-fns";
-import { QMCoin } from "@/app/icons/icons";
+// import { QMCoin } from "@/app/icons/icons";
 import JoinGameBtn from "./JoinGameBtn";
 import { useUpcomingGame } from "@/lib/queries";
 import { useQueryClient } from "@tanstack/react-query";

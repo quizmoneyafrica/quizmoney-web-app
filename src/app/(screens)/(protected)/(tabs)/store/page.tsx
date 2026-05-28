@@ -7,9 +7,8 @@ import ProductCard from "./productCard";
 import ProductSkeleton from "./productSkeleton";
 import Inventory from "./Inventory";
 import ScratchCard from "./ScratchCard";
-import { useStoreCatalogue, useWalletBalance } from "@/lib/queries";
+import { useStoreCatalogue } from "@/lib/queries";
 import { StoreItem } from "@/app/api/storeApi";
-import { formatNaira } from "@/lib/utils";
 
 type Tab = "shop" | "inventory" | "scratch";
 
@@ -22,7 +21,6 @@ const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
 export default function StorePage() {
   const [activeTab, setActiveTab] = useState<Tab>("shop");
   const { data: products, isLoading } = useStoreCatalogue();
-  const { data: balance } = useWalletBalance();
 
   return (
     <div className="min-h-[100dvh] pb-40">

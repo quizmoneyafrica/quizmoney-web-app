@@ -17,7 +17,7 @@ import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { queryKeys } from "@/lib/query-keys";
-import { useAuthStore, tokenStorage, Player } from "@/lib/auth-store";
+import { useAuthStore, tokenStorage } from "@/lib/auth-store";
 import AuthAPI from "@/app/api/authApi";
 import ProfileAPI from "@/app/api/profileApi";
 import WalletAPI from "@/app/api/wallet";
