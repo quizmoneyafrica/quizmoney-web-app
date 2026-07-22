@@ -37,7 +37,7 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       AuthAPI.login({ email, password }),
-    onSuccess: (res) => {
+    onSuccess: (res: any) => {
       const { access_token, refresh_token, player } = res.data.data;
       setAuth(player, { access_token, refresh_token });
       console.log("USER LOGGED IN:", player, { access_token, refresh_token });
@@ -142,7 +142,7 @@ export const useMe = () => {
   const query = useQuery({
     queryKey: queryKeys.me,
     queryFn: () => ProfileAPI.getMyProfile(),
-    select: (res) => res.data.data,
+    select: (res: any) => res.data.data,
     staleTime: 1000 * 60 * 5,
   });
 
@@ -182,14 +182,14 @@ export const useMyGameHistory = (params?: { page?: number; limit?: number }) =>
   useQuery({
     queryKey: queryKeys.myGameHistory(params),
     queryFn: () => ProfileAPI.getMyGameHistory(params),
-    select: (res) => res.data,
+    select: (res: any) => res.data,
   });
 
 export const useMyReferrals = () =>
   useQuery({
     queryKey: queryKeys.myReferrals,
     queryFn: ProfileAPI.getMyReferrals,
-    select: (res) => res.data,
+    select: (res: any) => res.data,
     staleTime: 1000 * 60 * 5,
   });
 
@@ -220,7 +220,7 @@ export const useWalletBalance = () =>
   useQuery({
     queryKey: queryKeys.walletBalance,
     queryFn: WalletAPI.getBalance,
-    select: (res) => res.data.data,
+    select: (res: any) => res.data.data,
     staleTime: 1000 * 30, // 30 seconds — balance changes frequently
   });
 
@@ -232,7 +232,7 @@ export const useWalletTransactions = (params?: {
   useQuery({
     queryKey: queryKeys.walletTransactions(params),
     queryFn: () => WalletAPI.getTransactions(params),
-    select: (res) => res.data.data,
+    select: (res: any) => res.data.data,
     staleTime: 1000 * 60,
   });
 
@@ -240,7 +240,7 @@ export const useVirtualAccount = () =>
   useQuery({
     queryKey: queryKeys.virtualAccount,
     queryFn: WalletAPI.getVirtualAccount,
-    select: (res) => res.data,
+    select: (res: any) => res.data,
     staleTime: 1000 * 60 * 10,
   });
 
@@ -280,7 +280,7 @@ export const useBanks = () =>
   useQuery({
     queryKey: queryKeys.banks,
     queryFn: WalletAPI.getBanks,
-    select: (res) => res.data,
+    select: (res: any) => res.data,
     staleTime: 1000 * 60 * 60, // 1 hour — bank list rarely changes
   });
 
@@ -385,7 +385,7 @@ export const useWithdrawalHistory = (params?: {
   useQuery({
     queryKey: queryKeys.withdrawals(params),
     queryFn: () => WalletAPI.getWithdrawalHistory(params),
-    select: (res) => res.data,
+    select: (res: any) => res.data,
   });
 
 // ─── Leaderboard Queries ──────────────────────────────────────────────────────
@@ -394,7 +394,7 @@ export const useLastGameLeaderboard = (limit?: number) =>
   useQuery({
     queryKey: queryKeys.leaderboardLastGame,
     queryFn: () => LeaderboardAPI.getLastGameLeaderboard(limit),
-    select: (res) => res.data,
+    select: (res: any) => res.data,
     staleTime: 1000 * 60 * 2,
   });
 
@@ -402,7 +402,7 @@ export const useAllTimeLeaderboard = (limit?: number) =>
   useQuery({
     queryKey: queryKeys.leaderboardAllTime({ limit }),
     queryFn: () => LeaderboardAPI.getAllTimeLeaderboard(limit),
-    select: (res) => res.data.data.leaderboard,
+    select: (res: any) => res.data.data.leaderboard,
     staleTime: 1000 * 60 * 5,
   });
 
@@ -410,7 +410,7 @@ export const useGameLeaderboard = (gameId: string) =>
   useQuery({
     queryKey: queryKeys.leaderboardGame(gameId),
     queryFn: () => LeaderboardAPI.getGameLeaderboard(gameId),
-    select: (res) => res.data,
+    select: (res: any) => res.data,
     enabled: !!gameId,
   });
 
@@ -418,21 +418,21 @@ export const useMyLastGameRank = () =>
   useQuery({
     queryKey: queryKeys.myLastGameRank,
     queryFn: LeaderboardAPI.getMyLastGameRank,
-    select: (res) => res.data,
+    select: (res: any) => res.data,
   });
 
 export const useMyAllTimeRank = () =>
   useQuery({
     queryKey: queryKeys.myAllTimeRank,
     queryFn: LeaderboardAPI.getMyAllTimeRank,
-    select: (res) => res.data,
+    select: (res: any) => res.data,
   });
 
 export const useMyLastGamePerformance = () =>
   useQuery({
     queryKey: queryKeys.myLastGamePerformance,
     queryFn: LeaderboardAPI.getMyLastGamePerformance,
-    select: (res) => res.data,
+    select: (res: any) => res.data,
   });
 
 // ─── KYC / Verification ───────────────────────────────────────────────────────
@@ -441,7 +441,7 @@ export const useVerificationStatus = () =>
   useQuery({
     queryKey: queryKeys.verificationStatus,
     queryFn: KycAPI.getVerificationStatus,
-    select: (res) => res.data.data,
+    select: (res: any) => res.data.data,
     staleTime: 0, // Always fetch fresh — verified state must never be served from cache
   });
 
@@ -567,7 +567,7 @@ export const useUpcomingGame = () =>
       apiClient.get<{ success: boolean; data: UpcomingGame | null }>(
         "/api/game/upcoming",
       ),
-    select: (res) => res.data.data,
+    select: (res: any) => res.data.data,
     staleTime: 1000 * 30, // 30s — status changes when lobby opens
     refetchInterval: 1000 * 30, // poll every 30s as a safety net
   });

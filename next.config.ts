@@ -35,7 +35,7 @@ const swHeaders = [
 const nextConfig: any = {
   reactStrictMode: true,
   productionBrowserSourceMaps: false,
-
+  turbopack: {},
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
