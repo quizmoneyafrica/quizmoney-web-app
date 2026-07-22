@@ -301,7 +301,7 @@ export const useBankAccounts = () =>
   useQuery({
     queryKey: queryKeys.bankAccounts,
     queryFn: WalletAPI.getBankAccounts,
-    select: (res) => res.data.data, // res.data = { success, data: BankAccount[] }
+    select: (res) => res.data, // res.data = { success, data: BankAccount[] }
   });
 
 export const useAddBankAccount = () => {
