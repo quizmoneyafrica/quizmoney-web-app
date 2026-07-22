@@ -58,7 +58,7 @@ export const MobileWithdrawalForm = ({
 
   // Prefer the default bank; fall back to the first saved account
   const activeBank =
-    bankAccounts.find((b) => b.is_default) ?? bankAccounts[0] ?? null;
+    bankAccounts.find((b: any) => b.is_default) ?? bankAccounts[0] ?? null;
 
   const {
     register,

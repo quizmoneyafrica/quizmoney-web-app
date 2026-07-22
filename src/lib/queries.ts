@@ -42,11 +42,11 @@ export const useLogin = () => {
       setAuth(player, { access_token, refresh_token });
       console.log("USER LOGGED IN:", player, { access_token, refresh_token });
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Login failed", {
-        position: toastPosition,
-      });
-    },
+    // onError: (error: any) => {
+    //   toast.error(error?.response?.data?.message || "Login failed", {
+    //     position: toastPosition,
+    //   });
+    // },
   });
 };
 

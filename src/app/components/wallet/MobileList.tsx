@@ -15,7 +15,6 @@ export default function MobileList({
   onClick,
   isLastInGroup,
 }: Props) {
-
   return (
     <button
       onClick={() => onClick?.()}
@@ -28,9 +27,11 @@ export default function MobileList({
         <div>
           <div
             className={`h-10 w-10 rounded-full grid place-items-center  ${
-              transaction.direction === "credit"
+              transaction.status === "success"
                 ? "bg-green-100 text-positive-900"
-                : "bg-error-100 text-error-900"
+                : transaction.status === "failed"
+                  ? "bg-error-100 text-error-900"
+                  : "bg-warning-100 text-warning-800"
             }`}
           >
             {transaction.direction === "credit" ? (
@@ -55,9 +56,11 @@ export default function MobileList({
       <div className="col-span-1 text-right ">
         <p
           className={`text-sm md:text-base font-medium ${
-            transaction.direction === "credit"
+            transaction.status === "success"
               ? "text-green-600"
-              : "text-red-600"
+              : transaction.status === "failed"
+                ? "text-red-600"
+                : "text-warning-800"
           }`}
         >
           {transaction.direction === "credit" ? "+ " : "- "}
