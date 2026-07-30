@@ -22,14 +22,14 @@ const containerVariants = {
   },
 };
 
-const buttonItem = {
-  hidden: { opacity: 0, y: 8 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.32, ease: "easeOut" },
-  },
-};
+// const buttonItem = {
+//   hidden: { opacity: 0, y: 8 },
+//   visible: {
+//     opacity: 1,
+//     y: 0,
+//     transition: { duration: 0.32, ease: "easeOut" },
+//   },
+// };
 
 export default function LostGameComponent() {
   const dispatch = useAppDispatch();
@@ -161,7 +161,7 @@ export default function LostGameComponent() {
                   animate="visible"
                 >
                   <motion.button
-                    variants={buttonItem}
+                    // variants={buttonItem}
                     onClick={() => handleLeaveGame()}
                     whileHover={{
                       scale: 1.03,
