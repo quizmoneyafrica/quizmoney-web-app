@@ -15,7 +15,7 @@ export default function Home() {
           <Image
             src="/icons/quizmoney-logo-white.svg"
             alt="Quiz Money"
-            width={180}
+            width={180} 
             height={38}
             priority
             className="w-[30%]"
