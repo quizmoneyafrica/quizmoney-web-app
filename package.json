@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "set GENERATE_SOURCEMAP=false && next dev --turbopack -H 0.0.0.0 --experimental-https",
-    "build": "GENERATE_SOURCEMAP=false next build",
+    "build": "GENERATE_SOURCEMAP=false next build --turbopack",
     "start": "next start",
     "lint": "next lint"
   },
